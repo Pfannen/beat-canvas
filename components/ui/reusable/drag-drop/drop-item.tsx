@@ -1,3 +1,5 @@
+"use client";
+
 import { ComponentProps } from "@/types/polymorphic";
 import { FunctionComponent } from "react";
 
