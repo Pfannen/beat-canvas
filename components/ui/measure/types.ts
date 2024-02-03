@@ -15,27 +15,42 @@ export type NoteType =
   | "thirtysecond";
 
 export interface Note {
-  x: number;
+  x: number; //Should be measure independent
   y: number;
   type: NoteType;
 }
 
+export type SegmentBeat = 4 | 2 | 1 | 0.5 | 0.25 | 0.125;
+
+export type KeySignature = {
+  beatsPerMeasure: number;
+  beatNote: number /*Make this more strict later */;
+};
+
 export type SegmentData = {
+  beatPercentage: SegmentBeat;
+  xPos: number;
+  notes?: Note[];
+};
+
+export type SegmentDelegates = {
   onNotePlaced: (note: Note) => void;
   onNoteRemoved: (yPos: number) => void;
-  notes?: Note[];
 };
 
 export type SegmentProps = {
   width: number;
-  xPos: number;
   noteValidator: (xPos: number, yPos: number, noteType: NoteType) => boolean;
-} & SegmentData;
+} & SegmentData &
+  SegmentDelegates;
 
-export type SegmentBeats = 1 | 0.5 | 0.25 | 0.125;
-export type SegmentMap = { [beat in SegmentBeats]?: number };
+export type SegmentMap = { [beat in SegmentBeat]?: number };
+export type SegmentOrder = "increasing" | "decreasing";
 
-export type SegmentGenerator = (xPosOne: number, xPosTwo: number) => SegmentMap;
+export type SegmentGenerator = (
+  xPosOne: number,
+  xPosTwo: number
+) => { segments: SegmentMap; segmentOrder?: SegmentOrder };
 
 export type MeasureProps = {
   segmentGenerator: SegmentGenerator;
@@ -43,6 +58,7 @@ export type MeasureProps = {
   notes: Note[];
   addNote: (note: Note) => void;
   removeNote: (xPos: number, yPos: number) => void;
+  keySignature: KeySignature;
 };
 
 export type Segment = DoublyLinkedList<SegmentData>;

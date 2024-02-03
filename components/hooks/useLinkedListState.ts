@@ -1,13 +1,15 @@
 import { Cell } from "@/types";
 import { useState } from "react";
 
-const useLinkedListState = <S extends Cell<S>>(initialState: S | (() => S)) => {
+const useLinkedListState = <S extends Cell<S> | undefined>(
+  initialState: S | (() => S)
+) => {
   const [state, setState] = useState(() => initializeState(initialState));
 
-  const setLinkedListState = (updateFn: (prevState: S) => void) => {
+  const setLinkedListState = (updateFn: (prevState: S) => S | undefined) => {
     setState((prevState) => {
-      updateFn(prevState.next as S);
-      const newNode = { next: prevState.next };
+      const newHead = updateFn(prevState.next as S);
+      const newNode = { next: newHead || prevState.next };
       prevState.next = undefined;
       return newNode;
     });
