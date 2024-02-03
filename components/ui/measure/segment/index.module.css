@@ -1,2 +1,7 @@
 .segment {
+  outline: 1px solid red;
+}
+
+.body {
+  border-right: 1px solid black;
 }

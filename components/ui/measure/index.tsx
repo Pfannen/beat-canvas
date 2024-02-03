@@ -7,7 +7,7 @@ import Segment from "./segment";
 type MeasureProps = {};
 
 const Measure: FunctionComponent<MeasureProps> = () => {
-  const width = "25%";
+  const width = 0.25;
   const lineHeight = "10px";
   const spaceHeight = "20px";
   return (
