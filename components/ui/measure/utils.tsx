@@ -1,10 +1,12 @@
 import { ReactElement } from "react";
 import { NoteType, SegmentBeat } from "./types";
 
+export type LedgerComponentRenderer = (yPos: number) => ReactElement;
+
 export const generateMeasureComponents = (
   belowBody: number,
   aboveBody: number,
-  getComponent: (yPos: number) => ReactElement
+  getComponent: LedgerComponentRenderer
 ) => {
   const above = new Array(aboveBody);
   const body = new Array(9);

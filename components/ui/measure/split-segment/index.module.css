@@ -1,0 +1,3 @@
+.light *[data-is-line="true"] {
+  background-color: lightgray;
+}

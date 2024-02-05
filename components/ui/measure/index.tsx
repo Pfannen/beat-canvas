@@ -1,7 +1,6 @@
 "use client";
 import classes from "./index.module.css";
 import { FunctionComponent } from "react";
-import SegmentComp from "./segment";
 import {
   KeySignature,
   MeasureProps,
@@ -16,55 +15,36 @@ import { getNoteTypePercentageOfBeat } from "./utils";
 const Measure: FunctionComponent<MeasureProps> = ({
   segmentGenerator,
   renderSegment,
+  addNote,
   notes,
   keySignature,
 }) => {
   const [segments, updateEnv, iterateSegments] = useLinkedListState(() => {
     return generateSegments(segmentGenerator, notes, keySignature);
   });
-  console.log(iterateSegments(({ data }) => data));
+  const onAddNote = (segment: Segment) => (note: Note) => {
+    console.log(segment);
+    //validate note placement
+    //if valid, update state...
+    addNote(note);
+    updateEnv(() => {
+      segment.data.notes = [note];
+    });
+  };
   return (
     <div className={classes.measure}>
-      {iterateSegments(({ data }) => {
-        const { beatPercentage, notes, xPos } = data;
+      {iterateSegments((segment) => {
+        const { beatPercentage, notes, xPos } = segment.data;
         return renderSegment({
           beatPercentage,
           notes,
           xPos,
           width: beatPercentage / keySignature.beatsPerMeasure,
           noteValidator: (x, y, t) => true,
-          onNotePlaced: (n) => console.log(n),
+          onNotePlaced: onAddNote(segment),
           onNoteRemoved: (y) => console.log(y),
         });
       })}
-      {/* <SegmentComp
-        width={width}
-        lineHeight={lineHeight}
-        spaceHeight={spaceHeight}
-        belowBody={3}
-        aboveBody={3}
-      />
-      <SegmentComp
-        width={width}
-        lineHeight={lineHeight}
-        spaceHeight={spaceHeight}
-        belowBody={3}
-        aboveBody={3}
-      />
-      <SegmentComp
-        width={width}
-        lineHeight={lineHeight}
-        spaceHeight={spaceHeight}
-        belowBody={3}
-        aboveBody={3}
-      />
-      <SegmentComp
-        width={width}
-        lineHeight={lineHeight}
-        spaceHeight={spaceHeight}
-        belowBody={3}
-        aboveBody={3}
-      /> */}
     </div>
   );
 };

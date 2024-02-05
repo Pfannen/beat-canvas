@@ -6,11 +6,13 @@ const useLinkedListState = <S extends Cell<S> | undefined>(
 ) => {
   const [state, setState] = useState(() => initializeState(initialState));
 
-  const setLinkedListState = (updateFn: (prevState: S) => S | undefined) => {
+  const setLinkedListState = (updateFn: (prevState: S) => S | void) => {
     setState((prevState) => {
-      const newHead = updateFn(prevState.next as S);
-      const newNode = { next: newHead || prevState.next };
-      prevState.next = undefined;
+      const copyState = { ...prevState };
+      const newHead = updateFn(copyState.next as S);
+      const newNode = { next: newHead || copyState.next };
+      copyState.next = undefined;
+      console.log(newNode);
       return newNode;
     });
   };

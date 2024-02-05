@@ -2,7 +2,6 @@
   width: 100%;
 }
 
-.line {
-  width: 100%;
+.component[data-is-line="true"] {
   background-color: black;
 }
