@@ -1,31 +1,11 @@
+import {
+  KeySignature,
+  Note,
+  NoteType,
+  SegmentBeat,
+} from "@/components/providers/music/types";
 import { DoublyLinkedList } from "@/types";
 import { ReactNode } from "react";
-
-export type NoteType =
-  | "whole"
-  | "dotted-half"
-  | "half"
-  | "dotted-quarter"
-  | "quarter"
-  | "dotted-eighth"
-  | "eighth"
-  | "dotted-sixteenth"
-  | "sixteenth"
-  | "dotted-thirtysecond"
-  | "thirtysecond";
-
-export interface Note {
-  x: number; //Should be measure independent
-  y: number;
-  type: NoteType;
-}
-
-export type SegmentBeat = 4 | 2 | 1 | 0.5 | 0.25 | 0.125;
-
-export type KeySignature = {
-  beatsPerMeasure: number;
-  beatNote: number /*Make this more strict later */;
-};
 
 export type SegmentData = {
   beatPercentage: SegmentBeat;

@@ -1,16 +1,14 @@
 "use client";
 import classes from "./index.module.css";
 import { FunctionComponent } from "react";
+import { MeasureProps, Segment, SegmentGenerator } from "./types";
+import useLinkedListState from "@/components/hooks/useLinkedListState";
 import {
   KeySignature,
-  MeasureProps,
   Note,
-  Segment,
   SegmentBeat,
-  SegmentGenerator,
-} from "./types";
-import useLinkedListState from "@/components/hooks/useLinkedListState";
-import { getNoteTypePercentageOfBeat } from "./utils";
+} from "@/components/providers/music/types";
+import { getNoteDuration } from "@/components/providers/music/utils";
 
 const Measure: FunctionComponent<MeasureProps> = ({
   segmentGenerator,
@@ -60,7 +58,7 @@ const generateSegments = (
   //Start from the end of the measure and build to the front
   let xPosition = keySignature.beatsPerMeasure;
   for (let i = notes.length - 1; i > -1; i--) {
-    const notePercentage = getNoteTypePercentageOfBeat(
+    const notePercentage = getNoteDuration(
       notes[i].type,
       keySignature.beatNote
     );
