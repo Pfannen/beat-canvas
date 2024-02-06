@@ -2,7 +2,7 @@
 
 import Measure from "@/components/ui/measure";
 import Note from "@/components/ui/measure/note";
-import SplitSegment from "@/components/ui/measure/split-segment";
+import SplitSegment from "@/components/ui/measure/segment/split-segment";
 import { getSplitSegmentValues } from "@/components/ui/reusable/segment-split/utils";
 
 export default function Home() {

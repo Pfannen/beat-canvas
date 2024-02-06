@@ -1,8 +1,8 @@
 import classes from "./index.module.css";
-import DropContainer from "../../reusable/drag-drop/drop-container";
-import LedgerComponent from "../ledger-component";
-import Segment from "../segment";
-import { SegmentBeat, SegmentProps } from "../types";
+import DropContainer from "../../../reusable/drag-drop/drop-container";
+import LedgerComponent from "../../ledger-component";
+import Segment from "..";
+import { SegmentBeat, SegmentProps } from "../../types";
 import { FunctionComponent, useState } from "react";
 
 type SplitSegmentProps = {
@@ -13,8 +13,7 @@ type SplitSegmentProps = {
 const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
   const [split, setSplit] = useState(false);
   const { lineHeight, spaceHeight, width } = props;
-  const renderLedgerComponent = (yPos: number) => {
-    const isLine = yPos % 2 != 0;
+  const renderLedgerComponent = (yPos: number, isLine: boolean) => {
     const height = isLine ? lineHeight : spaceHeight;
     return (
       <LedgerComponent
