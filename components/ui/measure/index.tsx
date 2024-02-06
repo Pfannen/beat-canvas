@@ -4,7 +4,7 @@ import { FunctionComponent } from "react";
 import { MeasureProps, Segment, SegmentGenerator } from "./types";
 import useLinkedListState from "@/components/hooks/useLinkedListState";
 import {
-  KeySignature,
+  TimeSignature,
   Note,
   SegmentBeat,
 } from "@/components/providers/music/types";
@@ -15,10 +15,10 @@ const Measure: FunctionComponent<MeasureProps> = ({
   renderSegment,
   addNote,
   notes,
-  keySignature,
+  timeSignature,
 }) => {
   const [segments, updateEnv, iterateSegments] = useLinkedListState(() => {
-    return generateSegments(segmentGenerator, notes, keySignature);
+    return generateSegments(segmentGenerator, notes, timeSignature);
   });
   const onAddNote = (segment: Segment) => (note: Note) => {
     console.log(segment);
@@ -37,7 +37,7 @@ const Measure: FunctionComponent<MeasureProps> = ({
           beatPercentage,
           notes,
           xPos,
-          width: beatPercentage / keySignature.beatsPerMeasure,
+          width: beatPercentage / timeSignature.beatsPerMeasure,
           noteValidator: (x, y, t) => true,
           onNotePlaced: onAddNote(segment),
           onNoteRemoved: (y) => console.log(y),
@@ -49,26 +49,24 @@ const Measure: FunctionComponent<MeasureProps> = ({
 
 export default Measure;
 
+//Start from the end of the measure and builds to the front
 const generateSegments = (
   segmentGenerator: SegmentGenerator,
   notes: Note[],
-  keySignature: KeySignature
+  timeSignature: TimeSignature
 ) => {
-  let segmentList: Segment | undefined = undefined;
-  //Start from the end of the measure and build to the front
-  let xPosition = keySignature.beatsPerMeasure;
+  let segmentList: Segment | undefined = undefined; //The head of the segment list
+
+  let xPosition = timeSignature.beatsPerMeasure; //The current starting position (initially the end of the measure)
   for (let i = notes.length - 1; i > -1; i--) {
-    const notePercentage = getNoteDuration(
-      notes[i].type,
-      keySignature.beatNote
-    );
+    const noteDuartion = getNoteDuration(notes[i].type, timeSignature.beatNote); //How long the note lasts (how much space it takes up on the x-axis)
     segmentList = getSegmentsBetween(
       segmentGenerator,
-      notes[i].x + notePercentage,
+      notes[i].x + noteDuartion,
       xPosition,
       segmentList
-    );
-    segmentList = getNoteSegment(notes[i], notePercentage, segmentList);
+    ); //Append the segments between the end of the current note and the current x position
+    segmentList = getNoteSegment(notes[i], noteDuartion, segmentList); //Append the note segment
     xPosition = notes[i].x;
   }
   return getSegmentsBetween(
@@ -76,7 +74,7 @@ const generateSegments = (
     0,
     xPosition,
     segmentList
-  ) as Segment;
+  ) as Segment; //Append the segments that make up the rest of the measure (from 0 (the start of the measure) to where the first note starts (which is stored in xPosition))
 };
 
 const getSegmentsBetween = (
@@ -85,27 +83,19 @@ const getSegmentsBetween = (
   xPosTo: number,
   segmentList: Segment | undefined
 ) => {
-  const { segments, segmentOrder } = segmentGenerator(xPosFrom, xPosTo);
-  const keys = Object.keys(segments);
-  if (segmentOrder) {
-    keys.sort((a, b) => {
-      return segmentOrder === "increasing" ? +b - +a : +a - +b; //This is actually opposite of what "segmentOrder" specifies because the segments will be created backwards
-    });
-  }
-  let currentXPos = xPosTo;
-  keys.forEach((key) => {
-    const beatPercentage = +key as SegmentBeat;
-    const numSegments = segments[beatPercentage]!;
-    for (let j = 0; j < numSegments; j++) {
-      currentXPos -= beatPercentage;
-      const xPos = currentXPos;
+  const segmentCounts = segmentGenerator(xPosFrom, xPosTo); //Call the segment generator to know how many of each segment to render
+  let currentXPos = xPosTo; //The current x position for the current segment being added
+  segmentCounts.forEach(({ segmentBeat, count }) => {
+    //Iterate over all of the segments for this segment beat
+    for (let j = 0; j < count; j++) {
+      currentXPos -= segmentBeat; //Subtract the segment beat to calculate where this segment starts
       const data: Segment["data"] = {
-        xPos,
-        beatPercentage,
+        xPos: currentXPos,
+        beatPercentage: segmentBeat,
       };
-      const segment: Segment = { data };
-      prependSegment(segment, segmentList);
-      segmentList = segment;
+      const segment: Segment = { data }; //Create a new segment cell
+      prependSegment(segment, segmentList); //Prepend the cell to the segment list (this will take care of the next and prev pointers)
+      segmentList = segment; //Set the segment list equal to the newest segment (since the list is being built backwards)
     }
   });
   return segmentList;
@@ -113,26 +103,23 @@ const getSegmentsBetween = (
 
 const getNoteSegment = (
   note: Note,
-  notePercentage: SegmentBeat,
+  noteDuartion: SegmentBeat,
   segmentList: Segment | undefined
 ) => {
   const noteData: Segment["data"] = {
     xPos: note.x,
-    beatPercentage: notePercentage,
+    beatPercentage: noteDuartion,
     notes: [note],
   };
-  const noteSegment: Segment = { data: noteData };
-  prependSegment(noteSegment, segmentList);
-  segmentList = noteSegment;
-  return segmentList;
+  const noteSegment: Segment = { data: noteData }; //Create a new segment cell for the note
+  prependSegment(noteSegment, segmentList); //Prepend the cell to the segment list
+  noteSegment;
+  return noteSegment;
 };
 
-const prependSegment = (
-  headSegment: Segment,
-  segmentList: Segment | undefined
-) => {
-  headSegment.next = segmentList;
-  if (headSegment.next) {
-    headSegment.next.prev = headSegment;
+const prependSegment = (cell: Segment, segmentList: Segment | undefined) => {
+  cell.next = segmentList; //Set the cell's next pointer to the segment list
+  if (segmentList) {
+    segmentList.prev = cell; //If there were already segments in the list, update the prev pointer of the segment list to the new head node
   }
 };

@@ -19,7 +19,7 @@ export interface Note {
 
 export type SegmentBeat = 4 | 2 | 1 | 0.5 | 0.25 | 0.125;
 
-export type KeySignature = {
+export type TimeSignature = {
   beatsPerMeasure: number;
   beatNote: number /*Make this more strict later */;
 };

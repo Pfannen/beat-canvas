@@ -1,5 +1,5 @@
 import {
-  KeySignature,
+  TimeSignature,
   Note,
   NoteType,
   SegmentBeat,
@@ -24,13 +24,12 @@ export type SegmentProps = {
 } & SegmentData &
   SegmentDelegates;
 
-export type SegmentMap = { [beat in SegmentBeat]?: number };
-export type SegmentOrder = "increasing" | "decreasing";
+export type SegmentCount = { segmentBeat: SegmentBeat; count: number };
 
 export type SegmentGenerator = (
   xPosOne: number,
   xPosTwo: number
-) => { segments: SegmentMap; segmentOrder?: SegmentOrder };
+) => SegmentCount[];
 
 export type MeasureProps = {
   segmentGenerator: SegmentGenerator;
@@ -38,7 +37,7 @@ export type MeasureProps = {
   notes: Note[];
   addNote: (note: Note) => void;
   removeNote: (xPos: number, yPos: number) => void;
-  keySignature: KeySignature;
+  timeSignature: TimeSignature;
 };
 
 export type Segment = DoublyLinkedList<SegmentData>;

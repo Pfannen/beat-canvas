@@ -1,4 +1,4 @@
-import { KeySignature, Measure, Note } from "../../types";
+import { TimeSignature, Measure, Note } from "../../types";
 import { getNoteDuration } from "../../utils";
 
 export type MeasureModifier<T> = (args: T) => (measures: Measure[]) => void;
@@ -7,12 +7,12 @@ export const addNote: MeasureModifier<{ note: Note; measureIndex: number }> =
   ({ note, measureIndex }) =>
   (measures) => {
     const measure = measures[measureIndex];
-    const keySignature = {
+    const timeSignature = {
       beatNote: 4,
       beatsPerMeasure: 4,
     };
     const noteIndex = findPositionIndex(note.x, measure.notes);
-    if (!isValidPlacement(note, measure, keySignature, noteIndex)) {
+    if (!isValidPlacement(note, measure, timeSignature, noteIndex)) {
       console.error("Invalid note placement");
       return;
     }
@@ -22,12 +22,12 @@ export const addNote: MeasureModifier<{ note: Note; measureIndex: number }> =
 const isValidPlacement = (
   note: Note,
   measure: Measure,
-  keySignature: KeySignature,
+  timeSignature: TimeSignature,
   noteIndex?: number
 ) => {
-  const noteDuration = getNoteDuration(note.type, keySignature.beatNote);
+  const noteDuration = getNoteDuration(note.type, timeSignature.beatNote);
   if (measure.notes.length === 0) {
-    return note.x + noteDuration <= keySignature.beatNote;
+    return note.x + noteDuration <= timeSignature.beatNote;
   }
   const { notes } = measure;
   if (noteIndex === undefined) {
@@ -36,9 +36,9 @@ const isValidPlacement = (
   const foundNote = notes[noteIndex];
   const prevNote = notes[noteIndex - 1];
   const lowerBound = prevNote
-    ? prevNote.x + getNoteDuration(prevNote.type, keySignature.beatNote)
+    ? prevNote.x + getNoteDuration(prevNote.type, timeSignature.beatNote)
     : 0;
-  const upperBound = foundNote ? foundNote.x : keySignature.beatsPerMeasure;
+  const upperBound = foundNote ? foundNote.x : timeSignature.beatsPerMeasure;
   return lowerBound <= note.x && note.x + noteDuration <= upperBound;
 };
 

@@ -1,31 +1,38 @@
-import { SegmentBeat, SegmentGenerator, SegmentMap } from "../../measure/types";
+import { SegmentBeat } from "@/components/providers/music/types";
+import { SegmentCount, SegmentGenerator } from "../../measure/types";
 
-export const getSplitSegmentValues: SegmentGenerator = (
+export const minimalSegmentGenerator: SegmentGenerator = (
   currentPosition: number,
   notePosition: number
 ) => {
-  const distance = notePosition - currentPosition;
-  const segments: SegmentMap = {};
-  let currentDistance = 0;
-  let currentBeat: SegmentBeat = 1;
+  const distance = notePosition - currentPosition; //The distance that needs to be covered
+  const segmentCounts: SegmentCount[] = []; //The segments that will fill the distance
+  let currentDistance = 0; //The total distance covered
+  let currentBeat: SegmentBeat = 1; //The segment length to start with
   while (currentDistance < distance) {
-    const numberOfSegment = Math.floor(
-      (distance - currentDistance) / currentBeat
-    );
-    currentDistance += numberOfSegment * currentBeat;
-    segments[currentBeat as SegmentBeat] = numberOfSegment;
-    currentBeat /= 2;
+    //While the distance hasn't been fully covered
+    const segmentCount = Math.floor((distance - currentDistance) / currentBeat); //How many whole segments can be placed in the current distance
+    currentDistance += segmentCount * currentBeat; //The distance that the whole segments cover
+    if (segmentCount) {
+      segmentCounts.push({
+        segmentBeat: currentBeat as SegmentBeat,
+        count: segmentCount,
+      }); //Add the segment to the list of counts
+    }
+    currentBeat /= 2; //Try the next biggest segment length
   }
-  return {
-    segments,
-    segmentOrder: isDownBeat(currentPosition) ? "decreasing" : "increasing",
-  };
+  if (isDownBeat(currentPosition)) {
+    segmentCounts.sort((a, b) => {
+      return b.segmentBeat - a.segmentBeat;
+    });
+  } //Display the segments in decreasing order if the current position is on a downbeat
+  return segmentCounts;
+};
+
+const isDownBeat = (currentPosition: number) => {
+  return Math.floor(currentPosition) === currentPosition; //Is down beat if there is no fractional part of current position
 };
 
 const getIndexLength = (index: number) => {
   return 1 / Math.pow(2, index);
-};
-
-const isDownBeat = (currentPosition: number) => {
-  return Math.floor(currentPosition) === currentPosition; //No fractional part of current position
 };
