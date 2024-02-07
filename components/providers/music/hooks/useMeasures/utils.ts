@@ -19,6 +19,41 @@ export const addNote: MeasureModifier<{ note: Note; measureIndex: number }> =
     measure.notes.splice(noteIndex, 0, note);
   };
 
+export const removeNote: MeasureModifier<{
+  noteIndex: number;
+  measureIndex: number;
+}> =
+  ({ noteIndex, measureIndex }) =>
+  (measures) => {
+    measures[measureIndex].notes.splice(noteIndex, 1);
+  };
+
+export const createMeasure: MeasureModifier<{ notes?: Note[] }> =
+  ({ notes }) =>
+  (measures) => {
+    measures.push({ notes: notes || [] });
+  };
+
+export const removeMeasures: MeasureModifier<{
+  startIndex: number;
+  count: number;
+}> =
+  ({ startIndex, count }) =>
+  (measures) => {
+    measures.splice(startIndex, count);
+  };
+
+export const duplicateMeasures: MeasureModifier<{
+  startIndex: number;
+  count: number;
+  insertIndex?: number;
+}> =
+  ({ startIndex, count, insertIndex }) =>
+  (measures) => {
+    const duplicatedMeasures = measures.slice(startIndex, startIndex + count);
+    measures.splice(insertIndex || measures.length, 0, ...duplicatedMeasures);
+  };
+
 const isValidPlacement = (
   note: Note,
   measure: Measure,

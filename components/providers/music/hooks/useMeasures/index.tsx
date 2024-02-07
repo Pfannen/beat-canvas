@@ -1,10 +1,23 @@
 import { useState } from "react";
 import { Measure } from "../../types";
+import { MeasureModifier } from "./utils";
 
-const useMeasures = () => {
-  const [measures, setMeasures] = useState<Measure[]>([]);
+const useMeasures = (initialMeasures?: Measure[]) => {
+  const [measures, setMeasures] = useState<Measure[]>(initialMeasures || []);
 
-  return { measures };
+  const invokeMeasureModifier = (del: ReturnType<MeasureModifier<any>>) => {
+    setMeasures((prevState) => {
+      const copyState = [...prevState];
+      del(copyState);
+      return copyState;
+    });
+  };
+  return { measures, invokeMeasureModifier };
+};
+
+useMeasures.initialState = {
+  measures: [],
+  invokeMeasureModifier: () => {},
 };
 
 export default useMeasures;

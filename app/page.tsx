@@ -1,5 +1,6 @@
 "use client";
 
+import MusicProvider from "@/components/providers/music";
 import Measure from "@/components/ui/measure";
 import Note from "@/components/ui/measure/note";
 import SplitSegment from "@/components/ui/measure/segment/split-segment";
@@ -7,7 +8,7 @@ import { minimalSegmentGenerator } from "@/components/ui/reusable/segment-split/
 
 export default function Home() {
   return (
-    <>
+    <MusicProvider>
       <Note />
       <Measure
         segmentGenerator={minimalSegmentGenerator}
@@ -30,6 +31,6 @@ export default function Home() {
           console.log(x, y);
         }}
       />
-    </>
+    </MusicProvider>
   );
 }

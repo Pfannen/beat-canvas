@@ -2,8 +2,9 @@ import classes from "./index.module.css";
 import DropContainer from "../../../reusable/drag-drop/drop-container";
 import LedgerComponent from "../../ledger-component";
 import Segment from "..";
-import { SegmentBeat, SegmentProps } from "../../types";
+import { SegmentProps } from "../../types";
 import { FunctionComponent, useState } from "react";
+import { SegmentBeat } from "@/components/providers/music/types";
 
 type SplitSegmentProps = {
   lineHeight: string;

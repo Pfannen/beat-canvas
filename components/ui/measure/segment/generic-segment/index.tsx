@@ -4,11 +4,22 @@ import { LedgerComponentRenderer } from "../../utils";
 import classes from "./index.module.css";
 import { FunctionComponent } from "react";
 
-type GenericSegmentProps = {};
+type GenericSegmentProps = {
+  lineHeight: string;
+  spaceHeight: string;
+};
 
-const GenericSegment: FunctionComponent<GenericSegmentProps> = () => {
+const GenericSegment: FunctionComponent<GenericSegmentProps> = ({
+  lineHeight,
+  spaceHeight,
+}) => {
   const componentRenderer: LedgerComponentRenderer = (y, isLine) => {
-    return <LedgerComponent height="10px" isLine={isLine} />;
+    return (
+      <LedgerComponent
+        height={isLine ? lineHeight : spaceHeight}
+        isLine={isLine}
+      />
+    );
   };
   return (
     <Segment
