@@ -1,7 +1,7 @@
 "use client";
 import classes from "./index.module.css";
 import { FunctionComponent } from "react";
-import { MeasureProps, Segment, SegmentGenerator } from "./types";
+import { MeasureProps, Segment, SegmentGenerator } from "../types";
 import useLinkedListState from "@/components/hooks/useLinkedListState";
 import {
   TimeSignature,

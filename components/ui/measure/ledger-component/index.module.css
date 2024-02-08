@@ -1,7 +1,15 @@
 .component {
   width: 100%;
+  position: relative;
 }
 
 .component[data-is-line="true"] {
   background-color: black;
+}
+
+.note {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }

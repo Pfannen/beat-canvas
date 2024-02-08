@@ -22,7 +22,11 @@ const LedgerComponent = <C extends ElementType = "div">({
       data-is-line={isLine}
       className={concatClassNames(classes.component, className)}
       style={{ height }}
-    />
+    >
+      {restProps.children && (
+        <span className={classes.note}>{restProps.children}</span>
+      )}
+    </Component>
   );
 };
 

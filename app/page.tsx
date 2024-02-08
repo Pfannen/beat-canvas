@@ -1,7 +1,7 @@
 "use client";
 
 import MusicProvider from "@/components/providers/music";
-import Measure from "@/components/ui/measure";
+import Measure from "@/components/ui/measure/modifiable-measure";
 import Note from "@/components/ui/measure/note";
 import SplitSegment from "@/components/ui/measure/segment/split-segment";
 import { minimalSegmentGenerator } from "@/components/ui/reusable/segment-split/utils";

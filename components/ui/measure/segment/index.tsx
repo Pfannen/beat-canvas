@@ -23,11 +23,11 @@ const Segment: FunctionComponent<Props> = (props) => {
   );
   return (
     <div className={props.className} style={{ width: props.width * 100 + "%" }}>
-      {components[0].length && (
+      {aboveBody && (
         <span className={props.aboveClassName}>{components[0]}</span>
       )}
       <span className={props.bodyClassName}>{components[1]}</span>
-      {components[2].length && (
+      {belowBody && (
         <span className={props.belowClassName}>{components[2]}</span>
       )}
     </div>
