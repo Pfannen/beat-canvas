@@ -1,0 +1,15 @@
+.container {
+  height: 100%;
+}
+
+.body {
+  height: 100%;
+}
+
+.before {
+  height: var(--padding-top);
+}
+
+.after {
+  height: var(--padding-bottom);
+}

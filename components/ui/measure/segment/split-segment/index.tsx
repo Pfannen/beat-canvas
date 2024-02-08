@@ -6,16 +6,14 @@ import { SegmentProps } from "../../types";
 import { FunctionComponent, useState } from "react";
 import { SegmentBeat } from "@/components/providers/music/types";
 
-type SplitSegmentProps = {
-  lineHeight: string;
-  spaceHeight: string;
-} & SegmentProps;
-
-const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
+const SplitSegment: FunctionComponent<SegmentProps> = (props) => {
   const [split, setSplit] = useState(false);
-  const { lineHeight, spaceHeight, width } = props;
-  const renderLedgerComponent = (yPos: number, isLine: boolean) => {
-    const height = isLine ? lineHeight : spaceHeight;
+  const { width } = props;
+  const renderLedgerComponent = (
+    yPos: number,
+    isLine: boolean,
+    height: string
+  ) => {
     return (
       <LedgerComponent
         as={DropContainer}
@@ -38,8 +36,6 @@ const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
         aboveBody={3}
         renderLedgerComponent={renderLedgerComponent}
         width={width}
-        aboveClassName={classes.light}
-        belowClassName={classes.light}
       />
     );
   } else {

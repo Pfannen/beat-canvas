@@ -24,36 +24,14 @@ export default class NotePosition {
     this.startsWithLine = startWithLine;
   }
 
-  //If startsWithLine is true this returns the number of lines
-  private getFirstComponentCount(yPos: number) {
-    return Math.floor(yPos / 2) + 1;
-  }
-
-  //If startsWithLine is false this returns the number of lines
-  private getSecondComponentCount(yPos: number) {
-    return Math.floor(yPos + 1 / 2);
-  }
-
-  private getSpaceCount(yPos: number) {
-    return this.startsWithLine
-      ? this.getSecondComponentCount(yPos)
-      : this.getFirstComponentCount(yPos);
-  }
-
-  private getLineCount(yPos: number) {
-    return this.startsWithLine
-      ? this.getFirstComponentCount(yPos)
-      : this.getSecondComponentCount(yPos);
-  }
-
   private isOnLine(yPos: number) {
     return this.startsWithLine ? yPos % 2 === 0 : yPos % 2 !== 0;
   }
 
   //Returns the value that is in the center of the component (line or space) that yPos represents
   private getYOffset(yPos: number) {
-    let spaceCount = this.getSpaceCount(yPos);
-    let lineCount = this.getLineCount(yPos);
+    let spaceCount = MeasureUtils.getSpaceCount(yPos, this.startsWithLine);
+    let lineCount = MeasureUtils.getLineCount(yPos, this.startsWithLine);
     this.isOnLine(yPos) ? (lineCount -= 0.5) : (spaceCount -= 0.5);
     const units = spaceCount * this.spaceHeight + lineCount * this.lineHeight;
     return units + this.unit;
@@ -72,5 +50,29 @@ export default class NotePosition {
         y: this.getYOffset(note.y),
       };
     });
+  }
+}
+
+export class MeasureUtils {
+  //If startsWithLine is true this returns the number of lines
+  private static getFirstComponentCount(yPos: number) {
+    return Math.floor(yPos / 2) + 1;
+  }
+
+  //If startsWithLine is false this returns the number of lines
+  private static getSecondComponentCount(yPos: number) {
+    return Math.floor((yPos + 1) / 2);
+  }
+
+  static getSpaceCount(yPos: number, startsWithLine: boolean) {
+    return startsWithLine
+      ? this.getSecondComponentCount(yPos)
+      : this.getFirstComponentCount(yPos);
+  }
+
+  static getLineCount(yPos: number, startsWithLine: boolean) {
+    return startsWithLine
+      ? this.getFirstComponentCount(yPos)
+      : this.getSecondComponentCount(yPos);
   }
 }

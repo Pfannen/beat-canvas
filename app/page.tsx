@@ -1,28 +1,27 @@
 "use client";
 
 import MusicProvider from "@/components/providers/music";
-import Measure from "@/components/ui/measure/modifiable-measure";
-import Note from "@/components/ui/measure/note";
-import SplitSegment from "@/components/ui/measure/segment/split-segment";
-import { minimalSegmentGenerator } from "@/components/ui/reusable/segment-split/utils";
+import DisplayMeasure from "@/components/ui/measure/display-measure";
+import classes from "./page.module.css";
 
 export default function Home() {
   return (
     <MusicProvider>
-      <Note />
+      <div className={classes.measures}>
+        <DisplayMeasure componentsAbove={2} componentsBelow={2} />
+      </div>
+    </MusicProvider>
+  );
+}
+
+{
+  /* <Note />
       <Measure
         segmentGenerator={minimalSegmentGenerator}
         notes={[{ x: 1.5, type: "eighth", y: 0 }]}
         timeSignature={{ beatNote: 4, beatsPerMeasure: 4 }}
         renderSegment={(props) => (
           <SplitSegment {...props} lineHeight="10px" spaceHeight="20px" />
-          // <Segment
-          //   {...props}
-          //   aboveBody={3}
-          //   belowBody={3}
-          //   lineHeight="10px"
-          //   spaceHeight="20px"
-          // />
         )}
         addNote={(note) => {
           console.log(note);
@@ -30,7 +29,5 @@ export default function Home() {
         removeNote={(x, y) => {
           console.log(x, y);
         }}
-      />
-    </MusicProvider>
-  );
+      /> */
 }
