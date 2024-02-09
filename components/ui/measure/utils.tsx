@@ -3,7 +3,8 @@ import { ReactElement } from "react";
 export type LedgerComponentRenderer = (
   yPos: number,
   isLine: boolean,
-  heightPercentage: string
+  heightPercentage: string,
+  isBodyComponent: boolean
 ) => ReactElement;
 
 export const generateMeasureComponents = (
@@ -26,11 +27,11 @@ export const generateMeasureComponents = (
     if (startWithLine) isLine = !isLine;
     const height = isLine ? lineHeight : spaceHeight;
     if (y < belowBody) {
-      below.push(getComponent(y, isLine, height));
+      below.push(getComponent(y, isLine, height, false));
     } else if (y < belowBody + bodyCt) {
-      body.push(getComponent(y, isLine, height));
+      body.push(getComponent(y, isLine, height, true));
     } else {
-      above.push(getComponent(y, isLine, height));
+      above.push(getComponent(y, isLine, height, false));
     }
   }
   return [above, body, below];

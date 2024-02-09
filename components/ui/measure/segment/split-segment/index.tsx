@@ -12,18 +12,23 @@ const SplitSegment: FunctionComponent<SegmentProps> = (props) => {
   const renderLedgerComponent = (
     yPos: number,
     isLine: boolean,
-    height: string
+    height: string,
+    isBodyComponent: boolean
   ) => {
     return (
       <LedgerComponent
-        as={DropContainer}
-        onDrop={(d: string) => {
-          console.log(d, yPos);
-        }}
-        onDragEnter={() => {
+        // as={DropContainer}
+        // onDrop={(d: string) => {
+        //   console.log(d, yPos);
+        // }}
+        // onDragEnter={() => {
+        //   setSplit(true);
+        // }}
+        // dataName="note"
+        onClick={() => {
           setSplit(true);
         }}
-        dataName="note"
+        className={classes.component}
         height={height}
         isLine={isLine}
       />

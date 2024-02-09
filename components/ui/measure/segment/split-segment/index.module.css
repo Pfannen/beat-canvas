@@ -1,3 +1,7 @@
 .light *[data-is-line="true"] {
   background-color: lightgray;
 }
+
+.component {
+  outline: 1px solid red;
+}
