@@ -17,7 +17,23 @@ const mockMeasures: Measure[] = [
       { x: 0, y: 0, type: "quarter" },
       { x: 1, y: 1, type: "quarter" },
       { x: 2, y: 2, type: "quarter" },
-      { x: 3, y: 3, type: "quarter" },
+      { x: 3, y: 10, type: "eighth" },
+    ],
+  },
+  {
+    notes: [
+      { x: 0, y: 0, type: "quarter" },
+      { x: 1, y: 1, type: "quarter" },
+      { x: 2, y: 2, type: "quarter" },
+      { x: 3, y: 10, type: "eighth" },
+    ],
+  },
+  {
+    notes: [
+      { x: 0, y: 0, type: "quarter" },
+      { x: 1, y: 1, type: "sixteenth" },
+      { x: 1.25, y: 2, type: "sixteenth" },
+      { x: 3, y: 10, type: "eighth" },
     ],
   },
 ];

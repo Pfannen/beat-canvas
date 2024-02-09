@@ -1,25 +1,35 @@
+import { ComponentPercentages } from "@/objects/note-position";
 import LedgerComponent from "../../ledger-component";
 import Segment from "../../segment";
 import { LedgerComponentRenderer } from "../../utils";
 import classes from "./index.module.css";
-import { FunctionComponent, ReactNode } from "react";
+import { CSSProperties, FunctionComponent, ReactNode } from "react";
 
 type DisplayMeasureProps = {
   componentsAbove?: number;
   componentsBelow?: number;
   notesComponents?: ReactNode;
+  componentPercentages?: ComponentPercentages;
+  height: string;
+  padding: string;
 };
 
 const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
   componentsAbove,
   componentsBelow,
   notesComponents,
+  componentPercentages,
+  height,
+  padding,
 }) => {
-  const componentRenderer: LedgerComponentRenderer = (y, isLine, height) => {
+  const componentRenderer: LedgerComponentRenderer = (_, isLine, height) => {
     return <LedgerComponent height={height} isLine={isLine} />;
   };
   return (
-    <div className={classes.container}>
+    <div
+      style={{ "--body-height": height, "--padding": padding } as CSSProperties}
+      className={classes.container}
+    >
       <Segment
         width={"100%"}
         belowBody={componentsBelow}
@@ -28,6 +38,7 @@ const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
         startWithLine
         body={7}
         className={classes.body}
+        componentPercentages={componentPercentages}
       />
       {notesComponents}
     </div>

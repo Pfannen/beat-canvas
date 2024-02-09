@@ -2,12 +2,10 @@ type UnitMeasurement = "px" | "%";
 
 type Note = { x: number; y: number; length: number };
 
-type ComponentHeights = { percentPerLine: number; percentPerSpace: number };
-
 export type Offset = { x: number; y: number };
 
 export default class NotePosition {
-  heights: ComponentHeights;
+  heights: ComponentPercentages;
   segmentLength: number;
   startsWithLine: boolean;
   measureHeight: number;
@@ -38,8 +36,8 @@ export default class NotePosition {
     let spaceCount = MeasureUtils.getSpaceCount(yPos, this.startsWithLine);
     let lineCount = MeasureUtils.getLineCount(yPos, this.startsWithLine);
     this.isOnLine(yPos) ? (lineCount -= 0.5) : (spaceCount -= 0.5);
-    const spaceHeight = this.heights.percentPerSpace * this.measureHeight;
-    const lineHeight = this.heights.percentPerLine * this.measureHeight;
+    const spaceHeight = this.heights.space * this.measureHeight;
+    const lineHeight = this.heights.line * this.measureHeight;
     return spaceCount * spaceHeight + lineCount * lineHeight;
   }
 
@@ -61,6 +59,8 @@ export default class NotePosition {
     };
   }
 }
+
+export type ComponentPercentages = { line: number; space: number };
 
 export class MeasureUtils {
   //If startsWithLine is true this returns the number of lines
@@ -89,7 +89,7 @@ export class MeasureUtils {
     componentCount: number,
     lineToSpaceRatio: number,
     startWithLine: boolean
-  ) {
+  ): ComponentPercentages {
     const lineCount = MeasureUtils.getLineCount(
       componentCount - 1,
       startWithLine
@@ -110,6 +110,6 @@ export class MeasureUtils {
       spacePercentage *
       (1 + (lineToSpaceRatio / 2) * linePercentage); //Apply half the ratio to upsize the space
     console.log();
-    return { percentPerLine, percentPerSpace };
+    return { line: percentPerLine, space: percentPerSpace };
   }
 }
