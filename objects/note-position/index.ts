@@ -13,20 +13,20 @@ export default class NotePosition {
   measureHeight: number;
   constructor(
     componentCount: number,
-    segmentLength: number,
-
+    wholeSegmentLength: number,
     measureHeight: number,
-    spaceToLineRatio = 0.25,
-    startWithLine = false
+    startWithLine = false,
+    lineToSpaceRatio = 3
   ) {
     this.heights = MeasureUtils.getLedgerComponentHeights(
       componentCount,
-      spaceToLineRatio,
+      lineToSpaceRatio,
       startWithLine
     );
     this.measureHeight = measureHeight;
-    this.segmentLength = segmentLength; //Will be 25 if 4/4 time (1/4 * 100) w/ % units
+    this.segmentLength = wholeSegmentLength; //Will be 25 if 4/4 time (1/4 * 100)
     this.startsWithLine = startWithLine;
+    console.log("invoke");
   }
 
   private isOnLine(yPos: number) {
@@ -50,11 +50,15 @@ export default class NotePosition {
 
   public getNoteOffsets(notes: Note[]): Offset[] {
     return notes.map((note) => {
-      return {
-        x: this.getXOffset(note.x, note.length),
-        y: this.getYOffset(note.y),
-      };
+      return this.getNoteOffset(note);
     });
+  }
+
+  public getNoteOffset(note: Note): Offset {
+    return {
+      x: this.getXOffset(note.x, note.length),
+      y: this.getYOffset(note.y),
+    };
   }
 }
 
@@ -83,7 +87,7 @@ export class MeasureUtils {
 
   static getLedgerComponentHeights(
     componentCount: number,
-    spaceToLineRatio: number,
+    lineToSpaceRatio: number,
     startWithLine: boolean
   ) {
     const lineCount = MeasureUtils.getLineCount(
@@ -98,10 +102,14 @@ export class MeasureUtils {
     const spacePercentage = 1 - linePercentage; //The percentage of the container that ALL of the spaces get
 
     const percentPerLine =
-      (1 / lineCount) * linePercentage * (1 - spaceToLineRatio / 2); //Apply half the ratio to downsize the line
+      (1 / lineCount) *
+      linePercentage *
+      (1 - (lineToSpaceRatio / 2) * spacePercentage); //Apply half the ratio to downsize the line
     const percentPerSpace =
-      (1 / spaceCount) * spacePercentage * (1 + spaceToLineRatio / 2); //Apply half the ratio to upsize the space
-
+      (1 / spaceCount) *
+      spacePercentage *
+      (1 + (lineToSpaceRatio / 2) * linePercentage); //Apply half the ratio to upsize the space
+    console.log();
     return { percentPerLine, percentPerSpace };
   }
 }

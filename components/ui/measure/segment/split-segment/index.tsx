@@ -35,7 +35,7 @@ const SplitSegment: FunctionComponent<SegmentProps> = (props) => {
         belowBody={3}
         aboveBody={3}
         renderLedgerComponent={renderLedgerComponent}
-        width={width}
+        width={width * 100 + "%"}
       />
     );
   } else {

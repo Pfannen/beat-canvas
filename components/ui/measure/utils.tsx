@@ -13,7 +13,7 @@ export const generateMeasureComponents = (
   spaceHeight: string,
   startWithLine: boolean,
   getComponent: LedgerComponentRenderer,
-  bodyCt = 9
+  bodyCt = 7
 ) => {
   const above = new Array(aboveBody);
   const body = new Array(bodyCt);

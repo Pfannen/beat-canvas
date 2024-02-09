@@ -1,12 +1,22 @@
+import { PolymorphicComponentProps } from "@/types/polymorphic";
 import DropItem from "../../reusable/drag-drop/drop-item";
 import classes from "./index.module.css";
-import { FunctionComponent } from "react";
+import { ElementType, FunctionComponent } from "react";
+import { concatClassNames } from "@/utils/css";
 
 type NoteProps = {};
 
-const Note: FunctionComponent<NoteProps> = () => {
+const Note = <C extends ElementType = "div">({
+  as,
+  className,
+  ...restProps
+}: PolymorphicComponentProps<C, NoteProps>) => {
+  const Component = as || "div";
   return (
-    <DropItem className={classes.note} dataName="note" dataValue="quarter" />
+    <Component
+      className={concatClassNames(classes.note, className)}
+      {...restProps}
+    />
   );
 };
 
