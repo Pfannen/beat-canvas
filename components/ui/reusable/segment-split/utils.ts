@@ -8,7 +8,8 @@ export const minimalSegmentGenerator: SegmentGenerator = (
   const distance = notePosition - currentPosition; //The distance that needs to be covered
   const segmentCounts: SegmentCount[] = []; //The segments that will fill the distance
   let currentDistance = 0; //The total distance covered
-  let currentBeat: SegmentBeat = 1; //The segment length to start with
+
+  let currentBeat = 1 as SegmentBeat; //The segment length to start with
   while (currentDistance < distance) {
     //While the distance hasn't been fully covered
     const segmentCount = Math.floor((distance - currentDistance) / currentBeat); //How many whole segments can be placed in the current distance

@@ -6,7 +6,7 @@ import { SegmentProps } from "../../types";
 import { FunctionComponent, useState } from "react";
 import { SegmentBeat } from "@/components/providers/music/types";
 
-const SplitSegment: FunctionComponent<SegmentProps> = (props) => {
+const SplitSegment: FunctionComponent<SegmentProps<any>> = (props) => {
   const [split, setSplit] = useState(false);
   const { width } = props;
   const renderLedgerComponent = (
@@ -26,7 +26,8 @@ const SplitSegment: FunctionComponent<SegmentProps> = (props) => {
         // }}
         // dataName="note"
         onClick={() => {
-          setSplit(true);
+          props.actionHandler("click", props.xPos, yPos);
+          //setSplit(true);
         }}
         className={classes.component}
         height={height}

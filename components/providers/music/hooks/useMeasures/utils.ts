@@ -1,12 +1,16 @@
 import { TimeSignature, Measure, Note } from "../../types";
 import { getNoteDuration } from "../../utils";
 
-export type MeasureModifier<T> = (args: T) => (measures: Measure[]) => void;
+export type MeasureFetcher = (index?: number, count?: number) => Measure[];
+
+export type MeasureModifier<T> = (
+  args: T
+) => (getMeasures: MeasureFetcher) => void;
 
 export const addNote: MeasureModifier<{ note: Note; measureIndex: number }> =
   ({ note, measureIndex }) =>
-  (measures) => {
-    const measure = measures[measureIndex];
+  (getMeasures) => {
+    const measure = getMeasures(measureIndex, 1)[0];
     const timeSignature = {
       beatNote: 4,
       beatsPerMeasure: 4,
@@ -24,14 +28,14 @@ export const removeNote: MeasureModifier<{
   measureIndex: number;
 }> =
   ({ noteIndex, measureIndex }) =>
-  (measures) => {
-    measures[measureIndex].notes.splice(noteIndex, 1);
+  (getMeasures) => {
+    getMeasures(measureIndex)[0].notes.splice(noteIndex, 1);
   };
 
 export const createMeasure: MeasureModifier<{ notes?: Note[] }> =
   ({ notes }) =>
-  (measures) => {
-    measures.push({ notes: notes || [] });
+  (getMeasures) => {
+    getMeasures().push({ notes: notes || [] });
   };
 
 export const removeMeasures: MeasureModifier<{
@@ -39,8 +43,8 @@ export const removeMeasures: MeasureModifier<{
   count: number;
 }> =
   ({ startIndex, count }) =>
-  (measures) => {
-    measures.splice(startIndex, count);
+  (getMeasures) => {
+    getMeasures().splice(startIndex, count);
   };
 
 export const duplicateMeasures: MeasureModifier<{
@@ -49,7 +53,8 @@ export const duplicateMeasures: MeasureModifier<{
   insertIndex?: number;
 }> =
   ({ startIndex, count, insertIndex }) =>
-  (measures) => {
+  (getMeasures) => {
+    const measures = getMeasures();
     const duplicatedMeasures = measures.slice(startIndex, startIndex + count);
     measures.splice(insertIndex || measures.length, 0, ...duplicatedMeasures);
   };

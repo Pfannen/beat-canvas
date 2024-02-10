@@ -1,8 +1,7 @@
 "use client";
 import classes from "./index.module.css";
-import { FunctionComponent } from "react";
-import { MeasureProps, Segment, SegmentGenerator } from "../types";
-import useLinkedListState from "@/components/hooks/useLinkedListState";
+import { FunctionComponent, ReactNode } from "react";
+import { Segment, SegmentGenerator, SegmentRenderer } from "../types";
 import {
   TimeSignature,
   Note,
@@ -10,37 +9,52 @@ import {
 } from "@/components/providers/music/types";
 import { getNoteDuration } from "@/components/providers/music/utils";
 
+export type MeasureProps = {
+  segmentGenerator: SegmentGenerator;
+  renderSegment: SegmentRenderer;
+  notes: Note[];
+  // addNote: (note: Note) => void;
+  // removeNote: (xPos: number, yPos: number) => void;
+  timeSignature: TimeSignature;
+};
+
 const Measure: FunctionComponent<MeasureProps> = ({
   segmentGenerator,
   renderSegment,
-  addNote,
   notes,
   timeSignature,
 }) => {
-  const [segments, updateEnv, iterateSegments] = useLinkedListState(() => {
-    return generateSegments(segmentGenerator, notes, timeSignature);
-  });
-  const onAddNote = (segment: Segment) => (note: Note) => {
-    console.log(segment);
-    //validate note placement
-    //if valid, update state...
-    addNote(note);
-    updateEnv(() => {
-      segment.data.notes = [note];
-    });
+  // const [segments, updateEnv, iterateSegments] = useLinkedListState(() => {
+  //   return generateSegments(segmentGenerator, notes, timeSignature);
+  // });
+  // const onAddNote = (segment: Segment) => (note: Note) => {
+  //   console.log(segment);
+  //   //validate note placement
+  //   //if valid, update state...
+  //   addNote(note);
+  //   updateEnv(() => {
+  //     segment.data.notes = [note];
+  //   });
+  // };
+  const segments = generateSegments(segmentGenerator, notes, timeSignature);
+  const reduceNodes = (reducer: (cell: Segment) => ReactNode) => {
+    const data = [];
+    let currNode: Segment | undefined = segments;
+    while (currNode) {
+      data.push(reducer(currNode));
+      currNode = currNode.next;
+    }
+    return data;
   };
   return (
     <div className={classes.measure}>
-      {iterateSegments((segment) => {
+      {reduceNodes((segment) => {
         const { beatPercentage, notes, xPos } = segment.data;
         return renderSegment({
           beatPercentage,
           notes,
           xPos,
           width: beatPercentage / timeSignature.beatsPerMeasure,
-          noteValidator: (x, y, t) => true,
-          onNotePlaced: onAddNote(segment),
-          onNoteRemoved: (y) => console.log(y),
         });
       })}
     </div>
