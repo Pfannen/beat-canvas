@@ -5,7 +5,7 @@ export type MeasureFetcher = (index?: number, count?: number) => Measure[];
 
 export type MeasureModifier<T> = (
   args: T
-) => (getMeasures: MeasureFetcher) => void;
+) => (getMeasures: MeasureFetcher) => boolean | void;
 
 export const addNote: MeasureModifier<{ note: Note; measureIndex: number }> =
   ({ note, measureIndex }) =>
@@ -18,7 +18,7 @@ export const addNote: MeasureModifier<{ note: Note; measureIndex: number }> =
     const noteIndex = findPositionIndex(note.x, measure.notes);
     if (!isValidPlacement(note, measure, timeSignature, noteIndex)) {
       console.error("Invalid note placement");
-      return;
+      return false;
     }
     measure.notes.splice(noteIndex, 0, note);
   };

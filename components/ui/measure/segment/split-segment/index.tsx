@@ -21,7 +21,7 @@ const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
     props.registryDelegates.register(
       props.xPos,
       () => {
-        setSplit((prevState) => !prevState);
+        if (!props.notes) setSplit((prevState) => !prevState);
       },
       props.lhs
     );

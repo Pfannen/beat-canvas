@@ -23,7 +23,7 @@ const useMeasures = (initialMeasures?: Measure[]) => {
         return copiedMeasures;
       };
 
-      del(getMeasures);
+      if (del(getMeasures) === false) return prevState; //Delegate could not perform the requested modification so no state is needed to be updated
       return copyState;
     });
   };

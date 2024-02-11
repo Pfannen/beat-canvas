@@ -109,7 +109,6 @@ export class MeasureUtils {
       (1 / spaceCount) *
       spacePercentage *
       (1 + (lineToSpaceRatio / 2) * linePercentage); //Apply half the ratio to upsize the space
-    console.log();
     return { line: percentPerLine, space: percentPerSpace };
   }
 }

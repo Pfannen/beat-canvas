@@ -16,7 +16,6 @@ const LedgerComponent = <C extends ElementType = "div">({
   ...restProps
 }: PolymorphicComponentProps<C, LedgerComponentProps>) => {
   const Component = as || "div";
-  console.log(restProps.children);
   return (
     <Component
       {...restProps}
@@ -24,9 +23,7 @@ const LedgerComponent = <C extends ElementType = "div">({
       className={concatClassNames(classes.component, className)}
       style={{ height }}
     >
-      {restProps.children &&
-        // <span className={classes.note}>{restProps.children}</span>
-        restProps.children}
+      {restProps.children && restProps.children}
     </Component>
   );
 };
