@@ -3,5 +3,5 @@
 }
 
 .component {
-  outline: 1px solid red;
+  border-inline: 1px solid red;
 }

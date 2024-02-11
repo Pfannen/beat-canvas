@@ -9,7 +9,7 @@ import {
 } from "@/components/providers/music/types";
 import { getNoteDuration } from "@/components/providers/music/utils";
 
-export type MeasureProps = {
+export type SegmentedMeasureProps = {
   segmentGenerator: SegmentGenerator;
   renderSegment: SegmentRenderer;
   notes: Note[];
@@ -18,7 +18,7 @@ export type MeasureProps = {
   timeSignature: TimeSignature;
 };
 
-const Measure: FunctionComponent<MeasureProps> = ({
+const SegmentedMeasure: FunctionComponent<SegmentedMeasureProps> = ({
   segmentGenerator,
   renderSegment,
   notes,
@@ -61,7 +61,7 @@ const Measure: FunctionComponent<MeasureProps> = ({
   );
 };
 
-export default Measure;
+export default SegmentedMeasure;
 
 //Start from the end of the measure and builds to the front
 const generateSegments = (

@@ -28,7 +28,7 @@ export type SegmentActionHandler<T> = (action: T, x: number, y: number) => void;
 export type SegmentProps<T> = {
   width: number;
   actionHandler: SegmentActionHandler<T>;
-} & Pick<SegmentData, "xPos" | "beatPercentage">;
+} & SegmentData;
 // Pick<SegmentDelegates, "noteValidator">;
 
 export type SegmentRenderer = (props: SegmentRendererProps) => ReactNode;

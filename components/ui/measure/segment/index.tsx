@@ -8,7 +8,7 @@ type Props = {
   body?: number;
   width: string;
   className?: string;
-  startWithLine?: boolean; //To render a line or a space first
+  startWithLine?: boolean; //To render a line or a space first (starting at the bottom)
   lineToSpaceRatio?: number;
   componentPercentages?: ComponentPercentages;
   renderLedgerComponent: LedgerComponentRenderer;
@@ -30,17 +30,15 @@ const Segment: FunctionComponent<Props> = (props) => {
   const components = generateMeasureComponents(
     belowBody,
     aboveBody,
-    componentPercentages.line * 100 + "%",
-    componentPercentages.space * 100 + "%",
+    componentPercentages.line,
+    componentPercentages.space,
     !!props.startWithLine,
     props.renderLedgerComponent,
     props.body
   );
   return (
     <span className={props.className} style={{ width: props.width }}>
-      {components[0]}
-      {components[1]}
-      {components[2]}
+      {components}
     </span>
   );
 };

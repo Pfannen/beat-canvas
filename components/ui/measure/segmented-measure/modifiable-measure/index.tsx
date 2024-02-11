@@ -1,7 +1,7 @@
 import { minimalSegmentGenerator } from "@/components/ui/reusable/segment-split/utils";
 import classes from "./index.module.css";
 import { FunctionComponent, useState } from "react";
-import Measure from "..";
+import SegmentedMeasure from "..";
 import SplitSegment from "../../segment/split-segment";
 import { useMusic } from "@/components/providers/music";
 import NoteSelection from "@/components/ui/reusable/note-selection";
@@ -19,17 +19,12 @@ const ModifiableMeasure: FunctionComponent<ModifiableMeasureProps> = ({
   measureIndex,
   modificationBehavior,
 }) => {
+  //To make modificationBehavior fully complete, need to take in additional props to pass into the split segment
+  //{props: ..., modificationBehavior: }
   const { getMeasures, invokeMeasureModifier } = useMusic();
   const { getRegistryProps, splitSegment, joinSegment } =
     useSplitSegmentRegistry();
   const [noteSelected, setNoteSelected] = useState<NoteType | undefined>();
-  // const actionHandler: SegmentActionHandler<"click"> = (action, x, y) => {
-  //   if (noteSelected) {
-  //     const del = addNote({ note: { x, y, type: noteSelected }, measureIndex });
-  //     invokeMeasureModifier(del);
-  //     console.log(del);
-  //   } else console.log(action, x, y);
-  // };
   const noteSelectHandler = (type: NoteType) => {
     setNoteSelected((prevState) => {
       if (type === prevState) {
@@ -47,7 +42,7 @@ const ModifiableMeasure: FunctionComponent<ModifiableMeasureProps> = ({
       <div className={classes.measures}>
         {getMeasures(measureIndex, 1).map(({ notes }, i) => {
           return (
-            <Measure
+            <SegmentedMeasure
               segmentGenerator={minimalSegmentGenerator}
               notes={notes}
               timeSignature={{ beatNote: 4, beatsPerMeasure: 4 }}

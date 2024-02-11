@@ -4,6 +4,7 @@ import Segment from "../../segment";
 import { LedgerComponentRenderer } from "../../utils";
 import classes from "./index.module.css";
 import { CSSProperties, FunctionComponent, ReactNode } from "react";
+import { numToPercent } from "@/utils";
 
 type DisplayMeasureProps = {
   componentsAbove?: number;
@@ -22,8 +23,18 @@ const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
   height,
   padding,
 }) => {
-  const componentRenderer: LedgerComponentRenderer = (_, isLine, height) => {
-    return <LedgerComponent height={height} isLine={isLine} />;
+  const componentRenderer: LedgerComponentRenderer = (
+    _,
+    isLine,
+    lineHeight,
+    spaceHeight
+  ) => {
+    return (
+      <LedgerComponent
+        height={isLine ? numToPercent(lineHeight) : numToPercent(spaceHeight)}
+        isLine={isLine}
+      />
+    );
   };
   return (
     <div
