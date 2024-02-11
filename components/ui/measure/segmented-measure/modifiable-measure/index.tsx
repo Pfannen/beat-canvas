@@ -1,5 +1,4 @@
 import { minimalSegmentGenerator } from "@/components/ui/reusable/segment-split/utils";
-import { SegmentActionHandler } from "../../types";
 import classes from "./index.module.css";
 import { FunctionComponent, useState } from "react";
 import Measure from "..";
@@ -8,21 +7,29 @@ import { useMusic } from "@/components/providers/music";
 import NoteSelection from "@/components/ui/reusable/note-selection";
 import { NoteType } from "@/components/providers/music/types";
 import { addNote } from "@/components/providers/music/hooks/useMeasures/utils";
+import { ModificationBehavior } from "../../utils";
+import useSplitSegmentRegistry from "@/components/hooks/useSplitSegmentRegistry";
 
-type ModifiableMeasureProps = { measureIndex: number };
+type ModifiableMeasureProps = {
+  measureIndex: number;
+  modificationBehavior: ModificationBehavior<any>;
+};
 
 const ModifiableMeasure: FunctionComponent<ModifiableMeasureProps> = ({
   measureIndex,
+  modificationBehavior,
 }) => {
   const { getMeasures, invokeMeasureModifier } = useMusic();
+  const { getRegistryProps, splitSegment, joinSegment } =
+    useSplitSegmentRegistry();
   const [noteSelected, setNoteSelected] = useState<NoteType | undefined>();
-  const actionHandler: SegmentActionHandler<"click"> = (action, x, y) => {
-    if (noteSelected) {
-      const del = addNote({ note: { x, y, type: noteSelected }, measureIndex });
-      invokeMeasureModifier(del);
-      console.log(del);
-    } else console.log(action, x, y);
-  };
+  // const actionHandler: SegmentActionHandler<"click"> = (action, x, y) => {
+  //   if (noteSelected) {
+  //     const del = addNote({ note: { x, y, type: noteSelected }, measureIndex });
+  //     invokeMeasureModifier(del);
+  //     console.log(del);
+  //   } else console.log(action, x, y);
+  // };
   const noteSelectHandler = (type: NoteType) => {
     setNoteSelected((prevState) => {
       if (type === prevState) {
@@ -38,7 +45,7 @@ const ModifiableMeasure: FunctionComponent<ModifiableMeasureProps> = ({
         onNoteClicked={noteSelectHandler}
       />
       <div className={classes.measures}>
-        {getMeasures(measureIndex, 1).map(({ notes }) => {
+        {getMeasures(measureIndex, 1).map(({ notes }, i) => {
           return (
             <Measure
               segmentGenerator={minimalSegmentGenerator}
@@ -46,7 +53,22 @@ const ModifiableMeasure: FunctionComponent<ModifiableMeasureProps> = ({
               timeSignature={{ beatNote: 4, beatsPerMeasure: 4 }}
               renderSegment={(props) => {
                 return (
-                  <SplitSegment actionHandler={actionHandler} {...props} />
+                  <SplitSegment
+                    actionHandler={modificationBehavior(
+                      {
+                        splitSegment,
+                        joinSegment,
+                        placeNote: (note) => {
+                          invokeMeasureModifier(
+                            addNote({ note, measureIndex: i })
+                          );
+                        },
+                      },
+                      noteSelected
+                    )}
+                    {...props}
+                    registryDelegates={getRegistryProps()}
+                  />
                 );
               }}
             />

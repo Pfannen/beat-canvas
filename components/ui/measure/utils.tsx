@@ -1,4 +1,6 @@
 import { ReactElement } from "react";
+import { SegmentActionHandler } from "./types";
+import { Note, NoteType } from "@/components/providers/music/types";
 
 export type LedgerComponentRenderer = (
   yPos: number,
@@ -35,4 +37,34 @@ export const generateMeasureComponents = (
     }
   }
   return [above, body, below];
+};
+
+/* Note Placement Functionalities */
+
+type ModifierDelegates = {
+  splitSegment: (x: number) => void;
+  joinSegment: (x: number) => void;
+  placeNote: (note: Note) => void;
+};
+
+export type ModificationBehavior<T> = (
+  delegates: ModifierDelegates,
+  noteType?: NoteType
+) => SegmentActionHandler<T>;
+
+export const clickBehavior: ModificationBehavior<
+  "left-click" | "middle-click"
+> = (delegates, type) => (action, x, y) => {
+  //If action is click, if note is selected, invoke add note
+  //Need to receive addNote and
+  if (action === "left-click") {
+    if (type) {
+      delegates.placeNote({ x, y, type });
+    } else {
+      delegates.splitSegment(x);
+    }
+  } else if (action === "middle-click") {
+    console.log("Middle");
+    delegates.joinSegment(x);
+  }
 };

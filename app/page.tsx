@@ -2,6 +2,7 @@
 
 import MusicProvider from "@/components/providers/music";
 import ModifiableMeasure from "@/components/ui/measure/segmented-measure/modifiable-measure";
+import { clickBehavior } from "@/components/ui/measure/utils";
 
 export default function Home() {
   return (
@@ -9,7 +10,10 @@ export default function Home() {
       {/* <div className={classes.measures}>
         <DisplayMeasures />
       </div> */}
-      <ModifiableMeasure measureIndex={0} />
+      <ModifiableMeasure
+        measureIndex={0}
+        modificationBehavior={clickBehavior}
+      />
     </MusicProvider>
   );
 }
