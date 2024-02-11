@@ -51,7 +51,18 @@ const useSplitSegmentRegistry = () => {
     return { register, deregister };
   };
 
-  return { register, deregister, joinSegment, splitSegment, getRegistryProps };
+  const getSegmentActions = <T extends object>(extraActions: T = {} as T) => {
+    return { joinSegment, splitSegment, ...extraActions };
+  };
+
+  return {
+    register,
+    deregister,
+    joinSegment,
+    splitSegment,
+    getRegistryProps,
+    getSegmentActions,
+  };
 };
 
 export default useSplitSegmentRegistry;

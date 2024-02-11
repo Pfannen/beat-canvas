@@ -5,7 +5,7 @@ import SegmentedMeasure from "..";
 import SplitSegment from "../../segment/split-segment";
 import { useMusic } from "@/components/providers/music";
 import NoteSelection from "@/components/ui/reusable/note-selection";
-import { NoteType } from "@/components/providers/music/types";
+import { Note, NoteType } from "@/components/providers/music/types";
 import { addNote } from "@/components/providers/music/hooks/useMeasures/utils";
 import { ModificationBehavior } from "../../utils";
 import useSplitSegmentRegistry from "@/components/hooks/useSplitSegmentRegistry";
@@ -22,8 +22,7 @@ const ModifiableMeasure: FunctionComponent<ModifiableMeasureProps> = ({
   //To make modificationBehavior fully complete, need to take in additional props to pass into the split segment
   //{props: ..., modificationBehavior: }
   const { getMeasures, invokeMeasureModifier } = useMusic();
-  const { getRegistryProps, splitSegment, joinSegment } =
-    useSplitSegmentRegistry();
+  const { getRegistryProps, getSegmentActions } = useSplitSegmentRegistry();
   const [noteSelected, setNoteSelected] = useState<NoteType | undefined>();
   const noteSelectHandler = (type: NoteType) => {
     setNoteSelected((prevState) => {
@@ -33,6 +32,9 @@ const ModifiableMeasure: FunctionComponent<ModifiableMeasureProps> = ({
       return type;
     });
   };
+  const placeNote = (note: Note) => {
+    invokeMeasureModifier(addNote({ note, measureIndex }));
+  };
   return (
     <>
       <NoteSelection
@@ -40,7 +42,7 @@ const ModifiableMeasure: FunctionComponent<ModifiableMeasureProps> = ({
         onNoteClicked={noteSelectHandler}
       />
       <div className={classes.measures}>
-        {getMeasures(measureIndex, 1).map(({ notes }, i) => {
+        {getMeasures(measureIndex, 1).map(({ notes }) => {
           return (
             <SegmentedMeasure
               segmentGenerator={minimalSegmentGenerator}
@@ -50,15 +52,9 @@ const ModifiableMeasure: FunctionComponent<ModifiableMeasureProps> = ({
                 return (
                   <SplitSegment
                     actionHandler={modificationBehavior(
-                      {
-                        splitSegment,
-                        joinSegment,
-                        placeNote: (note) => {
-                          invokeMeasureModifier(
-                            addNote({ note, measureIndex: i })
-                          );
-                        },
-                      },
+                      getSegmentActions({
+                        placeNote,
+                      }),
                       noteSelected
                     )}
                     {...props}

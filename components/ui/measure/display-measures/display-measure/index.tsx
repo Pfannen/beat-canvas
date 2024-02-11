@@ -5,6 +5,7 @@ import { LedgerComponentRenderer } from "../../utils";
 import classes from "./index.module.css";
 import { CSSProperties, FunctionComponent, ReactNode } from "react";
 import { numToPercent } from "@/utils";
+import { ComponentProps } from "@/types/polymorphic";
 
 type DisplayMeasureProps = {
   componentsAbove?: number;
@@ -13,7 +14,7 @@ type DisplayMeasureProps = {
   componentPercentages?: ComponentPercentages;
   height: string;
   padding: string;
-};
+} & ComponentProps<"div">;
 
 const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
   componentsAbove,
@@ -22,9 +23,10 @@ const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
   componentPercentages,
   height,
   padding,
+  ...restProps
 }) => {
   const componentRenderer: LedgerComponentRenderer = (
-    _,
+    y,
     isLine,
     lineHeight,
     spaceHeight
@@ -33,6 +35,8 @@ const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
       <LedgerComponent
         height={isLine ? numToPercent(lineHeight) : numToPercent(spaceHeight)}
         isLine={isLine}
+        className={classes.component}
+        key={y}
       />
     );
   };
@@ -40,6 +44,7 @@ const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
     <div
       style={{ "--body-height": height, "--padding": padding } as CSSProperties}
       className={classes.container}
+      {...restProps}
     >
       <Segment
         width={"100%"}
@@ -48,7 +53,6 @@ const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
         renderLedgerComponent={componentRenderer}
         startWithLine
         body={7}
-        className={classes.body}
         componentPercentages={componentPercentages}
       />
       {notesComponents}

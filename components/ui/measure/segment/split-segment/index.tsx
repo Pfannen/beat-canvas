@@ -2,12 +2,13 @@ import classes from "./index.module.css";
 import LedgerComponent from "../../ledger-component";
 import Segment from "..";
 import { SegmentProps } from "../../types";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent } from "react";
 import { SegmentBeat } from "@/components/providers/music/types";
 import { RegistryDelegates } from "@/components/hooks/useSplitSegmentRegistry";
 import { LedgerComponentRenderer } from "../../utils";
 import DisplayNote from "../../note/display-note";
 import { numToPercent } from "@/utils";
+import useSplitSegment from "./useSplitSegment";
 
 type SplitSegmentProps = {
   registryDelegates: RegistryDelegates;
@@ -15,20 +16,12 @@ type SplitSegmentProps = {
 } & SegmentProps<any>;
 
 const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
-  const [split, setSplit] = useState(false);
-
-  useEffect(() => {
-    props.registryDelegates.register(
-      props.xPos,
-      () => {
-        if (!props.notes) setSplit((prevState) => !prevState);
-      },
-      props.lhs
-    );
-    return () => {
-      props.registryDelegates.deregister(props.xPos);
-    };
-  }, []);
+  const { split } = useSplitSegment(
+    props.xPos,
+    props.registryDelegates,
+    !props.notes,
+    props.lhs
+  );
 
   const { width } = props;
   const renderLedgerComponent: LedgerComponentRenderer = (

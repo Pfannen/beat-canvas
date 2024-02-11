@@ -10,9 +10,13 @@ const spaceCount = 3;
 const lineCount = 2;
 const bodyCt = 7;
 
-type DisplayMeasuresProps = {};
+type DisplayMeasuresProps = {
+  onMeasureClick: (index: number) => void;
+};
 
-const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = () => {
+const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = ({
+  onMeasureClick,
+}) => {
   const { measures } = useMusic();
   const [notePosition, setNotePosition] = useState(() => {
     return new NotePosition((spaceCount + lineCount) * 2 + bodyCt, 25, 100);
@@ -31,6 +35,7 @@ const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = () => {
           left={x + "%"}
           type={note.type}
           height={notePosition.heights.space * 100 + "%"}
+          key={`${x}-${y}`}
         />
       );
       return component;
@@ -38,13 +43,14 @@ const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = () => {
   });
   return (
     <div className={classes.measures}>
-      {noteComponents.map((measureNotes) => {
+      {noteComponents.map((measureNotes, i) => {
         return (
           <DisplayMeasure
             notesComponents={measureNotes}
             componentPercentages={notePosition.heights}
             height={bodyPercent * 100 + "%"}
             padding={padding * 100 + "%"}
+            onClick={onMeasureClick.bind(null, i)}
           />
         );
       })}

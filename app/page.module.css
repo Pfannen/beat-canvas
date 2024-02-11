@@ -1,4 +1,10 @@
 .measures {
-  width: 100%;
+  width: 90%;
+  height: 10vh;
+  margin-inline: auto;
+  margin-block: 1rem;
+}
+
+.modifiable_measure {
   height: 10vh;
 }
