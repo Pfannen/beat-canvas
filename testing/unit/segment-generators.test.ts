@@ -180,6 +180,17 @@ test('xPos 1.125 - 7.75 ; less trivial segmenting', () => {
 	expect(segmentsEqual(expectedSegments, resultingSegments)).toBeTruthy();
 });
 
+test('xPos 0 - 3.875 ; less trivial segmenting', () => {
+	const expectedSegments: SegmentCount[] = [
+		{ segmentBeat: 1, count: 3 },
+		{ segmentBeat: 0.5, count: 1 },
+		{ segmentBeat: 0.25, count: 1 },
+		{ segmentBeat: 0.125, count: 1 },
+	];
+	const resultingSegments = segmentGen1(0, 3.875);
+	expect(segmentsEqual(expectedSegments, resultingSegments)).toBeTruthy();
+});
+
 //#endregion
 
 //#region invalid parameters

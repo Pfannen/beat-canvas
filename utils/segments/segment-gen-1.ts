@@ -14,7 +14,7 @@ const smallestSegmentBeat = 0.125;
 
 export const segmentGen1: SegmentGenerator = (xPos1: number, xPos2: number) => {
 	const distance = xPos2 - xPos1; //The distance that needs to be covered
-	let remainingDistance = distance; //The total distance covered
+	let remainingDistance = distance;
 	const segmentCounts: SegmentCount[] = []; //The segments that will fill the distance
 
 	// Normalize xPos1 and xPos2
@@ -50,7 +50,7 @@ export const segmentGen1: SegmentGenerator = (xPos1: number, xPos2: number) => {
 		currentBeat /= 2; //Try the next biggest segment length
 	}
 
-	if (currentBeat < smallestSegmentBeat) return [];
+	if (remainingDistance > 0) return [];
 
 	return segmentCounts;
 };
