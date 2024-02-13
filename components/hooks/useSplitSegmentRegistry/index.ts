@@ -1,6 +1,6 @@
 import { useRef } from "react";
 
-type SplitJoinDel = () => void;
+export type SplitJoinDel = (split: boolean) => void;
 
 type Registry = { [x: number]: { invoke: SplitJoinDel; lhs?: number }[] };
 
@@ -34,7 +34,7 @@ const useSplitSegmentRegistry = () => {
       if (registeredVal?.lhs !== undefined) {
         joinSegment(registeredVal.lhs);
       } else if (registeredVal) {
-        peek(delegateStack, 2)?.invoke();
+        peek(delegateStack, 2)?.invoke(false);
       }
     }
   };
@@ -47,7 +47,7 @@ const useSplitSegmentRegistry = () => {
       if (registeredVal?.lhs !== undefined) {
         joinAll(registeredVal.lhs);
       } else {
-        delegateStack[0].invoke(); //Invoke the top-level segment's split (which will close all children)
+        delegateStack[0].invoke(false); //Invoke the top-level segment's split (which will close all children)
       }
     }
   };
@@ -55,7 +55,7 @@ const useSplitSegmentRegistry = () => {
   const splitSegment = (x: number) => {
     const delegateStack = registry.current[x];
     if (delegateStack && delegateStack.length) {
-      delegateStack[delegateStack.length - 1].invoke();
+      delegateStack[delegateStack.length - 1].invoke(true);
     } else {
       console.error(`No delegate registered for xPos: ${x}`);
     }

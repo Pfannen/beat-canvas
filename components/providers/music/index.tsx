@@ -1,3 +1,5 @@
+"use client";
+
 import { ReactNode, createContext, useContext } from "react";
 import { FunctionComponent } from "react";
 import useMeasures from "./hooks/useMeasures";

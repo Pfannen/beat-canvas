@@ -1,0 +1,18 @@
+.measures {
+  width: 90%;
+  height: 10vh;
+  margin-inline: auto;
+  margin-block: 1rem;
+}
+
+.modifiable_measure {
+  height: 30%;
+}
+
+.measure {
+  cursor: pointer;
+}
+
+.selected {
+  outline: 1px solid red;
+}

@@ -9,9 +9,8 @@ const useSplitSegment = (
 ) => {
   const [split, setSplit] = useState(false);
 
-  const toggle = () => {
-    console.log(canChange);
-    if (canChange) setSplit((prevState) => !prevState);
+  const toggle = (split: boolean) => {
+    if (canChange) setSplit(split);
   };
 
   useEffect(() => {
@@ -24,7 +23,7 @@ const useSplitSegment = (
         registryDels.deregister(xPos);
       }
     };
-  }, [canChange]);
+  }, [canChange, registryDels]);
 
   return { split };
 };

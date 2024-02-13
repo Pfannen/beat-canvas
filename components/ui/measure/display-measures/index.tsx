@@ -5,6 +5,7 @@ import { getNoteDuration } from "@/components/providers/music/utils";
 import { useMusic } from "@/components/providers/music";
 import DisplayMeasure from "./display-measure";
 import DisplayNote from "../note/display-note";
+import { concatClassNames } from "@/utils/css";
 
 const spaceCount = 3;
 const lineCount = 2;
@@ -12,10 +13,16 @@ const bodyCt = 7;
 
 type DisplayMeasuresProps = {
   onMeasureClick: (index: number) => void;
+  className?: string;
+  selectedMeasures?: number[];
+  selectedMeasureClassName?: string;
 };
 
 const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = ({
   onMeasureClick,
+  className,
+  selectedMeasures,
+  selectedMeasureClassName,
 }) => {
   const { measures } = useMusic();
   const [notePosition, setNotePosition] = useState(() => {
@@ -42,7 +49,7 @@ const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = ({
     });
   });
   return (
-    <div className={classes.measures}>
+    <div className={concatClassNames(classes.measures, className)}>
       {noteComponents.map((measureNotes, i) => {
         return (
           <DisplayMeasure
@@ -51,6 +58,11 @@ const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = ({
             height={bodyPercent * 100 + "%"}
             padding={padding * 100 + "%"}
             onClick={onMeasureClick.bind(null, i)}
+            className={
+              selectedMeasures?.includes(i)
+                ? selectedMeasureClassName
+                : undefined
+            }
           />
         );
       })}

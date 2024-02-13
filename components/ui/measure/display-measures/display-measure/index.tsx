@@ -6,6 +6,7 @@ import classes from "./index.module.css";
 import { CSSProperties, FunctionComponent, ReactNode } from "react";
 import { numToPercent } from "@/utils";
 import { ComponentProps } from "@/types/polymorphic";
+import { concatClassNames } from "@/utils/css";
 
 type DisplayMeasureProps = {
   componentsAbove?: number;
@@ -23,6 +24,7 @@ const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
   componentPercentages,
   height,
   padding,
+  className,
   ...restProps
 }) => {
   const componentRenderer: LedgerComponentRenderer = (
@@ -43,7 +45,7 @@ const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
   return (
     <div
       style={{ "--body-height": height, "--padding": padding } as CSSProperties}
-      className={classes.container}
+      className={concatClassNames(classes.container, className)}
       {...restProps}
     >
       <Segment
