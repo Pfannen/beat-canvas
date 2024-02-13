@@ -38,6 +38,7 @@ export const generateMeasureComponents = (
 type ModifierDelegates = {
   splitSegment: (x: number) => void;
   joinSegment: (x: number) => void;
+  joinAll: (x: number) => void;
   placeNote: (note: Note) => void;
 };
 
@@ -54,6 +55,7 @@ export const clickBehavior: ModificationBehavior<
   if (action === "left-click") {
     if (type) {
       delegates.placeNote({ x, y, type });
+      delegates.joinAll(x);
     } else {
       delegates.splitSegment(x);
     }

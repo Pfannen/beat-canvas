@@ -9,6 +9,7 @@ import { LedgerComponentRenderer } from "../../utils";
 import DisplayNote from "../../note/display-note";
 import { numToPercent } from "@/utils";
 import useSplitSegment from "./useSplitSegment";
+import { concatClassNames } from "@/utils/css";
 
 type SplitSegmentProps = {
   registryDelegates: RegistryDelegates;
@@ -31,6 +32,7 @@ const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
     spacePercent,
     isBodyComponent
   ) => {
+    const containsNote = props.notes && props.notes[0].y === yPos;
     return (
       <LedgerComponent
         onClick={() => {
@@ -39,11 +41,14 @@ const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
         onAuxClick={() => {
           props.actionHandler("middle-click", props.xPos, yPos);
         }}
-        className={classes.component}
+        className={concatClassNames(
+          classes.component,
+          !isBodyComponent && classes.light
+        )}
         height={isLine ? numToPercent(linePercent) : numToPercent(spacePercent)}
         isLine={isLine}
       >
-        {props.notes && props.notes[0].y === yPos && (
+        {containsNote && (
           <DisplayNote
             height={
               isLine
@@ -52,7 +57,7 @@ const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
             }
             bottom={"50%"}
             left={"50%"}
-            type={props.notes[0].type}
+            type={props.notes![0].type}
           />
         )}
       </LedgerComponent>
@@ -65,6 +70,7 @@ const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
         aboveBody={3}
         renderLedgerComponent={renderLedgerComponent}
         width={width * 100 + "%"}
+        lineToSpaceRatio={1.5}
       />
     );
   } else {

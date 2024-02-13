@@ -10,15 +10,21 @@ const useSplitSegment = (
   const [split, setSplit] = useState(false);
 
   const toggle = () => {
+    console.log(canChange);
     if (canChange) setSplit((prevState) => !prevState);
   };
 
   useEffect(() => {
-    registryDels.register(xPos, toggle, lhs);
+    if (canChange) {
+      registryDels.register(xPos, toggle, lhs);
+    }
+
     return () => {
-      registryDels.deregister(xPos);
+      if (canChange) {
+        registryDels.deregister(xPos);
+      }
     };
-  }, []);
+  }, [canChange]);
 
   return { split };
 };

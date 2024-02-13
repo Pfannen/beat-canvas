@@ -21,7 +21,7 @@ const useSplitSegmentRegistry = () => {
   };
 
   //Since register is called in useEffect, there needs to be a cleanup function alongside it to stick to react best practices
-  //In strict mode useEffect gets invoked twice, this is the cleanup function for useEffect which will cleanup the first invokation
+  //In strict mode useEffect gets invoked twice, this is the cleanup function for useEffect which will cleanup the first invokation (and when a segment is joined)
   const deregister = (x: number) => {
     registry.current[x].pop();
   };
@@ -38,9 +38,23 @@ const useSplitSegmentRegistry = () => {
       }
     }
   };
+
+  //This is for an action like placing a note on a splitted segment, once the note is place you want to unplit all segments
+  const joinAll = (x: number) => {
+    const delegateStack = registry.current[x];
+    if (delegateStack && delegateStack.length) {
+      const registeredVal = peek(delegateStack);
+      if (registeredVal?.lhs !== undefined) {
+        joinAll(registeredVal.lhs);
+      } else {
+        delegateStack[0].invoke(); //Invoke the top-level segment's split (which will close all children)
+      }
+    }
+  };
+
   const splitSegment = (x: number) => {
     const delegateStack = registry.current[x];
-    if (delegateStack) {
+    if (delegateStack && delegateStack.length) {
       delegateStack[delegateStack.length - 1].invoke();
     } else {
       console.error(`No delegate registered for xPos: ${x}`);
@@ -52,7 +66,7 @@ const useSplitSegmentRegistry = () => {
   };
 
   const getSegmentActions = <T extends object>(extraActions: T = {} as T) => {
-    return { joinSegment, splitSegment, ...extraActions };
+    return { joinSegment, splitSegment, joinAll, ...extraActions };
   };
 
   return {
