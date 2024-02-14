@@ -3,55 +3,29 @@
 import ReactModal from "react-modal";
 import DisplayMeasures from "../measure/display-measures";
 import classes from "./index.module.css";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 import ModifiableMeasure from "../measure/segmented-measure/modifiable-measure";
 import { clickBehavior } from "../measure/utils";
-import { useMusic } from "@/components/providers/music";
-import {
-  createMeasure,
-  duplicateMeasures,
-} from "@/components/providers/music/hooks/useMeasures/utils";
 import useWorkSpace from "./hooks/useWorkspace";
 import ControlButtons, { ControlButton } from "./control-buttons";
 
 type WorkspaceProps = {};
 
 const Workspace: FunctionComponent<WorkspaceProps> = () => {
-  const {
-    getSelectedMeasures,
-    isSelectedMeasures,
-    onMeasureClick,
-    isMeasureSelected,
-  } = useWorkSpace();
-  const { invokeMeasureModifier } = useMusic();
-  const addMeasureHandler = () => {
-    invokeMeasureModifier(createMeasure({}));
-  };
-  const duplicateMeasureHandler = () => {
-    const selectedMeasures = getSelectedMeasures();
-    if (selectedMeasures) {
-      invokeMeasureModifier(
-        duplicateMeasures({
-          startIndex: selectedMeasures.start,
-          count: selectedMeasures.end - selectedMeasures.start + 1,
-        })
-      );
-    }
-  };
+  const ws = useWorkSpace();
 
   const buttons: ControlButton[] = [
     {
       label: "Add Measure",
       buttonProps: {
-        onClick: addMeasureHandler,
-        disabled: !isSelectedMeasures(),
+        onClick: ws.measureDels.addMeasureHandler,
       },
     },
     {
       label: "Duplicate Measures",
       buttonProps: {
-        onClick: duplicateMeasureHandler,
-        disabled: !isSelectedMeasures(),
+        onClick: ws.setMode.bind(null, "duplicate"),
+        disabled: !ws.isSelectedMeasures(),
       },
     },
     {
@@ -60,7 +34,7 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
         onClick: () => {
           console.log("Hello");
         },
-        disabled: !isSelectedMeasures(),
+        disabled: !ws.isSelectedMeasures(),
       },
     },
   ];
@@ -70,9 +44,9 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
       <ControlButtons buttons={buttons} />
       <div className={classes.measures}>
         <DisplayMeasures
-          onMeasureClick={onMeasureClick}
+          onMeasureClick={ws.onMeasureClick}
           className={classes.measure}
-          isMeasureSelected={isMeasureSelected}
+          isMeasureSelected={ws.isMeasureSelected}
           selectedMeasureClassName={classes.selected}
         />
       </div>

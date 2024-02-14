@@ -10,7 +10,6 @@ type ControlButtonProps = {
 const ControlButton: FunctionComponent<
   ComponentProps<"button", ControlButtonProps>
 > = ({ children, className, ...restProps }) => {
-  console.log(restProps);
   return (
     <button
       className={concatClassNames(classes.button, className)}

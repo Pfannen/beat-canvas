@@ -32,10 +32,16 @@ export const removeNote: MeasureModifier<{
     getMeasures(measureIndex)[0].notes.splice(noteIndex, 1);
   };
 
-export const createMeasure: MeasureModifier<{ notes?: Note[] }> =
-  ({ notes }) =>
+export const createMeasure: MeasureModifier<{
+  notes?: Note[];
+  insertIndex?: number;
+}> =
+  ({ notes, insertIndex }) =>
   (getMeasures) => {
-    getMeasures().push({ notes: notes || [] });
+    console.log(insertIndex);
+    const measures = getMeasures();
+    insertIndex = insertIndex === undefined ? measures.length : insertIndex;
+    measures.splice(insertIndex!, 0, { notes: notes || [] });
   };
 
 export const removeMeasures: MeasureModifier<{

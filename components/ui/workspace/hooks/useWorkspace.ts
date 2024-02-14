@@ -1,87 +1,86 @@
+import useSelection, { Selection } from "@/components/hooks/useSelection";
+import { useMusic } from "@/components/providers/music";
+import {
+  MeasureModifier,
+  createMeasure,
+  duplicateMeasures,
+} from "@/components/providers/music/hooks/useMeasures/utils";
 import { useState } from "react";
+import { MeasureMode, modeRegistry } from "./utils";
 
-type MeasureSelections = { start: number; end: number };
+type Delegates = {
+  clearSelection: () => void;
+  getSelection: () => Selection | undefined;
+  getSelectionCount: () => number;
+  setMode: (mode?: any) => void;
+};
 
-const useWorkSpace = () => {
-  const [selectedMeasures, setSelectedMeasures] = useState<MeasureSelections>();
-  const [mode, setMode] = useState();
+export type ModeDelegate = (
+  delegates: Delegates,
+  selectedMeasure: number
+) => ReturnType<MeasureModifier<any>> | undefined;
+
+const useWorkspace = () => {
+  const selection = useSelection();
+  const [mode, setMode] = useState<MeasureMode>();
+  const { invokeMeasureModifier } = useMusic();
+
+  //   const registerModeDelegate = (mode: string, del: ModeDelegate) => {
+  //     registry.current[mode] = del;
+  //   };
+
+  //   const deregisterModeDelegate = (mode: string) => {
+  //     registry.current[mode];
+  //   };
 
   const onMeasureClick = (index: number) => {
     if (mode) {
+      const del = modeRegistry[mode](
+        selection.selectionDelegates({ setMode }),
+        index
+      );
+      if (del) {
+        invokeMeasureModifier(del);
+      }
       //invoke mode delegate and pass in update delegates (clear, updateStart, updateEnd, ...)
     } else {
-      updateSelection(index);
+      selection.updateSelection(index);
     }
   };
 
-  const updateSelection = (index: number) => {
-    if (!selectedMeasures) {
-      updateStart(index);
-      return;
+  const addMeasureHandler = () => {
+    const selectedMeasures = selection.getSelection();
+    const insertIndex =
+      selectedMeasures?.end === undefined
+        ? undefined
+        : selectedMeasures?.end! + 1;
+    invokeMeasureModifier(createMeasure({ insertIndex }));
+  };
+
+  const duplicateMeasureHandler = () => {
+    const selectedMeasures = selection.getSelection();
+    if (selectedMeasures) {
+      invokeMeasureModifier(
+        duplicateMeasures({
+          startIndex: selectedMeasures.start,
+          count: selectedMeasures.end - selectedMeasures.start + 1,
+        })
+      );
+      selection.clearSelection();
     }
-
-    if (selectedMeasures.start === index || selectedMeasures.end === index) {
-      clearSelections();
-      return;
-    }
-
-    if (index < selectedMeasures.start) {
-      updateStart(index);
-    } else {
-      updateEnd(index);
-    }
-  };
-
-  const clearSelections = () => {
-    setSelectedMeasures(undefined);
-  };
-
-  const updateStart = (start: number) => {
-    setSelectedMeasures((prevState) => {
-      if (prevState) {
-        return { start, end: prevState.end };
-      } else {
-        return { start, end: start };
-      }
-    });
-  };
-
-  const updateEnd = (end: number) => {
-    setSelectedMeasures((prevState) => {
-      if (prevState) {
-        return { start: prevState.start, end };
-      } else {
-        return { start: end, end };
-      }
-    });
-  };
-
-  const getSelectedMeasures = () => {
-    return selectedMeasures;
-  };
-
-  const isMeasureSelected = (index: number) => {
-    if (!selectedMeasures) {
-      return false;
-    }
-    return !(selectedMeasures.start > index || selectedMeasures.end < index);
-  };
-
-  const isSelectedMeasures = () => {
-    return !!selectedMeasures;
-  };
-
-  const getMeasureDelegates = () => {
-    return { getSelectedMeasures, isMeasureSelected, isSelectedMeasures };
   };
 
   return {
     onMeasureClick,
-    getSelectedMeasures,
-    isMeasureSelected,
-    isSelectedMeasures,
-    getMeasureDelegates,
+    getSelectedMeasures: selection.getSelection,
+    isSelectedMeasures: selection.isSelection,
+    isMeasureSelected: selection.isValueSelected,
+    measureDels: {
+      addMeasureHandler,
+      duplicateMeasureHandler,
+    },
+    setMode,
   };
 };
 
-export default useWorkSpace;
+export default useWorkspace;
