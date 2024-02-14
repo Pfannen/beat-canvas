@@ -14,14 +14,14 @@ const bodyCt = 7;
 type DisplayMeasuresProps = {
   onMeasureClick: (index: number) => void;
   className?: string;
-  selectedMeasures?: number[];
+  isMeasureSelected: (index: number) => boolean;
   selectedMeasureClassName?: string;
 };
 
 const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = ({
   onMeasureClick,
   className,
-  selectedMeasures,
+  isMeasureSelected,
   selectedMeasureClassName,
 }) => {
   const { measures } = useMusic();
@@ -59,9 +59,7 @@ const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = ({
             padding={padding * 100 + "%"}
             onClick={onMeasureClick.bind(null, i)}
             className={
-              selectedMeasures?.includes(i)
-                ? selectedMeasureClassName
-                : undefined
+              isMeasureSelected(i) ? selectedMeasureClassName : undefined
             }
           />
         );

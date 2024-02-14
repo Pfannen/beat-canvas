@@ -11,63 +11,72 @@ import {
   createMeasure,
   duplicateMeasures,
 } from "@/components/providers/music/hooks/useMeasures/utils";
+import useWorkSpace from "./hooks/useWorkspace";
+import ControlButtons, { ControlButton } from "./control-buttons";
 
 type WorkspaceProps = {};
 
 const Workspace: FunctionComponent<WorkspaceProps> = () => {
-  const [selectedMeasures, setSelectedMeasures] = useState<number[]>([]);
-  const [mode, setMode] = useState<"modify" | "create">("create");
+  const {
+    getSelectedMeasures,
+    isSelectedMeasures,
+    onMeasureClick,
+    isMeasureSelected,
+  } = useWorkSpace();
   const { invokeMeasureModifier } = useMusic();
-  const modeHandler = () => {
-    setMode((prevMode) => {
-      return prevMode === "create" ? "modify" : "create";
-    });
-    setSelectedMeasures([]);
-  };
   const addMeasureHandler = () => {
     invokeMeasureModifier(createMeasure({}));
   };
   const duplicateMeasureHandler = () => {
-    if (selectedMeasures.length) {
+    const selectedMeasures = getSelectedMeasures();
+    if (selectedMeasures) {
       invokeMeasureModifier(
         duplicateMeasures({
-          startIndex: selectedMeasures[0],
-          count: selectedMeasures.length,
+          startIndex: selectedMeasures.start,
+          count: selectedMeasures.end - selectedMeasures.start + 1,
         })
       );
     }
   };
-  const measureSelectedHandler = (index: number) => {
-    setSelectedMeasures((prevState) => {
-      const idx = prevState.findIndex((val) => val === index);
-      if (idx === -1) {
-        return [...prevState, index];
-      } else {
-        const cpy = [...prevState];
-        cpy.splice(idx, 1);
-        return cpy;
-      }
-    });
-  };
+
+  const buttons: ControlButton[] = [
+    {
+      label: "Add Measure",
+      buttonProps: {
+        onClick: addMeasureHandler,
+        disabled: !isSelectedMeasures(),
+      },
+    },
+    {
+      label: "Duplicate Measures",
+      buttonProps: {
+        onClick: duplicateMeasureHandler,
+        disabled: !isSelectedMeasures(),
+      },
+    },
+    {
+      label: "Modify",
+      buttonProps: {
+        onClick: () => {
+          console.log("Hello");
+        },
+        disabled: !isSelectedMeasures(),
+      },
+    },
+  ];
 
   return (
     <>
-      <button onClick={modeHandler}>
-        Enter {mode === "create" ? "Modify" : "Create"} Mode
-      </button>
-      <div>
-        <button onClick={addMeasureHandler}>Add New Measure</button>
-        <button onClick={duplicateMeasureHandler}>Duplicate Measures</button>
-      </div>
+      <ControlButtons buttons={buttons} />
       <div className={classes.measures}>
         <DisplayMeasures
-          onMeasureClick={measureSelectedHandler}
+          onMeasureClick={onMeasureClick}
           className={classes.measure}
-          selectedMeasures={selectedMeasures}
+          isMeasureSelected={isMeasureSelected}
           selectedMeasureClassName={classes.selected}
         />
       </div>
-      <ReactModal
+      {/* <ReactModal
         isOpen={mode === "modify" && !!selectedMeasures.length}
         onRequestClose={() => {
           setSelectedMeasures([]);
@@ -82,7 +91,7 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
             />
           </div>
         )}
-      </ReactModal>
+      </ReactModal> */}
     </>
   );
 };
