@@ -9,20 +9,22 @@ import { Note, NoteType } from "@/components/providers/music/types";
 import { addNote } from "@/components/providers/music/hooks/useMeasures/utils";
 import { ModificationBehavior } from "../../utils";
 import useSplitSegmentRegistry from "@/components/hooks/useSplitSegmentRegistry";
+import ModifiableMeasure from "./modifiable-measure";
 
-type ModifiableMeasureProps = {
+type ModifiableMeasuresProps = {
   measureIndex: number;
+  count?: number;
   modificationBehavior: ModificationBehavior<any>;
 };
 
-const ModifiableMeasure: FunctionComponent<ModifiableMeasureProps> = ({
+const ModifiableMeasures: FunctionComponent<ModifiableMeasuresProps> = ({
   measureIndex,
+  count = 1,
   modificationBehavior,
 }) => {
   //To make modificationBehavior fully complete, need to take in additional props to pass into the split segment
   //{props: ..., modificationBehavior: }
   const { getMeasures, invokeMeasureModifier } = useMusic();
-  const { getRegistryProps, getSegmentActions } = useSplitSegmentRegistry();
   const [noteSelected, setNoteSelected] = useState<NoteType | undefined>();
   const noteSelectHandler = (type: NoteType) => {
     setNoteSelected((prevState) => {
@@ -32,7 +34,7 @@ const ModifiableMeasure: FunctionComponent<ModifiableMeasureProps> = ({
       return type;
     });
   };
-  const placeNote = (note: Note) => {
+  const placeNote = (note: Note, measureIndex: number) => {
     invokeMeasureModifier(addNote({ note, measureIndex }));
   };
   return (
@@ -42,26 +44,14 @@ const ModifiableMeasure: FunctionComponent<ModifiableMeasureProps> = ({
         onNoteClicked={noteSelectHandler}
       />
       <div className={classes.measures}>
-        {getMeasures(measureIndex, 1).map(({ notes }) => {
+        {getMeasures(measureIndex, count).map(({ notes }, i) => {
           return (
-            <SegmentedMeasure
-              segmentGenerator={minimalSegmentGenerator}
+            <ModifiableMeasure
+              index={i + measureIndex}
               notes={notes}
-              timeSignature={{ beatNote: 4, beatsPerMeasure: 4 }}
-              renderSegment={(props) => {
-                return (
-                  <SplitSegment
-                    actionHandler={modificationBehavior(
-                      getSegmentActions({
-                        placeNote,
-                      }),
-                      noteSelected
-                    )}
-                    {...props}
-                    registryDelegates={getRegistryProps()}
-                  />
-                );
-              }}
+              modificationBehavior={modificationBehavior}
+              noteSelected={noteSelected}
+              placeNote={placeNote}
             />
           );
         })}
@@ -70,4 +60,4 @@ const ModifiableMeasure: FunctionComponent<ModifiableMeasureProps> = ({
   );
 };
 
-export default ModifiableMeasure;
+export default ModifiableMeasures;

@@ -4,7 +4,7 @@ import ReactModal from "react-modal";
 import DisplayMeasures from "../measure/display-measures";
 import classes from "./index.module.css";
 import { FunctionComponent } from "react";
-import ModifiableMeasure from "../measure/segmented-measure/modifiable-measure";
+import ModifiableMeasures from "../measure/segmented-measure/modifiable-measures";
 import { clickBehavior } from "../measure/utils";
 import useWorkSpace from "./hooks/useWorkspace";
 import ControlButtons, { ControlButton } from "./control-buttons";
@@ -24,16 +24,14 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
     {
       label: "Duplicate Measures",
       buttonProps: {
-        onClick: ws.setMode.bind(null, "duplicate"),
+        onClick: ws.mode.set.bind(null, "duplicate"),
         disabled: !ws.isSelectedMeasures(),
       },
     },
     {
       label: "Modify",
       buttonProps: {
-        onClick: () => {
-          console.log("Hello");
-        },
+        onClick: ws.mode.set.bind(null, "modify"),
         disabled: !ws.isSelectedMeasures(),
       },
     },
@@ -45,6 +43,8 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
       },
     },
   ];
+
+  const modalShouldOpen = ws.mode.get() === "modify" && ws.isSelectedMeasures();
 
   return (
     <>
@@ -60,22 +60,21 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
           }
         />
       </div>
-      {/* <ReactModal
-        isOpen={mode === "modify" && !!selectedMeasures.length}
-        onRequestClose={() => {
-          setSelectedMeasures([]);
-        }}
+      <ReactModal
+        isOpen={modalShouldOpen}
+        onRequestClose={ws.mode.clear}
         shouldCloseOnOverlayClick={true}
       >
-        {mode === "modify" && !!selectedMeasures.length && (
+        {modalShouldOpen && (
           <div className={classes.modifiable_measure}>
-            <ModifiableMeasure
-              measureIndex={selectedMeasures[0]}
+            <ModifiableMeasures
+              measureIndex={ws.getSelectedMeasures()!.start} //ws.isSelectedMeasures is true
+              count={ws.getSelectedCount()}
               modificationBehavior={clickBehavior}
             />
           </div>
         )}
-      </ReactModal> */}
+      </ReactModal>
     </>
   );
 };

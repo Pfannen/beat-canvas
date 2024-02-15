@@ -1,9 +1,26 @@
-import { duplicateMeasures } from "@/components/providers/music/hooks/useMeasures/utils";
-import { ModeDelegate } from "./useWorkspace";
+import {
+  MeasureModifier,
+  duplicateMeasures,
+} from "@/components/providers/music/hooks/useMeasures/utils";
 
-export type MeasureMode = "duplicate";
+import { Selection } from "@/components/hooks/useSelection";
 
-export type ModeRegistry = { [mode in MeasureMode]: ModeDelegate };
+export type MeasureMode = "duplicate" | "modify";
+
+export type ModeRegistry = { [mode in MeasureMode]?: ModeDelegate };
+
+export type Delegates = {
+  clearSelection: () => void;
+  getSelection: () => Selection | undefined;
+  getSelectionCount: () => number;
+  setMode: (mode: MeasureMode) => void;
+  clearMode: () => void;
+};
+
+export type ModeDelegate = (
+  delegates: Delegates,
+  selectedMeasure: number
+) => ReturnType<MeasureModifier<any>> | undefined;
 
 const duplicateModeDel: ModeDelegate = (dels, insertIndex) => {
   const selection = dels.getSelection();
@@ -11,7 +28,7 @@ const duplicateModeDel: ModeDelegate = (dels, insertIndex) => {
   if (!selection) {
     return;
   }
-  dels.setMode();
+  dels.clearMode();
   //   dels.clearSelection();
   return duplicateMeasures({
     startIndex: selection.start,

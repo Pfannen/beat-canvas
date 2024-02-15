@@ -1,48 +1,33 @@
-import useSelection, { Selection } from "@/components/hooks/useSelection";
+import useSelection from "@/components/hooks/useSelection";
 import { useMusic } from "@/components/providers/music";
 import {
-  MeasureModifier,
   createMeasure,
-  duplicateMeasures,
   removeMeasures,
 } from "@/components/providers/music/hooks/useMeasures/utils";
-import { useState } from "react";
 import { MeasureMode, modeRegistry } from "./utils";
 import { numIsUndefined } from "@/utils";
-
-type Delegates = {
-  clearSelection: () => void;
-  getSelection: () => Selection | undefined;
-  getSelectionCount: () => number;
-  setMode: (mode?: any) => void;
-};
-
-export type ModeDelegate = (
-  delegates: Delegates,
-  selectedMeasure: number
-) => ReturnType<MeasureModifier<any>> | undefined;
+import useMode from "@/components/hooks/useMode";
 
 const useWorkspace = () => {
   const selection = useSelection();
-  const [mode, setMode] = useState<MeasureMode>();
+  const mode = useMode<MeasureMode>();
   const { invokeMeasureModifier } = useMusic();
-
-  //   const registerModeDelegate = (mode: string, del: ModeDelegate) => {
-  //     registry.current[mode] = del;
-  //   };
-
-  //   const deregisterModeDelegate = (mode: string) => {
-  //     registry.current[mode];
-  //   };
 
   const onMeasureClick = (index: number) => {
     //invoke mode delegate and pass in update delegates (clear, updateStart, updateEnd, ...)
-    if (mode) {
-      const del = modeRegistry[mode](
-        selection.selectionDelegates({ setMode }),
-        index
-      );
-      del && invokeMeasureModifier(del);
+    const currentMode = mode.get();
+    if (currentMode) {
+      const modeDel = modeRegistry[currentMode];
+      if (modeDel) {
+        const del = modeDel(
+          selection.selectionDelegates({
+            setMode: mode.set,
+            clearMode: mode.clear,
+          }),
+          index
+        );
+        del && invokeMeasureModifier(del);
+      }
     } else {
       selection.updateSelection(index);
     }
@@ -70,6 +55,7 @@ const useWorkspace = () => {
 
   return {
     onMeasureClick,
+    getSelectedCount: selection.getSelectionCount,
     getSelectedMeasures: selection.getSelection,
     isSelectedMeasures: selection.isSelection,
     isMeasureSelected: selection.isValueSelected,
@@ -77,7 +63,7 @@ const useWorkspace = () => {
       addMeasureSelection,
       removeMeasureSelection,
     },
-    setMode,
+    mode,
   };
 };
 
