@@ -16,6 +16,7 @@ type DisplayMeasuresProps = {
   className?: string;
   isMeasureSelected: (index: number) => boolean;
   selectedMeasureClassName?: string;
+  notSelectedMeasureClassName?: string;
 };
 
 const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = ({
@@ -23,6 +24,7 @@ const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = ({
   className,
   isMeasureSelected,
   selectedMeasureClassName,
+  notSelectedMeasureClassName,
 }) => {
   const { measures } = useMusic();
   const [notePosition, setNotePosition] = useState(() => {
@@ -59,7 +61,9 @@ const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = ({
             padding={padding * 100 + "%"}
             onClick={onMeasureClick.bind(null, i)}
             className={
-              isMeasureSelected(i) ? selectedMeasureClassName : undefined
+              isMeasureSelected(i)
+                ? selectedMeasureClassName
+                : notSelectedMeasureClassName
             }
           />
         );

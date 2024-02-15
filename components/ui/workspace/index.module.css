@@ -14,5 +14,10 @@
 }
 
 .selected {
-  outline: 1px solid red;
+  background-color: rgba(144, 238, 144, 0.3);
+}
+
+.not_selected {
+  opacity: 0.1;
+  background-color: gray;
 }

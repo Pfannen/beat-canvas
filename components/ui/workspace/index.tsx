@@ -18,7 +18,7 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
     {
       label: "Add Measure",
       buttonProps: {
-        onClick: ws.measureDels.addMeasureHandler,
+        onClick: ws.measureDels.addMeasureSelection,
       },
     },
     {
@@ -37,6 +37,13 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
         disabled: !ws.isSelectedMeasures(),
       },
     },
+    {
+      label: "Remove",
+      buttonProps: {
+        onClick: ws.measureDels.removeMeasureSelection,
+        disabled: !ws.isSelectedMeasures(),
+      },
+    },
   ];
 
   return (
@@ -48,6 +55,9 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
           className={classes.measure}
           isMeasureSelected={ws.isMeasureSelected}
           selectedMeasureClassName={classes.selected}
+          notSelectedMeasureClassName={
+            ws.isSelectedMeasures() ? classes.not_selected : undefined
+          }
         />
       </div>
       {/* <ReactModal

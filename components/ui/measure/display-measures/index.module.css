@@ -5,6 +5,7 @@
   flex-wrap: wrap;
 }
 
-.measures * {
+.measures > * {
   flex: 1;
+  margin-top: 0.5rem;
 }
