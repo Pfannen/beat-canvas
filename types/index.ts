@@ -10,3 +10,5 @@ export interface DoublyLinkedList<T> extends Cell<DoublyLinkedList<T>> {
   prev?: DoublyLinkedList<T>;
   data: T;
 }
+
+export type UnitMeasurement = "px" | "%";

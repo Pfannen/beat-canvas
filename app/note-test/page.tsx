@@ -7,7 +7,7 @@ type NoteTestProps = {};
 const NoteTest: FunctionComponent<NoteTestProps> = () => {
   return (
     <div className={classes.page}>
-      <Note></Note>
+      <Note bodyHeight={1}></Note>
     </div>
   );
 };

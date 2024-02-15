@@ -2,19 +2,16 @@ import { numToPercent, numToUnit } from "@/utils";
 import { NoteDirection } from "../../types";
 import classes from "./index.module.css";
 import { CSSProperties, FunctionComponent, ReactNode } from "react";
+import { UnitMeasurement } from "@/types";
 
 type NoteStaffProps = {
-  bodyHeight: number;
   heightMultiplier: number;
-  unit: "px" | "%";
   direction: NoteDirection;
   children?: ReactNode;
 };
 
 const NoteStaff: FunctionComponent<NoteStaffProps> = ({
-  bodyHeight,
   heightMultiplier,
-  unit,
   direction,
   children,
 }) => {
@@ -29,8 +26,7 @@ const NoteStaff: FunctionComponent<NoteStaffProps> = ({
       className={classes.note_staff}
       style={
         {
-          "--height": numToUnit(bodyHeight * heightMultiplier, unit),
-          "--body-width": numToUnit(bodyHeight, unit),
+          "--height": numToUnit(heightMultiplier, "%"),
           [yAxis]: "50%",
           [xAxis]: "0%",
         } as CSSProperties
