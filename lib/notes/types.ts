@@ -1,9 +1,14 @@
 import { NoteType } from "@/components/providers/music/types";
-import { ReactNode } from "react";
+import { FunctionComponent } from "react";
+
+export type YAxis = "top" | "bottom";
+export type XAxis = "left" | "right";
+
+export type AxisProps = { xAxis: XAxis; yAxis: YAxis };
 
 export interface NoteComponent<T> {
   container: T;
-  component: ReactNode;
+  component: FunctionComponent<AxisProps>;
 }
 
 export type BodyPosition =
@@ -27,10 +32,10 @@ export interface StaffComponent extends NoteComponent<"staff"> {
 
 export type NoteDirection = "up" | "down"; //up --> staff is up and on right, down --> staff is down and on left
 
-export type NoteProps =
-  | { type: "whole"; bodyComponents?: BodyComponent[] }
-  | {
+export type NoteProps<T> =
+  | ({ type: "whole"; bodyComponents?: BodyComponent[] } & T)
+  | ({
       type: Exclude<NoteType, "whole">;
       bodyComponents?: BodyComponent[];
       staffComponents?: StaffComponent[];
-    };
+    } & T);
