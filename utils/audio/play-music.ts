@@ -1,8 +1,12 @@
 import * as Tone from 'tone';
 import { Measure } from '@/components/providers/music/types';
 import { ToneAudioNode } from 'tone';
-import { getNoteFromYPos, getSecondsPerBeat } from '../music-modifier';
-import { PitchOctaveHelper } from '@/types/music';
+import {
+	getNoteFromYPos,
+	getPitchOctaveHelper,
+	getSecondsPerBeat,
+} from '../music-modifier';
+import { MusicScore, PitchOctaveHelper } from '@/types/music';
 import { getNoteDuration } from '@/components/providers/music/utils';
 
 // TODO: Take in time signature and instrument
@@ -80,3 +84,21 @@ export const ohWhatANight: Measure[] = [
 		],
 	},
 ];
+
+export const ohWhatANightScore: MusicScore = {
+	title: 'Oh What a Night!',
+	timeSignature: {
+		beatNote: 4,
+		beatsPerMeasure: 4,
+	},
+	beatsPerMinute: 106,
+	pitchOctaveHelper: getPitchOctaveHelper('C4'),
+	keySignature: 'G2',
+	parts: [
+		{
+			instrument: 'Bass Guitar',
+			id: 'P1',
+			measures: ohWhatANight,
+		},
+	],
+};
