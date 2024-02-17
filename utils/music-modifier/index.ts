@@ -36,3 +36,6 @@ export const getNoteFromYPos = (
 };
 
 export const getSecondsPerBeat = (bpm: number) => 1 / (bpm / 60);
+
+export const getMeasureXStart = (xPos: number, beatsPerMeasure: number) =>
+	Math.floor(xPos / beatsPerMeasure);
