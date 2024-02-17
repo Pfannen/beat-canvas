@@ -1,6 +1,6 @@
 .note_staff {
   position: absolute;
   height: var(--height); /*Variable defined in the component*/
-  width: 25%;
+  width: 15%;
   background-color: black;
 }

@@ -33,7 +33,6 @@ const NoteStaff: FunctionComponent<NoteStaffProps> = ({
       xAxis={xAxis}
       yAxis={yAxis}
       yPercent={"50%"}
-      xPercent={"0%"}
     >
       {children}
     </AbsoluteContainer>

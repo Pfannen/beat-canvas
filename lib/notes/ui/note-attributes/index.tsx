@@ -1,10 +1,16 @@
-import { BodyComponent, StaffComponent } from "../../types";
+import { BodyAttribute, StaffAttribute } from "../../types";
 import NoteDot from "./note-dot";
 
-const attributes: { [attribute: string]: StaffComponent | BodyComponent } = {
+export type NoteAttribute = "sticatto";
+
+export const attributeMap: {
+  [attribute in NoteAttribute]: BodyAttribute | StaffAttribute;
+} = {
   sticatto: {
     container: "body",
     position: "top",
-    component: ({ xAxis, yAxis }) => <NoteDot xAxis={xAxis} yAxis={yAxis} />,
+    component: ({ xAxis, yAxis }) => (
+      <NoteDot xAxis={xAxis} yAxis={yAxis} yPercentOffset={-1.5} centerX />
+    ),
   },
 };

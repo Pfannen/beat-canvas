@@ -1,39 +1,45 @@
 import { numToPercent } from "@/utils";
 import classes from "./index.module.css";
 import { CSSProperties, FunctionComponent } from "react";
-import { AxisProps, XAxis } from "@/lib/notes/types";
-import AbsoluteContainer from "../../absolute-container";
+import AbsoluteContainer, {
+  AbsoluteContainerProps,
+} from "../../absolute-container";
 
 type NoteDotProps = {
   percentOfBody?: number;
-} & AxisProps;
+  xPercentOffset?: number;
+  yPercentOffset?: number;
+};
 
-const NoteDot: FunctionComponent<NoteDotProps> = ({
+const NoteDot: FunctionComponent<
+  AbsoluteContainerProps<"div", NoteDotProps>
+> = ({
   percentOfBody = 0.25,
-  xAxis,
-  yAxis,
+  yPercentOffset = 0,
+  xPercentOffset = 0,
+  ...restProps
 }) => {
-  const translateX = centerX(xAxis);
   return (
     <AbsoluteContainer
       className={classes.note_dot}
       style={
         {
           "--percent-of-body": numToPercent(percentOfBody),
-          translate: translateX,
         } as CSSProperties
       }
-      yAxis={yAxis}
-      xAxis={xAxis}
-      yPercent={numToPercent(-1.5 * percentOfBody)}
-      xPercent={"50%"}
+      xPercent={
+        xPercentOffset
+          ? numToPercent(xPercentOffset * percentOfBody)
+          : undefined
+      }
+      yPercent={
+        yPercentOffset
+          ? numToPercent(yPercentOffset * percentOfBody)
+          : undefined
+      }
+      {...restProps}
     />
   );
 };
 
 export default NoteDot;
-
-const centerX = (xAxis: XAxis) => {
-  if (xAxis === "left") return "-50%";
-  return "50%";
-};
