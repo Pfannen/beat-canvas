@@ -14,7 +14,7 @@ type NoteDotProps = {
 const NoteDot: FunctionComponent<
   AbsoluteContainerProps<"div", NoteDotProps>
 > = ({
-  percentOfBody = 0.25,
+  percentOfBody = 0.2,
   yPercentOffset = 0,
   xPercentOffset = 0,
   ...restProps

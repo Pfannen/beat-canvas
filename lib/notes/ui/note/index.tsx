@@ -3,7 +3,13 @@ import NoteBody from "../note-body";
 import NoteStaff from "../note-staff";
 import classes from "./index.module.css";
 import { FunctionComponent, ReactNode } from "react";
-import { BodyPosition, NoteDirection, XAxis, YAxis } from "../../types";
+import {
+  BodyPosition,
+  NoteDirection,
+  StaffDirection,
+  XAxis,
+  YAxis,
+} from "../../types";
 import { numToUnit } from "@/utils";
 import { NoteAttribute, attributeMap } from "../note-attributes";
 import { NoteType } from "@/components/providers/music/types";
@@ -25,7 +31,10 @@ const Note: FunctionComponent<NoteProps> = (props) => {
     direction = "up",
   } = props;
 
-  const { bodyComponents } = reduceAttributes(direction, props.attributes);
+  const { bodyComponents, staffComponents } = reduceAttributes(
+    direction,
+    props.attributes
+  );
 
   const isNonFilledNote =
     props.type === "whole" ||
@@ -38,7 +47,9 @@ const Note: FunctionComponent<NoteProps> = (props) => {
         <NoteStaff
           heightMultiplier={staffHeightMultiplier}
           direction={direction}
-        />
+        >
+          {staffComponents}
+        </NoteStaff>
       )}
       {bodyComponents}
     </NoteBody>
@@ -57,7 +68,7 @@ const reduceAttributes = (
     const a = attributeMap[attribute];
     const Component = a.component;
     if (a.container === "body") {
-      const position = getBodyPosition(direction, a.position);
+      const position = getBodyPosition(direction, a.position || "top");
       const isXAxis = !isYAxis(position);
 
       bodyComponents.push(
@@ -66,10 +77,10 @@ const reduceAttributes = (
           yAxis={(isXAxis ? "top" : position) as YAxis}
         />
       );
+    } else {
+      const dir = getStaffDirection(direction, a.direction || "away-from-body");
+      staffComponents.push(<Component {...dir} />);
     }
-    // else {
-    //   staffComponents.push(a);
-    // }
   });
   return { bodyComponents, staffComponents };
 };
@@ -82,6 +93,21 @@ const getBodyPosition = (
     return direction === "up" ? "left" : "right";
   if (position === "staff-side") return direction === "up" ? "right" : "left";
   return position;
+};
+
+const getStaffDirection = (
+  direction: NoteDirection,
+  staffDirection: StaffDirection
+): { xAxis: XAxis; yAxis: YAxis } => {
+  if (direction === "up") {
+    const yAxis = "top";
+    if (staffDirection === "away-from-body") return { xAxis: "left", yAxis };
+    return { xAxis: "right", yAxis };
+  } else {
+    const yAxis = "bottom";
+    if (staffDirection === "away-from-body") return { xAxis: "right", yAxis };
+    return { xAxis: "left", yAxis };
+  }
 };
 
 const isYAxis = (axis: XAxis | YAxis) => axis === "bottom" || axis === "top";

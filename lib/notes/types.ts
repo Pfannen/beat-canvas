@@ -20,13 +20,13 @@ export type BodyPosition =
   | "non-staff-side";
 
 export interface BodyAttribute extends NoteAttributeComponent<"body"> {
-  position: BodyPosition;
+  position?: BodyPosition;
 }
 
 export type StaffDirection = "toward-body" | "away-from-body";
 
 export interface StaffAttribute extends NoteAttributeComponent<"staff"> {
-  direction: StaffDirection;
+  direction?: StaffDirection;
   topOffsetPercent?: number;
 }
 

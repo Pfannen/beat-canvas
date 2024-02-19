@@ -15,11 +15,11 @@ export type AbsoluteContainerProps<
   P = {}
 > = PolymorphicComponentProps<C, P & Props>;
 
-const AbsoluteContainer = <C extends ElementType>({
+const AbsoluteContainer = <C extends ElementType = "div">({
   as,
-  yAxis,
+  yAxis = "top",
   yPercent,
-  xAxis,
+  xAxis = "left",
   xPercent,
   centerX,
   centerY,

@@ -7,7 +7,12 @@ type NoteTestProps = {};
 const NoteTest: FunctionComponent<NoteTestProps> = () => {
   return (
     <div className={classes.page}>
-      <Note type="half" bodyHeight={1} attributes={["sticatto"]}></Note>
+      <Note
+        type="quarter"
+        bodyHeight={1}
+        attributes={["line-through", "sixteenth-flag"]}
+        direction="up"
+      ></Note>
     </div>
   );
 };
