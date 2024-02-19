@@ -4,8 +4,6 @@ import { FunctionComponent } from 'react';
 import classes from './AudioTest.module.css';
 import TaskbarButton from '@/components/ui/taskbar/buttons/taskbar-button';
 import { ohWhatANight, playMeasures } from '@/utils/audio/play-music';
-import { PitchOctaveHelper } from '@/types/music';
-import { getPitchOctaveHelperForClef } from '@/utils/music';
 
 interface AudioTestProps {}
 

@@ -1,16 +1,12 @@
 import { Measure, Note, NoteType } from '@/components/providers/music/types';
 import {
+	Clef,
 	MeasureAttributesMXML,
 	MusicPart,
 	MusicScore,
 	Pitch,
-	PitchOctaveHelper,
 } from '@/types/music';
-import {
-	getPitchOctaveHelper,
-	getPitchOctaveHelperForClef,
-	getYPosFromNote,
-} from '../music';
+import { getYPosFromNote } from '../music';
 import { musicXMLToClef } from '../musicXML';
 
 const getElements = (
@@ -28,7 +24,8 @@ const getElements = (
 const getMeasureNotesJS = (
 	measureXML: Element,
 	quarterNoteDivisions: number,
-	pitchOctaveHelper: PitchOctaveHelper
+	clef: Clef,
+	beatsPerMeasure: number
 ) => {
 	const noteArr: Note[] = [];
 
@@ -61,7 +58,7 @@ const getMeasureNotesJS = (
 			if (typeXMLArr && typeXMLArr[0].textContent)
 				type = typeXMLArr[0].textContent as NoteType;
 
-			const y = getYPosFromNote(pitchOctave, pitchOctaveHelper);
+			const y = getYPosFromNote(pitchOctave, clef);
 			noteArr.push({ x: curX, y, type });
 		} else {
 			// TODO: Make no rest and no pitch result beats per measure rest
@@ -73,6 +70,8 @@ const getMeasureNotesJS = (
 		}
 
 		curX += duration;
+		// TODO: Address measures specifying multiple voices
+		if (curX >= beatsPerMeasure) break;
 	}
 
 	return noteArr;
@@ -186,9 +185,11 @@ const getMeasuresJS = (part: Element) => {
 
 		const measureAttributes = getMeasureAttributesJS(measureXML);
 		if (measureAttributes) {
-			// TODO: Make squiggles go away, types are correct
+			// TODO: Remove any cast
 			for (const key in measureAttributes) {
-				curAttr[key] = measureAttributes[key];
+				curAttr[key as keyof MeasureAttributesMXML] = measureAttributes[
+					key as keyof MeasureAttributesMXML
+				] as any;
 			}
 
 			delete measureAttributes.quarterNoteDivisions;
@@ -198,7 +199,8 @@ const getMeasuresJS = (part: Element) => {
 		const notes = getMeasureNotesJS(
 			measureXML,
 			curAttr.quarterNoteDivisions!,
-			getPitchOctaveHelperForClef(curAttr.clef!)
+			curAttr.clef!,
+			curAttr.timeSignature!.beatsPerMeasure
 		);
 
 		if (!notes) return null;

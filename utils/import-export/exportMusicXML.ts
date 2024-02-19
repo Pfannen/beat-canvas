@@ -1,9 +1,5 @@
 import { getNoteDuration } from '@/components/providers/music/utils';
-import {
-	getNoteFromYPos,
-	getPitchOctaveHelper,
-	getPitchOctaveHelperForClef,
-} from '../music';
+import { getNoteFromYPos } from '../music';
 import { createAppend } from './xml-helpers';
 import { Clef, MeasureAttributes, MusicPart, MusicScore } from '@/types/music';
 import {
@@ -47,8 +43,6 @@ const getMeasureNotesXML = (
 ) => {
 	const boundCA = createAppend.bind(this, root);
 
-	const pitchOctaveHelper = getPitchOctaveHelperForClef(clef);
-
 	createRestsXML(
 		root,
 		0,
@@ -58,7 +52,7 @@ const getMeasureNotesXML = (
 
 	for (let i = 0; i < notes.length; i++) {
 		const { x, y, type } = notes[i];
-		const stepOctave = getNoteFromYPos(y, pitchOctaveHelper);
+		const stepOctave = getNoteFromYPos(y, clef);
 
 		const noteXML = boundCA(measureXML, 'note');
 

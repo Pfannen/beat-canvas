@@ -1,13 +1,7 @@
 import * as Tone from 'tone';
 import { Measure } from '@/components/providers/music/types';
-import { ToneAudioNode } from 'tone';
-import {
-	getNoteFromYPos,
-	getPitchOctaveHelper,
-	getPitchOctaveHelperForClef,
-	getSecondsPerBeat,
-} from '../music';
-import { MusicScore, PitchOctaveHelper } from '@/types/music';
+import { getNoteFromYPos, getSecondsPerBeat } from '../music';
+import { MusicScore } from '@/types/music';
 import { getNoteDuration } from '@/components/providers/music/utils';
 
 // TODO: Take in instrument, extract measure attributes
@@ -24,11 +18,10 @@ export const playMeasures = (measures: Measure[]) => {
 		const secondsPerBeat = getSecondsPerBeat(
 			attributes?.metronome?.beatsPerMinute || 60
 		);
-		const pitchOctaveHelper = getPitchOctaveHelperForClef(attributes!.clef!);
 
 		for (const { x, y, type } of measure.notes) {
 			const noteDuration = getNoteDuration(type, 4);
-			const pitchOctave = getNoteFromYPos(y, pitchOctaveHelper);
+			const pitchOctave = getNoteFromYPos(y, attributes!.clef!);
 			console.log(pitchOctave);
 
 			synth.triggerAttackRelease(
