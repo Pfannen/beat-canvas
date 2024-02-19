@@ -4,7 +4,7 @@ import { FunctionComponent } from "react";
 export type YAxis = "top" | "bottom";
 export type XAxis = "left" | "right";
 
-export type AxisProps = { xAxis: XAxis; yAxis: YAxis };
+export type AxisProps = { xAxis?: XAxis; yAxis?: YAxis };
 
 export interface NoteAttributeComponent<T> {
   container: T;

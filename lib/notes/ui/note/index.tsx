@@ -1,7 +1,6 @@
 import { UnitMeasurement } from "@/types";
 import NoteBody from "../note-body";
 import NoteStaff from "../note-staff";
-import classes from "./index.module.css";
 import { FunctionComponent, ReactNode } from "react";
 import {
   BodyPosition,
@@ -11,7 +10,7 @@ import {
   YAxis,
 } from "../../types";
 import { numToUnit } from "@/utils";
-import { NoteAttribute, attributeMap } from "../note-attributes";
+import { NonConfigAttributes, attributeMap } from "../note-attributes";
 import { NoteType } from "@/components/providers/music/types";
 
 type NoteProps = {
@@ -20,7 +19,7 @@ type NoteProps = {
   staffHeightMultiplier?: number;
   unit?: UnitMeasurement;
   direction?: NoteDirection;
-  attributes?: NoteAttribute[];
+  attributes?: NonConfigAttributes[];
 };
 
 const Note: FunctionComponent<NoteProps> = (props) => {
@@ -60,7 +59,7 @@ export default Note;
 
 const reduceAttributes = (
   direction: NoteDirection,
-  attributes?: NoteAttribute[]
+  attributes?: NonConfigAttributes[]
 ) => {
   const bodyComponents: ReactNode[] = [];
   const staffComponents: ReactNode[] = [];
