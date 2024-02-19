@@ -17,11 +17,25 @@ export type MusicPart = {
 	measures: Measure[];
 };
 
+export type Clef = 'treble' | 'alto' | 'bass';
+
 export type MusicScore = {
 	title: string;
 	parts: MusicPart[];
-	pitchOctaveHelper: PitchOctaveHelper;
-	beatsPerMinute: number; // will need to move these last three to the Measure type
-	timeSignature: TimeSignature;
-	keySignature: string;
+};
+
+export type Metronome = {
+	beatNote: number;
+	beatsPerMinute: number;
+};
+
+export type MeasureAttributes = {
+	metronome?: Metronome;
+	timeSignature?: TimeSignature;
+	keySignature?: string;
+	clef?: Clef;
+};
+
+export type MeasureAttributesMXML = MeasureAttributes & {
+	quarterNoteDivisions?: number;
 };

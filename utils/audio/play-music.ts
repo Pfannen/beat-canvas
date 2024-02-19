@@ -4,22 +4,28 @@ import { ToneAudioNode } from 'tone';
 import {
 	getNoteFromYPos,
 	getPitchOctaveHelper,
+	getPitchOctaveHelperForClef,
 	getSecondsPerBeat,
-} from '../music-modifier';
+} from '../music';
 import { MusicScore, PitchOctaveHelper } from '@/types/music';
 import { getNoteDuration } from '@/components/providers/music/utils';
 
-// TODO: Take in time signature and instrument
-export const playMeasures = (
-	measures: Measure[],
-	bpm: number,
-	pitchOctaveHelper: PitchOctaveHelper
-) => {
-	const secondsPerBeat = getSecondsPerBeat(bpm);
+// TODO: Take in instrument, extract measure attributes
+export const playMeasures = (measures: Measure[]) => {
 	const now = Tone.now();
 	const synth = new Tone.PolySynth(Tone.Synth).toDestination();
 
-	for (const measure of measures) {
+	let curX = 0;
+	// TODO: Extract measure attributes from current measure to use and make guarnteed measure attributes type
+	const { attributes } = measures[0];
+	for (let i = 0; i < measures.length; i++) {
+		const measure = measures[i];
+
+		const secondsPerBeat = getSecondsPerBeat(
+			attributes?.metronome?.beatsPerMinute || 60
+		);
+		const pitchOctaveHelper = getPitchOctaveHelperForClef(attributes!.clef!);
+
 		for (const { x, y, type } of measure.notes) {
 			const noteDuration = getNoteDuration(type, 4);
 			const pitchOctave = getNoteFromYPos(y, pitchOctaveHelper);
@@ -28,72 +34,78 @@ export const playMeasures = (
 			synth.triggerAttackRelease(
 				[pitchOctave],
 				noteDuration * secondsPerBeat,
-				now + x * secondsPerBeat
+				now + (curX + x) * secondsPerBeat
 			);
 		}
+		curX = (i + 1) * 4;
 	}
 };
 
 export const ohWhatANight: Measure[] = [
 	{
+		attributes: {
+			metronome: {
+				beatNote: 4,
+				beatsPerMinute: 106,
+			},
+			timeSignature: {
+				beatNote: 4,
+				beatsPerMeasure: 4,
+			},
+			keySignature: 'do not have functionality rn',
+			clef: 'bass',
+		},
 		notes: [
-			{ x: 0, y: -6, type: 'dotted-eighth' },
-			{ x: 0.75, y: -5, type: 'sixteenth' },
-			{ x: 1.5, y: -4, type: 'eighth' },
-			{ x: 2.25, y: -3, type: 'sixteenth' },
-			{ x: 2.5, y: -3, type: 'eighth' },
-			{ x: 3, y: -3, type: 'eighth' },
-			{ x: 3.5, y: -4, type: 'eighth' },
+			{ x: 0, y: 4, type: 'dotted-eighth' },
+			{ x: 0.75, y: 5, type: 'sixteenth' },
+			{ x: 1.5, y: 6, type: 'eighth' },
+			{ x: 2.25, y: 7, type: 'sixteenth' },
+			{ x: 2.5, y: 7, type: 'eighth' },
+			{ x: 3, y: 7, type: 'eighth' },
+			{ x: 3.5, y: 6, type: 'eighth' },
 		],
 	},
 	{
 		notes: [
-			{ x: 4, y: -3, type: 'eighth' },
-			{ x: 4.5, y: -3, type: 'sixteenth' },
-			{ x: 4.75, y: -3, type: 'sixteenth' },
-			{ x: 5.5, y: -2, type: 'dotted-eighth' },
-			{ x: 6.25, y: -5, type: 'sixteenth' },
-			{ x: 6.5, y: -9, type: 'eighth' },
-			{ x: 7, y: -8, type: 'eighth' },
-			{ x: 7.5, y: -7, type: 'eighth' },
+			{ x: 0, y: 7, type: 'eighth' },
+			{ x: 0.5, y: 7, type: 'sixteenth' },
+			{ x: 0.75, y: 7, type: 'sixteenth' },
+			{ x: 1.5, y: 8, type: 'dotted-eighth' },
+			{ x: 2.25, y: 5, type: 'sixteenth' },
+			{ x: 2.5, y: 1, type: 'eighth' },
+			{ x: 3, y: 2, type: 'eighth' },
+			{ x: 3.5, y: 3, type: 'eighth' },
 		],
 	},
 	{
 		notes: [
-			{ x: 8, y: -6, type: 'eighth' },
-			{ x: 8.5, y: -5, type: 'sixteenth' },
-			{ x: 8.75, y: -5, type: 'sixteenth' },
-			{ x: 9.25, y: -4, type: 'sixteenth' },
-			{ x: 9.5, y: -4, type: 'eighth' },
-			{ x: 10.25, y: -3, type: 'sixteenth' },
-			{ x: 10.5, y: -3, type: 'eighth' },
-			{ x: 11, y: -3, type: 'eighth' },
-			{ x: 11.5, y: -4, type: 'eighth' },
+			{ x: 0, y: 4, type: 'eighth' },
+			{ x: 0.5, y: 5, type: 'sixteenth' },
+			{ x: 0.75, y: 5, type: 'sixteenth' },
+			{ x: 1.25, y: 6, type: 'sixteenth' },
+			{ x: 1.5, y: 6, type: 'eighth' },
+			{ x: 2.25, y: 7, type: 'sixteenth' },
+			{ x: 2.5, y: 7, type: 'eighth' },
+			{ x: 3, y: 7, type: 'eighth' },
+			{ x: 3.5, y: 6, type: 'eighth' },
 		],
 	},
 	{
 		notes: [
-			{ x: 12, y: -3, type: 'eighth' },
-			{ x: 12.5, y: -3, type: 'sixteenth' },
-			{ x: 12.75, y: -3, type: 'sixteenth' },
-			{ x: 13.5, y: -2, type: 'dotted-eighth' },
-			{ x: 14.25, y: -2, type: 'sixteenth' },
-			{ x: 14.5, y: -9, type: 'eighth' },
-			{ x: 15, y: -8, type: 'eighth' },
-			{ x: 15.5, y: -7, type: 'eighth' },
+			{ x: 0, y: 7, type: 'eighth' },
+			{ x: 0.5, y: 7, type: 'sixteenth' },
+			{ x: 0.75, y: 7, type: 'sixteenth' },
+			{ x: 1.5, y: 8, type: 'dotted-eighth' },
+			{ x: 2.25, y: 8, type: 'sixteenth' },
+			{ x: 2.5, y: 1, type: 'eighth' },
+			{ x: 3, y: 2, type: 'eighth' },
+			{ x: 3.5, y: 3, type: 'eighth' },
 		],
 	},
 ];
 
 export const ohWhatANightScore: MusicScore = {
 	title: 'Oh What a Night!',
-	timeSignature: {
-		beatNote: 4,
-		beatsPerMeasure: 4,
-	},
-	beatsPerMinute: 106,
-	pitchOctaveHelper: getPitchOctaveHelper('C4'),
-	keySignature: 'G2',
 	parts: [
 		{
 			instrument: 'Bass Guitar',

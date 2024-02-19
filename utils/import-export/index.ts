@@ -28,14 +28,15 @@ export const exportJSONScore = (score: MusicScore) => {
 	exportData(jsonString, 'application/json', score.title + '-JSON');
 };
 
+// TODO: Allow musicxml files so we can bring back the IF check
 export const importMusicXMLScore = (
 	file: File,
 	xmlLoadCallback: (score: MusicScore | null) => void
 ) => {
-	if (file.type !== 'text/xml' && file.type !== 'application/xml') {
+	/* if (file.type !== 'text/xml' && file.type !== 'application/xml') {
 		xmlLoadCallback(null);
 		return;
-	}
+	} */
 
 	const fileReader = new FileReader();
 	fileReader.onload = (event) => {

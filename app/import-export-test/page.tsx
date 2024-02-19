@@ -3,15 +3,21 @@
 import { FunctionComponent, useRef } from 'react';
 import classes from './ImportExportPage.module.css';
 import TaskbarButton from '@/components/ui/taskbar/buttons/taskbar-button';
-import { ohWhatANightScore } from '@/utils/audio/play-music';
-import { MusicScore } from '@/types/music';
+import {
+	ohWhatANight,
+	ohWhatANightScore,
+	playMeasures,
+} from '@/utils/audio/play-music';
 import {
 	exportJSONScore,
 	exportMusicXMLScore,
 	importMusicXMLScore,
 } from '@/utils/import-export';
+import { MusicScore } from '@/types/music';
 
 interface ImportExportPageProps {}
+
+let curScore: MusicScore | null = null;
 
 const ImportExportPage: FunctionComponent<ImportExportPageProps> = () => {
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -29,7 +35,7 @@ const ImportExportPage: FunctionComponent<ImportExportPageProps> = () => {
 			<input
 				type="file"
 				ref={inputRef}
-				accept=".xml"
+				accept=".xml, MUSICXML"
 				onChange={() => {
 					console.log('hit');
 					if (!inputRef.current || !inputRef.current.files) {
@@ -38,12 +44,27 @@ const ImportExportPage: FunctionComponent<ImportExportPageProps> = () => {
 					}
 
 					const file = inputRef.current.files[0];
-					if (file.type === 'text/xml' || file.type === 'application/xml') {
-						console.log(file.type);
-						importMusicXMLScore(file, (musicScore) => console.log(musicScore));
+					console.log(file.type);
+					// TODO: Allow musicxml files to bring back the IF check
+					if (
+						true /* file.type === 'text/xml' || file.type === 'application/xml' */
+					) {
+						importMusicXMLScore(file, (musicScore) => {
+							if (musicScore) curScore = musicScore;
+							console.log(musicScore);
+						});
 					}
 				}}
 			/>
+
+			<TaskbarButton
+				onClick={() => {
+					if (curScore && curScore.parts)
+						playMeasures(curScore.parts[0].measures);
+				}}
+			>
+				Play
+			</TaskbarButton>
 		</div>
 	);
 };
