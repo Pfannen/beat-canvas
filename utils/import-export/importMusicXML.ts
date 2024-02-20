@@ -1,31 +1,37 @@
-import { Measure, Note, NoteType } from '@/components/providers/music/types';
+import {
+	Measure,
+	Note,
+	NoteType,
+	TimeSignature,
+} from '@/components/providers/music/types';
 import {
 	Clef,
 	MeasureAttributesMXML,
+	Metronome,
 	MusicPart,
 	MusicScore,
 	Pitch,
 } from '@/types/music';
 import { getYPosFromNote } from '../music';
 import { musicXMLToClef } from '../musicXML';
+import { getElements, getSingleElement, validateElements } from './xml-helpers';
+import { getNoteDuration } from '@/components/providers/music/utils';
 
-const getElements = (
-	parent: Element,
-	elementName: string,
-	triggerError = true
-) => {
-	const elements = parent.getElementsByTagName(elementName);
-	if (elements.length === 0) {
-		if (triggerError) console.error(`couldn't get elements for ${elementName}`);
-		return null;
-	} else return elements;
+const getNotePitchOctave = (noteXML: Element) => {
+	const pitchXML = getSingleElement(noteXML, 'pitch');
+	if (!pitchXML) return null;
+
+	const stepXML = getSingleElement(pitchXML, 'step');
+	const octaveXML = getSingleElement(pitchXML, 'octave');
+	if (!validateElements([stepXML, octaveXML], true)) return null;
+	else return stepXML!.textContent! + octaveXML!.textContent!;
 };
 
 const getMeasureNotesJS = (
 	measureXML: Element,
 	quarterNoteDivisions: number,
 	clef: Clef,
-	beatsPerMeasure: number
+	timeSignature: TimeSignature
 ) => {
 	const noteArr: Note[] = [];
 
@@ -33,37 +39,41 @@ const getMeasureNotesJS = (
 	if (!noteXMLArr) return null;
 
 	let curX = 0;
+	const { beatNote, beatsPerMeasure } = timeSignature;
 	for (let i = 0; i < noteXMLArr.length; i++) {
 		const noteXML = noteXMLArr[i];
 
-		const durationXMLArr = getElements(noteXML, 'duration');
-		if (!durationXMLArr || !durationXMLArr[0].textContent) return null;
-		const duration = +durationXMLArr[0].textContent / quarterNoteDivisions;
+		const durationXML = getSingleElement(noteXML, 'duration', true);
+		// TODO: Look into not being able to get duration element
+		if (!durationXML) {
+			continue;
+		}
 
-		const pitchXMLArr = getElements(noteXML, 'pitch', false);
-		if (pitchXMLArr) {
-			const stepXMLArr = getElements(pitchXMLArr[0], 'step');
-			if (!stepXMLArr || !stepXMLArr[0].textContent) return null;
-			const step = stepXMLArr[0].textContent;
-
-			const octaveXMLArr = getElements(pitchXMLArr[0], 'octave');
-			if (!octaveXMLArr || !octaveXMLArr[0].textContent) return null;
-			const octave = octaveXMLArr[0].textContent;
-
-			const pitchOctave = step + octave;
-
-			const typeXMLArr = getElements(noteXML, 'type');
+		// TODO: Make this a helper function
+		const duration =
+			beatNote / (4 / (+durationXML!.textContent! / quarterNoteDivisions));
+		const pitchOctave = getNotePitchOctave(noteXML);
+		if (pitchOctave) {
 			// TODO: Implement a duration to note util and remove default quarter note type
 			let type: NoteType = 'quarter';
-			if (typeXMLArr && typeXMLArr[0].textContent)
-				type = typeXMLArr[0].textContent as NoteType;
+
+			const typeXML = getSingleElement(noteXML, 'type', true);
+			if (typeXML) {
+				const tempType = typeXML!.textContent!;
+				if (tempType === '16th') type = 'sixteenth';
+				else if (tempType === '32nd') type = 'thirtysecond';
+				else type = typeXML!.textContent! as NoteType;
+				//console.log(type);
+			} else {
+				// Get type from duration
+			}
 
 			const y = getYPosFromNote(pitchOctave, clef);
 			noteArr.push({ x: curX, y, type });
 		} else {
-			// TODO: Make no rest and no pitch result beats per measure rest
-			const restXMLArr = getElements(noteXML, 'rest', false);
-			if (!restXMLArr) {
+			// TODO: Make no rest and no pitch result in beats per measure rest
+			const restXML = getSingleElement(noteXML, 'rest');
+			if (!restXML) {
 				console.error('there was neither a pitch nor rest in a measure');
 				//return null;
 			}
@@ -77,83 +87,90 @@ const getMeasureNotesJS = (
 	return noteArr;
 };
 
+const getMeasureDivisions = (attributesXML: Element) => {
+	const divisionsXML = getSingleElement(attributesXML, 'divisions', true);
+	if (!divisionsXML) return null;
+	else return +divisionsXML.textContent!;
+};
+
+const getMeasureTimeSignature = (attributesXML: Element) => {
+	const timeXML = getSingleElement(attributesXML, 'time');
+	if (!timeXML) return null;
+
+	const beatsXML = getSingleElement(timeXML, 'beats');
+	const beatTypeXML = getSingleElement(timeXML, 'beat-type');
+
+	if (!validateElements([beatsXML, beatTypeXML], true)) return null;
+
+	const timeSignature: TimeSignature = {
+		beatNote: +beatTypeXML!.textContent!,
+		beatsPerMeasure: +beatsXML!.textContent!,
+	};
+	return timeSignature;
+};
+
+const getMeasureMetronome = (measureXML: Element) => {
+	let metronomeXML = getSingleElement(measureXML, 'metronome');
+	console.log(metronomeXML);
+	if (!metronomeXML) return null;
+
+	const beatUnitXML = getSingleElement(metronomeXML, 'beat-unit');
+	const perMinuteXML = getSingleElement(metronomeXML, 'per-minute');
+
+	if (!validateElements([beatUnitXML, perMinuteXML], true)) return null;
+
+	// TODO: Create utility to convert beatUnit (quarter, eighth, etc.) to number
+	const metronome: Metronome = {
+		beatNote: 4,
+		beatsPerMinute: +perMinuteXML!.textContent!,
+	};
+	return metronome;
+};
+
+const getMeasureClef = (attributesXML: Element) => {
+	const clefXML = getSingleElement(attributesXML, 'clef');
+	if (!clefXML) return null;
+
+	const signXML = getSingleElement(clefXML, 'sign');
+	const lineXML = getSingleElement(clefXML, 'line');
+	if (!validateElements([signXML, lineXML], true)) return null;
+
+	const clef = musicXMLToClef(
+		signXML!.textContent! as Pitch,
+		+lineXML!.textContent!
+	);
+	return clef;
+};
+
+const getMeasureKeySignature = (attributesXML: Element) => {
+	const keyXML = getSingleElement(attributesXML, 'key');
+	if (!keyXML) return null;
+
+	const fifthsXML = getSingleElement(keyXML, 'fifths', true);
+	if (!fifthsXML) return null;
+	else return fifthsXML!.textContent!;
+};
+
 const getMeasureAttributesJS = (measureXML: Element) => {
-	const attributesXMLArr = getElements(measureXML, 'attributes', false);
-	if (!attributesXMLArr) return null;
+	const attributesXML = getSingleElement(measureXML, 'attributes');
+	if (!attributesXML) return null;
 
 	const attributes: MeasureAttributesMXML = {};
-	const attributesXML = attributesXMLArr[0];
 
-	const divisionsXMLArr = getElements(attributesXML, 'divisions', false);
-	if (divisionsXMLArr && divisionsXMLArr[0].textContent)
-		attributes.quarterNoteDivisions = +divisionsXMLArr[0].textContent;
+	const divisions = getMeasureDivisions(attributesXML);
+	if (divisions !== null) attributes.quarterNoteDivisions = divisions;
 
-	const timeXMLArr = getElements(attributesXML, 'time', false);
-	if (timeXMLArr) {
-		const timeXML = timeXMLArr[0];
-		const beatsXMLArr = getElements(timeXML, 'beats');
-		const beatTypeXMLArr = getElements(timeXML, 'beat-type');
+	const timeSignature = getMeasureTimeSignature(attributesXML);
+	if (timeSignature) attributes.timeSignature = timeSignature;
 
-		if (
-			beatsXMLArr &&
-			beatsXMLArr[0].textContent &&
-			beatTypeXMLArr &&
-			beatTypeXMLArr[0].textContent
-		) {
-			attributes.timeSignature = {
-				beatNote: +beatTypeXMLArr[0].textContent,
-				beatsPerMeasure: +beatsXMLArr[0].textContent,
-			};
-		}
-	}
+	const metronome = getMeasureMetronome(measureXML);
+	if (metronome) attributes.metronome = metronome;
 
-	const metronomeXMLArr = getElements(attributesXML, 'metronome', false);
-	if (metronomeXMLArr) {
-		const metronomeXML = metronomeXMLArr[0];
-		const beatUnitXMLArr = getElements(metronomeXML, 'beat-unit', false);
-		const perMinuteXMLArr = getElements(metronomeXML, 'per-minute', false);
+	const clef = getMeasureClef(attributesXML);
+	if (clef) attributes.clef = clef;
 
-		if (
-			beatUnitXMLArr &&
-			beatUnitXMLArr[0].textContent &&
-			perMinuteXMLArr &&
-			perMinuteXMLArr[0].textContent
-		) {
-			attributes.metronome = {
-				beatNote: +beatUnitXMLArr[0].textContent,
-				beatsPerMinute: +perMinuteXMLArr[0].textContent,
-			};
-		}
-	}
-
-	const clefXMLArr = getElements(attributesXML, 'clef', false);
-	if (clefXMLArr) {
-		const clefXML = clefXMLArr[0];
-		const signXMLArr = getElements(clefXML, 'sign');
-		const lineXMLArr = getElements(clefXML, 'line');
-
-		if (
-			signXMLArr &&
-			signXMLArr[0].textContent &&
-			lineXMLArr &&
-			lineXMLArr[0].textContent
-		) {
-			attributes.clef = musicXMLToClef(
-				signXMLArr[0].textContent as Pitch,
-				+lineXMLArr[0].textContent
-			);
-		}
-	}
-
-	const keyXMLArr = getElements(attributesXML, 'key', false);
-	if (keyXMLArr) {
-		const keyXML = keyXMLArr[0];
-		const fifthsXMLArr = getElements(keyXML, 'fifths');
-
-		if (fifthsXMLArr && fifthsXMLArr[0].textContent) {
-			attributes.keySignature = fifthsXMLArr[0].textContent;
-		}
-	}
+	const key = getMeasureKeySignature(attributesXML);
+	if (key) attributes.keySignature = key;
 
 	return attributes;
 };
@@ -200,7 +217,7 @@ const getMeasuresJS = (part: Element) => {
 			measureXML,
 			curAttr.quarterNoteDivisions!,
 			curAttr.clef!,
-			curAttr.timeSignature!.beatsPerMeasure
+			curAttr.timeSignature!
 		);
 
 		if (!notes) return null;

@@ -21,12 +21,14 @@ export type Metronome = {
 };
 
 export type MeasureAttributes = {
-	metronome?: Metronome;
-	timeSignature?: TimeSignature;
-	keySignature?: string;
-	clef?: Clef;
+	metronome: Metronome;
+	timeSignature: TimeSignature;
+	keySignature: string;
+	clef: Clef;
 };
 
-export type MeasureAttributesMXML = MeasureAttributes & {
+export type PartialMeasureAttributes = Partial<MeasureAttributes>;
+
+export type MeasureAttributesMXML = Partial<MeasureAttributes> & {
 	quarterNoteDivisions?: number;
 };

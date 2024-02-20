@@ -1,8 +1,43 @@
 import * as Tone from 'tone';
 import { Measure } from '@/components/providers/music/types';
 import { getNoteFromYPos, getSecondsPerBeat } from '../music';
-import { MusicScore } from '@/types/music';
+import { MeasureAttributes, MusicScore } from '@/types/music';
 import { getNoteDuration } from '@/components/providers/music/utils';
+
+const initializeAttributes = (initialMeasure: Measure) => {
+	const { attributes } = initialMeasure;
+	const metronome = attributes?.metronome || {
+		beatNote: 4,
+		beatsPerMinute: 136,
+	};
+	const timeSignature = attributes?.timeSignature || {
+		beatNote: 4,
+		beatsPerMeasure: 4,
+	};
+	const keySignature = attributes?.keySignature || '0';
+	const clef = attributes?.clef || 'treble';
+	return {
+		metronome,
+		timeSignature,
+		keySignature,
+		clef,
+	} as MeasureAttributes;
+};
+
+const updateAttributes = (
+	currentAttributes: MeasureAttributes,
+	measure: Measure
+) => {
+	const { attributes } = measure;
+	if (!attributes) return;
+
+	const { metronome, timeSignature, keySignature, clef } = attributes;
+
+	if (metronome) currentAttributes.metronome = metronome;
+	if (timeSignature) currentAttributes.timeSignature = timeSignature;
+	if (keySignature) currentAttributes.keySignature = keySignature;
+	if (clef) currentAttributes.clef = clef;
+};
 
 // TODO: Take in instrument, extract measure attributes
 export const playMeasures = (measures: Measure[]) => {
@@ -10,18 +45,19 @@ export const playMeasures = (measures: Measure[]) => {
 	const synth = new Tone.PolySynth(Tone.Synth).toDestination();
 
 	let curX = 0;
-	// TODO: Extract measure attributes from current measure to use and make guarnteed measure attributes type
-	const { attributes } = measures[0];
+	const attributes = initializeAttributes(measures[0]);
+
 	for (let i = 0; i < measures.length; i++) {
 		const measure = measures[i];
+		updateAttributes(attributes, measure);
 
-		const secondsPerBeat = getSecondsPerBeat(
-			attributes?.metronome?.beatsPerMinute || 60
-		);
+		const { metronome, timeSignature, clef } = attributes;
+
+		const secondsPerBeat = getSecondsPerBeat(metronome.beatsPerMinute);
 
 		for (const { x, y, type } of measure.notes) {
-			const noteDuration = getNoteDuration(type, 4);
-			const pitchOctave = getNoteFromYPos(y, attributes!.clef!);
+			const noteDuration = getNoteDuration(type, timeSignature.beatNote);
+			const pitchOctave = getNoteFromYPos(y, clef);
 			console.log(pitchOctave);
 
 			synth.triggerAttackRelease(
@@ -30,7 +66,7 @@ export const playMeasures = (measures: Measure[]) => {
 				now + (curX + x) * secondsPerBeat
 			);
 		}
-		curX = (i + 1) * 4;
+		curX = (i + 1) * timeSignature.beatsPerMeasure;
 	}
 };
 

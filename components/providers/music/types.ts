@@ -1,4 +1,4 @@
-import { MeasureAttributes } from '@/types/music';
+import { MeasureAttributes, PartialMeasureAttributes } from '@/types/music';
 
 export type NoteType =
 	| 'whole'
@@ -26,4 +26,4 @@ export type TimeSignature = {
 	beatNote: number /*Make this more strict later */;
 };
 
-export type Measure = { notes: Note[]; attributes?: MeasureAttributes };
+export type Measure = { notes: Note[]; attributes?: PartialMeasureAttributes };

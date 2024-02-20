@@ -69,7 +69,5 @@ export const getYPosFromNote = (note: string, clef: Clef) => {
 	// Add all the results, factoring in stepsToC
 	const yPos = octaveSteps * 7 + stepsToC + stepsToTargetPitch;
 
-	console.log({ note, yPos });
-
 	return yPos;
 };
