@@ -1,37 +1,32 @@
-import { numToPercent, numToUnit } from "@/utils";
-import { NoteDirection, XAxis, YAxis } from "../../types";
+import { numToPercent } from "@/utils";
+import { Axis, NoteDirection, XAxis, YAxis } from "../../types";
 import classes from "./index.module.css";
 import { CSSProperties, FunctionComponent, ReactNode } from "react";
-import { UnitMeasurement } from "@/types";
 import AbsoluteContainer from "../absolute-container";
 
 type NoteStaffProps = {
   heightMultiplier: number;
   direction: NoteDirection;
   children?: ReactNode;
+  hide?: boolean;
 };
 
 const NoteStaff: FunctionComponent<NoteStaffProps> = ({
   heightMultiplier,
   direction,
   children,
+  hide,
 }) => {
-  let yAxis: YAxis = "top";
-  let xAxis: XAxis = "left";
-  if (direction === "up") {
-    yAxis = "bottom";
-    xAxis = "right";
-  }
+  if (hide) return null;
   return (
     <AbsoluteContainer
       className={classes.note_staff}
       style={
         {
-          "--height": numToUnit(heightMultiplier, "%"),
+          "--height": numToPercent(heightMultiplier),
         } as CSSProperties
       }
-      xAxis={xAxis}
-      yAxis={yAxis}
+      {...getAxisInfo(direction)}
       yPercent={"50%"}
     >
       {children}
@@ -40,3 +35,13 @@ const NoteStaff: FunctionComponent<NoteStaffProps> = ({
 };
 
 export default NoteStaff;
+
+const getAxisInfo = (direction: NoteDirection): Axis => {
+  let yAxis: YAxis = "top";
+  let xAxis: XAxis = "left";
+  if (direction === "up") {
+    yAxis = "bottom";
+    xAxis = "right";
+  }
+  return { xAxis, yAxis };
+};

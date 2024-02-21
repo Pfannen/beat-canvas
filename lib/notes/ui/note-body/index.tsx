@@ -4,25 +4,25 @@ import { CSSProperties, FunctionComponent, ReactNode } from "react";
 
 type NoteBodyProps = {
   height: string;
-  notFilled?: boolean;
+  isFilled?: boolean;
   children?: ReactNode;
 };
 
 const NoteBody: FunctionComponent<NoteBodyProps> = ({
   height,
-  notFilled,
+  isFilled,
   children,
 }) => {
   return (
     <div
       className={concatClassNames(
         classes.note_body,
-        notFilled && classes.not_filled
+        !isFilled && classes.not_filled
       )}
       style={{ "--height": height } as CSSProperties}
     >
       {children}
-      {notFilled && (
+      {!isFilled && (
         <div className={concatClassNames("center", classes.hole)} />
       )}
     </div>

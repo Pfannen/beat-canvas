@@ -1,13 +1,16 @@
 import { NoteType } from "@/components/providers/music/types";
-import { FunctionComponent } from "react";
+import { FunctionComponent, Key } from "react";
 
 export type YAxis = "top" | "bottom";
 export type XAxis = "left" | "right";
 
-export type AxisProps = { xAxis?: XAxis; yAxis?: YAxis };
+export type Axis = { xAxis: XAxis; yAxis: YAxis };
+
+export type AxisProps = Partial<Axis>;
 
 export interface NoteAttributeComponent<T> {
   container: T;
+  key: Key; //For passing in as the "key" prop
   component: FunctionComponent<AxisProps>;
 }
 
