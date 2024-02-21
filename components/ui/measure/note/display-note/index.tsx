@@ -1,5 +1,5 @@
 import { NoteType } from "@/components/providers/music/types";
-import Note from "..";
+import Note from "@/lib/notes/ui/note";
 import classes from "./index.module.css";
 import { FunctionComponent } from "react";
 
@@ -16,7 +16,11 @@ const DisplayNote: FunctionComponent<DisplayNoteProps> = ({
   height,
   type,
 }) => {
-  return <Note style={{ bottom, left, height }} className={classes.note} />;
+  return (
+    <div style={{ bottom, left, height }} className={classes.note}>
+      <Note type={type} />
+    </div>
+  );
 };
 
 export default DisplayNote;

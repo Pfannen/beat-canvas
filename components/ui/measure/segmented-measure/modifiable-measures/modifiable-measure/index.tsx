@@ -1,4 +1,4 @@
-import { minimalSegmentGenerator } from "@/components/ui/reusable/segment-split/utils";
+// import { minimalSegmentGenerator } from "@/components/ui/reusable/segment-split/utils";
 import SegmentedMeasure from "../..";
 import classes from "./index.module.css";
 import { FunctionComponent } from "react";
@@ -6,6 +6,7 @@ import { Note, NoteType } from "@/components/providers/music/types";
 import SplitSegment from "../../../segment/split-segment";
 import { ModificationBehavior } from "../../../utils";
 import useSplitSegmentRegistry from "@/components/hooks/useSplitSegmentRegistry";
+import { minimalSegmentGenerator } from "@/utils/segments/segment-gen-1";
 
 type ModifiableMeasureProps = {
   index: number;

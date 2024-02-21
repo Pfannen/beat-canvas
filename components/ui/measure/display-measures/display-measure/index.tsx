@@ -1,4 +1,4 @@
-import { ComponentPercentages } from "@/objects/note-position";
+import { ComponentPercentages } from "@/objects/music/note-position";
 import LedgerComponent from "../../ledger-component";
 import Segment from "../../segment";
 import { LedgerComponentRenderer } from "../../utils";
@@ -11,7 +11,7 @@ import { concatClassNames } from "@/utils/css";
 type DisplayMeasureProps = {
   componentsAbove?: number;
   componentsBelow?: number;
-  notesComponents?: ReactNode;
+  noteComponents?: ReactNode;
   componentPercentages?: ComponentPercentages;
   height: string;
   padding: string;
@@ -20,7 +20,7 @@ type DisplayMeasureProps = {
 const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
   componentsAbove,
   componentsBelow,
-  notesComponents,
+  noteComponents,
   componentPercentages,
   height,
   padding,
@@ -57,7 +57,7 @@ const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
         body={7}
         componentPercentages={componentPercentages}
       />
-      {notesComponents}
+      {noteComponents}
     </div>
   );
 };

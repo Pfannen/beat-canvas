@@ -56,6 +56,7 @@ export const clickBehavior: ModificationBehavior<
     if (type) {
       delegates.placeNote({ x, y, type });
       delegates.joinAll(x);
+      console.log("Join all");
     } else {
       delegates.splitSegment(x);
     }

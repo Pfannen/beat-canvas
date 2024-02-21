@@ -1,4 +1,4 @@
-type Note = { x: number; y: number; length: number };
+export type NotePositionNote = { x: number; y: number; length: number };
 
 export type Offset = { x: number; y: number };
 
@@ -22,7 +22,6 @@ export default class NotePosition {
     this.measureHeight = measureHeight;
     this.segmentLength = wholeSegmentLength; //Will be 25 if 4/4 time (1/4 * 100)
     this.startsWithLine = startWithLine;
-    console.log("invoke");
   }
 
   private isOnLine(yPos: number) {
@@ -44,13 +43,13 @@ export default class NotePosition {
     return (xPos + centerOfLength) * this.segmentLength;
   }
 
-  public getNoteOffsets(notes: Note[]): Offset[] {
+  public getNoteOffsets(notes: NotePositionNote[]): Offset[] {
     return notes.map((note) => {
       return this.getNoteOffset(note);
     });
   }
 
-  public getNoteOffset(note: Note): Offset {
+  public getNoteOffset(note: NotePositionNote): Offset {
     return {
       x: this.getXOffset(note.x, note.length),
       y: this.getYOffset(note.y),

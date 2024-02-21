@@ -39,7 +39,7 @@ const useSplitSegmentRegistry = () => {
     }
   };
 
-  //This is for an action like placing a note on a splitted segment, once the note is place you want to unplit all segments
+  //This is for an action like placing a note on a segment that is split, once the note is place you want to unplit all segments
   const joinAll = (x: number) => {
     const delegateStack = registry.current[x];
     if (delegateStack && delegateStack.length) {

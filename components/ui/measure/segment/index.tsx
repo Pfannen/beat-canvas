@@ -1,6 +1,9 @@
 import { FunctionComponent } from "react";
 import { LedgerComponentRenderer, generateMeasureComponents } from "../utils";
-import { ComponentPercentages, MeasureUtils } from "@/objects/note-position";
+import {
+  ComponentPercentages,
+  MeasureUtils,
+} from "@/objects/music/note-position";
 
 type Props = {
   belowBody?: number;

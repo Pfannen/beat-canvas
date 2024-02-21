@@ -1,15 +1,13 @@
 import classes from "./index.module.css";
-import { FunctionComponent, useState } from "react";
-import NotePosition from "@/objects/note-position";
+import { FunctionComponent } from "react";
 import { getNoteDuration } from "@/components/providers/music/utils";
 import { useMusic } from "@/components/providers/music";
 import DisplayMeasure from "./display-measure";
 import DisplayNote from "../note/display-note";
 import { concatClassNames } from "@/utils/css";
+import Measure from "@/objects/music/measure";
 
-const spaceCount = 3;
-const lineCount = 2;
-const bodyCt = 7;
+const measure = new Measure(5, 25, 100);
 
 type DisplayMeasuresProps = {
   onMeasureClick: (index: number) => void;
@@ -27,23 +25,22 @@ const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = ({
   notSelectedMeasureClassName,
 }) => {
   const { measures } = useMusic();
-  const [notePosition, setNotePosition] = useState(() => {
-    return new NotePosition((spaceCount + lineCount) * 2 + bodyCt, 25, 100);
-  });
+  const linePercent = measure.getLinePercent();
+  const spacePercent = measure.getSpacePercent();
   const padding =
-    lineCount * notePosition.heights.line +
-    spaceCount * notePosition.heights.space;
+    measure.getAboveBelowLines() * linePercent +
+    measure.getAboveBelowSpaces() * spacePercent;
   const bodyPercent = 1 - padding * 2;
   const noteComponents = measures.map(({ notes }) => {
     return notes.map((note) => {
       const length = getNoteDuration(note.type, 4);
-      const { x, y } = notePosition.getNoteOffset({ ...note, length });
+      const { x, y } = measure.getNoteOffset({ ...note, length });
       const component = (
         <DisplayNote
           bottom={y + "%"}
           left={x + "%"}
           type={note.type}
-          height={notePosition.heights.space * 100 + "%"}
+          height={measure.getSpacePercent() * 100 + "%"}
           key={`${x}-${y}`}
         />
       );
@@ -55,8 +52,8 @@ const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = ({
       {noteComponents.map((measureNotes, i) => {
         return (
           <DisplayMeasure
-            notesComponents={measureNotes}
-            componentPercentages={notePosition.heights}
+            noteComponents={measureNotes}
+            componentPercentages={{ space: spacePercent, line: linePercent }}
             height={bodyPercent * 100 + "%"}
             padding={padding * 100 + "%"}
             onClick={onMeasureClick.bind(null, i)}

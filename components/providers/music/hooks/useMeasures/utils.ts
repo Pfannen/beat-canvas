@@ -38,7 +38,6 @@ export const createMeasure: MeasureModifier<{
 }> =
   ({ notes, insertIndex }) =>
   (getMeasures) => {
-    console.log(insertIndex);
     const measures = getMeasures();
     insertIndex = insertIndex === undefined ? measures.length : insertIndex;
     measures.splice(insertIndex!, 0, { notes: notes || [] });
