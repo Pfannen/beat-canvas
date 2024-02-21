@@ -1,5 +1,3 @@
-type UnitMeasurement = "px" | "%";
-
 type Note = { x: number; y: number; length: number };
 
 export type Offset = { x: number; y: number };
