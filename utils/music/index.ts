@@ -1,3 +1,4 @@
+import { NoteType } from '@/components/providers/music/types';
 import { Clef } from '@/types/music';
 
 export const getSecondsPerBeat = (bpm: number) => 1 / (bpm / 60);
@@ -71,3 +72,67 @@ export const getYPosFromNote = (note: string, clef: Clef) => {
 
 	return yPos;
 };
+
+const quarterDurationToNoteType: { [key in number]: NoteType } = {
+	4: 'whole',
+	3: 'dotted-half',
+	2: 'half',
+	1.5: 'dotted-quarter',
+	1: 'quarter',
+	0.75: 'dotted-eighth',
+	0.5: 'eighth',
+	0.375: 'dotted-sixteenth',
+	0.25: 'sixteenth',
+	0.1875: 'dotted-thirtysecond',
+	0.125: 'thirtysecond',
+};
+
+const noteTypeToQuarterNoteDuration: { [key in NoteType]: number } = {
+	whole: 4,
+	'dotted-half': 3,
+	half: 2,
+	'dotted-quarter': 1.5,
+	quarter: 1,
+	'dotted-eighth': 0.75,
+	eighth: 0.5,
+	'dotted-sixteenth': 0.375,
+	sixteenth: 0.25,
+	'dotted-thirtysecond': 0.1875,
+	thirtysecond: 0.125,
+};
+
+// The duration of note with respect to a quarter note (i.e. an eighth note in 3/8 has duration 1, but in 4/4 it's 0.5)
+export const getQuarterNoteDuration = (duration: number, beatNote: number) => {
+	// Calculate what we need to multiply the duration by to get its quarter note duration
+	const multiplier = 4 / beatNote;
+
+	// Multiply the duration by the multiplier
+	const quarterDuration = duration * multiplier;
+
+	return quarterDuration;
+};
+
+export const durationToNoteType = (duration: number, beatNote: number) => {
+	const quarterDuration = getQuarterNoteDuration(duration, beatNote);
+
+	if (quarterDuration in quarterDurationToNoteType) {
+		return quarterDurationToNoteType[quarterDuration];
+	} else {
+		console.error("Quarter duration doesn't have a type:\n ");
+		console.error({ quarterDuration, duration });
+		return 'quarter';
+	}
+};
+
+export const getQuarterNoteDurationFromNoteType = (noteType: NoteType) => {
+	if (noteType in noteTypeToQuarterNoteDuration) {
+		return noteTypeToQuarterNoteDuration[noteType];
+	} else {
+		console.error('Note type not supported:\n ');
+		console.error({ noteType });
+		return 1;
+	}
+};
+
+export const noteTypeIsDotted = (noteType: NoteType) =>
+	noteType.startsWith('dotted-');

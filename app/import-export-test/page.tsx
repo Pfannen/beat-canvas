@@ -17,18 +17,24 @@ import { MusicScore } from '@/types/music';
 
 interface ImportExportPageProps {}
 
-let curScore: MusicScore | null = null;
+let curScore: MusicScore | null = ohWhatANightScore;
 
 const ImportExportPage: FunctionComponent<ImportExportPageProps> = () => {
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	return (
 		<div className={classes.container}>
-			<TaskbarButton onClick={exportJSONScore.bind(null, ohWhatANightScore)}>
+			<TaskbarButton
+				onClick={() => {
+					if (curScore) exportJSONScore(curScore);
+				}}
+			>
 				Export JSON
 			</TaskbarButton>
 			<TaskbarButton
-				onClick={exportMusicXMLScore.bind(null, ohWhatANightScore)}
+				onClick={() => {
+					if (curScore) exportMusicXMLScore(curScore);
+				}}
 			>
 				Export MusicXML
 			</TaskbarButton>

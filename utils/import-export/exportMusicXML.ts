@@ -1,5 +1,5 @@
 import { getNoteDuration } from '@/components/providers/music/utils';
-import { getNoteFromYPos } from '../music';
+import { getNoteFromYPos, noteTypeIsDotted } from '../music';
 import { createAppend } from './xml-helpers';
 import { Clef, MeasureAttributes, MusicPart, MusicScore } from '@/types/music';
 import {
@@ -8,12 +8,13 @@ import {
 	TimeSignature,
 } from '@/components/providers/music/types';
 import { segmentGen1 } from '../segments/segment-gen-1';
-import { clefToMusicXML } from '../musicXML';
+import { clefToMusicXML, convertJSNoteTypeToMusicXML } from '../musicXML';
 
 const createRestsXML = (
 	root: XMLDocument,
 	xPos1: number,
 	xPos2: number,
+	beatNote: number,
 	measureXML?: Element
 ) => {
 	const restsData = segmentGen1(xPos1, xPos2);
@@ -34,50 +35,66 @@ const createRestsXML = (
 	return restsXML;
 };
 
-const getMeasureNotesXML = (
+const createNoteXML = (
+	root: XMLDocument,
+	measureXML: Element,
+	note: Note,
+	clef: Clef,
+	beatNote: number
+) => {
+	const boundCA = createAppend.bind(this, root);
+	const { y, type } = note;
+	const stepOctave = getNoteFromYPos(y, clef);
+
+	const noteXML = boundCA(measureXML, 'note');
+
+	const pitchXML = boundCA(noteXML, 'pitch');
+	const stepXML = boundCA(pitchXML, 'step');
+	stepXML.textContent = stepOctave.slice(0, -1);
+	const octaveXML = boundCA(pitchXML, 'octave');
+	octaveXML.textContent = stepOctave.slice(-1);
+
+	const durationXML = boundCA(noteXML, 'duration');
+	durationXML.textContent = getNoteDuration(note.type, beatNote).toString();
+	const typeXML = boundCA(noteXML, 'type');
+	typeXML.textContent = convertJSNoteTypeToMusicXML(type);
+
+	if (noteTypeIsDotted(type)) boundCA(noteXML, 'dot');
+};
+
+const createMeasureNotesXML = (
 	root: XMLDocument,
 	measureXML: Element,
 	notes: Note[],
 	timeSignature: TimeSignature,
 	clef: Clef
 ) => {
-	const boundCA = createAppend.bind(this, root);
+	const { beatNote, beatsPerMeasure } = timeSignature;
 
 	createRestsXML(
 		root,
 		0,
-		notes.length ? notes[0].x : timeSignature.beatsPerMeasure,
+		notes.length ? notes[0].x : beatsPerMeasure,
+		beatNote,
 		measureXML
 	);
 
 	for (let i = 0; i < notes.length; i++) {
-		const { x, y, type } = notes[i];
-		const stepOctave = getNoteFromYPos(y, clef);
-
-		const noteXML = boundCA(measureXML, 'note');
-
-		const pitchXML = boundCA(noteXML, 'pitch');
-		const stepXML = boundCA(pitchXML, 'step');
-		stepXML.textContent = stepOctave.slice(0, -1);
-		const octaveXML = boundCA(pitchXML, 'octave');
-		octaveXML.textContent = stepOctave.slice(-1);
-
-		const duration = getNoteDuration(type, timeSignature.beatNote);
-		const durationXML = boundCA(noteXML, 'duration');
-		durationXML.textContent = duration.toString();
-		const typeXML = boundCA(noteXML, 'type');
-		typeXML.textContent = type;
+		const note = notes[i];
+		createNoteXML(root, measureXML, note, clef, beatNote);
+		const duration = getNoteDuration(note.type, beatNote);
 
 		createRestsXML(
 			root,
-			x + duration,
-			i === notes.length - 1 ? timeSignature.beatsPerMeasure : notes[i + 1].x,
+			note.x + duration,
+			i === notes.length - 1 ? beatsPerMeasure : notes[i + 1].x,
+			beatNote,
 			measureXML
 		);
 	}
 };
 
-const getMeasureAttributesXML = (
+const createMeasureAttributesXML = (
 	root: XMLDocument,
 	measureXML: Element,
 	measure: Measure,
@@ -114,7 +131,8 @@ const getMeasureAttributesXML = (
 	if (metronome) {
 		curAttributes.metronome = metronome;
 
-		const directionTypeXML = boundCA(attributesXML, 'direction-type');
+		// MusicXML has metronome placed outside of attributes, but inside measure
+		const directionTypeXML = boundCA(measureXML, 'direction-type');
 		const metronomeXML = boundCA(directionTypeXML, 'metronome');
 		const beatUnitXML = boundCA(metronomeXML, 'beat-unit');
 		beatUnitXML.textContent = metronome.beatNote.toString();
@@ -136,7 +154,7 @@ const getMeasureAttributesXML = (
 	return attributesXML;
 };
 
-const getMeasuresXML = (
+const createMeasuresXML = (
 	root: XMLDocument,
 	partXML: Element,
 	measures: Measure[]
@@ -160,8 +178,8 @@ const getMeasuresXML = (
 		measureXML.setAttribute('number', (i + 1).toString());
 
 		const measure = measures[i];
-		getMeasureAttributesXML(root, measureXML, measure, curAttr);
-		getMeasureNotesXML(
+		createMeasureAttributesXML(root, measureXML, measure, curAttr);
+		createMeasureNotesXML(
 			root,
 			measureXML,
 			measure.notes,
@@ -171,7 +189,7 @@ const getMeasuresXML = (
 	}
 };
 
-const getPartListXML = (root: XMLDocument, parts: MusicPart[]) => {
+const createPartListXML = (root: XMLDocument, parts: MusicPart[]) => {
 	const partList = root.createElement('part-list');
 
 	for (const part of parts) {
@@ -196,7 +214,7 @@ export const createMusicXMLScore = (score: MusicScore) => {
 	const scoreXML = root.getElementsByTagName('score-partwise')[0];
 	scoreXML.setAttribute('version', '4.0');
 
-	const partListXML = getPartListXML(root, parts);
+	const partListXML = createPartListXML(root, parts);
 	scoreXML.appendChild(partListXML);
 
 	for (let i = 0; i < parts.length; i++) {
@@ -205,7 +223,7 @@ export const createMusicXMLScore = (score: MusicScore) => {
 		const partXML = createAppend(root, scoreXML, 'part');
 		partXML.setAttribute('id', id);
 
-		getMeasuresXML(root, partXML, measures);
+		createMeasuresXML(root, partXML, measures);
 	}
 
 	return root;
