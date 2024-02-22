@@ -17,18 +17,21 @@ export const generateMeasureComponents = (
   spaceHeight: number,
   startWithLine: boolean,
   getComponent: LedgerComponentRenderer,
-  bodyCt = 7
+  bodyCt = 9
 ) => {
   const totalComponents = bodyCt + belowBody + aboveBody;
   const components = new Array(totalComponents);
-
-  for (let y = totalComponents - 1; y > -1; y--) {
+  let i = 0;
+  let y = bodyCt + aboveBody - 1;
+  while (i < totalComponents) {
     let isLine = y % 2 != 0;
     if (startWithLine) isLine = !isLine;
-    const isBodyComponent = y >= belowBody && y < belowBody + bodyCt;
+    const isBodyComponent = y >= 0 && y < bodyCt;
     components.push(
       getComponent(y, isLine, lineHeight, spaceHeight, isBodyComponent)
     );
+    i++;
+    y--;
   }
   return components;
 };

@@ -1,7 +1,7 @@
 import NotePosition, { MeasureUtils, NotePositionNote } from "../note-position";
 
 export default class Measurement {
-  private bodyCt = 7;
+  private bodyCt = 9;
   private aboveBelowCount: number;
   private notePosition: NotePosition;
   private startsWithLine: boolean;
@@ -26,6 +26,7 @@ export default class Measurement {
     );
     this.notePosition = new NotePosition(
       componentCount,
+      aboveBelowCount,
       wholeSegmentLength,
       measureHeight,
       this.startsWithLine,
@@ -77,5 +78,9 @@ export default class Measurement {
 
   public getNoteOffsets(notes: NotePositionNote[]) {
     return this.notePosition.getNoteOffsets(notes);
+  }
+
+  public getMiddleYPos() {
+    return Math.floor(this.bodyCt / 2);
   }
 }

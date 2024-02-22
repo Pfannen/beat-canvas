@@ -8,7 +8,7 @@ import { NonConfigAttributes } from "../note-attributes";
 import { NoteType } from "@/components/providers/music/types";
 import { getTypeDetails, reduceAttributes } from "../utils";
 
-type NoteProps = {
+export type NoteProps = {
   type: NoteType;
   bodyHeight?: number;
   staffHeightMultiplier?: number;

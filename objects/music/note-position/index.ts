@@ -7,8 +7,10 @@ export default class NotePosition {
   segmentLength: number;
   startsWithLine: boolean;
   measureHeight: number;
+  componentsBelowBody: number;
   constructor(
     componentCount: number,
+    componentsBelowBody: number,
     wholeSegmentLength: number,
     measureHeight: number,
     startWithLine = false,
@@ -19,19 +21,28 @@ export default class NotePosition {
       lineToSpaceRatio,
       startWithLine
     );
+    this.componentsBelowBody = componentsBelowBody;
     this.measureHeight = measureHeight;
     this.segmentLength = wholeSegmentLength; //Will be 25 if 4/4 time (1/4 * 100)
     this.startsWithLine = startWithLine;
   }
 
   private isOnLine(yPos: number) {
-    return this.startsWithLine ? yPos % 2 === 0 : yPos % 2 !== 0;
+    return yPos % 2 === 0;
   }
 
   //Returns the value that is in the center of the component (line or space) that yPos represents
   private getYOffset(yPos: number) {
-    let spaceCount = MeasureUtils.getSpaceCount(yPos, this.startsWithLine);
-    let lineCount = MeasureUtils.getLineCount(yPos, this.startsWithLine);
+    //We shall assume yPos: 0 is the first line of the body (if yPos is negative the position is below the body)
+    const componentsAboveBottom = yPos + this.componentsBelowBody;
+    let spaceCount = MeasureUtils.getSpaceCount(
+      componentsAboveBottom,
+      this.startsWithLine
+    );
+    let lineCount = MeasureUtils.getLineCount(
+      componentsAboveBottom,
+      this.startsWithLine
+    );
     this.isOnLine(yPos) ? (lineCount -= 0.5) : (spaceCount -= 0.5);
     const spaceHeight = this.heights.space * this.measureHeight;
     const lineHeight = this.heights.line * this.measureHeight;
@@ -61,25 +72,25 @@ export type ComponentFractions = { line: number; space: number };
 
 export class MeasureUtils {
   //If startsWithLine is true this returns the number of lines
-  private static getFirstComponentCount(yPos: number) {
-    return Math.floor(yPos / 2) + 1;
+  private static getFirstComponentCount(componentsAboveBottom: number) {
+    return Math.floor(componentsAboveBottom / 2) + 1;
   }
 
   //If startsWithLine is false this returns the number of lines
-  private static getSecondComponentCount(yPos: number) {
-    return Math.floor((yPos + 1) / 2);
+  private static getSecondComponentCount(componentsAboveBottom: number) {
+    return Math.floor((componentsAboveBottom + 1) / 2);
   }
 
-  static getSpaceCount(yPos: number, startsWithLine: boolean) {
+  static getSpaceCount(componentsAboveBottom: number, startsWithLine: boolean) {
     return startsWithLine
-      ? this.getSecondComponentCount(yPos)
-      : this.getFirstComponentCount(yPos);
+      ? this.getSecondComponentCount(componentsAboveBottom)
+      : this.getFirstComponentCount(componentsAboveBottom);
   }
 
-  static getLineCount(yPos: number, startsWithLine: boolean) {
+  static getLineCount(componentsAboveBottom: number, startsWithLine: boolean) {
     return startsWithLine
-      ? this.getFirstComponentCount(yPos)
-      : this.getSecondComponentCount(yPos);
+      ? this.getFirstComponentCount(componentsAboveBottom)
+      : this.getSecondComponentCount(componentsAboveBottom);
   }
 
   static getLedgerComponentFractions(

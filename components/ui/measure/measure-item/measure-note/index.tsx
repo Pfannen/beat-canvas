@@ -1,20 +1,18 @@
-import { NoteType } from "@/components/providers/music/types";
-import Note from "@/lib/notes/ui/note";
+import Note, { NoteProps } from "@/lib/notes/ui/note";
 import { FunctionComponent } from "react";
 import MeasureItem, { MeasureItemContainerProps } from "..";
 
 type DisplayNoteProps = {
   containerProps: MeasureItemContainerProps;
-  type: NoteType;
-};
+} & NoteProps;
 
 const DisplayNote: FunctionComponent<DisplayNoteProps> = ({
   containerProps,
-  type,
+  ...restProps
 }) => {
   return (
     <MeasureItem {...containerProps}>
-      <Note type={type} />
+      <Note {...restProps} />
     </MeasureItem>
   );
 };

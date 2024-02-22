@@ -47,6 +47,7 @@ const getDisplayNote = (note: Note, measurements: Measurement) => {
       }}
       type={note.type}
       key={`${x}-${y}`}
+      direction={note.y > 5 ? "down" : "up"}
     />
   );
   return component;
@@ -61,7 +62,7 @@ const getDisplayRest = (
   const type = durationToNoteType(duration, beatNote);
   const { x, y } = measurements.getNoteOffset({
     x: xPos,
-    y: 8, //Replace this with the y value that is the middle of the measure
+    y: measurements.getMiddleYPos(),
     length: duration,
   });
   const component = (
@@ -70,7 +71,7 @@ const getDisplayRest = (
       containerProps={{
         bottom: fractionToPercent(y),
         left: fractionToPercent(x),
-        height: fractionToPercent(measurements.getSpaceFraction() * 3),
+        height: fractionToPercent(measurements.getSpaceFraction() * 2.5),
       }}
     />
   );

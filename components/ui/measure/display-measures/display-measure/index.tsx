@@ -8,6 +8,8 @@ import { ComponentProps } from "@/types/polymorphic";
 import { concatClassNames } from "@/utils/css";
 import { ComponentFractions } from "@/objects/music/note-position";
 
+const bodyCt = 9;
+
 type DisplayMeasureProps = {
   componentsAbove?: number;
   componentsBelow?: number;
@@ -58,7 +60,7 @@ const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
         aboveBody={componentsAbove}
         renderLedgerComponent={componentRenderer}
         startWithLine
-        body={7}
+        body={bodyCt}
         componentFractions={componentFractions}
       />
       {noteComponents}

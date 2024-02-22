@@ -11,15 +11,15 @@
   aspect-ratio: 1.5/1;
   border-radius: 50%;
   background-color: black;
-  transform: rotate(-15deg);
+  transform: rotateZ(-15deg);
 }
 
 .hole {
   position: absolute;
-  aspect-ratio: 1.5/1;
+  aspect-ratio: 1.15/1;
   /* width: 75%; */
   height: 75%;
   border-radius: 50%;
   background-color: white;
-  /* transform: rotate(-15deg); */
+  /* transform: rotateZ(15deg); */
 }
