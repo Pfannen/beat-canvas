@@ -194,10 +194,12 @@ const createPartListXML = (root: XMLDocument, parts: MusicPart[]) => {
 
 	for (const part of parts) {
 		const scorePart = createAppend(root, partList, 'score-part');
-		scorePart.setAttribute('id', part.id);
+
+		const { id, instrument } = part.attributes;
+		scorePart.setAttribute('id', id);
 
 		const pName = createAppend(root, scorePart, 'part-name');
-		pName.textContent = part.instrument;
+		pName.textContent = instrument;
 	}
 
 	return partList;
@@ -218,10 +220,10 @@ export const createMusicXMLScore = (score: MusicScore) => {
 	scoreXML.appendChild(partListXML);
 
 	for (let i = 0; i < parts.length; i++) {
-		const { measures, id, instrument } = parts[i];
+		const { measures, attributes: partAttributes } = parts[i];
 
 		const partXML = createAppend(root, scoreXML, 'part');
-		partXML.setAttribute('id', id);
+		partXML.setAttribute('id', partAttributes.id);
 
 		createMeasuresXML(root, partXML, measures);
 	}

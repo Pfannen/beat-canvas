@@ -97,30 +97,32 @@ const getMeasuresJS = (part: Element) => {
 };
 
 export const musicXMLToJSON = (musicXML: XMLDocument) => {
-	const tagName = musicXML.documentElement.tagName;
+	const docEl = musicXML.documentElement;
+	const tagName = docEl.tagName;
+
 	if (tagName !== 'score-partwise') {
 		console.error("can't read anything other than score-partwise rn");
 		return null;
 	}
 
-	const partListXML = Helper.getPartListXMLArray(musicXML.documentElement);
-	if (!partListXML) return null;
-
-	const partsXML = Helper.getPartsXMLArray(musicXML.documentElement);
-	if (!partsXML) return null;
-
 	const partsJS: MusicPart[] = [];
+	const partAttributes = Helper.getPartAttributesArray(docEl);
+	if (!partAttributes) return null;
+
+	const partsXML = Helper.getPartsXMLArray(docEl);
+	if (!partsXML) return null;
 
 	for (let i = 0; i < partsXML.length; i++) {
 		const partXML = partsXML[i];
 		const measures = getMeasuresJS(partXML);
 		if (!measures) return null;
 
-		partsJS.push({ instrument: 'bass guitar', id: 'p1', measures });
+		const attributes = partAttributes[i];
+		partsJS.push({ attributes, measures });
 	}
 
 	const musicScore: MusicScore = {
-		title: 'need to extract title',
+		title: Helper.getScoreTitle(docEl) || 'Unknown Title',
 		parts: partsJS,
 	};
 

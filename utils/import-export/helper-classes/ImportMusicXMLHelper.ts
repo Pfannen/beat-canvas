@@ -1,4 +1,9 @@
-import { MeasureAttributesMXML, Metronome, Pitch } from '@/types/music';
+import {
+	MeasureAttributesMXML,
+	Metronome,
+	MusicPartAttributes,
+	Pitch,
+} from '@/types/music';
 import {
 	getElements,
 	getSingleElement,
@@ -8,10 +13,44 @@ import { convertImportedDuration, musicXMLToClef } from '@/utils/musicXML';
 import { TimeSignature } from '@/components/providers/music/types';
 
 class ImportMusicXMLHelper {
-	static getPartListXMLArray = (root: Element) =>
-		getElements(root, 'part-list');
+	static getScoreTitle = (root: Element) => {
+		const workTitleXML = getSingleElement(root, 'work work-title', true);
+		if (workTitleXML) return workTitleXML!.textContent!;
+	};
 
 	static getPartsXMLArray = (root: Element) => getElements(root, 'part');
+
+	static getPartAttributesArray = (root: Element) => {
+		const partListXML = getSingleElement(root, 'part-list');
+		if (!partListXML) return null;
+
+		const scorePartsXMLArr = getElements(partListXML, 'score-part');
+		if (!scorePartsXMLArr) return null;
+
+		const partAttributesArr: MusicPartAttributes[] = [];
+		for (let i = 0; i < scorePartsXMLArr.length; i++) {
+			const scorePartXML = scorePartsXMLArr[i];
+
+			let id = scorePartXML.getAttribute('id');
+			if (!id) id = `P${i}`;
+
+			let name = `Part ${i}`;
+			const partNameXML = getSingleElement(scorePartXML, 'part-name', true);
+			if (partNameXML) name = partNameXML!.textContent!;
+
+			let instrument = `Instrument ${i}`;
+			const instrumentNameXML = getSingleElement(
+				scorePartXML,
+				'score-instrument instrument-name',
+				true
+			);
+			if (instrumentNameXML) instrument = instrumentNameXML!.textContent!;
+
+			partAttributesArr.push({ instrument, id, name });
+		}
+
+		return partAttributesArr;
+	};
 
 	static getMeasureXMLArray = (partXML: Element) =>
 		getElements(partXML, 'measure');

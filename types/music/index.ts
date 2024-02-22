@@ -3,9 +3,14 @@ import { Measure, TimeSignature } from '@/components/providers/music/types';
 export type Pitch = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 
 export type MusicPart = {
+	attributes: MusicPartAttributes;
+	measures: Measure[];
+};
+
+export type MusicPartAttributes = {
 	instrument: string;
 	id: string;
-	measures: Measure[];
+	name: string;
 };
 
 export type Clef = 'treble' | 'alto' | 'bass';

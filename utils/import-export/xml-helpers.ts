@@ -34,12 +34,11 @@ export const getElements = (
 
 export const getSingleElement = (
 	parent: Element,
-	elementName: string,
+	query: string,
 	textContentChek = false
 ) => {
-	const elements = parent.getElementsByTagName(elementName);
-	if (elements.length === 0) return null;
-	if (textContentChek && !elements[0].textContent) return null;
+	const element = parent.querySelector(query);
+	if (!element || (textContentChek && !element.textContent)) return null;
 
-	return elements[0];
+	return element;
 };
