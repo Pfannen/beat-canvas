@@ -23,7 +23,7 @@ export default class NotePosition {
     );
     this.componentsBelowBody = componentsBelowBody;
     this.measureHeight = measureHeight;
-    this.segmentLength = wholeSegmentLength; //Will be 25 if 4/4 time (1/4 * 100)
+    this.segmentLength = wholeSegmentLength; //Will be .25 if 4/4 time (1/4 * 100)
     this.startsWithLine = startWithLine;
   }
 

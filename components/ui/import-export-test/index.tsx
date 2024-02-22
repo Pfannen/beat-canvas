@@ -71,8 +71,7 @@ const ImportExportPage: FunctionComponent<ImportExportPageProps> = () => {
 
       <TaskbarButton
         onClick={() => {
-          if (curScore && curScore.parts)
-            playMeasures(curScore.parts[0].measures);
+          if (curScore && curScore.parts) playMeasures(music.measures);
         }}
       >
         Play
