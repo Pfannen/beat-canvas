@@ -1,13 +1,8 @@
 "use client";
 import classes from "./index.module.css";
-import { FunctionComponent, ReactNode } from "react";
-import { Segment, SegmentGenerator, SegmentRenderer } from "../types";
-import {
-  TimeSignature,
-  Note,
-  SegmentBeat,
-} from "@/components/providers/music/types";
-import { getNoteDuration } from "@/components/providers/music/utils";
+import { FunctionComponent } from "react";
+import { SegmentGenerator, SegmentRenderer } from "../types";
+import { TimeSignature, Note } from "@/components/providers/music/types";
 import { measuresToSegmentArray } from "@/utils/segments/measuresToSegments";
 
 export type SegmentedMeasureProps = {

@@ -31,7 +31,6 @@ const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = ({
     measurement.getAboveBelowSpaces() * spacePercent;
   const bodyPercent = 1 - padding * 2;
   const noteComponents = getMeasureItems(measures, measurement);
-  console.log(linePercent, spacePercent);
   return (
     <div className={concatClassNames(classes.measures, className)}>
       {noteComponents.map((measureNotes, i) => {

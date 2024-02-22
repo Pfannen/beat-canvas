@@ -54,13 +54,14 @@ const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
       >
         {containsNote && (
           <DisplayNote
-            height={
-              isLine
+            containerProps={{
+              height: isLine
                 ? fractionToPercent(spacePercent / linePercent)
-                : fractionToPercent(1)
-            }
-            bottom={"50%"}
-            left={"50%"}
+                : fractionToPercent(1),
+
+              bottom: "50%",
+              left: "50%",
+            }}
             type={props.notes![0].type}
           />
         )}
