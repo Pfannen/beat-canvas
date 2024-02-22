@@ -3,6 +3,7 @@ import {
 	Metronome,
 	MusicPartAttributes,
 	Pitch,
+	PitchOctave,
 } from '@/types/music';
 import {
 	getElements,
@@ -65,7 +66,11 @@ class ImportMusicXMLHelper {
 		const stepXML = getSingleElement(pitchXML, 'step');
 		const octaveXML = getSingleElement(pitchXML, 'octave');
 		if (!validateElements([stepXML, octaveXML], true)) return null;
-		else return stepXML!.textContent! + octaveXML!.textContent!;
+		else
+			return {
+				pitch: stepXML!.textContent!,
+				octave: +octaveXML!.textContent!,
+			} as PitchOctave;
 	};
 
 	static getNoteXMLDuration = (
@@ -100,7 +105,7 @@ class ImportMusicXMLHelper {
 				beatNote: 4,
 				beatsPerMeasure: 4,
 			},
-			keySignature: 'not implemented yet',
+			keySignature: 0,
 			clef: 'treble',
 			quarterNoteDivisions: 1,
 		} as MeasureAttributesMXML;
@@ -188,7 +193,7 @@ class ImportMusicXMLHelper {
 		if (clef) attributes.clef = clef;
 
 		const key = this.getMeasureKeySignature(attributesXML);
-		if (key) attributes.keySignature = key;
+		if (key) attributes.keySignature = +key;
 
 		return attributes;
 	};

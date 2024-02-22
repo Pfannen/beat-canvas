@@ -1,21 +1,28 @@
 import { NoteType } from '@/components/providers/music/types';
-import { Clef } from '@/types/music';
+import { Clef, PitchOctave } from '@/types/music';
 
 export const getSecondsPerBeat = (bpm: number) => 1 / (bpm / 60);
 
 export const getMeasureXStart = (xPos: number, beatsPerMeasure: number) =>
 	Math.floor(xPos / beatsPerMeasure);
 
-const clefBasePitchOctave: { [key in Clef]: string } = {
-	alto: 'F3',
-	bass: 'G2',
-	treble: 'E4',
+const clefBasePitchOctave: { [key in Clef]: PitchOctave } = {
+	alto: {
+		pitch: 'F',
+		octave: 3,
+	},
+	bass: {
+		pitch: 'G',
+		octave: 2,
+	},
+	treble: {
+		pitch: 'E',
+		octave: 4,
+	},
 };
 
 export const getNoteFromYPos = (yPos: number, clef: Clef) => {
-	const basePitchOctave = clefBasePitchOctave[clef];
-	const pitch = basePitchOctave[0];
-	const octave = +basePitchOctave[1];
+	const { pitch, octave } = clefBasePitchOctave[clef];
 
 	// If yPos is -1, floor(-1/7) is -1 and we don't want that
 	const octaveSteps = Math.floor(Math.abs(yPos) / 7) * Math.sign(yPos);
@@ -44,20 +51,19 @@ export const getNoteFromYPos = (yPos: number, clef: Clef) => {
 			if (targetPitch < 'C'.charCodeAt(0)) targetOctave -= 1;
 		}
 	}
-
-	return String.fromCharCode(targetPitch) + targetOctave;
+	return {
+		pitch: String.fromCharCode(targetPitch),
+		octave: targetOctave,
+	} as PitchOctave;
 };
 
-export const getYPosFromNote = (note: string, clef: Clef) => {
-	const basePitchOctave = clefBasePitchOctave[clef];
-	const basePitch = basePitchOctave[0];
-	const baseOctave = +basePitchOctave[1];
+export const getYPosFromNote = (note: PitchOctave, clef: Clef) => {
+	const { pitch: basePitch, octave: baseOctave } = clefBasePitchOctave[clef];
 
-	const targetPitch = note[0];
-	const targetOcatve = +note[1];
+	const { pitch: targetPitch, octave: targetOctave } = note;
 
 	// Get into the right octave
-	const octaveSteps = targetOcatve - baseOctave;
+	const octaveSteps = targetOctave - baseOctave;
 	// Convert base pitch to a C in targetOctave -> now we know that targetPitch MUST be a positive distance from us
 	let stepsToC = 'C'.charCodeAt(0) - basePitch.charCodeAt(0);
 	// If stepsToC is positive, we'll end up in the next octave's C, so we need to subtract 7
