@@ -3,6 +3,7 @@ import { Measure } from '@/components/providers/music/types';
 import { getNoteFromYPos, getSecondsPerBeat } from '../music';
 import { MeasureAttributes, MusicScore } from '@/types/music';
 import { getNoteDuration } from '@/components/providers/music/utils';
+import { applyKeySignature } from '../music/key-signature';
 
 const initializeAttributes = (initialMeasure: Measure) => {
 	const { attributes } = initialMeasure;
@@ -51,17 +52,21 @@ export const playMeasures = (measures: Measure[]) => {
 		const measure = measures[i];
 		updateAttributes(attributes, measure);
 
-		const { metronome, timeSignature, clef } = attributes;
+		const { metronome, timeSignature, clef, keySignature } = attributes;
 
 		const secondsPerBeat = getSecondsPerBeat(metronome.beatsPerMinute);
 
 		for (const { x, y, type } of measure.notes) {
 			const noteDuration = getNoteDuration(type, timeSignature.beatNote);
 			const pitchOctave = getNoteFromYPos(y, clef);
-			console.log(pitchOctave);
+			applyKeySignature(keySignature, pitchOctave);
+
+			const { pitch, octave, accidental } = pitchOctave;
+			const fullNote = pitch + (accidental || '') + octave;
+			console.log(fullNote);
 
 			synth.triggerAttackRelease(
-				[pitchOctave],
+				[fullNote],
 				noteDuration * secondsPerBeat,
 				now + (curX + x) * secondsPerBeat
 			);
@@ -81,7 +86,7 @@ export const ohWhatANight: Measure[] = [
 				beatNote: 4,
 				beatsPerMeasure: 4,
 			},
-			keySignature: 'do not have functionality rn',
+			keySignature: 0,
 			clef: 'bass',
 		},
 		notes: [
@@ -137,8 +142,11 @@ export const ohWhatANightScore: MusicScore = {
 	title: 'Oh What a Night!',
 	parts: [
 		{
-			instrument: 'Bass Guitar',
-			id: 'P1',
+			attributes: {
+				instrument: 'Bass Guitar',
+				id: 'P1',
+				name: 'Bass Guitar',
+			},
 			measures: ohWhatANight,
 		},
 	],

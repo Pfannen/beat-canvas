@@ -2,6 +2,12 @@ import { Measure, TimeSignature } from '@/components/providers/music/types';
 
 export type Pitch = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 
+export type PitchOctave = {
+	pitch: Pitch;
+	octave: number;
+	accidental?: 'b' | '#';
+};
+
 export type MusicPart = {
 	attributes: MusicPartAttributes;
 	measures: Measure[];
@@ -28,7 +34,7 @@ export type Metronome = {
 export type MeasureAttributes = {
 	metronome: Metronome;
 	timeSignature: TimeSignature;
-	keySignature: string;
+	keySignature: number;
 	clef: Clef;
 };
 
