@@ -28,16 +28,21 @@ const useMeasures = (initialMeasures?: Measure[]) => {
     });
   };
 
+  const replaceMeasures = (measures: Measure[]) => {
+    setMeasures(measures);
+  };
+
   const getMeasures = (index: number, count: number) => {
     return measures.slice(index, index + count);
   };
-  return { measures, invokeMeasureModifier, getMeasures };
+  return { measures, replaceMeasures, invokeMeasureModifier, getMeasures };
 };
 
 useMeasures.initialState = {
   measures: [],
   invokeMeasureModifier: () => {},
   getMeasures: () => [],
+  replaceMeasures: () => {},
 };
 
 export default useMeasures;

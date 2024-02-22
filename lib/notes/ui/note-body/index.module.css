@@ -16,8 +16,10 @@
 
 .hole {
   position: absolute;
-  width: 75%;
+  aspect-ratio: 1.5/1;
+  /* width: 75%; */
   height: 75%;
   border-radius: 50%;
   background-color: white;
+  /* transform: rotate(-15deg); */
 }
