@@ -1,13 +1,12 @@
 import classes from "./index.module.css";
 import { FunctionComponent } from "react";
-import { getNoteDuration } from "@/components/providers/music/utils";
 import { useMusic } from "@/components/providers/music";
 import DisplayMeasure from "./display-measure";
-import DisplayNote from "../note/display-note";
 import { concatClassNames } from "@/utils/css";
-import Measure from "@/objects/music/measure";
+import Measurement from "@/objects/music/measurement";
+import { getMeasureItems } from "./utils";
 
-const measure = new Measure(5, 25, 100);
+const measurement = new Measurement(5, 0.25, 1);
 
 type DisplayMeasuresProps = {
   onMeasureClick: (index: number) => void;
@@ -25,37 +24,26 @@ const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = ({
   notSelectedMeasureClassName,
 }) => {
   const { measures } = useMusic();
-  const linePercent = measure.getLinePercent();
-  const spacePercent = measure.getSpacePercent();
+  const linePercent = measurement.getLineFraction() * 100;
+  const spacePercent = measurement.getSpaceFraction() * 100;
   const padding =
-    measure.getAboveBelowLines() * linePercent +
-    measure.getAboveBelowSpaces() * spacePercent;
+    measurement.getAboveBelowLines() * linePercent +
+    measurement.getAboveBelowSpaces() * spacePercent;
   const bodyPercent = 1 - padding * 2;
-  const noteComponents = measures.map(({ notes }) => {
-    return notes.map((note) => {
-      const length = getNoteDuration(note.type, 4);
-      const { x, y } = measure.getNoteOffset({ ...note, length });
-      const component = (
-        <DisplayNote
-          bottom={y + "%"}
-          left={x + "%"}
-          type={note.type}
-          height={measure.getSpacePercent() * 100 + "%"}
-          key={`${x}-${y}`}
-        />
-      );
-      return component;
-    });
-  });
+  const noteComponents = getMeasureItems(measures, measurement);
+  console.log(linePercent, spacePercent);
   return (
     <div className={concatClassNames(classes.measures, className)}>
       {noteComponents.map((measureNotes, i) => {
         return (
           <DisplayMeasure
             noteComponents={measureNotes}
-            componentPercentages={{ space: spacePercent, line: linePercent }}
-            height={bodyPercent * 100 + "%"}
-            padding={padding * 100 + "%"}
+            componentFractions={{
+              space: measurement.getSpaceFraction(),
+              line: measurement.getLineFraction(),
+            }}
+            height={bodyPercent + "%"}
+            padding={padding + "%"}
             onClick={onMeasureClick.bind(null, i)}
             className={
               isMeasureSelected(i)

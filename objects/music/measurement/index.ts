@@ -1,10 +1,10 @@
 import NotePosition, { MeasureUtils, NotePositionNote } from "../note-position";
 
-export default class Measure {
-  bodyCt = 7;
-  aboveBelowCount: number;
-  notePosition: NotePosition;
-  startsWithLine: boolean;
+export default class Measurement {
+  private bodyCt = 7;
+  private aboveBelowCount: number;
+  private notePosition: NotePosition;
+  private startsWithLine: boolean;
   private lineCount: number;
   private spaceCount: number;
   constructor(
@@ -59,15 +59,15 @@ export default class Measure {
     return yPos < this.aboveBelowCount + this.bodyCt || yPos >= 0;
   }
 
-  public getLinePercent() {
+  public getLineFraction() {
     return this.notePosition.heights.line;
   }
 
-  public getSpacePercent() {
+  public getSpaceFraction() {
     return this.notePosition.heights.space;
   }
 
-  public getComponentPercents() {
+  public getComponentFractions() {
     return this.notePosition.heights;
   }
 

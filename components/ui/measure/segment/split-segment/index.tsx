@@ -6,8 +6,8 @@ import { FunctionComponent } from "react";
 import { SegmentBeat } from "@/components/providers/music/types";
 import { RegistryDelegates } from "@/components/hooks/useSplitSegmentRegistry";
 import { LedgerComponentRenderer } from "../../utils";
-import DisplayNote from "../../note/display-note";
-import { numToPercent } from "@/utils";
+import DisplayNote from "../../measure-item/measure-note";
+import { fractionToPercent } from "@/utils";
 import useSplitSegment from "./useSplitSegment";
 import { concatClassNames } from "@/utils/css";
 
@@ -45,15 +45,19 @@ const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
           classes.component,
           !isBodyComponent && classes.light
         )}
-        height={isLine ? numToPercent(linePercent) : numToPercent(spacePercent)}
+        height={
+          isLine
+            ? fractionToPercent(linePercent)
+            : fractionToPercent(spacePercent)
+        }
         isLine={isLine}
       >
         {containsNote && (
           <DisplayNote
             height={
               isLine
-                ? numToPercent(spacePercent / linePercent)
-                : numToPercent(1)
+                ? fractionToPercent(spacePercent / linePercent)
+                : fractionToPercent(1)
             }
             bottom={"50%"}
             left={"50%"}

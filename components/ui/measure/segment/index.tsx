@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import { LedgerComponentRenderer, generateMeasureComponents } from "../utils";
 import {
-  ComponentPercentages,
+  ComponentFractions,
   MeasureUtils,
 } from "@/objects/music/note-position";
 
@@ -13,17 +13,17 @@ type Props = {
   className?: string;
   startWithLine?: boolean; //To render a line or a space first (starting at the bottom)
   lineToSpaceRatio?: number;
-  componentPercentages?: ComponentPercentages;
+  componentFractions?: ComponentFractions;
   renderLedgerComponent: LedgerComponentRenderer;
 };
 
 const Segment: FunctionComponent<Props> = (props) => {
   const { belowBody = 0, body = 7, aboveBody = 0 } = props;
   const { lineToSpaceRatio = 3 } = props;
-  let { componentPercentages } = props;
+  let { componentFractions } = props;
   const totalComponents = belowBody + body + aboveBody;
-  if (!componentPercentages) {
-    componentPercentages = MeasureUtils.getLedgerComponentHeights(
+  if (!componentFractions) {
+    componentFractions = MeasureUtils.getLedgerComponentFractions(
       totalComponents,
       lineToSpaceRatio,
       !!props.startWithLine
@@ -33,8 +33,8 @@ const Segment: FunctionComponent<Props> = (props) => {
   const components = generateMeasureComponents(
     belowBody,
     aboveBody,
-    componentPercentages.line,
-    componentPercentages.space,
+    componentFractions.line,
+    componentFractions.space,
     !!props.startWithLine,
     props.renderLedgerComponent,
     props.body

@@ -1,4 +1,4 @@
-import { numToPercent } from "@/utils";
+import { fractionToPercent } from "@/utils";
 import AbsoluteContainer from "../../absolute-container";
 import classes from "./index.module.css";
 import { FunctionComponent } from "react";
@@ -18,7 +18,7 @@ const NoteFlag: FunctionComponent<NoteFlagProps> = ({
   return (
     <AbsoluteContainer
       className={classes.note_flag}
-      yPercent={numToPercent(offsetPercentage * flagNumber)}
+      yPercent={fractionToPercent(offsetPercentage * flagNumber)}
       xAxis={xAxis}
       yAxis={yAxis}
     />

@@ -1,4 +1,3 @@
-import { NoteType } from "@/components/providers/music/types";
 import { FunctionComponent, Key } from "react";
 
 export type YAxis = "top" | "bottom";

@@ -1,4 +1,4 @@
-import { numToPercent } from "@/utils";
+import { fractionToPercent } from "@/utils";
 import { Axis, NoteDirection, XAxis, YAxis } from "../../types";
 import classes from "./index.module.css";
 import { CSSProperties, FunctionComponent, ReactNode } from "react";
@@ -23,7 +23,7 @@ const NoteStaff: FunctionComponent<NoteStaffProps> = ({
       className={classes.note_staff}
       style={
         {
-          "--height": numToPercent(heightMultiplier),
+          "--height": fractionToPercent(heightMultiplier),
         } as CSSProperties
       }
       {...getAxisInfo(direction)}

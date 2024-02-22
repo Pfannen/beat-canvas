@@ -1,18 +1,18 @@
-import { ComponentPercentages } from "@/objects/music/note-position";
 import LedgerComponent from "../../ledger-component";
 import Segment from "../../segment";
 import { LedgerComponentRenderer } from "../../utils";
 import classes from "./index.module.css";
 import { CSSProperties, FunctionComponent, ReactNode } from "react";
-import { numToPercent } from "@/utils";
+import { fractionToPercent } from "@/utils";
 import { ComponentProps } from "@/types/polymorphic";
 import { concatClassNames } from "@/utils/css";
+import { ComponentFractions } from "@/objects/music/note-position";
 
 type DisplayMeasureProps = {
   componentsAbove?: number;
   componentsBelow?: number;
   noteComponents?: ReactNode;
-  componentPercentages?: ComponentPercentages;
+  componentFractions?: ComponentFractions;
   height: string;
   padding: string;
 } & ComponentProps<"div">;
@@ -21,7 +21,7 @@ const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
   componentsAbove,
   componentsBelow,
   noteComponents,
-  componentPercentages,
+  componentFractions,
   height,
   padding,
   className,
@@ -35,7 +35,11 @@ const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
   ) => {
     return (
       <LedgerComponent
-        height={isLine ? numToPercent(lineHeight) : numToPercent(spaceHeight)}
+        height={
+          isLine
+            ? fractionToPercent(lineHeight)
+            : fractionToPercent(spaceHeight)
+        }
         isLine={isLine}
         className={classes.component}
         key={y}
@@ -55,7 +59,7 @@ const DisplayMeasure: FunctionComponent<DisplayMeasureProps> = ({
         renderLedgerComponent={componentRenderer}
         startWithLine
         body={7}
-        componentPercentages={componentPercentages}
+        componentFractions={componentFractions}
       />
       {noteComponents}
     </div>

@@ -15,16 +15,20 @@ const NoteBody: FunctionComponent<NoteBodyProps> = ({
 }) => {
   return (
     <div
-      className={concatClassNames(
-        classes.note_body,
-        !isFilled && classes.not_filled
-      )}
+      className={classes.body_container}
       style={{ "--height": height } as CSSProperties}
     >
+      <div
+        className={concatClassNames(
+          classes.note_body,
+          !isFilled && classes.not_filled
+        )}
+      >
+        {!isFilled && (
+          <div className={concatClassNames("center", classes.hole)} />
+        )}
+      </div>
       {children}
-      {!isFilled && (
-        <div className={concatClassNames("center", classes.hole)} />
-      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { numToPercent } from "@/utils";
+import { fractionToPercent } from "@/utils";
 import classes from "./index.module.css";
 import { CSSProperties, FunctionComponent } from "react";
 import AbsoluteContainer, {
@@ -24,17 +24,17 @@ const NoteDot: FunctionComponent<
       className={classes.note_dot}
       style={
         {
-          "--percent-of-body": numToPercent(percentOfBody),
+          "--percent-of-body": fractionToPercent(percentOfBody),
         } as CSSProperties
       }
       xPercent={
         xPercentOffset
-          ? numToPercent(xPercentOffset * percentOfBody)
+          ? fractionToPercent(xPercentOffset * percentOfBody)
           : undefined
       }
       yPercent={
         yPercentOffset
-          ? numToPercent(yPercentOffset * percentOfBody)
+          ? fractionToPercent(yPercentOffset * percentOfBody)
           : undefined
       }
       {...restProps}

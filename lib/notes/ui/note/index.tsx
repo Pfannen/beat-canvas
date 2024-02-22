@@ -22,7 +22,7 @@ type NoteProps = {
 const Note: FunctionComponent<NoteProps> = (props) => {
   const {
     bodyHeight = 1,
-    staffHeightMultiplier = 2,
+    staffHeightMultiplier = 3,
     unit = "%",
     direction = "up",
     attachTypeAttributes = true,
