@@ -66,10 +66,11 @@ export const playMeasures = (measures: Measure[]) => {
 			console.log(fullNote);
 
 			synth.triggerAttackRelease(
-				[fullNote],
+				fullNote,
 				noteDuration * secondsPerBeat,
 				now + (curX + x) * secondsPerBeat
 			);
+			
 		}
 		curX = (i + 1) * timeSignature.beatsPerMeasure;
 	}
