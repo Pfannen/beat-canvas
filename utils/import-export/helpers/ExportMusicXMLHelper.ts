@@ -1,5 +1,5 @@
 import { clefToMusicXML } from '@/utils/musicXML';
-import { createAppend } from '../xml-helpers';
+import { createAppend } from './xml-helpers';
 import {
 	Clef,
 	MeasureAttributes,

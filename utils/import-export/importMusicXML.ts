@@ -10,7 +10,7 @@ import {
 	MusicScore,
 } from '@/types/music';
 import { durationToNoteType, getYPosFromNote } from '../music';
-import Helper from './helper-classes/ImportMusicXMLHelper';
+import Helper from './helpers/ImportMusicXMLHelper';
 import { convertImportedDuration } from '../musicXML';
 
 const getMeasureNotesJS = (
@@ -28,7 +28,7 @@ const getMeasureNotesJS = (
 	const { beatNote, beatsPerMeasure } = timeSignature;
 	for (let i = 0; i < noteXMLArr.length; i++) {
 		const noteXML = noteXMLArr[i];
-		const noteDetails = Helper.getMeasureNoteDetails(noteXML);
+		const noteDetails = Helper.getNoteDetails(noteXML);
 
 		const { pitch, octave, duration, annotations } = noteDetails;
 		if (!duration) continue;
@@ -67,32 +67,16 @@ const getMeasuresJS = (part: Element) => {
 
 	for (let i = 0; i < measuresXML.length; i++) {
 		const measureXML = measuresXML[i];
+		const measureDetails = Helper.getMeasureDetails(measureXML, curAttr);
+
 		const measure: Measure = {
-			notes: [],
+			notes: measureDetails.notes,
 		};
 
-		const measureAttributes = Helper.getMeasureAttributesJS(measureXML);
-		if (measureAttributes) {
-			// TODO: Remove any cast
-			for (const key in measureAttributes) {
-				curAttr[key as keyof MeasureAttributesMXML] = measureAttributes[
-					key as keyof MeasureAttributesMXML
-				] as any;
-			}
-
-			delete measureAttributes.quarterNoteDivisions;
-			measure.attributes = measureAttributes;
+		if (Object.keys(measureDetails.newAttributes).length > 0) {
+			measure.attributes = measureDetails.newAttributes;
 		}
 
-		const notes = getMeasureNotesJS(
-			measureXML,
-			curAttr.quarterNoteDivisions!,
-			curAttr.clef!,
-			curAttr.timeSignature!
-		);
-
-		if (!notes) return null;
-		measure.notes = notes;
 		measures.push(measure);
 	}
 
