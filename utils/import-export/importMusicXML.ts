@@ -11,6 +11,7 @@ import {
 } from '@/types/music';
 import { durationToNoteType, getYPosFromNote } from '../music';
 import Helper from './helper-classes/ImportMusicXMLHelper';
+import { convertImportedDuration } from '../musicXML';
 
 const getMeasureNotesJS = (
 	measureXML: Element,
@@ -27,27 +28,29 @@ const getMeasureNotesJS = (
 	const { beatNote, beatsPerMeasure } = timeSignature;
 	for (let i = 0; i < noteXMLArr.length; i++) {
 		const noteXML = noteXMLArr[i];
+		const noteDetails = Helper.getMeasureNoteDetails(noteXML);
 
-		const duration = Helper.getNoteXMLDuration(
-			noteXML,
+		const { pitch, octave, duration, annotations } = noteDetails;
+		if (!duration) continue;
+
+		const trueDuration = convertImportedDuration(
 			quarterNoteDivisions,
+			duration,
 			beatNote
 		);
-		if (duration === null) continue;
 
-		const pitchOctave = Helper.getNoteXMLPitchOctave(noteXML);
-		if (pitchOctave) {
-			let type = durationToNoteType(duration, beatNote);
-
-			const y = getYPosFromNote(pitchOctave, clef);
-			noteArr.push({ x: curX, y, type });
-		} else {
-			if (!Helper.noteXMLIsRest(noteXML)) {
-				console.error('there was neither a pitch nor rest in a measure');
-			}
+		if (pitch && octave) {
+			const note: Note = {
+				x: curX,
+				y: getYPosFromNote({ pitch, octave }, clef),
+				type: durationToNoteType(trueDuration, beatNote),
+			};
+			if (annotations && Object.keys(annotations).length > 0)
+				note.annotations = annotations;
+			noteArr.push(note);
 		}
 
-		curX += duration;
+		curX += trueDuration;
 		// TODO: Address measures specifying multiple voices
 		if (curX >= beatsPerMeasure) break;
 	}

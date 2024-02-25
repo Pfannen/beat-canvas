@@ -42,3 +42,7 @@ export const getSingleElement = (
 
 	return element;
 };
+
+export const verifyTagName = (element: Element, expectedTagName: string) => {
+	return element.tagName === expectedTagName;
+};
