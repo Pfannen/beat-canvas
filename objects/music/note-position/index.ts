@@ -2,7 +2,7 @@ export type NotePositionNote = { x: number; y: number; length: number };
 
 export type Offset = { x: number; y: number };
 
-export default class NotePosition {
+export default class MeasurePositions {
   heights: ComponentFractions;
   segmentLength: number;
   startsWithLine: boolean;
@@ -23,16 +23,16 @@ export default class NotePosition {
     );
     this.componentsBelowBody = componentsBelowBody;
     this.measureHeight = measureHeight;
-    this.segmentLength = wholeSegmentLength; //Will be .25 if 4/4 time (1/4 * 100)
+    this.segmentLength = wholeSegmentLength; //Will be .25 if 4/4 time (1/4)
     this.startsWithLine = startWithLine;
   }
 
   private isOnLine(yPos: number) {
-    return yPos % 2 === 0;
+    return Math.floor(yPos) % 2 === 0;
   }
 
   //Returns the value that is in the center of the component (line or space) that yPos represents
-  private getYOffset(yPos: number) {
+  public getYOffset(yPos: number) {
     //We shall assume yPos: 0 is the first line of the body (if yPos is negative the position is below the body)
     const componentsAboveBottom = yPos + this.componentsBelowBody;
     let spaceCount = MeasureUtils.getSpaceCount(
@@ -49,7 +49,7 @@ export default class NotePosition {
     return spaceCount * spaceHeight + lineCount * lineHeight;
   }
 
-  private getXOffset(xPos: number, length: number) {
+  public getXOffset(xPos: number, length: number = 0) {
     const centerOfLength = length / 2;
     return (xPos + centerOfLength) * this.segmentLength;
   }
