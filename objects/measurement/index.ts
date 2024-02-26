@@ -1,8 +1,8 @@
-import { MeasureUnitConverter } from "../measure-unit-converter";
+import { MeasureUnitConverter } from "./measure-unit-converter";
 import MeasurePositions, {
   MeasureUtils,
   NotePositionNote,
-} from "../note-position";
+} from "./note-position";
 
 export default class Measurement {
   private bodyCt = 9;

@@ -25,6 +25,7 @@ export default class MeasurePositions {
     this.measureHeight = measureHeight;
     this.segmentLength = wholeSegmentLength; //Will be .25 if 4/4 time (1/4)
     this.startsWithLine = startWithLine;
+    this.getYOffset = this.getYOffset.bind(this); //Since this method is passed as a delegate, "this" becomes undefined.
   }
 
   private isOnLine(yPos: number) {
@@ -120,24 +121,3 @@ export class MeasureUtils {
     return { line: lineFraction, space: spaceFraction };
   }
 }
-
-export class NoteBeamMeasurements {
-  static getBeamData(x1: number, y1: number, x2: number, y2: number) {
-    const xDistance = Math.abs(x1 - x2);
-    const yDistance = Math.abs(y1 - y2);
-    const beamLength = calculateHypotenuse(xDistance, yDistance);
-    let beamAngle = 90;
-    if (y1 < y2) {
-      beamAngle = radiansToDegrees(Math.atan(yDistance / xDistance));
-    } else if (y1 > y2) {
-      beamAngle = 180 - radiansToDegrees(Math.atan(xDistance / yDistance));
-    }
-    return { beamLength, beamAngle };
-  }
-}
-
-const calculateHypotenuse = (sideOne: number, sideTwo: number) => {
-  return Math.sqrt(Math.pow(sideOne, 2) + Math.pow(sideTwo, 2));
-};
-
-const radiansToDegrees = (radians: number) => radians * (180 / Math.PI);

@@ -1,6 +1,6 @@
 import { Measure, Note } from "@/components/providers/music/types";
 import MeasureNote from "../measure-item/measure-note";
-import Measurement from "@/objects/music/measurement";
+import Measurement from "@/objects/music/measurement/measurement";
 import { getNoteDuration } from "@/components/providers/music/utils";
 import { durationToNoteType } from "@/utils/music";
 import MeasureRest from "../measure-item/measure-rest";
