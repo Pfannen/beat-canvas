@@ -29,7 +29,7 @@ export class NoteBeamCalculator {
     if (y1 > y2) {
       beamAngle = 180 - radiansToDegrees(Math.atan(xyRatio));
     } else if (y1 < y2) {
-      beamAngle = radiansToDegrees(Math.atan(1 / xyRatio)); //yDistance / xDistance
+      beamAngle = 90 - radiansToDegrees(Math.atan(1 / xyRatio)); //yDistance / xDistance
     }
     return { beamLength, beamAngle };
   }
@@ -47,12 +47,11 @@ export class NoteBeamCalculator {
       const betaAngle = 180 - angle;
       const alphaAngle = 90 - betaAngle;
       sideA = xDistance * Math.tan(degreesToRadians(alphaAngle));
-      y1Offset = yDistance - sideA;
+      y1Offset = sideA - yDistance;
     } else {
       const alphaAngle = 90 - angle;
       sideA = xDistance * Math.tan(degreesToRadians(alphaAngle));
-      console.log(sideA, alphaAngle);
-      y2Offset = yDistance - sideA;
+      y2Offset = sideA - yDistance;
     }
     const beamLength = calculateHypotenuse(xDistance, sideA);
     return { beamLength, y1Offset, y2Offset };
