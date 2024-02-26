@@ -1,5 +1,8 @@
+import { PitchOctave } from '@/types/music';
 import {
 	NoteAnnotation,
+	NoteAnnotations,
+	NoteAttributes,
 	NoteAttributesModifier,
 } from '@/types/music/note-annotations';
 
@@ -9,6 +12,12 @@ const staccatoApplier: NoteAttributesModifier = (attr, annotations) => {
 
 const slurApplier: NoteAttributesModifier = (attr, annotations) => {
 	console.log('slur');
+	const { slur } = annotations;
+	if (!slur) return;
+
+	/* const { instrumentProps: iP } = attr;
+	if (slur === 'start') iP.decay = 1;
+	else iP.decay = 0.1; */
 };
 
 const accidentalApplier: NoteAttributesModifier = (attr, annotations) => {
@@ -36,7 +45,21 @@ const dynamicApplier: NoteAttributesModifier = (attr, annotations) => {
 	}
 };
 
-const annotationApplier: { [key in NoteAnnotation]: NoteAttributesModifier } = {
+export const applyNoteAnnotations = (
+	noteAttributes: NoteAttributes,
+	annotations?: NoteAnnotations
+) => {
+	if (!annotations) return;
+
+	const keys = Object.keys(annotations) as (keyof NoteAnnotations)[];
+	for (const key of keys) {
+		annotationApplier[key](noteAttributes, annotations);
+	}
+};
+
+export const annotationApplier: {
+	[key in NoteAnnotation]: NoteAttributesModifier;
+} = {
 	staccato: staccatoApplier,
 	slur: slurApplier,
 	accidental: accidentalApplier,
@@ -44,4 +67,23 @@ const annotationApplier: { [key in NoteAnnotation]: NoteAttributesModifier } = {
 	dynamic: dynamicApplier,
 };
 
-export default annotationApplier;
+export const constructNoteAttributes = (
+	pitchOctave: PitchOctave,
+	duration: number,
+	volumePercentage?: number,
+	velocity?: number
+) => {
+	const nA: NoteAttributes = {
+		pitchOctave,
+		volumePercentage: volumePercentage || 1,
+		velocity: velocity || 0.3,
+		duration,
+		instrumentProps: {},
+	};
+	return nA;
+};
+
+export const getFullNote = (pitchOctave: PitchOctave) => {
+	const { pitch, octave, accidental } = pitchOctave;
+	return pitch + (accidental || '') + octave;
+};

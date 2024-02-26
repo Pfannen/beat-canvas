@@ -51,7 +51,7 @@ const articulationsImportHelper: NoteImportAnnotationsHelper = (a, el) => {
 	for (let i = 0; i < children.length; i++) {
 		const child = children[i];
 		if (child.tagName in notationsImportHelperMap) {
-			notationsImportHelperMap[child.tagName](a, el);
+			notationsImportHelperMap[child.tagName](a, child);
 		}
 	}
 };
@@ -65,6 +65,12 @@ const accentImportHelper: NoteImportAnnotationsHelper = (a, el) => {
 const softAccentImportHelper: NoteImportAnnotationsHelper = (a, el) => {
 	if (!verifyTagName(el, 'soft-accent')) return;
 	a.accent = 'weak';
+};
+
+const staccatoImportHelper: NoteImportAnnotationsHelper = (a, el) => {
+	if (!verifyTagName(el, 'staccato')) return;
+
+	a.staccato = true;
 };
 
 const dynamicsImportHelper: NoteImportAnnotationsHelper = (a, el) => {
@@ -121,4 +127,5 @@ export const notationsImportHelperMap: NoteImportAnnotationsHelperMap = {
 	dynamics: dynamicsImportHelper,
 	slur: slurImportHelper,
 	tied: tiedImportHelper,
+	staccato: staccatoImportHelper,
 };

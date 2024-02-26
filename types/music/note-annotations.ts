@@ -16,6 +16,14 @@ export type Dynamic = 'pp' | 'p' | 'mp' | 'mf' | 'fp' | 'f' | 'ff';
 
 export type Accidental = 'sharp' | 'flat' | 'natural';
 
+export type InstrumentProps = {
+	attack: number;
+	sustain: number;
+	decay: number;
+	release: number;
+	portamento: number;
+};
+
 export type NoteAnnotations = {
 	staccato?: boolean;
 	slur?: Slur;
@@ -26,10 +34,10 @@ export type NoteAnnotations = {
 
 export type NoteAttributes = {
 	pitchOctave: PitchOctave;
-	volumePercentage: number;
 	velocity: number;
 	duration: number;
-	toneVolume: Tone.Volume;
+	instrumentProps: Partial<InstrumentProps>;
+	volumePercentage?: number;
 };
 
 export type NoteAttributesModifier = (

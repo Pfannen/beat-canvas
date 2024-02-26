@@ -4,6 +4,12 @@ import { getNoteFromYPos, getSecondsPerBeat } from '../music';
 import { MeasureAttributes, MusicScore } from '@/types/music';
 import { getNoteDuration } from '@/components/providers/music/utils';
 import { applyKeySignature } from '../music/key-signature';
+import {
+	applyNoteAnnotations,
+	constructNoteAttributes,
+	getFullNote,
+} from './apply-note-annotations';
+import { InstrumentProps } from '@/types/music/note-annotations';
 
 const initializeAttributes = (initialMeasure: Measure) => {
 	const { attributes } = initialMeasure;
@@ -32,18 +38,34 @@ const updateAttributes = (
 	const { attributes } = measure;
 	if (!attributes) return;
 
-	const { metronome, timeSignature, keySignature, clef } = attributes;
-
-	if (metronome) currentAttributes.metronome = metronome;
-	if (timeSignature) currentAttributes.timeSignature = timeSignature;
-	if (keySignature) currentAttributes.keySignature = keySignature;
-	if (clef) currentAttributes.clef = clef;
+	// TODO: Remove never cast
+	const keys = Object.keys(attributes) as (keyof MeasureAttributes)[];
+	for (const key of keys) {
+		if (attributes[key]) currentAttributes[key] = attributes[key] as never;
+	}
 };
 
-// TODO: Take in instrument, extract measure attributes
+const updateInstrument = (
+	instrument: Tone.Synth,
+	instrumentProps?: Partial<InstrumentProps>
+) => {
+	if (!instrumentProps) return;
+
+	const { attack, sustain, decay, release, portamento } = instrumentProps;
+
+	
+	const { envelope } = instrument;
+	if (attack !== undefined) envelope.attack = attack;
+	if (sustain !== undefined) envelope.sustain = sustain;
+	if (decay !== undefined) envelope.decay = decay;
+	if (release !== undefined) envelope.release = release;
+	if (portamento !== undefined) instrument.portamento = portamento;
+};
+
+// TODO: Take in instrument
 export const playMeasures = (measures: Measure[]) => {
 	const now = Tone.now();
-	const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+	const synth = new Tone.Synth().toDestination();
 
 	let curX = 0;
 	const attributes = initializeAttributes(measures[0]);
@@ -56,22 +78,27 @@ export const playMeasures = (measures: Measure[]) => {
 
 		const secondsPerBeat = getSecondsPerBeat(metronome.beatsPerMinute);
 
-		for (const { x, y, type } of measure.notes) {
+		for (const { x, y, type, annotations } of measure.notes) {
 			const noteDuration = getNoteDuration(type, timeSignature.beatNote);
 			const pitchOctave = getNoteFromYPos(y, clef);
 			applyKeySignature(keySignature, pitchOctave);
 
-			const { pitch, octave, accidental } = pitchOctave;
-			const fullNote = pitch + (accidental || '') + octave;
-			console.log(fullNote);
+			const noteAttributes = constructNoteAttributes(pitchOctave, noteDuration);
+			applyNoteAnnotations(noteAttributes, annotations);
+
+			const fullNote = getFullNote(noteAttributes.pitchOctave);
+			//console.log(fullNote);
+
+			updateInstrument(synth, noteAttributes.instrumentProps);
 
 			synth.triggerAttackRelease(
 				fullNote,
-				noteDuration * secondsPerBeat,
-				now + (curX + x) * secondsPerBeat
+				noteAttributes.duration * secondsPerBeat,
+				now + (curX + x) * secondsPerBeat,
+				noteAttributes.velocity
 			);
-			
 		}
+
 		curX = (i + 1) * timeSignature.beatsPerMeasure;
 	}
 };
