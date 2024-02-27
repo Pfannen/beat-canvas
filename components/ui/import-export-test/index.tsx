@@ -4,7 +4,6 @@ import { FunctionComponent, useRef } from 'react';
 import classes from './index.module.css';
 import TaskbarButton from '@/components/ui/taskbar/buttons/taskbar-button';
 import {
-	ohWhatANight,
 	ohWhatANightScore,
 	playMusicScore,
 } from '@/utils/audio/play-music/play-music';

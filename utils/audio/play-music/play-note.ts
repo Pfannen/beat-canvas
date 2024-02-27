@@ -32,7 +32,7 @@ export const playNote = (
 	applyNoteAnnotations(noteAttributes, annotations);
 
 	const fullNote = getFullNote(noteAttributes.pitchOctave);
-	console.log(fullNote);
+	//console.log(fullNote);
 
 	updateInstrument(instrument, noteAttributes.instrumentProps);
 

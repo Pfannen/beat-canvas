@@ -19,8 +19,16 @@ export const updateInstrument = (
 	if (portamento !== undefined) instrument.portamento = portamento;
 };
 
-const polySynth = () => new Tone.PolySynth(Tone.Synth).toDestination();
+const polySynth = () => new Tone.PolySynth(Tone.Synth);
 
-export const getInstrument = (name: string): ToneInstrument => {
-	return polySynth();
+export const getInstrument = (
+	name: string,
+	volumeNode?: Tone.Volume
+): ToneInstrument => {
+	const instrument = polySynth();
+	
+	if (volumeNode) instrument.connect(volumeNode);
+	else instrument.toDestination();
+
+	return instrument;
 };

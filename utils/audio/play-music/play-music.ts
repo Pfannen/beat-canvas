@@ -1,19 +1,32 @@
-import { now } from 'tone';
+import { Volume, now } from 'tone';
 import { Measure } from '@/components/providers/music/types';
 import { MusicScore } from '@/types/music';
 import { playPart } from './play-part';
+import { getInstrument } from '../instruments';
+import { ToneInstrumentSpecifier } from '@/types/audio/instrument';
+import { ScoreVolumeManager } from '../ScoreVolumeManager';
 
-// TODO: Get instruments here and pass to playPart
-// Use ScoreVolumeManager to reuse instruments / set instruments so volume adjusting is easy
+// TODO: Look into multiple parts not each specifying metronome
 export const playMusicScore = (score: MusicScore) => {
 	const { title, parts } = score;
 	console.log('Now playing: ' + title);
 
+	const masterVolume = new Volume(6).toDestination();
+
+	const instruments: ToneInstrumentSpecifier[] = [];
+
 	// Make sure there's enough time to queue all the parts up
-	const musicStart = now() + parts.length - 0.8;
+	const musicStart = now() + parts.length * 0.2;
 	for (const part of parts) {
-		playPart(part, musicStart);
+		const { attributes } = part;
+		const instrument = getInstrument(attributes.instrument, masterVolume);
+
+		playPart(part, instrument, musicStart);
+
+		instruments.push({ id: part.attributes.id, instrument });
 	}
+
+	ScoreVolumeManager.setInstruments(title, instruments, masterVolume);
 };
 
 export const ohWhatANight: Measure[] = [

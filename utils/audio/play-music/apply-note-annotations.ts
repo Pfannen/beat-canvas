@@ -31,7 +31,7 @@ const accidentalApplier: NoteAttributesModifier = (attr, annotations) => {
 const accentApplier: NoteAttributesModifier = (attr, annotations) => {
 	const { accent } = annotations;
 	if (accent) {
-		accent === 'weak' ? (attr.velocity = 0.8) : (attr.velocity = 1);
+		accent === 'weak' ? (attr.velocity = 0.4) : (attr.velocity = 0.5);
 	}
 };
 

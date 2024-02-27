@@ -6,7 +6,9 @@ import { ScoreVolumeModifier, ToneInstrumentMap } from '@/types/audio/volume';
 import { Volume } from 'tone';
 
 export class ScoreVolumeManager extends ScoreVolumeModifier {
-	private static maxDecibels = 12;
+	private static maxDecibels = 10;
+	private static minDecibels = -30;
+
 	private static instrumentMap?: ToneInstrumentMap;
 	private static masterVolume?: Volume;
 
@@ -16,11 +18,15 @@ export class ScoreVolumeManager extends ScoreVolumeModifier {
 	private static getVolumeValue = (volumePct: number) => {
 		if (volumePct === 0) return -Infinity;
 
-		if (volumePct > 1 || volumePct < 0) volumePct = 0.5;
-		// 0.5 - volumePct lets us go to negative and positive values of maxDecibels
-		// Look into a better way to get volume value w/ ToneJS, for some reason volume.value = 0 doesn't mute audio
-		volumePct = (0.5 - volumePct) * -1;
-		return this.maxDecibels * volumePct;
+		const maxDecibelOffset =
+			this.minDecibels < 0 ? this.minDecibels * -1 : this.minDecibels;
+
+		const max = this.maxDecibels + maxDecibelOffset;
+		const volumeWithOffset = volumePct * max;
+		const volume = volumeWithOffset - maxDecibelOffset;
+
+		console.log(volume);
+		return volume;
 	};
 
 	static modifyVolume = (audioId: string, volumePct: number) => {
