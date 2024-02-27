@@ -6,10 +6,11 @@ import {
 	constructNoteAttributes,
 	getFullNote,
 } from './apply-note-annotations';
-import { ToneInstrument, updateInstrument } from '../instruments';
+import { updateInstrument } from '../instruments';
 import { MeasureAttributes } from '@/types/music';
 import { Synth } from 'tone';
 import { Note } from '@/components/providers/music/types';
+import { ToneInstrument } from '@/types/audio/instrument';
 
 export const playNote = (
 	note: Note,

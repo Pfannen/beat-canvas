@@ -1,10 +1,6 @@
+import { ToneInstrument } from '@/types/audio/instrument';
 import { InstrumentProps } from '@/types/music/note-annotations';
 import * as Tone from 'tone';
-
-export type ToneInstrument =
-	| Tone.Synth<Tone.SynthOptions>
-	| Tone.PolySynth<Tone.Synth<Tone.SynthOptions>>
-	| Tone.Sampler;
 
 export const updateInstrument = (
 	instrument: ToneInstrument,

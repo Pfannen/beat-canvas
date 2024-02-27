@@ -2,7 +2,7 @@ import { Measure } from '@/components/providers/music/types';
 import { MeasureAttributes } from '@/types/music';
 import { Synth } from 'tone';
 import { playNote } from './play-note';
-import { ToneInstrument } from '../instruments';
+import { ToneInstrument } from '@/types/audio/instrument';
 
 export const initializeMeasureAttributes = (initialMeasure: Measure) => {
 	const { attributes } = initialMeasure;

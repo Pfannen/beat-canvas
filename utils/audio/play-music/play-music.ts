@@ -3,6 +3,8 @@ import { Measure } from '@/components/providers/music/types';
 import { MusicScore } from '@/types/music';
 import { playPart } from './play-part';
 
+// TODO: Get instruments here and pass to playPart
+// Use ScoreVolumeManager to reuse instruments / set instruments so volume adjusting is easy
 export const playMusicScore = (score: MusicScore) => {
 	const { title, parts } = score;
 	console.log('Now playing: ' + title);
