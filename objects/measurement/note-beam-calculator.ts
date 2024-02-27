@@ -1,23 +1,64 @@
 import { NoteDirection } from "@/lib/notes/types";
-import { Coordinate } from "./types";
+import { BeamData, Coordinate } from "./types";
 
 export class NoteBeamCalculator {
+  //*always want a note to "grow" and not shrink*
   static getPositionData(
     noteCoordinates: Coordinate[],
     direction: NoteDirection,
     angleTolerance: number
-  ) {
+  ): BeamData {
     const startNote = noteCoordinates[0];
     const endNote = noteCoordinates[noteCoordinates.length - 1];
-    const { beamAngle, beamLength } = this.calculateEndpointData(
+    let { beamAngle, beamLength } = this.calculateEndpointData(
       startNote,
       endNote
     );
     const lowerBound = 90 - angleTolerance;
     const upperBound = 90 + angleTolerance;
+    let thresholdData;
     if (beamAngle < lowerBound) {
+      beamAngle = lowerBound;
+      thresholdData = this.calculateThresholdData(
+        startNote,
+        endNote,
+        lowerBound
+      );
     } else if (beamAngle > upperBound) {
+      beamAngle = upperBound;
+      thresholdData = this.calculateThresholdData(
+        startNote,
+        endNote,
+        upperBound
+      );
     }
+    let startNoteOffset = 0;
+    let endNoteOffset = 0;
+    if (thresholdData) {
+      beamLength = thresholdData.beamLength;
+      const { y1Offset, y2Offset } = thresholdData;
+
+      //Only one offset will be present
+      if (y1Offset) {
+        //If the note staffs are pointing up and an endpoint's offset is negative, we don't want the note staff to shrink so we grow the other endpoint's staff
+        if (y1Offset < 0 && direction === "up") {
+          endNoteOffset = -y1Offset;
+        } else {
+          startNoteOffset = y1Offset;
+        }
+      } else {
+        if (y2Offset < 0 && direction === "up") {
+          startNoteOffset = -y2Offset;
+        } else {
+          endNoteOffset = y2Offset;
+        }
+      }
+    }
+    return {
+      beamAngle,
+      beamLength,
+      noteOffsets: [startNoteOffset, endNoteOffset],
+    };
   }
   static calculateEndpointData(pointOne: Coordinate, pointTwo: Coordinate) {
     const { y: y1 } = pointOne;

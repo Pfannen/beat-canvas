@@ -4,8 +4,10 @@ import { Coordinate } from "../../../objects/measurement/types";
 const expectedHypotenuse = (sideOne: number, sideTwo: number) =>
   Math.sqrt(Math.pow(sideOne, 2) + Math.pow(sideTwo, 2));
 
-//#region beam angles and lengths
-test("Increasing notes - simple", () => {
+//Calculator tests verified using: https://www.omnicalculator.com/math/right-triangle-side-angle
+
+//#region Beam Angles and Lengths
+test("EndpointData - Increasing notes - simple", () => {
   const pointOne: Coordinate = { x: 0, y: 0 };
   const pointTwo: Coordinate = { x: 2, y: 2 };
   const data = NoteBeamCalculator.calculateEndpointData(pointOne, pointTwo);
@@ -13,15 +15,15 @@ test("Increasing notes - simple", () => {
   expect(data.beamLength).toBe(expectedHypotenuse(2, 2));
 });
 
-test("Increasing notes - challenge", () => {
+test("EndpointData - Increasing notes - calculator", () => {
   const pointOne: Coordinate = { x: 0, y: 0 };
-  const pointTwo: Coordinate = { x: 2, y: 2 };
+  const pointTwo: Coordinate = { x: 397, y: 1088 };
   const data = NoteBeamCalculator.calculateEndpointData(pointOne, pointTwo);
-  expect(data.beamAngle).toBe(45);
-  expect(data.beamLength).toBe(expectedHypotenuse(2, 2));
+  expect(data.beamAngle).toBeCloseTo(90 - 69.95);
+  expect(data.beamLength).toBeCloseTo(1158.2, 1);
 });
 
-test("Decreasing notes", () => {
+test("EndpointData - Decreasing notes - simple", () => {
   const pointOne: Coordinate = { x: 0, y: 2 };
   const pointTwo: Coordinate = { x: 2, y: 0 };
   const data = NoteBeamCalculator.calculateEndpointData(pointOne, pointTwo);
@@ -29,7 +31,15 @@ test("Decreasing notes", () => {
   expect(data.beamLength).toBe(expectedHypotenuse(2, 2));
 });
 
-test("Equal notes", () => {
+test("EndpointData - Decreasing notes - calculator", () => {
+  const pointOne: Coordinate = { x: 0, y: 271 };
+  const pointTwo: Coordinate = { x: 19, y: 0 };
+  const data = NoteBeamCalculator.calculateEndpointData(pointOne, pointTwo);
+  expect(data.beamAngle).toBeCloseTo(180 - 4.0105);
+  expect(data.beamLength).toBeCloseTo(271.67);
+});
+
+test("EndpointData - Equal y notes", () => {
   const pointOne: Coordinate = { x: 0, y: 2 };
   const pointTwo: Coordinate = { x: 2, y: 2 };
   const data = NoteBeamCalculator.calculateEndpointData(pointOne, pointTwo);
@@ -39,7 +49,7 @@ test("Equal notes", () => {
 //#endregion
 
 //#region Beam Treshold Simple Cases
-test("Increasing notes with threshold", () => {
+test("ThresholdData - Increasing notes with threshold", () => {
   const pointOne: Coordinate = { x: 0, y: 0 };
   const pointTwo: Coordinate = { x: 2, y: 2 };
   const data = NoteBeamCalculator.calculateEndpointData(pointOne, pointTwo);
@@ -53,7 +63,7 @@ test("Increasing notes with threshold", () => {
   expect(thresholdData.y2Offset).toBeCloseTo(0);
 });
 
-test("Decreasing notes with threshold", () => {
+test("ThresholdData - Decreasing notes with threshold", () => {
   const pointOne: Coordinate = { x: 0, y: 2 };
   const pointTwo: Coordinate = { x: 2, y: 0 };
   const data = NoteBeamCalculator.calculateEndpointData(pointOne, pointTwo);
@@ -68,7 +78,7 @@ test("Decreasing notes with threshold", () => {
   expect(thresholdData.y2Offset).toBeCloseTo(0);
 });
 
-test("Equal notes with threshold", () => {
+test("ThresholdData - Equal notes with threshold", () => {
   const pointOne: Coordinate = { x: 0, y: 2 };
   const pointTwo: Coordinate = { x: 2, y: 2 };
   const data = NoteBeamCalculator.calculateEndpointData(pointOne, pointTwo);
@@ -85,7 +95,7 @@ test("Equal notes with threshold", () => {
 //#endregion
 
 //#region Beam Treshold Theoretical Cases (shouldn't actually appear)
-test("Increasing notes with threshold and offset", () => {
+test("ThresholdData - Increasing notes with threshold and offset", () => {
   const pointOne: Coordinate = { x: 0, y: 0 };
   const pointTwo: Coordinate = { x: 2, y: 2 };
   const angle = 45;
@@ -106,7 +116,7 @@ test("Increasing notes with threshold and offset", () => {
   expect(testData.y2Offset).toBeCloseTo(pointTwo.y);
 });
 
-test("Decreasing notes with threshold and offset", () => {
+test("ThresholdData - Decreasing notes with threshold and offset", () => {
   const pointOne: Coordinate = { x: 0, y: 2 };
   const pointTwo: Coordinate = { x: 2, y: 0 };
   const angle = 135;
@@ -127,7 +137,7 @@ test("Decreasing notes with threshold and offset", () => {
   expect(testData.y2Offset).toBe(0);
 });
 
-test("Increasing notes with threshold and offset (non-standard)", () => {
+test("ThresholdData - Increasing notes with threshold and offset (non-standard)", () => {
   const pointOne: Coordinate = { x: 99, y: 200 };
   const pointTwo: Coordinate = { x: 100, y: 576 };
   const thresholdData = NoteBeamCalculator.calculateEndpointData(
@@ -140,13 +150,12 @@ test("Increasing notes with threshold and offset (non-standard)", () => {
     testPointTwo,
     thresholdData.beamAngle
   );
-  console.log(thresholdData);
   expect(testData.beamLength).toBeCloseTo(thresholdData.beamLength);
   expect(testData.y1Offset).toBe(0);
   expect(testData.y2Offset).toBeCloseTo(pointTwo.y - testPointTwo.y);
 });
 
-test("Decreasing notes with threshold and offset (non-standard)", () => {
+test("ThresholdData - Decreasing notes with threshold and offset (non-standard)", () => {
   const pointOne: Coordinate = { x: 23.4, y: 200 };
   const pointTwo: Coordinate = { x: 100, y: 23.4 };
   const thresholdData = NoteBeamCalculator.calculateEndpointData(
@@ -165,4 +174,96 @@ test("Decreasing notes with threshold and offset (non-standard)", () => {
   expect(testData.y2Offset).toBe(0);
 });
 
+//#endregion
+
+//#region Beam Position Data with Notes
+test("BeamPosition - Two increasing notes (no threshold)", () => {
+  const pointOne: Coordinate = { x: 0, y: 0 };
+  const pointTwo: Coordinate = { x: 2, y: 2 };
+  const data = NoteBeamCalculator.getPositionData(
+    [pointOne, pointTwo],
+    "up",
+    45
+  );
+  expect(data.beamAngle).toBe(45);
+  expect(data.beamLength).toBe(expectedHypotenuse(2, 2));
+  data.noteOffsets.forEach((offset) => {
+    expect(offset).toBe(0);
+  });
+});
+
+test("BeamPosition - Two increasing notes w/ threshold (direction up)", () => {
+  const pointOne: Coordinate = { x: 0, y: 0 };
+  const pointTwo: Coordinate = { x: 2, y: 3 };
+
+  const data = NoteBeamCalculator.getPositionData(
+    [pointOne, pointTwo],
+    "up",
+    45
+  );
+  expect(data.beamAngle).toBe(45);
+  expect(data.beamLength).toBeCloseTo(expectedHypotenuse(2, 2));
+  expect(data.noteOffsets[0]).toBeCloseTo(1);
+  expect(data.noteOffsets[1]).toBe(0);
+});
+
+test("BeamPosition - Two increasing notes w/ threshold (direction down)", () => {
+  const pointOne: Coordinate = { x: 0, y: 0 };
+  const pointTwo: Coordinate = { x: 2, y: 3 };
+
+  const data = NoteBeamCalculator.getPositionData(
+    [pointOne, pointTwo],
+    "down",
+    45
+  );
+  expect(data.beamAngle).toBe(45);
+  expect(data.beamLength).toBeCloseTo(expectedHypotenuse(2, 2));
+  expect(data.noteOffsets[0]).toBe(0);
+  expect(data.noteOffsets[1]).toBeCloseTo(-1);
+});
+
+test("BeamPosition - Two decreasing notes (no threshold)", () => {
+  const pointOne: Coordinate = { x: 2, y: 2 };
+  const pointTwo: Coordinate = { x: 0, y: 0 };
+  const data = NoteBeamCalculator.getPositionData(
+    [pointOne, pointTwo],
+    "up",
+    45
+  );
+  expect(data.beamAngle).toBe(135);
+  expect(data.beamLength).toBe(expectedHypotenuse(2, 2));
+  data.noteOffsets.forEach((offset) => {
+    expect(offset).toBe(0);
+  });
+});
+
+test("BeamPosition - Two decreasing notes w/ threshold (direction up)", () => {
+  const pointOne: Coordinate = { x: 2, y: 3 };
+  const pointTwo: Coordinate = { x: 0, y: 0 };
+
+  const data = NoteBeamCalculator.getPositionData(
+    [pointOne, pointTwo],
+    "up",
+    45
+  );
+  expect(data.beamAngle).toBe(90 + 45);
+  expect(data.beamLength).toBeCloseTo(2.8284);
+  expect(data.noteOffsets[0]).toBe(0);
+  expect(data.noteOffsets[1]).toBeCloseTo(1);
+});
+
+test("BeamPosition - Two decreasing notes w/ threshold (direction down)", () => {
+  const pointOne: Coordinate = { x: 2, y: 3 };
+  const pointTwo: Coordinate = { x: 0, y: 0 };
+
+  const data = NoteBeamCalculator.getPositionData(
+    [pointOne, pointTwo],
+    "down",
+    45
+  );
+  expect(data.beamAngle).toBe(90 + 45);
+  expect(data.beamLength).toBeCloseTo(2.8284);
+  expect(data.noteOffsets[0]).toBeCloseTo(-1);
+  expect(data.noteOffsets[1]).toBe(0);
+});
 //#endregion
