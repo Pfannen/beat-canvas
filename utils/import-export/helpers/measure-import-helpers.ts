@@ -142,15 +142,15 @@ const backupImportHelper: MeasureImportHelper = (mD, el) => {
 		return;
 
 	// TODO: Once we have the ability to edit chords / stacked notes, we can work with backup and forward elements and uncomment this
-	/* const duration = +el.children[0].textContent!;
+	const duration = +el.children[0].textContent!;
 	const trueDuration = convertImportedDuration(
 		mD.currentAttributes.quarterNoteDivisions,
 		duration,
 		mD.currentAttributes.timeSignature.beatNote
 	);
-	mD.curX -= trueDuration; */
+	mD.curX -= trueDuration;
 
-	mD.curX = mD.currentAttributes.timeSignature.beatsPerMeasure;
+	//mD.curX = mD.currentAttributes.timeSignature.beatsPerMeasure;
 };
 
 // TODO: Extract direction-specifc helpers into their own map

@@ -234,7 +234,7 @@ class ImportMusicXMLHelper {
 
 			// TODO: Having equal-to can screw up backup elements, look into this
 			if (
-				measureDetails.curX >=
+				measureDetails.curX >
 				measureDetails.currentAttributes.timeSignature.beatsPerMeasure
 			)
 				break;

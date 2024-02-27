@@ -11,13 +11,12 @@ const staccatoApplier: NoteAttributesModifier = (attr, annotations) => {
 };
 
 const slurApplier: NoteAttributesModifier = (attr, annotations) => {
-	console.log('slur');
 	const { slur } = annotations;
 	if (!slur) return;
 
-	/* const { instrumentProps: iP } = attr;
-	if (slur === 'start') iP.decay = 1;
-	else iP.decay = 0.1; */
+	const { instrumentProps: iP } = attr;
+	if (slur === 'start') iP.portamento = 0.2;
+	else iP.portamento = 0;
 };
 
 const accidentalApplier: NoteAttributesModifier = (attr, annotations) => {

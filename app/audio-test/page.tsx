@@ -3,14 +3,18 @@
 import { FunctionComponent } from 'react';
 import classes from './AudioTest.module.css';
 import TaskbarButton from '@/components/ui/taskbar/buttons/taskbar-button';
-import { ohWhatANight, playMeasures } from '@/utils/audio/play-music';
+import {
+	ohWhatANight,
+	ohWhatANightScore,
+	playMusicScore,
+} from '@/utils/audio/play-music/play-music';
 
 interface AudioTestProps {}
 
 const AudioTest: FunctionComponent<AudioTestProps> = () => {
 	return (
 		<>
-			<TaskbarButton onClick={playMeasures.bind(null, ohWhatANight)}>
+			<TaskbarButton onClick={playMusicScore.bind(null, ohWhatANightScore)}>
 				Play
 			</TaskbarButton>
 		</>
