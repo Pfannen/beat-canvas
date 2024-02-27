@@ -3,8 +3,8 @@ import { FunctionComponent } from "react";
 import { useMusic } from "@/components/providers/music";
 import DisplayMeasure from "./display-measure";
 import { concatClassNames } from "@/utils/css";
-import Measurement from "@/objects/music/measurement/measurement";
 import { getMeasureItems } from "./utils";
+import Measurement from "@/objects/measurement";
 
 const measurement = new Measurement(5, 0.25, 1);
 

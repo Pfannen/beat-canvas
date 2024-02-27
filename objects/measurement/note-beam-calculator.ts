@@ -8,6 +8,9 @@ export class NoteBeamCalculator {
     direction: NoteDirection,
     angleTolerance: number
   ): BeamData {
+    if (noteCoordinates.length < 2) {
+      throw new Error("Cannot beam a single note");
+    }
     const startNote = noteCoordinates[0];
     const endNote = noteCoordinates[noteCoordinates.length - 1];
     let { beamAngle, beamLength } = this.calculateEndpointData(

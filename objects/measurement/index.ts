@@ -1,8 +1,11 @@
+import { Note } from "@/components/providers/music/types";
 import { MeasureUnitConverter } from "./measure-unit-converter";
+import { NoteBeamCalculator } from "./note-beam-calculator";
 import MeasurePositions, {
   MeasureUtils,
   NotePositionNote,
 } from "./note-position";
+import { NoteDirection } from "@/lib/notes/types";
 
 export default class Measurement {
   private bodyCt = 9;
@@ -94,5 +97,13 @@ export default class Measurement {
 
   public getMiddleYPos() {
     return Math.floor(this.bodyCt / 2);
+  }
+
+  public getUnitConverter() {
+    return this.unitConverter;
+  }
+
+  public getNoteBeamData(notes: Note[], direction: NoteDirection) {
+    return NoteBeamCalculator.getPositionData(notes, direction, 25);
   }
 }
