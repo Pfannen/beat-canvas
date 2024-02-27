@@ -6,6 +6,8 @@ import { concatClassNames } from "@/utils/css";
 import { getMeasureItems } from "./utils";
 import Measurement from "@/objects/measurement";
 
+const aspectRatio = 4 / 3;
+
 const measurement = new Measurement(5, 0.25, 1);
 
 type DisplayMeasuresProps = {

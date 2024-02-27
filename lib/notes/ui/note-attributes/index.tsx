@@ -44,7 +44,7 @@ const sixteenthAttribute: StaffAttribute = {
   direction: "away-from-body",
   component: (axisProps) => (
     <>
-      <NoteFlag {...axisProps} key={"flag-1"} />,
+      <NoteFlag {...axisProps} key={"flag-1"} />
       <NoteFlag {...axisProps} flagNumber={1} key={"flag-2"} />
     </>
   ),
@@ -68,6 +68,10 @@ export const getNoteBeam: AttributeGetter<{
     container: "staff",
     component: (axisProps, noteProps) => {
       const lengthInBodyPercentage = lengthInBodyUnits * noteProps.bodyHeight;
+      console.log({
+        lengthInBodyPercentage,
+        mult: noteProps.staffHeightMultiplier,
+      });
       const lengthInStaffPercentage =
         lengthInBodyPercentage / noteProps.staffHeightMultiplier;
       return (

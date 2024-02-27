@@ -13,35 +13,42 @@ type MusicProviderProps = {
   children: ReactNode;
 };
 
-const mockMeasures: Measure[] = [
-  {
-    notes: [
-      { x: 0, y: 0, type: "quarter" },
-      { x: 1, y: 1, type: "quarter" },
-      { x: 2, y: 2, type: "quarter" },
-      { x: 3, y: 10, type: "eighth" },
-    ],
-  },
-  {
-    notes: [
-      { x: 0, y: 0, type: "quarter" },
-      { x: 1, y: 1, type: "quarter" },
-      { x: 2, y: 2, type: "quarter" },
-      { x: 3, y: 10, type: "eighth" },
-    ],
-  },
-  {
-    notes: [
-      { x: 0, y: 0, type: "quarter" },
-      { x: 1, y: 1, type: "sixteenth" },
-      { x: 1.25, y: 2, type: "sixteenth" },
-      { x: 3, y: 10, type: "eighth" },
-    ],
-  },
-];
+// const mockMeasures: Measure[] = [
+//   {
+//     notes: [
+//       { x: 0, y: 0, type: "quarter" },
+//       { x: 1, y: 1, type: "quarter" },
+//       { x: 2, y: 2, type: "quarter" },
+//       { x: 3, y: 10, type: "eighth" },
+//     ],
+//   },
+//   {
+//     notes: [
+//       { x: 0, y: 0, type: "quarter" },
+//       { x: 1, y: 1, type: "quarter" },
+//       { x: 2, y: 2, type: "quarter" },
+//       { x: 3, y: 10, type: "eighth" },
+//     ],
+//   },
+//   {
+//     notes: [
+//       { x: 0, y: 0, type: "quarter" },
+//       { x: 1, y: 1, type: "sixteenth" },
+//       { x: 1.25, y: 2, type: "sixteenth" },
+//       { x: 3, y: 10, type: "eighth" },
+//     ],
+//   },
+// ];
 
 const MusicProvider: FunctionComponent<MusicProviderProps> = ({ children }) => {
-  const measureData = useMeasures(mockMeasures);
+  const measureData = useMeasures([
+    {
+      notes: [
+        { x: 0, y: 1, type: "sixteenth" },
+        { x: 0.25, y: 0, type: "sixteenth" },
+      ],
+    },
+  ]);
   return (
     <MusicContext.Provider value={measureData}>
       {children}

@@ -6,6 +6,7 @@ import MeasurePositions, {
   NotePositionNote,
 } from "./note-position";
 import { NoteDirection } from "@/lib/notes/types";
+import { getNoteDuration } from "@/components/providers/music/utils";
 
 export default class Measurement {
   private bodyCt = 9;
@@ -41,7 +42,7 @@ export default class Measurement {
       lineToSpaceRatio
     );
     this.unitConverter = new MeasureUnitConverter({
-      widthHeightRatio: 0.75,
+      widthHeightRatio: 4 / 3,
       segmentFraction: wholeSegmentLength,
       height: measureHeight,
       getYOffset: this.notePosition.getYOffset,
@@ -103,7 +104,31 @@ export default class Measurement {
     return this.unitConverter;
   }
 
-  public getNoteBeamData(notes: Note[], direction: NoteDirection) {
-    return NoteBeamCalculator.getPositionData(notes, direction, 25);
+  public getNoteBeamData(
+    notes: Note[],
+    direction: NoteDirection,
+    notesAreCentered = true
+  ) {
+    const coordinates = notes.map(({ x, y, type }) => {
+      const center = notesAreCentered ? getNoteDuration(type, 4) / 2 : 0;
+      const xPos = this.unitConverter.convert(
+        "xPos",
+        "measureUnit",
+        x + center
+      );
+      const yPos = this.unitConverter.convert("yPos", "measureUnit", y);
+      return { x: xPos, y: yPos };
+    });
+    console.log(coordinates);
+    const data = NoteBeamCalculator.getPositionData(coordinates, direction, 25);
+    data.beamLength = this.unitConverter.convert(
+      "measureUnit",
+      "measureSpace",
+      data.beamLength
+    );
+    data.noteOffsets = data.noteOffsets.map((offset) => {
+      return this.unitConverter.convert("measureUnit", "measureSpace", offset);
+    });
+    return data;
   }
 }

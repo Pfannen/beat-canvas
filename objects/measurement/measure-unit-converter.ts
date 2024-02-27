@@ -1,6 +1,6 @@
 import { ComponentFractions } from "./note-position";
 
-export type MeasureUnit = "xPos" | "yPos" | "measureUnit";
+export type MeasureUnit = "xPos" | "yPos" | "measureUnit" | "measureSpace";
 
 type Converter = (value: number, details: ConverterArgs) => number;
 
@@ -52,6 +52,7 @@ const unitToMeasureUnit: { [unit in MeasureUnit]: Converter } = {
     return getYOffset(yPos) * height;
   },
   measureUnit: (mUVal) => mUVal,
+  measureSpace: (space, d) => space * (d.height * d.componentFractions.space),
 };
 
 const measureUnitToUnit: { [unit in MeasureUnit]: Converter } = {
@@ -73,6 +74,9 @@ const measureUnitToUnit: { [unit in MeasureUnit]: Converter } = {
     throw new Error("measureUnit to yPos is needed?");
   },
   measureUnit: (mUVal) => mUVal,
+  measureSpace: (mUVal, d) => {
+    return mUVal / (d.height * d.componentFractions.space);
+  },
 };
 
 const getMeasureWidth = (height: number, widthHeightRatio: number) =>

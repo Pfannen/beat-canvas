@@ -26,6 +26,7 @@ const NoteBeam: FunctionComponent<NoteBeamProps> = ({
       className={classes.note_beam}
       yAxis="bottom"
       yPercent="100%"
+      xAxis="right"
     />
   );
 };
