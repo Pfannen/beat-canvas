@@ -1,6 +1,6 @@
 import { getNoteDuration } from "@/components/providers/music/utils";
 import { getNoteFromYPos, noteTypeIsDotted } from "../music";
-import { createAppend } from "./xml-helpers";
+import { createAppend } from "./helpers/xml-helpers";
 import { Clef, MeasureAttributes, MusicPart, MusicScore } from "@/types/music";
 import {
 	Measure,
@@ -9,7 +9,7 @@ import {
 } from '@/components/providers/music/types';
 import { clefToMusicXML, convertJSNoteTypeToMusicXML } from '../musicXML';
 import { minimalSegmentGenerator } from '../segments/segment-gen-1';
-import Helper from './helper-classes/ExportMusicXMLHelper';
+import Helper from './helpers/ExportMusicXMLHelper';
 
 const createNoteXML = (
   root: XMLDocument,

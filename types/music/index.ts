@@ -40,6 +40,6 @@ export type MeasureAttributes = {
 
 export type PartialMeasureAttributes = Partial<MeasureAttributes>;
 
-export type MeasureAttributesMXML = Partial<MeasureAttributes> & {
-	quarterNoteDivisions?: number;
+export type MeasureAttributesMXML = MeasureAttributes & {
+	quarterNoteDivisions: number;
 };

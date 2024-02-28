@@ -5,13 +5,15 @@ import {
 	Pitch,
 	PitchOctave,
 } from '@/types/music';
-import {
-	getElements,
-	getSingleElement,
-	validateElements,
-} from '../xml-helpers';
+import { getElements, getSingleElement, validateElements } from './xml-helpers';
 import { convertImportedDuration, musicXMLToClef } from '@/utils/musicXML';
-import { TimeSignature } from '@/components/providers/music/types';
+import { Measure, TimeSignature } from '@/components/providers/music/types';
+import {
+	MeasureImportDetails,
+	NoteImportDetails,
+} from '@/types/import-export/import';
+import { noteImportHelperMap } from './note-import-helpers';
+import { measureImportHelperMap } from './measure-import-helpers';
 
 class ImportMusicXMLHelper {
 	static getScoreTitle = (root: Element) => {
@@ -178,7 +180,7 @@ class ImportMusicXMLHelper {
 		const attributesXML = getSingleElement(measureXML, 'attributes');
 		if (!attributesXML) return null;
 
-		const attributes: MeasureAttributesMXML = {};
+		const attributes: Partial<MeasureAttributesMXML> = {};
 
 		const divisions = this.getMeasureDivisions(attributesXML);
 		if (divisions !== null) attributes.quarterNoteDivisions = divisions;
@@ -196,6 +198,49 @@ class ImportMusicXMLHelper {
 		if (key) attributes.keySignature = +key;
 
 		return attributes;
+	};
+
+	static getNoteDetails = (noteXML: Element) => {
+		const noteDetails: NoteImportDetails = {};
+		const { children } = noteXML;
+
+		for (let i = 0; i < children.length; i++) {
+			const child = children[i];
+			if (child.tagName in noteImportHelperMap) {
+				noteImportHelperMap[child.tagName](noteDetails, child);
+			}
+		}
+
+		return noteDetails;
+	};
+
+	static getMeasureDetails = (
+		measureXML: Element,
+		measureAttributes: MeasureAttributesMXML
+	) => {
+		const measureDetails: MeasureImportDetails = {
+			currentAttributes: measureAttributes,
+			newAttributes: {},
+			notes: [],
+			curX: 0,
+		};
+
+		const { children } = measureXML;
+		for (let i = 0; i < children.length; i++) {
+			const child = children[i];
+			if (child.tagName in measureImportHelperMap) {
+				measureImportHelperMap[child.tagName](measureDetails, child);
+			}
+
+			// TODO: Having equal-to can screw up backup elements, look into this
+			if (
+				measureDetails.curX >
+				measureDetails.currentAttributes.timeSignature.beatsPerMeasure
+			)
+				break;
+		}
+
+		return measureDetails;
 	};
 }
 
