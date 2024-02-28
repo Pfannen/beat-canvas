@@ -3,38 +3,32 @@
 import { FunctionComponent, useRef } from 'react';
 import classes from './index.module.css';
 import TaskbarButton from '@/components/ui/taskbar/buttons/taskbar-button';
-import {
-	ohWhatANightScore,
-	playMusicScore,
-} from '@/utils/audio/play-music/play-music';
+import { playMusicScore } from '@/utils/audio/play-music/play-music';
 import {
 	exportJSONScore,
 	exportMusicXMLScore,
 	importMusicXMLScore,
 } from '@/utils/import-export';
-import { MusicScore } from '@/types/music';
 import { useMusic } from '@/components/providers/music';
 
 interface ImportExportPageProps {}
 
-let curScore: MusicScore | null = ohWhatANightScore;
-
 const ImportExportPage: FunctionComponent<ImportExportPageProps> = () => {
 	const inputRef = useRef<HTMLInputElement>(null);
-	const music = useMusic();
+	const { musicScore, setNewMusicScore, replaceMeasures } = useMusic();
 
 	return (
 		<div className={classes.container}>
 			<TaskbarButton
 				onClick={() => {
-					if (curScore) exportJSONScore(curScore);
+					if (musicScore) exportJSONScore(musicScore);
 				}}
 			>
 				Export JSON
 			</TaskbarButton>
 			<TaskbarButton
 				onClick={() => {
-					if (curScore) exportMusicXMLScore(curScore);
+					if (musicScore) exportMusicXMLScore(musicScore);
 				}}
 			>
 				Export MusicXML
@@ -57,9 +51,10 @@ const ImportExportPage: FunctionComponent<ImportExportPageProps> = () => {
 						true /* file.type === 'text/xml' || file.type === 'application/xml' */
 					) {
 						importMusicXMLScore(file, (musicScore) => {
+							console.log('hit');
 							if (musicScore) {
-								curScore = musicScore;
-								music.replaceMeasures(musicScore.parts[0].measures);
+								setNewMusicScore(musicScore);
+								replaceMeasures(musicScore.parts[0].measures);
 							}
 
 							console.log(musicScore);
@@ -70,7 +65,7 @@ const ImportExportPage: FunctionComponent<ImportExportPageProps> = () => {
 
 			<TaskbarButton
 				onClick={() => {
-					if (curScore && curScore.parts) playMusicScore(curScore);
+					if (musicScore && musicScore.parts) playMusicScore(musicScore);
 				}}
 			>
 				Play

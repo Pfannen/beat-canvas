@@ -8,6 +8,7 @@ import { Volume } from 'tone';
 export class ScoreVolumeManager extends ScoreVolumeModifier {
 	private static maxDecibels = 10;
 	private static minDecibels = -30;
+	static defaultVolumePct = 0.5;
 
 	private static instrumentMap?: ToneInstrumentMap;
 	private static masterVolume?: Volume;
@@ -25,7 +26,6 @@ export class ScoreVolumeManager extends ScoreVolumeModifier {
 		const volumeWithOffset = volumePct * max;
 		const volume = volumeWithOffset - maxDecibelOffset;
 
-		console.log(volume);
 		return volume;
 	};
 
@@ -63,10 +63,13 @@ export class ScoreVolumeManager extends ScoreVolumeModifier {
 	) => {
 		this.musicScoreName = musicScoreName;
 		this.instrumentMap = {};
+		const volumeValue = this.getVolumeValue(this.defaultVolumePct);
 		for (const { id, instrument } of instruments) {
 			this.instrumentMap[id] = instrument;
+			instrument.volume.value = volumeValue;
 		}
 
 		this.masterVolume = masterVolume;
+		if (masterVolume) masterVolume.volume.value = volumeValue;
 	};
 }
