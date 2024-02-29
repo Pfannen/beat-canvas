@@ -15,13 +15,11 @@ const useSplitSegment = (
 
   useEffect(() => {
     if (canChange) {
-      console.log("regis");
       registryDels.register(xPos, toggle, lhs);
     }
 
     return () => {
       if (canChange) {
-        console.log("degregis");
         registryDels.deregister(xPos);
       }
     };

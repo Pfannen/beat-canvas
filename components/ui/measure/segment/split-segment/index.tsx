@@ -36,7 +36,6 @@ const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
       props.notes &&
       props.notes[0].y === yPos &&
       props.notes[0].x === props.xPos;
-    if (containsNote) console.log(props.xPos, yPos);
     return (
       <LedgerComponent
         onClick={() => {
@@ -83,6 +82,7 @@ const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
       />
     );
   } else {
+    console.log("Split", props.xPos);
     return (
       <>
         <SplitSegment

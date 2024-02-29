@@ -55,17 +55,15 @@ export const clickBehavior: ModificationBehavior<
 > = (delegates, type) => (action, x, y) => {
   //If action is click, if note is selected, invoke add note
   //Need to receive addNote and
-  console.log("Click", type);
+
   if (action === "left-click") {
     if (type) {
       delegates.placeNote({ x, y, type });
-      // delegates.joinAll(x);
-      // console.log("Join all");
+      delegates.joinAll(x);
     } else {
       delegates.splitSegment(x);
     }
   } else if (action === "middle-click") {
-    console.log("Middle");
     delegates.joinSegment(x);
   }
 };

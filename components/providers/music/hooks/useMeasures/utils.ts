@@ -17,7 +17,7 @@ export const addNote: MeasureModifier<{ note: Note; measureIndex: number }> =
     };
     const noteIndex = findPositionIndex(note.x, measure.notes);
     if (!isValidPlacement(note, measure, timeSignature, noteIndex)) {
-      console.error("Invalid note placement");
+      console.error("Invalid note placement", note.x);
       return false;
     }
     measure.notes.splice(noteIndex, 0, note);

@@ -14,7 +14,7 @@ export type RegistryDelegates = {
 const useSplitSegmentRegistry = () => {
   const registry = useRef<Registry>({});
 
-  const register = (x: number, delegate: SplitJoinDel, lhs?: number) => {
+  const register: Register = (x, delegate, lhs) => {
     const delegateStack = registry.current[x] || [];
     delegateStack.push({ invoke: delegate, lhs });
     registry.current[x] = delegateStack;
@@ -47,7 +47,8 @@ const useSplitSegmentRegistry = () => {
       if (registeredVal?.lhs !== undefined) {
         joinAll(registeredVal.lhs);
       } else {
-        delegateStack[0].invoke(false); //Invoke the top-level segment's split (which will close all children)
+        console.log("Join all", x);
+        delegateStack[delegateStack.length - 1].invoke(false); //Invoke the top-level segment's split (which will close all children) ** Haven't figured out why length - 1 works for the index and 0 doesn't **
       }
     }
   };
