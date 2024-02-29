@@ -1,4 +1,4 @@
-import { RegistryDelegates } from "@/components/hooks/useSplitSegmentRegistry";
+import { RegistryDelegates } from "@/components/hooks/useSplitSegement/useSplitSegmentRegistry";
 import { useEffect, useState } from "react";
 
 const useSplitSegment = (
@@ -15,11 +15,13 @@ const useSplitSegment = (
 
   useEffect(() => {
     if (canChange) {
+      console.log("regis");
       registryDels.register(xPos, toggle, lhs);
     }
 
     return () => {
       if (canChange) {
+        console.log("degregis");
         registryDels.deregister(xPos);
       }
     };

@@ -4,12 +4,12 @@ import Segment from "..";
 import { SegmentProps } from "../../types";
 import { FunctionComponent } from "react";
 import { SegmentBeat } from "@/components/providers/music/types";
-import { RegistryDelegates } from "@/components/hooks/useSplitSegmentRegistry";
+import { RegistryDelegates } from "@/components/hooks/useSplitSegement/useSplitSegmentRegistry";
 import { LedgerComponentRenderer } from "../../utils";
 import DisplayNote from "../../measure-item/measure-note";
 import { fractionToPercent } from "@/utils";
-import useSplitSegment from "./useSplitSegment";
 import { concatClassNames } from "@/utils/css";
+import useSplitSegment from "@/components/hooks/useSplitSegement";
 
 type SplitSegmentProps = {
   registryDelegates: RegistryDelegates;
@@ -32,7 +32,11 @@ const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
     spacePercent,
     isBodyComponent
   ) => {
-    const containsNote = props.notes && props.notes[0].y === yPos;
+    const containsNote =
+      props.notes &&
+      props.notes[0].y === yPos &&
+      props.notes[0].x === props.xPos;
+    if (containsNote) console.log(props.xPos, yPos);
     return (
       <LedgerComponent
         onClick={() => {
@@ -74,7 +78,7 @@ const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
         belowBody={3}
         aboveBody={3}
         renderLedgerComponent={renderLedgerComponent}
-        width={width * 100 + "%"}
+        width={fractionToPercent(width)}
         lineToSpaceRatio={1.5}
       />
     );

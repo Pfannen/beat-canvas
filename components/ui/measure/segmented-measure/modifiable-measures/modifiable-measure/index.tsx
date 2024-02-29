@@ -5,7 +5,7 @@ import { FunctionComponent } from "react";
 import { Note, NoteType } from "@/components/providers/music/types";
 import SplitSegment from "../../../segment/split-segment";
 import { ModificationBehavior } from "../../../utils";
-import useSplitSegmentRegistry from "@/components/hooks/useSplitSegmentRegistry";
+import useSplitSegmentRegistry from "@/components/hooks/useSplitSegement/useSplitSegmentRegistry";
 import { minimalSegmentGenerator } from "@/utils/segments/segment-gen-1";
 
 type ModifiableMeasureProps = {
