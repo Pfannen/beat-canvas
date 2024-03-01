@@ -9,11 +9,11 @@
   font: inherit; /*Forces you to declare what heading levels look like*/
 }
 
-img,
+/* img,
 svg {
   display: block;
   max-width: 100%;
-}
+} */
 
 ul,
 ol {

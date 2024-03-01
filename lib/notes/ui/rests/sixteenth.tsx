@@ -3,8 +3,6 @@ import { FunctionComponent } from "react";
 const SixteenthRest: FunctionComponent = () => {
   return (
     <svg
-      id="Layer_1"
-      data-name="Layer 1"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 28.36 60.96"
       height={"100%"}

@@ -10,7 +10,7 @@ const NoteTest: FunctionComponent<NoteTestProps> = () => {
     <div className={classes.page}>
       <Note
         type="eighth"
-        bodyHeight={1}
+        bodyHeight={0.5}
         direction="up"
         extraAttributes={[getLineThrough({ lineHeight: "5%" })]}
       ></Note>

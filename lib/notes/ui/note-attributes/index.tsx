@@ -1,4 +1,5 @@
 import { BodyAttribute, StaffAttribute } from "../../types";
+import EighthFlag from "./eighth-flag";
 import NoteDot from "./note-dot";
 import NoteFlag from "./note-flag";
 import NoteLine from "./note-line";
@@ -29,7 +30,7 @@ const eighthFlag: StaffAttribute = {
   container: "staff",
   direction: "away-from-body",
   key: "flag-0",
-  component: (props) => <NoteFlag {...props} />,
+  component: (props) => <EighthFlag {...props} />,
 };
 
 const sixteenthAttribute: StaffAttribute = {
