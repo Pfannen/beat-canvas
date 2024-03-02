@@ -8,7 +8,7 @@ import { Volume } from 'tone';
 export class ScoreVolumeManager extends ScoreVolumeModifier {
 	private static maxDecibels = 10;
 	private static minDecibels = -30;
-	static defaultVolumePct = 0.5;
+	static defaultVolumePct = 0.7;
 
 	private static instrumentMap?: ToneInstrumentMap;
 	private static masterVolume?: Volume;

@@ -32,16 +32,28 @@ export type NoteAnnotations = {
 	accidental?: Accidental;
 };
 
-export type NoteAttributes = {
-	pitchOctave: PitchOctave;
+export type PersistentNotePlayingAttributes = {
+	instrumentProps: InstrumentProps;
 	velocity: number;
-	duration: number;
+};
+
+export type PartialPNPA = {
 	instrumentProps: Partial<InstrumentProps>;
-	volumePercentage?: number;
+	velocity?: number;
+};
+
+export type NoteAudioAttributes = {
+	pitchOctave: PitchOctave;
+	duration: number;
+	persistentAttributes: {
+		cur: PersistentNotePlayingAttributes;
+		applyToNote: PartialPNPA;
+		persist: PartialPNPA;
+	};
 };
 
 export type NoteAttributesModifier = (
-	noteAttributes: NoteAttributes,
+	noteAttributes: NoteAudioAttributes,
 	annotations: NoteAnnotations
 ) => void;
 

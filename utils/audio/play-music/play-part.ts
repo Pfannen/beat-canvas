@@ -1,7 +1,12 @@
 import { MusicPart } from '@/types/music';
-import { getInstrument } from '../instruments';
+import {
+	getDefaultInstrumentProps,
+	getInstrument,
+	updateInstrument,
+} from '../instruments';
 import { initializeMeasureAttributes, playMeasure } from './play-measure';
 import { ToneInstrument } from '@/types/audio/instrument';
+import { PersistentNotePlayingAttributes } from '@/types/music/note-annotations';
 
 export const playPart = (
 	part: MusicPart,
@@ -14,11 +19,17 @@ export const playPart = (
 	const { measures } = part;
 	const attributes = initializeMeasureAttributes(measures[0]);
 
+	const persistentAttr: PersistentNotePlayingAttributes = {
+		instrumentProps: getDefaultInstrumentProps(),
+		velocity: 0.5,
+	};
+	updateInstrument(instrument, persistentAttr.instrumentProps);
+	
 	let curX = 0;
 	for (let i = 0; i < measures.length; i++) {
 		const measure = measures[i];
-		playMeasure(measure, attributes, instrument, curX, now);
 
+		playMeasure(measure, attributes, instrument, persistentAttr, curX, now);
 		curX = (i + 1) * attributes.timeSignature.beatsPerMeasure;
 	}
 };

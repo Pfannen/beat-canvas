@@ -3,6 +3,7 @@ import { MeasureAttributes } from '@/types/music';
 import { Synth } from 'tone';
 import { playNote } from './play-note';
 import { ToneInstrument } from '@/types/audio/instrument';
+import { PersistentNotePlayingAttributes } from '@/types/music/note-annotations';
 
 export const initializeMeasureAttributes = (initialMeasure: Measure) => {
 	const { attributes } = initialMeasure;
@@ -42,6 +43,7 @@ export const playMeasure = (
 	measure: Measure,
 	currentAttributes: MeasureAttributes,
 	instrument: ToneInstrument,
+	persistentAttr: PersistentNotePlayingAttributes,
 	curX: number,
 	now: number
 ) => {
@@ -49,6 +51,6 @@ export const playMeasure = (
 
 	const { notes } = measure;
 	for (const note of notes) {
-		playNote(note, currentAttributes, instrument, curX, now);
+		playNote(note, currentAttributes, instrument, persistentAttr, curX, now);
 	}
 };
