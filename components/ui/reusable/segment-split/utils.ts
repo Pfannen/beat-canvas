@@ -22,7 +22,7 @@ export const minimalSegmentGenerator: SegmentGenerator = (
     }
     currentBeat /= 2; //Try the next biggest segment length
   }
-  if (isDownBeat(currentPosition)) {
+  if (isDownbeat(currentPosition)) {
     segmentCounts.sort((a, b) => {
       return b.segmentBeat - a.segmentBeat;
     });
@@ -30,7 +30,7 @@ export const minimalSegmentGenerator: SegmentGenerator = (
   return segmentCounts;
 };
 
-const isDownBeat = (currentPosition: number) => {
+const isDownbeat = (currentPosition: number) => {
   return Math.floor(currentPosition) === currentPosition; //Is down beat if there is no fractional part of current position
 };
 

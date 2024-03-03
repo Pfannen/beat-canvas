@@ -57,7 +57,3 @@ export const minimalSegmentGenerator: SegmentGenerator = (
 
   return segmentCounts;
 };
-
-const isDownBeat = (currentPosition: number) => {
-  return Math.floor(currentPosition) === currentPosition; //Is down beat if there is no fractional part of current position
-};
