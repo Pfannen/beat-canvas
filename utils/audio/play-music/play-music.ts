@@ -4,7 +4,7 @@ import { MusicScore } from '@/types/music';
 import { playPart } from './play-part';
 import { getInstrument } from '../instruments';
 import { ToneInstrumentSpecifier } from '@/types/audio/instrument';
-import { ScoreVolumeManager } from '../ScoreVolumeManager';
+import { ScoreVolumeManager } from '../volume';
 
 // TODO: Look into multiple parts not each specifying metronome
 export const playMusicScore = (score: MusicScore) => {
@@ -31,18 +31,23 @@ export const playMusicScore = (score: MusicScore) => {
 
 export const ohWhatANight: Measure[] = [
 	{
-		attributes: {
-			metronome: {
-				beatNote: 4,
-				beatsPerMinute: 106,
+		attributes: [
+			{
+				x: 0,
+				attributes: {
+					metronome: {
+						beatNote: 4,
+						beatsPerMinute: 106,
+					},
+					timeSignature: {
+						beatNote: 4,
+						beatsPerMeasure: 4,
+					},
+					keySignature: 0,
+					clef: 'bass',
+				},
 			},
-			timeSignature: {
-				beatNote: 4,
-				beatsPerMeasure: 4,
-			},
-			keySignature: 0,
-			clef: 'bass',
-		},
+		],
 		notes: [
 			{ x: 0, y: 4, type: 'dotted-eighth' },
 			{ x: 0.75, y: 5, type: 'sixteenth' },

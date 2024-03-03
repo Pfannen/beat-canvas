@@ -3,6 +3,7 @@ import {
 	ToneInstrumentSpecifier,
 } from '@/types/audio/instrument';
 import { ScoreVolumeModifier, ToneInstrumentMap } from '@/types/audio/volume';
+import { Dynamic } from '@/types/music/note-annotations';
 import { Volume } from 'tone';
 
 export class ScoreVolumeManager extends ScoreVolumeModifier {
@@ -73,3 +74,25 @@ export class ScoreVolumeManager extends ScoreVolumeModifier {
 		if (masterVolume) masterVolume.volume.value = volumeValue;
 	};
 }
+
+// Temporary method, dynamics should affect volume, not velocity
+export const dynamicToVelocity = (dynamic: Dynamic) => {
+	switch (dynamic) {
+		case 'pp':
+			return 0.2;
+		case 'p':
+			return 0.25;
+		case 'mp':
+			return 0.3;
+		case 'mf':
+			return 0.4;
+		case 'fp':
+			return 0.5;
+		case 'f':
+			return 0.6;
+		case 'ff':
+			return 0.7;
+		default:
+			return 0.3;
+	}
+};

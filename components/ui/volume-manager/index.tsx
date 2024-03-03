@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
 import classes from './VolumeManager.module.css';
 import { useMusic } from '@/components/providers/music';
-import { ScoreVolumeManager } from '@/utils/audio/ScoreVolumeManager';
+import { ScoreVolumeManager } from '@/utils/audio/volume';
 
 interface VolumeManagerProps {}
 

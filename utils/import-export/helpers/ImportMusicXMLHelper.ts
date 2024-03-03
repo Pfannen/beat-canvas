@@ -220,7 +220,7 @@ class ImportMusicXMLHelper {
 	) => {
 		const measureDetails: MeasureImportDetails = {
 			currentAttributes: measureAttributes,
-			newAttributes: {},
+			newTemporalAttributes: [],
 			notes: [],
 			curX: 0,
 		};
