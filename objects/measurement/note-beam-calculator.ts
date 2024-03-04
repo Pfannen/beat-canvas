@@ -17,6 +17,10 @@ export class NoteBeamCalculator {
       startNote,
       endNote
     );
+    const ordered = this.notesAreOrdered(noteCoordinates);
+    if (!ordered) {
+      return this.calculateNonOrderedData(noteCoordinates, direction);
+    }
     const lowerBound = 90 - angleTolerance;
     const upperBound = 90 + angleTolerance;
     let thresholdData;
@@ -100,7 +104,40 @@ export class NoteBeamCalculator {
     const beamLength = calculateHypotenuse(xDistance, sideA);
     return { beamLength, y1Offset, y2Offset };
   }
+
+  static notesAreOrdered(noteCoordinates: Coordinate[]) {
+    if (noteCoordinates[0].y === noteCoordinates[1].y) return false;
+    let isDecreasing = noteCoordinates[1].y < noteCoordinates[0].y;
+    let prevY = noteCoordinates[1].y;
+    for (let i = 2; i < noteCoordinates.length; i++) {
+      const currY = noteCoordinates[i].y;
+      if (isDecreasing) {
+        if (currY <= prevY) return false;
+      } else if (prevY <= currY) return false;
+      prevY = currY;
+    }
+    return true;
+  }
+
+  static calculateNonOrderedData(
+    notes: Coordinate[],
+    direction: NoteDirection
+  ): BeamData {
+    const reducer = direction === "up" ? greatestReducer : leastReducer;
+    const significantY = notes.reduce(reducer).y;
+    const noteOffsets = notes.map(({ y }) => Math.abs(y - significantY));
+    const beamLength = notes[notes.length - 1].x - notes[0].x;
+    return { beamAngle: 90, beamLength, noteOffsets };
+  }
 }
+
+const greatestReducer = (greatest: Coordinate, current: Coordinate) => {
+  return current.y > greatest.y ? current : greatest;
+};
+
+const leastReducer = (least: Coordinate, current: Coordinate) => {
+  return current.y < current.y ? current : least;
+};
 
 const calculateHypotenuse = (sideOne: number, sideTwo: number) => {
   return Math.sqrt(Math.pow(sideOne, 2) + Math.pow(sideTwo, 2));
