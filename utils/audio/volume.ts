@@ -1,77 +1,75 @@
 import {
-	ToneInstrument,
-	ToneInstrumentSpecifier,
-} from '@/types/audio/instrument';
-import { ScoreVolumeModifier, ToneInstrumentMap } from '@/types/audio/volume';
+	IVolumeNodeModifier,
+	IVolumeValueModifer,
+	VolumeManagerParams,
+	VolumeNode,
+	VolumeNodeMap,
+} from '@/types/audio/volume';
 import { Dynamic } from '@/types/music/note-annotations';
 import { Volume } from 'tone';
 
-export class ScoreVolumeManager extends ScoreVolumeModifier {
-	private static maxDecibels = 10;
-	private static minDecibels = -30;
-	static defaultVolumePct = 0.7;
+export class VolumeManager implements IVolumeNodeModifier, IVolumeValueModifer {
+	private minDecibels = -30;
+	private maxDecibels = 10;
+	defaultVolumePct = 0.5;
+	defaultDecibels = VolumeManager.getVolumeValue(
+		this.defaultVolumePct,
+		this.minDecibels,
+		this.maxDecibels
+	);
 
-	private static instrumentMap?: ToneInstrumentMap;
-	private static masterVolume?: Volume;
+	masterVolumeId = 'master';
 
-	static musicScoreName?: string;
-	static masterAudioId = 'master';
+	private volumeMap: VolumeNodeMap = {};
+	private masterVolume = new Volume(this.defaultDecibels).toDestination();
 
-	private static getVolumeValue = (volumePct: number) => {
+	constructor(volumeParams?: VolumeManagerParams) {
+		if (volumeParams) Object.assign(this, volumeParams);
+		this.masterVolume.volume.value = this.defaultDecibels;
+		this.volumeMap[this.masterVolumeId] = this.masterVolume;
+	}
+
+	static getVolumeValue = (
+		volumePct: number,
+		minDecibels: number,
+		maxDecibels: number
+	) => {
 		if (volumePct === 0) return -Infinity;
 
-		const maxDecibelOffset =
-			this.minDecibels < 0 ? this.minDecibels * -1 : this.minDecibels;
+		const maxDecibelOffset = minDecibels * -1;
 
-		const max = this.maxDecibels + maxDecibelOffset;
+		const max = maxDecibels + maxDecibelOffset;
 		const volumeWithOffset = volumePct * max;
 		const volume = volumeWithOffset - maxDecibelOffset;
 
 		return volume;
 	};
 
-	static modifyVolume = (audioId: string, volumePct: number) => {
-		const volumeValue = this.getVolumeValue(volumePct);
-
-		if (this.instrumentMap && audioId in this.instrumentMap) {
-			this.instrumentMap[audioId].volume.value = volumeValue;
-		} else if (this.masterVolume && audioId === this.masterAudioId) {
-			this.masterVolume.volume.value = volumeValue;
+	modifyVolume = (audioId: string, volumePct: number) => {
+		if (audioId in this.volumeMap) {
+			const volumeValue = VolumeManager.getVolumeValue(
+				volumePct,
+				this.minDecibels,
+				this.maxDecibels
+			);
+			this.volumeMap[audioId].volume.value = volumeValue;
 		}
 	};
 
-	static getInstrument = (instrumentId: string) => {
-		if (this.instrumentMap && instrumentId in this.instrumentMap)
-			return this.instrumentMap[instrumentId];
+	mute = (audioId: string) => {
+		if (audioId in this.volumeMap) {
+			this.volumeMap[audioId];
+		}
 	};
 
-	static getInstrumentsIfAllExist = (instrumentIds: string[]) => {
-		if (!this.instrumentMap) return null;
-
-		const instruments: ToneInstrumentMap = {};
-		for (const id of instrumentIds) {
-			if (id in this.instrumentMap) instruments[id] = this.instrumentMap[id];
-			else return null;
-		}
-
-		return instruments;
+	addVolumeNode = (audioId: string, volumeNode: VolumeNode) => {
+		volumeNode.connect(this.masterVolume);
+		volumeNode.volume.value = this.defaultDecibels;
+		this.volumeMap[audioId] = volumeNode;
 	};
 
-	static setInstruments = (
-		musicScoreName: string,
-		instruments: ToneInstrumentSpecifier[],
-		masterVolume?: Volume
-	) => {
-		this.musicScoreName = musicScoreName;
-		this.instrumentMap = {};
-		const volumeValue = this.getVolumeValue(this.defaultVolumePct);
-		for (const { id, instrument } of instruments) {
-			this.instrumentMap[id] = instrument;
-			instrument.volume.value = volumeValue;
-		}
-
-		this.masterVolume = masterVolume;
-		if (masterVolume) masterVolume.volume.value = volumeValue;
+	removeVolumeNode = (audioId: string) => {
+		delete this.volumeMap[audioId];
 	};
 }
 

@@ -27,14 +27,8 @@ const synth = () => new Tone.Synth();
 const polySynth = () => new Tone.PolySynth();
 const sampler = () => new Tone.Sampler();
 
-export const getInstrument = (
-	name: string,
-	volumeNode?: Tone.Volume
-): ToneInstrument => {
+export const getInstrument = (name: string): ToneInstrument => {
 	const instrument = synth();
-
-	if (volumeNode) instrument.connect(volumeNode);
-	else instrument.toDestination();
 
 	return instrument;
 };

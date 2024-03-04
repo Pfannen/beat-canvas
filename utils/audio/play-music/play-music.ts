@@ -4,29 +4,35 @@ import { MusicScore } from '@/types/music';
 import { playPart } from './play-part';
 import { getInstrument } from '../instruments';
 import { ToneInstrumentSpecifier } from '@/types/audio/instrument';
-import { ScoreVolumeManager } from '../volume';
+import { IVolumeNodeModifier } from '@/types/audio/volume';
 
 // TODO: Look into multiple parts not each specifying metronome
-export const playMusicScore = (score: MusicScore) => {
+export const playMusicScore = (
+	score: MusicScore,
+	volumeNodeModifier?: IVolumeNodeModifier
+) => {
 	const { title, parts } = score;
 	console.log('Now playing: ' + title);
 
-	const masterVolume = new Volume(6).toDestination();
-
 	const instruments: ToneInstrumentSpecifier[] = [];
 
-	// Make sure there's enough time to queue all the parts up
-	const musicStart = now() + parts.length * 0.2;
+	const musicStart = now() + 0.15;
 	for (const part of parts) {
 		const { attributes } = part;
-		const instrument = getInstrument(attributes.instrument, masterVolume);
+		const instrument = getInstrument(attributes.instrument);
+
+		if (volumeNodeModifier) {
+			volumeNodeModifier.addVolumeNode(attributes.id, instrument);
+		} else {
+			instrument.toDestination();
+		}
 
 		playPart(part, instrument, musicStart);
 
 		instruments.push({ id: part.attributes.id, instrument });
 	}
 
-	ScoreVolumeManager.setInstruments(title, instruments, masterVolume);
+	return instruments;
 };
 
 export const ohWhatANight: Measure[] = [
