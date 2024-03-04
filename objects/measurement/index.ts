@@ -8,6 +8,8 @@ import MeasurePositions, {
 import { NoteDirection } from "@/lib/notes/types";
 import { getNoteDuration } from "@/components/providers/music/utils";
 
+export type BeamableNoteData = { x: number; y: number; duration: number };
+
 export default class Measurement {
   private bodyCt = 9;
   private aboveBelowCount: number;
@@ -104,13 +106,17 @@ export default class Measurement {
     return this.unitConverter;
   }
 
+  public getNoteDirection(yPos: number) {
+    return yPos < this.getMiddleYPos() ? "up" : "down";
+  }
+
   public getNoteBeamData(
-    notes: Note[],
+    notes: BeamableNoteData[],
     direction: NoteDirection,
     notesAreCentered = true
   ) {
-    const coordinates = notes.map(({ x, y, type }) => {
-      const center = notesAreCentered ? getNoteDuration(type, 4) / 2 : 0;
+    const coordinates = notes.map(({ x, y, duration }) => {
+      const center = notesAreCentered ? duration / 2 : 0;
       const xPos = this.unitConverter.convert(
         "xPos",
         "measureUnit",

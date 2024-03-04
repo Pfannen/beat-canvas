@@ -23,13 +23,13 @@ export type Note = {
 };
 
 export type NoteRenderData = {
-  stemOffset?: number;
+  stemOffset: number;
   noteDirection: NoteDirection;
 } & Partial<RenderData> &
   Note;
 
 export type RenderData = {
-  beamData: any; //Merge beam data branch for this
+  beamData: { angle: number; length: number };
   slurData: { x: number; y: number };
   nonBodyData: { numLines: number; isOnLine: boolean; isAboveBody: boolean }; // If this is undefined the note is a body component (where this information doesn't apply)
 };
