@@ -1,4 +1,5 @@
 import { FunctionComponent, Key } from "react";
+import { NoteProps } from "./ui/note";
 
 export type YAxis = "top" | "bottom";
 export type XAxis = "left" | "right";
@@ -7,10 +8,25 @@ export type Axis = { xAxis: XAxis; yAxis: YAxis };
 
 export type AxisProps = Partial<Axis>;
 
+type RequiredNotePropKeys =
+  | "staffHeightMultiplier"
+  | "staffWidthMultipler"
+  | "type"
+  | "direction"
+  | "bodyHeight"
+  | "unit";
+
+export type AttributeNoteProps = Required<
+  Pick<NoteProps, RequiredNotePropKeys>
+> &
+  Omit<NoteProps, RequiredNotePropKeys>;
+
 export interface NoteAttributeComponent<T> {
   container: T;
-  key: Key; //For passing in as the "key" prop
-  component: FunctionComponent<AxisProps>;
+  component: (
+    axisProps: AxisProps,
+    noteProps: AttributeNoteProps
+  ) => ReturnType<FunctionComponent>;
 }
 
 export type BodyPosition =

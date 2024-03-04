@@ -3,7 +3,7 @@ import { LedgerComponentRenderer, generateMeasureComponents } from "../utils";
 import {
   ComponentFractions,
   MeasureUtils,
-} from "@/objects/music/note-position";
+} from "@/objects/measurement/note-position";
 
 type Props = {
   belowBody?: number;

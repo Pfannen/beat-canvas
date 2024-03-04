@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import {
+  AttributeNoteProps,
   Axis,
   BodyAttribute,
   BodyPosition,
@@ -14,13 +15,7 @@ import { NoteType } from "@/components/providers/music/types";
 
 type AttributeReducer = (attribute: BodyAttribute | StaffAttribute) => void;
 
-export const reduceAttributes = (
-  direction: NoteDirection,
-  type: NoteType,
-  attributes: NonConfigAttributes[] = [],
-  extraAttributes: (BodyAttribute | StaffAttribute)[] = [],
-  getTypeComponents = true
-) => {
+export const reduceAttributes = (noteProps: AttributeNoteProps) => {
   const bodyComponents: ReactNode[] = [];
   const staffComponents: ReactNode[] = [];
 
@@ -28,17 +23,21 @@ export const reduceAttributes = (
     attribute: BodyAttribute | StaffAttribute
   ) => {
     if (attribute.container === "body") {
-      bodyComponents.push(getBodyComponent(direction, attribute));
+      bodyComponents.push(
+        getBodyComponent(noteProps.direction, attribute, noteProps)
+      );
     } else {
-      staffComponents.push(getStaffComponent(direction, attribute));
+      staffComponents.push(
+        getStaffComponent(noteProps.direction, attribute, noteProps)
+      );
     }
   };
 
-  reduceNonConfigAttributes(attributes, reducer);
-  if (getTypeComponents) {
-    reduceNonConfigAttributes(getNoteTypeComponents(type), reducer);
+  reduceNonConfigAttributes(noteProps.attributes, reducer);
+  if (noteProps.attachTypeAttributes) {
+    reduceNonConfigAttributes(getNoteTypeComponents(noteProps.type), reducer);
   }
-  extraAttributes.forEach((a) => {
+  noteProps.extraAttributes?.forEach((a) => {
     reducer(a);
   });
 
@@ -46,10 +45,10 @@ export const reduceAttributes = (
 };
 
 const reduceNonConfigAttributes = (
-  attributes: NonConfigAttributes[],
+  attributes: NonConfigAttributes[] | undefined,
   reducer: AttributeReducer
 ) => {
-  attributes.forEach((attribute) => {
+  attributes?.forEach((attribute) => {
     const a = attributeMap[attribute];
     reducer(a);
   });
@@ -57,20 +56,20 @@ const reduceNonConfigAttributes = (
 
 const getBodyComponent = (
   direction: NoteDirection,
-  attribute: BodyAttribute
+  attribute: BodyAttribute,
+  noteProps: AttributeNoteProps
 ) => {
   const position = getBodyPosition(direction, attribute.position || "top");
-  const Component = attribute.component;
-  return <Component {...position} key={attribute.key} />;
+  return attribute.component(position, noteProps);
 };
 
 const getStaffComponent = (
   direction: NoteDirection,
-  attribute: StaffAttribute
+  attribute: StaffAttribute,
+  noteProps: AttributeNoteProps
 ) => {
-  const Component = attribute.component;
   const dir = getStaffDirection(direction, attribute.direction);
-  return <Component {...dir} key={attribute.key} />;
+  return attribute.component(dir, noteProps);
 };
 
 const getBodyPosition = (

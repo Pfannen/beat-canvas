@@ -6,7 +6,7 @@ import { CSSProperties, FunctionComponent, ReactNode } from "react";
 import { fractionToPercent } from "@/utils";
 import { ComponentProps } from "@/types/polymorphic";
 import { concatClassNames } from "@/utils/css";
-import { ComponentFractions } from "@/objects/music/note-position";
+import { ComponentFractions } from "@/objects/measurement/note-position";
 
 const bodyCt = 9;
 
