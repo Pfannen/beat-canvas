@@ -6,9 +6,13 @@ import MeasurePositions, {
   NotePositionNote,
 } from "./note-position";
 import { NoteDirection } from "@/lib/notes/types";
-import { getNoteDuration } from "@/components/providers/music/utils";
 
-export type BeamableNoteData = { x: number; y: number; duration: number };
+export type BeamableNoteData = {
+  x: number;
+  y: number;
+  duration: number;
+  stemOffset: number;
+}; //stemOffset is in measureUnits
 
 export default class Measurement {
   private bodyCt = 9;
@@ -115,7 +119,7 @@ export default class Measurement {
     direction: NoteDirection,
     notesAreCentered = true
   ) {
-    const coordinates = notes.map(({ x, y, duration }) => {
+    const coordinates = notes.map(({ x, y, duration, stemOffset }) => {
       const center = notesAreCentered ? duration / 2 : 0;
       const xPos = this.unitConverter.convert(
         "xPos",
@@ -123,7 +127,7 @@ export default class Measurement {
         x + center
       );
       const yPos = this.unitConverter.convert("yPos", "measureUnit", y);
-      return { x: xPos, y: yPos };
+      return { x: xPos, y: yPos + stemOffset };
     });
     console.log(coordinates);
     const data = NoteBeamCalculator.getPositionData(coordinates, direction, 25);
