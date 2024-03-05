@@ -61,10 +61,20 @@ export class NoteBeamCalculator {
         }
       }
     }
+    const intersectFn = getYIntersection.bind(null, {
+      point: { ...startNote, y: startNote.y + startNoteOffset },
+      angle: beamAngle,
+    });
+    const noteOffsets = [startNoteOffset];
+    for (let i = 1; i < noteCoordinates.length - 1; i++) {
+      const note = noteCoordinates[i];
+      noteOffsets.push(Math.abs(note.y - intersectFn(note)));
+    }
+    noteOffsets.push(endNoteOffset);
     return {
       beamAngle,
       beamLength,
-      noteOffsets: [startNoteOffset, endNoteOffset],
+      noteOffsets,
     };
   }
   static calculateEndpointData(pointOne: Coordinate, pointTwo: Coordinate) {
@@ -112,8 +122,8 @@ export class NoteBeamCalculator {
     for (let i = 2; i < noteCoordinates.length; i++) {
       const currY = noteCoordinates[i].y;
       if (isDecreasing) {
-        if (currY <= prevY) return false;
-      } else if (prevY <= currY) return false;
+        if (prevY <= currY) return false;
+      } else if (currY <= prevY) return false;
       prevY = currY;
     }
     return true;
@@ -136,7 +146,7 @@ const greatestReducer = (greatest: Coordinate, current: Coordinate) => {
 };
 
 const leastReducer = (least: Coordinate, current: Coordinate) => {
-  return current.y < current.y ? current : least;
+  return current.y < least.y ? current : least;
 };
 
 const calculateHypotenuse = (sideOne: number, sideTwo: number) => {
@@ -154,3 +164,17 @@ const getSideLengths = (pointOne: Coordinate, pointTwo: Coordinate) => {
 const radiansToDegrees = (radians: number) => radians * (180 / Math.PI);
 
 const degreesToRadians = (degrees: number) => degrees * (Math.PI / 180);
+
+const getYIntersection = (
+  beam: { point: Coordinate; angle: number },
+  pointOne: Coordinate
+) => {
+  if (beam.angle === 90) {
+    return beam.point.y;
+  }
+  const m = Math.tan(degreesToRadians(beam.angle));
+  const b = beam.point.y - m * beam.point.x;
+  const pointSlopeFormula = (x: number) => m * x + b;
+  const yIntersect = pointSlopeFormula(pointOne.x);
+  return yIntersect;
+};

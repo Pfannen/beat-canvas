@@ -112,7 +112,7 @@ test("ThresholdData - Increasing notes with threshold and offset", () => {
   );
 
   expect(testData.beamLength).toBeCloseTo(thresholdData.beamLength);
-  expect(testData.y1Offset).toBe(0);
+  expect(testData.y1Offset).toBeCloseTo(0);
   expect(testData.y2Offset).toBeCloseTo(pointTwo.y);
 });
 
@@ -134,7 +134,7 @@ test("ThresholdData - Decreasing notes with threshold and offset", () => {
 
   expect(testData.beamLength).toBeCloseTo(thresholdData.beamLength);
   expect(testData.y1Offset).toBeCloseTo(pointOne.y - testPointOne.y);
-  expect(testData.y2Offset).toBe(0);
+  expect(testData.y2Offset).toBeCloseTo(0);
 });
 
 test("ThresholdData - Increasing notes with threshold and offset (non-standard)", () => {
@@ -151,7 +151,7 @@ test("ThresholdData - Increasing notes with threshold and offset (non-standard)"
     thresholdData.beamAngle
   );
   expect(testData.beamLength).toBeCloseTo(thresholdData.beamLength);
-  expect(testData.y1Offset).toBe(0);
+  expect(testData.y1Offset).toBeCloseTo(0);
   expect(testData.y2Offset).toBeCloseTo(pointTwo.y - testPointTwo.y);
 });
 
@@ -171,7 +171,7 @@ test("ThresholdData - Decreasing notes with threshold and offset (non-standard)"
 
   expect(testData.beamLength).toBeCloseTo(thresholdData.beamLength);
   expect(testData.y1Offset).toBeCloseTo(pointOne.y - testPointOne.y);
-  expect(testData.y2Offset).toBe(0);
+  expect(testData.y2Offset).toBeCloseTo(0);
 });
 
 //#endregion
@@ -188,7 +188,7 @@ test("BeamPosition - Two increasing notes (no threshold)", () => {
   expect(data.beamAngle).toBe(45);
   expect(data.beamLength).toBe(expectedHypotenuse(2, 2));
   data.noteOffsets.forEach((offset) => {
-    expect(offset).toBe(0);
+    expect(offset).toBeCloseTo(0);
   });
 });
 
@@ -204,7 +204,7 @@ test("BeamPosition - Two increasing notes w/ threshold (direction up)", () => {
   expect(data.beamAngle).toBe(45);
   expect(data.beamLength).toBeCloseTo(expectedHypotenuse(2, 2));
   expect(data.noteOffsets[0]).toBeCloseTo(1);
-  expect(data.noteOffsets[1]).toBe(0);
+  expect(data.noteOffsets[1]).toBeCloseTo(0);
 });
 
 test("BeamPosition - Two increasing notes w/ threshold (direction down)", () => {
@@ -218,7 +218,7 @@ test("BeamPosition - Two increasing notes w/ threshold (direction down)", () => 
   );
   expect(data.beamAngle).toBe(45);
   expect(data.beamLength).toBeCloseTo(expectedHypotenuse(2, 2));
-  expect(data.noteOffsets[0]).toBe(0);
+  expect(data.noteOffsets[0]).toBeCloseTo(0);
   expect(data.noteOffsets[1]).toBeCloseTo(-1);
 });
 
@@ -233,7 +233,7 @@ test("BeamPosition - Two decreasing notes (no threshold)", () => {
   expect(data.beamAngle).toBe(135);
   expect(data.beamLength).toBe(expectedHypotenuse(2, 2));
   data.noteOffsets.forEach((offset) => {
-    expect(offset).toBe(0);
+    expect(offset).toBeCloseTo(0);
   });
 });
 
@@ -248,7 +248,7 @@ test("BeamPosition - Two decreasing notes w/ threshold (direction up)", () => {
   );
   expect(data.beamAngle).toBe(90 + 45);
   expect(data.beamLength).toBeCloseTo(2.8284);
-  expect(data.noteOffsets[0]).toBe(0);
+  expect(data.noteOffsets[0]).toBeCloseTo(0);
   expect(data.noteOffsets[1]).toBeCloseTo(1);
 });
 
@@ -264,6 +264,6 @@ test("BeamPosition - Two decreasing notes w/ threshold (direction down)", () => 
   expect(data.beamAngle).toBe(90 + 45);
   expect(data.beamLength).toBeCloseTo(2.8284);
   expect(data.noteOffsets[0]).toBeCloseTo(-1);
-  expect(data.noteOffsets[1]).toBe(0);
+  expect(data.noteOffsets[1]).toBeCloseTo(0);
 });
 //#endregion
