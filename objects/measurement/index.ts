@@ -11,7 +11,7 @@ export type BeamableNoteData = {
   x: number;
   y: number;
   duration: number;
-  stemOffset: number;
+  stemOffset?: number;
 }; //stemOffset is in measureUnits
 
 export default class Measurement {
@@ -127,7 +127,7 @@ export default class Measurement {
         x + center
       );
       const yPos = this.unitConverter.convert("yPos", "measureUnit", y);
-      return { x: xPos, y: yPos + stemOffset };
+      return { x: xPos, y: yPos + (stemOffset || 0) };
     });
     const data = NoteBeamCalculator.getPositionData(coordinates, direction, 25);
     data.beamLength = this.unitConverter.convert(

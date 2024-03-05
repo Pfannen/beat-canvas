@@ -1,26 +1,26 @@
-import {
-  NoteRenderData,
-  TimeSignature,
-} from "@/components/providers/music/types";
-import { getNoteDuration } from "../../../../components/providers/music/utils";
+import { NoteRenderData } from "@/components/providers/music/types";
 import Measurement, { BeamableNoteData } from "@/objects/measurement";
 import { isBeamable } from "../../../../utils/music";
 import { getDecimalPortion } from "../../../../utils";
+import { ReadonlyMusic } from "../../measure-data-container";
 
 export const attachBeamData = (
-  measureNotes: NoteRenderData[],
-  timeSignature: TimeSignature,
-  subdivisionLength: number,
+  music: ReadonlyMusic,
+  noteRenderData: NoteRenderData[],
+  measureIndex: number,
   measurement: Measurement
 ) => {
+  const subdivisionLength = music.getMeasureSubdivisionLength(measureIndex);
+  const noteCount = music.getMeasureNoteCount(measureIndex);
   let currentDivision = 0; // The current subdivision of the measure the notes in beamStack are in (dont want to beam notes across "segments")
   let beamStack: BeamableNoteData[] = []; // The notes that should be beamed together
   let startNoteIndex = 0; // The index of the first note in the beam stack
-  measureNotes.forEach((note, i) => {
+  for (let i = 0; i < noteCount; i++) {
+    const note = music.getNoteData(measureIndex, i);
     let processStack = true; // If the notes in the beam stack should be beamed (this will be toggled if necessary)
     let currNote: BeamableNoteData | undefined; // The note to be pushed onto the beam stack (if undefined, no note should be pushed)
     if (isBeamable(note.type)) {
-      const duration = getNoteDuration(note.type, timeSignature.beatNote);
+      const duration = music.getNoteDuration(measureIndex, i);
       const { start, end } = noteStartEndDivisions(
         note.x,
         duration,
@@ -28,7 +28,11 @@ export const attachBeamData = (
       );
       // If the note only belongs to one division
       if (start === end) {
-        currNote = getBeamableNoteData(note, duration);
+        currNote = {
+          ...note,
+          duration,
+          stemOffset: noteRenderData[i].stemOffset,
+        };
         // If this is the first note to go on the beam stack
         if (beamStack.length === 0) {
           startNoteIndex = i;
@@ -48,12 +52,12 @@ export const attachBeamData = (
     }
     // If process stack was set to true (the current note wasn't beamable or it was in a different division)
     if (processStack) {
-      processBeamStack(measureNotes, startNoteIndex, beamStack, measurement);
+      processBeamStack(noteRenderData, startNoteIndex, beamStack, measurement);
       startNoteIndex = i;
       beamStack = currNote ? [currNote] : [];
     }
-  });
-  processBeamStack(measureNotes, startNoteIndex, beamStack, measurement);
+  }
+  processBeamStack(noteRenderData, startNoteIndex, beamStack, measurement);
 };
 
 const processBeamStack = (
@@ -65,49 +69,21 @@ const processBeamStack = (
   //If there is actually more than one note to beam
   if (beamStack.length > 1) {
     let upCount = 0;
-    beamStack.forEach(({ y }) => {
-      if (measurement.getNoteDirection(y) === "up") upCount++;
-    });
+    for (let i = 0; i < beamStack.length; i++) {
+      if (measureNotes[i + startNoteIndex].noteDirection === "up") upCount++;
+    }
     const direction = beamStack.length / 2 < upCount ? "up" : "down"; //All notes should be the same direction so this will make the direction whatever the most common direction was
     const data = measurement.getNoteBeamData(beamStack, direction);
     const firstNote = measureNotes[startNoteIndex];
     firstNote.beamData = { angle: data.beamAngle, length: data.beamLength }; //Give the first note in the stack the data
     for (let i = 0; i < beamStack.length; i++) {
       const note = measureNotes[i + startNoteIndex];
-      note.stemOffset += data.noteOffsets[i];
+      if (data.noteOffsets[i]) {
+        note.stemOffset = data.noteOffsets[i] + (note.stemOffset || 0); //Only attach this property if necessary
+      }
       note.noteDirection = direction;
     }
   }
-};
-
-const getBeamableNoteData = (
-  note: NoteRenderData,
-  duration: number
-): BeamableNoteData => ({
-  x: note.x,
-  y: note.y,
-  duration,
-  stemOffset: note.stemOffset,
-});
-
-const noteIsInDivision = (
-  x: number,
-  duration: number,
-  subdivisionLength: number,
-  currentSubdivision: number
-) => {
-  const { start, end } = noteStartEndDivisions(x, duration, subdivisionLength);
-  if (start === end) return start === currentSubdivision;
-  return false;
-};
-
-const noteCrossesDivisions = (
-  x: number,
-  duration: number,
-  subdivisionLength: number
-) => {
-  const { start, end } = noteStartEndDivisions(x, duration, subdivisionLength);
-  return start !== end;
 };
 
 const noteStartEndDivisions = (

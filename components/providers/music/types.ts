@@ -23,10 +23,9 @@ export type Note = {
 };
 
 export type NoteRenderData = {
-  stemOffset: number;
+  stemOffset?: number;
   noteDirection: NoteDirection;
-} & Partial<RenderData> &
-  Note;
+} & Partial<RenderData>;
 
 export type RenderData = {
   beamData: { angle: number; length: number };
