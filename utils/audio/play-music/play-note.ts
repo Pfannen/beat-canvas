@@ -11,11 +11,13 @@ import { MeasureAttributes } from '@/types/music';
 import { Synth } from 'tone';
 import { Note } from '@/components/providers/music/types';
 import { ToneInstrument } from '@/types/audio/instrument';
+import { PersistentNotePlayingAttributes } from '@/types/music/note-annotations';
 
 export const playNote = (
 	note: Note,
 	measureAttributes: MeasureAttributes,
 	instrument: ToneInstrument,
+	persistentAttr: PersistentNotePlayingAttributes,
 	curX: number,
 	now: number
 ) => {
@@ -28,18 +30,36 @@ export const playNote = (
 
 	applyKeySignature(keySignature, pitchOctave);
 
-	const noteAttributes = constructNoteAttributes(pitchOctave, noteDuration);
+	const noteAttributes = constructNoteAttributes(
+		pitchOctave,
+		noteDuration,
+		persistentAttr
+	);
 	applyNoteAnnotations(noteAttributes, annotations);
 
 	const fullNote = getFullNote(noteAttributes.pitchOctave);
 	//console.log(fullNote);
 
-	updateInstrument(instrument, noteAttributes.instrumentProps);
+	// Extract the persistent attributes so we can apply them to the note and update
+	// them with 'persist'
+	const { cur, applyToNote, persist } = noteAttributes.persistentAttributes;
+
+	updateInstrument(instrument, applyToNote.instrumentProps);
+
+	let velocity =
+		applyToNote.velocity !== undefined ? applyToNote.velocity : cur.velocity;
+	// Clamp velocity between 0 and 1
+	velocity = Math.min(1, Math.max(0, velocity));
 
 	instrument.triggerAttackRelease(
 		fullNote,
 		noteAttributes.duration * secondsPerBeat,
 		now + (curX + x) * secondsPerBeat,
-		noteAttributes.velocity
+		velocity
 	);
+
+	// Write back persist to persistentAttr so they are reflected in future playNote calls
+	Object.assign(persistentAttr, persist);
+	// Update the instrument to have the 'persist' instrument props so they are persisted
+	updateInstrument(instrument, persist.instrumentProps);
 };

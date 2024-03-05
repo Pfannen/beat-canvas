@@ -73,8 +73,8 @@ const getMeasuresJS = (part: Element) => {
 			notes: measureDetails.notes,
 		};
 
-		if (Object.keys(measureDetails.newAttributes).length > 0) {
-			measure.attributes = measureDetails.newAttributes;
+		if (measureDetails.newTemporalAttributes.length > 0) {
+			measure.attributes = measureDetails.newTemporalAttributes;
 		}
 
 		measures.push(measure);

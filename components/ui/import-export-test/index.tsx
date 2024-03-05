@@ -10,11 +10,17 @@ import {
 	importMusicXMLScore,
 } from '@/utils/import-export';
 import { useMusic } from '@/components/providers/music';
+import { PlaybackManager } from '@/utils/audio/playback';
 
-interface ImportExportPageProps {}
+interface ImportExportPageProps {
+	playbackManager?: PlaybackManager;
+}
 
-const ImportExportPage: FunctionComponent<ImportExportPageProps> = () => {
-	const inputRef = useRef<HTMLInputElement>(null);
+const ImportExportPage: FunctionComponent<ImportExportPageProps> = ({
+	playbackManager,
+}) => {
+	const scoreInputRef = useRef<HTMLInputElement>(null);
+	const audioInputRef = useRef<HTMLInputElement>(null);
 	const { musicScore, setNewMusicScore, replaceMeasures } = useMusic();
 
 	return (
@@ -33,18 +39,19 @@ const ImportExportPage: FunctionComponent<ImportExportPageProps> = () => {
 			>
 				Export MusicXML
 			</TaskbarButton>
+			<p>MusicXML --</p>
 			<input
 				type="file"
-				ref={inputRef}
+				ref={scoreInputRef}
 				accept=".xml, .musicxml"
 				onChange={() => {
 					console.log('hit');
-					if (!inputRef.current || !inputRef.current.files) {
+					if (!scoreInputRef.current || !scoreInputRef.current.files) {
 						console.log('no file');
 						return;
 					}
 
-					const file = inputRef.current.files[0];
+					const file = scoreInputRef.current.files[0];
 					console.log(file.type);
 					// TODO: Allow musicxml files to bring back the IF check
 					if (
@@ -62,10 +69,25 @@ const ImportExportPage: FunctionComponent<ImportExportPageProps> = () => {
 					}
 				}}
 			/>
+			<p>Audio --</p>
+			<input
+				type="file"
+				accept=".mp3"
+				ref={audioInputRef}
+				onChange={() => {
+					const input = audioInputRef.current;
+					if (!input || !input.files || !playbackManager) return;
+
+					playbackManager.setImportedAudio(input.files[0], (success) =>
+						console.log('Imported audio: ' + success)
+					);
+				}}
+			/>
 
 			<TaskbarButton
 				onClick={() => {
-					if (musicScore && musicScore.parts) playMusicScore(musicScore);
+					if (playbackManager) playbackManager.play();
+					else if (musicScore && musicScore.parts) playMusicScore(musicScore);
 				}}
 			>
 				Play

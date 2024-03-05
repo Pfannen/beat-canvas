@@ -1,4 +1,5 @@
 import { Measure, TimeSignature } from '@/components/providers/music/types';
+import { Dynamic } from './note-annotations';
 
 export type Pitch = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 
@@ -36,10 +37,19 @@ export type MeasureAttributes = {
 	timeSignature: TimeSignature;
 	keySignature: number;
 	clef: Clef;
+	dynamic: Dynamic;
 };
 
 export type PartialMeasureAttributes = Partial<MeasureAttributes>;
 
+export type TemporalMeasureAttributes = {
+	x: number;
+	attributes: Partial<MeasureAttributes>;
+};
+
 export type MeasureAttributesMXML = MeasureAttributes & {
 	quarterNoteDivisions: number;
 };
+
+export type TimedMeasureAttributesMXML = TemporalMeasureAttributes &
+	MeasureAttributesMXML;

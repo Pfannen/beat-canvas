@@ -4,6 +4,7 @@ import {
 	MeasureAttributesMXML,
 	PartialMeasureAttributes,
 	Pitch,
+	TemporalMeasureAttributes,
 } from '../music';
 import { NoteAnnotations } from '../music/note-annotations';
 
@@ -51,7 +52,7 @@ export type MeasureImportDetails = {
 	currentAttributes: MeasureAttributesMXML;
 	// The attributes that are new to the measure - should also update currentAttributes if this is set
 	// Will be placed on the measure created from combining these properties
-	newAttributes: PartialMeasureAttributes;
+	newTemporalAttributes: TemporalMeasureAttributes[];
 	// The measure's notes
 	notes: Note[];
 	// The current x-position within the measure

@@ -21,6 +21,10 @@ const clefBasePitchOctave: { [key in Clef]: PitchOctave } = {
 	},
 };
 
+const cCharCode = 'C'.charCodeAt(0);
+const aCharCode = 'A'.charCodeAt(0);
+const gCharCode = 'G'.charCodeAt(0);
+
 export const getNoteFromYPos = (yPos: number, clef: Clef) => {
 	const { pitch, octave } = clefBasePitchOctave[clef];
 
@@ -33,23 +37,25 @@ export const getNoteFromYPos = (yPos: number, clef: Clef) => {
 
 	// Could've gone too far right with pitch
 	if (yPos > 0) {
-		if (targetPitch > 'G'.charCodeAt(0)) {
-			const overflow = targetPitch - 'G'.charCodeAt(0);
+		if (targetPitch > gCharCode) {
+			const overflow = targetPitch - gCharCode;
 			// If we overflowed 1, that means we want an A
-			targetPitch = 'A'.charCodeAt(0) + (overflow - 1);
-			// If we had to scale up to reach the target pitch, that means anytime the target pitch is above or equal to a C AND we had overflow, it's an octave higher
-			if (targetPitch >= 'C'.charCodeAt(0)) targetOctave += 1;
+			targetPitch = aCharCode + (overflow - 1);
 		}
+		// If we had to scale up to reach the target pitch, that means anytime the target pitch is above or equal to a C and the base pitch is lower than a C, it's an octave higher
+		if (targetPitch >= cCharCode && pitch.charCodeAt(0) < cCharCode)
+			targetOctave += 1;
 	}
 	// Could've gone too far left with pitch
 	else if (yPos < 0) {
-		if (targetPitch < 'A'.charCodeAt(0)) {
-			const overflow = 'A'.charCodeAt(0) - targetPitch;
+		if (targetPitch < aCharCode) {
+			const overflow = aCharCode - targetPitch;
 			// If we overflowed 1, that means we want a G
-			targetPitch = 'G'.charCodeAt(0) - (overflow - 1);
-			// If we had to scale down to reach the target pitch, that means anytime the target pitch is lower than a C AND we had overflow, it's an octave lower
-			if (targetPitch < 'C'.charCodeAt(0)) targetOctave -= 1;
+			targetPitch = gCharCode - (overflow - 1);
 		}
+		// If we had to scale down to reach the target pitch, that means anytime the target pitch is lower than a C and the base pitch is a C or higher, it's an octave lower
+		if (targetPitch < cCharCode && pitch.charCodeAt(0) >= cCharCode)
+			targetOctave -= 1;
 	}
 	return {
 		pitch: String.fromCharCode(targetPitch),

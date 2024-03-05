@@ -14,6 +14,8 @@ import Helper from './ImportMusicXMLHelper';
 import { durationToNoteType, getYPosFromNote } from '@/utils/music';
 import { convertImportedDuration, musicXMLToClef } from '@/utils/musicXML';
 import { Note } from '@/components/providers/music/types';
+import { assignTemporalMeasureAttributes } from '@/utils/music/measure-attributes';
+import { Dynamic } from '@/types/music/note-annotations';
 
 const noteImportHelper: MeasureImportHelper = (mD, el) => {
 	if (!verifyTagName(el, 'note')) return;
@@ -62,32 +64,7 @@ const metronomeImportHelper: MeasureImportHelper = (mD, el) => {
 	};
 	mD.currentAttributes.metronome = metronome;
 
-	if (!mD.newAttributes) mD.newAttributes = { metronome };
-	else mD.newAttributes.metronome = metronome;
-};
-
-const attributesImportHelper: MeasureImportHelper = (mD, el) => {
-	const newAttributes: Partial<MeasureAttributesMXML> = {};
-
-	const { children } = el;
-	for (let i = 0; i < children.length; i++) {
-		const child = children[i];
-		if (child.tagName in attributesImportHelperMap) {
-			attributesImportHelperMap[child.tagName](newAttributes, child);
-		}
-	}
-
-	const keys = Object.keys(
-		newAttributes
-	) as (keyof Partial<MeasureAttributesMXML>)[];
-	if (keys.length > 0) {
-		for (const key of keys) {
-			// TODO: Remove never cast
-			mD.currentAttributes[key] = newAttributes[key] as never;
-		}
-		delete newAttributes.quarterNoteDivisions;
-		mD.newAttributes = newAttributes;
-	}
+	assignTemporalMeasureAttributes(mD.newTemporalAttributes, { metronome }, mD.curX);
 };
 
 const directionImportHelper: MeasureImportHelper = (mD, el) => {
@@ -130,8 +107,7 @@ const soundImportHelper: MeasureImportHelper = (mD, el) => {
 
 	mD.currentAttributes.metronome = metronome;
 
-	if (!mD.newAttributes) mD.newAttributes = { metronome };
-	else mD.newAttributes.metronome = metronome;
+	assignTemporalMeasureAttributes(mD.newTemporalAttributes, { metronome }, mD.curX);
 };
 
 const backupImportHelper: MeasureImportHelper = (mD, el) => {
@@ -153,15 +129,12 @@ const backupImportHelper: MeasureImportHelper = (mD, el) => {
 	//mD.curX = mD.currentAttributes.timeSignature.beatsPerMeasure;
 };
 
-// TODO: Extract direction-specifc helpers into their own map
-export const measureImportHelperMap: MeasureImportHelperMap = {
-	attributes: attributesImportHelper,
-	note: noteImportHelper,
-	metronome: metronomeImportHelper,
-	direction: directionImportHelper,
-	'direction-type': directionTypeImportHelper,
-	sound: soundImportHelper,
-	backup: backupImportHelper,
+const dynamicsImportHelper: MeasureImportHelper = (mD, el) => {
+	if (!verifyTagName(el, 'dynamics') || !el.children.length) return;
+
+	const dynamic = el.children[0].tagName as Dynamic;
+	mD.currentAttributes.dynamic = dynamic;
+	assignTemporalMeasureAttributes(mD.newTemporalAttributes, { dynamic }, mD.curX);
 };
 
 const divisionsImportHelper: MeasureAttributesImportHelper = (
@@ -206,6 +179,35 @@ const keySignatureImportHelper: MeasureAttributesImportHelper = (a, el) => {
 	const fifthsXML = getSingleElement(el, 'fifths', true);
 	if (!fifthsXML) return;
 	a.keySignature = +fifthsXML!.textContent!;
+};
+
+const attributesImportHelper: MeasureImportHelper = (mD, el) => {
+	const newAttributes: Partial<MeasureAttributesMXML> = {};
+
+	const { children } = el;
+	for (let i = 0; i < children.length; i++) {
+		const child = children[i];
+		if (child.tagName in attributesImportHelperMap) {
+			attributesImportHelperMap[child.tagName](newAttributes, child);
+		}
+	}
+
+	Object.assign(mD.currentAttributes, newAttributes);
+	delete newAttributes.quarterNoteDivisions;
+
+	assignTemporalMeasureAttributes(mD.newTemporalAttributes, newAttributes, mD.curX);
+};
+
+// TODO: Extract direction-specifc helpers into their own map
+export const measureImportHelperMap: MeasureImportHelperMap = {
+	attributes: attributesImportHelper,
+	note: noteImportHelper,
+	metronome: metronomeImportHelper,
+	direction: directionImportHelper,
+	'direction-type': directionTypeImportHelper,
+	sound: soundImportHelper,
+	backup: backupImportHelper,
+	dynamics: dynamicsImportHelper,
 };
 
 export const attributesImportHelperMap: MeasureAttributesImportHelperMap = {

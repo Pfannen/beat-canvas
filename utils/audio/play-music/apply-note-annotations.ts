@@ -2,21 +2,31 @@ import { PitchOctave } from '@/types/music';
 import {
 	NoteAnnotation,
 	NoteAnnotations,
-	NoteAttributes,
+	NoteAudioAttributes,
 	NoteAttributesModifier,
+	PersistentNotePlayingAttributes,
 } from '@/types/music/note-annotations';
 
 const staccatoApplier: NoteAttributesModifier = (attr, annotations) => {
-	if (annotations.staccato) attr.duration /= 2;
+	if (!annotations.staccato) return;
+
+	attr.duration /= 2;
+	const { applyToNote } = attr.persistentAttributes;
+	applyToNote.instrumentProps.release = 0.5;
 };
 
 const slurApplier: NoteAttributesModifier = (attr, annotations) => {
 	const { slur } = annotations;
 	if (!slur) return;
 
-	const { instrumentProps: iP } = attr;
-	if (slur === 'start') iP.portamento = 0.2;
-	else iP.portamento = 0;
+	const { applyToNote, persist } = attr.persistentAttributes;
+	if (slur === 'start') {
+		persist.instrumentProps.decay = 0.00001;
+		persist.instrumentProps.attack = 0;
+	} else {
+		persist.instrumentProps.decay = 0.1;
+		persist.instrumentProps.attack = 0.005;
+	}
 };
 
 const accidentalApplier: NoteAttributesModifier = (attr, annotations) => {
@@ -30,22 +40,32 @@ const accidentalApplier: NoteAttributesModifier = (attr, annotations) => {
 
 const accentApplier: NoteAttributesModifier = (attr, annotations) => {
 	const { accent } = annotations;
-	if (accent) {
-		accent === 'weak' ? (attr.velocity = 0.4) : (attr.velocity = 0.5);
-	}
+	if (!accent) return;
+
+	const { persistentAttributes: pA } = attr;
+	const curVelocity = pA.cur.velocity;
+	let newVelocity = Math.max(1, curVelocity * 1.1);
+	if (accent === 'strong') newVelocity = Math.max(1, curVelocity * 1.25);
+
+	pA.applyToNote.velocity = newVelocity;
 };
 
 const dynamicApplier: NoteAttributesModifier = (attr, annotations) => {
 	const { dynamic } = annotations;
-	if (dynamic) {
-		if (dynamic[0] === 'p') attr.volumePercentage = 0.2;
-		else if (dynamic[0] === 'm') attr.volumePercentage = 0.5;
-		else attr.volumePercentage = 0.8;
-	}
+	if (!dynamic) return;
+
+	const { applyToNote, persist } = attr.persistentAttributes;
+	let newVelocity = 0.2;
+	if (dynamic[0] === 'm') newVelocity = 0.5;
+	else newVelocity = 0.8;
+
+	console.log('dynamic change ' + dynamic);
+	applyToNote.velocity = newVelocity;
+	persist.velocity = newVelocity;
 };
 
 export const applyNoteAnnotations = (
-	noteAttributes: NoteAttributes,
+	noteAttributes: NoteAudioAttributes,
 	annotations?: NoteAnnotations
 ) => {
 	if (!annotations) return;
@@ -69,15 +89,16 @@ export const annotationApplier: {
 export const constructNoteAttributes = (
 	pitchOctave: PitchOctave,
 	duration: number,
-	volumePercentage?: number,
-	velocity?: number
+	curPersistent: PersistentNotePlayingAttributes
 ) => {
-	const nA: NoteAttributes = {
+	const nA: NoteAudioAttributes = {
 		pitchOctave,
-		volumePercentage: volumePercentage || 1,
-		velocity: velocity || 0.3,
 		duration,
-		instrumentProps: {},
+		persistentAttributes: {
+			cur: curPersistent,
+			applyToNote: { instrumentProps: {} },
+			persist: { instrumentProps: {} },
+		},
 	};
 	return nA;
 };
