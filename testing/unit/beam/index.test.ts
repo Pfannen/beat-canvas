@@ -267,3 +267,43 @@ test("BeamPosition - Two decreasing notes w/ threshold (direction down)", () => 
   expect(data.noteOffsets[1]).toBeCloseTo(0);
 });
 //#endregion
+
+//#region Beam Position Data with >2 notes
+test("Beam Position- Increasing 4 notes", () => {
+  const notes: Coordinate[] = [
+    { x: 0, y: 0 },
+    { x: 1, y: 1 },
+    { x: 2, y: 2 },
+    { x: 3, y: 3 },
+    { x: 4, y: 4.5 },
+    { x: 5, y: 5 },
+  ];
+  const beamData = NoteBeamCalculator.getPositionData(notes, "up", 45);
+  beamData.noteOffsets.forEach((offset, i) => {
+    if (i === 4) {
+      expect(offset).toBeCloseTo(0.5);
+    } else {
+      expect(offset).toBeCloseTo(0);
+    }
+  });
+});
+
+test("Beam Position- Decreasing 4 notes", () => {
+  const notes: Coordinate[] = [
+    { x: 0, y: 5 },
+    { x: 1, y: 4 },
+    { x: 2, y: 3 },
+    { x: 3, y: 2 },
+    { x: 4, y: 0.5 },
+    { x: 5, y: 0 },
+  ];
+  const beamData = NoteBeamCalculator.getPositionData(notes, "up", 45);
+  beamData.noteOffsets.forEach((offset, i) => {
+    if (i === 4) {
+      expect(offset).toBeCloseTo(0.5);
+    } else {
+      expect(offset).toBeCloseTo(0);
+    }
+  });
+});
+//#endregion

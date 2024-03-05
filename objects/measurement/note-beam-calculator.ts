@@ -62,7 +62,7 @@ export class NoteBeamCalculator {
       }
     }
     const intersectFn = getYIntersection.bind(null, {
-      point: { ...startNote, y: startNote.y + startNoteOffset },
+      point: startNote,
       angle: beamAngle,
     });
     const noteOffsets = [startNoteOffset];
