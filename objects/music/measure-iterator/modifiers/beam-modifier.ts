@@ -1,5 +1,4 @@
 import {
-  Note,
   NoteRenderData,
   TimeSignature,
 } from "@/components/providers/music/types";
@@ -50,6 +49,7 @@ export const attachBeamData = (
     // If process stack was set to true (the current note wasn't beamable or it was in a different division)
     if (processStack) {
       processBeamStack(measureNotes, startNoteIndex, beamStack, measurement);
+      startNoteIndex = i;
       beamStack = currNote ? [currNote] : [];
     }
   });
@@ -62,7 +62,7 @@ const processBeamStack = (
   beamStack: BeamableNoteData[],
   measurement: Measurement
 ) => {
-  //If there are actually two notes to beam
+  //If there is actually more than one note to beam
   if (beamStack.length > 1) {
     let upCount = 0;
     beamStack.forEach(({ y }) => {

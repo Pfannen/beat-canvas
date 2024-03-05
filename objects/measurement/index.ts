@@ -129,7 +129,6 @@ export default class Measurement {
       const yPos = this.unitConverter.convert("yPos", "measureUnit", y);
       return { x: xPos, y: yPos + stemOffset };
     });
-    console.log(coordinates);
     const data = NoteBeamCalculator.getPositionData(coordinates, direction, 25);
     data.beamLength = this.unitConverter.convert(
       "measureUnit",
