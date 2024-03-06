@@ -61,7 +61,7 @@ export const attachBeamData = (
 };
 
 const processBeamStack = (
-  measureNotes: NoteRenderData[],
+  noteData: NoteRenderData[],
   startNoteIndex: number,
   beamStack: BeamableNoteData[],
   measurement: Measurement
@@ -70,14 +70,14 @@ const processBeamStack = (
   if (beamStack.length > 1) {
     let upCount = 0;
     for (let i = 0; i < beamStack.length; i++) {
-      if (measureNotes[i + startNoteIndex].noteDirection === "up") upCount++;
+      if (noteData[i + startNoteIndex].noteDirection === "up") upCount++;
     }
     const direction = beamStack.length / 2 < upCount ? "up" : "down"; //All notes should be the same direction so this will make the direction whatever the most common direction was
     const data = measurement.getNoteBeamData(beamStack, direction);
-    const firstNote = measureNotes[startNoteIndex];
+    const firstNote = noteData[startNoteIndex];
     firstNote.beamData = { angle: data.beamAngle, length: data.beamLength }; //Give the first note in the stack the data
     for (let i = 0; i < beamStack.length; i++) {
-      const note = measureNotes[i + startNoteIndex];
+      const note = noteData[i + startNoteIndex];
       if (data.noteOffsets[i]) {
         note.stemOffset = data.noteOffsets[i] + (note.stemOffset || 0); //Only attach this property if necessary
       }
@@ -94,6 +94,8 @@ const noteStartEndDivisions = (
   const start = Math.floor(x / subdivisionLength);
   const endPoint = x + duration;
   let end = Math.floor(endPoint / subdivisionLength);
-  if (getDecimalPortion(endPoint) === 0) end--;
+  if (getDecimalPortion(endPoint) === 0 && endPoint % subdivisionLength === 0)
+    end--;
+
   return { start, end };
 };

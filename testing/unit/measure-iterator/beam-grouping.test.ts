@@ -124,7 +124,6 @@ test("Note Direction - Majority down", () => {
     { x: 0.5, y: 8, type: "sixteenth" },
   ];
   const { music, renderData, measureIndex } = getAttachmentArgs(notes);
-
   attachBeamData(music, renderData, measureIndex, measurement);
   renderData.forEach((note) => expect(note.noteDirection).toBe("down"));
 });

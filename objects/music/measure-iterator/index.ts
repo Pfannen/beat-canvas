@@ -31,7 +31,7 @@ export const initializeMeasureRenderData = (
   const renderData: NoteRenderData[] = new Array(noteCount);
   for (let i = 0; i < noteCount; i++) {
     const note = music.getNoteData(measureIndex, i);
-    renderData.push({ noteDirection: measurement.getNoteDirection(note.x) });
+    renderData[i] = { noteDirection: measurement.getNoteDirection(note.y) };
   }
   return renderData;
 };
