@@ -1,8 +1,8 @@
+import { getRestsForDuration } from "@/objects/music/music-iterator";
 import {
   NoteType,
   TimeSignature,
 } from "../../../components/providers/music/types";
-import { getRestsForDuration } from "../../../objects/music/measure-iterator";
 
 const sixEight: TimeSignature = { beatsPerMeasure: 6, beatNote: 8 };
 const fourFour: TimeSignature = { beatsPerMeasure: 4, beatNote: 4 };

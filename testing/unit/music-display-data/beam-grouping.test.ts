@@ -1,11 +1,8 @@
-import Measurement from "../../../objects/measurement";
-import { attachBeamData } from "../../../objects/music/measure-iterator/modifiers/beam-modifier";
-import {
-  Note,
-  NoteRenderData,
-} from "../../../components/providers/music/types";
-import { Music } from "../../..//objects/music/measure-data-container";
-import { initializeMeasureRenderData } from "../../..//objects/music/measure-iterator";
+import { Note, NoteRenderData } from "@/components/providers/music/types";
+import Measurement from "@/objects/measurement";
+import { Music } from "@/objects/music/measure-data-container";
+import { initializeMeasureRenderData } from "@/objects/music/music-display-data";
+import { attachBeamData } from "@/objects/music/music-display-data/modifiers/beam-modifier";
 
 const componentsBelowBody = 5;
 const segmentFraction = 0.25;

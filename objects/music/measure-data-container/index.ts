@@ -4,6 +4,7 @@ import {
   TimeSignature,
 } from "@/components/providers/music/types";
 import { getNoteDuration } from "@/components/providers/music/utils";
+import { MeasureAttributes } from "@/types/music";
 import { NoteAnnotation } from "@/types/music/note-annotations";
 import { beamableSubdivisionLength } from "@/utils/music";
 
@@ -11,6 +12,7 @@ export interface ReadonlyMusic {
   getMeasureCount(): number;
   getMeasureNoteCount(measureIndex: number): number;
   getMeasureTimeSignature(measureIndex: number): TimeSignature;
+  getMeasureAnnotations(measureIndex: number): Measure["attributes"];
   getNoteData(
     measureIndex: number,
     noteIndex: number
@@ -69,6 +71,15 @@ export class Music implements ReadonlyMusic {
     return this.measures[measureIndex].notes.length;
   }
 
+  getMeasureAnnotations(
+    measureIndex: number
+  ): Partial<MeasureAttributes> | undefined {
+    if (this.measures) {
+      return { ...this.measures[measureIndex].attributes };
+    }
+    return undefined;
+  }
+
   getMeasureTimeSignature(measureIndex: number): TimeSignature {
     return { beatsPerMeasure: 4, beatNote: 4 }; //Add time signauture data later
   }
@@ -80,6 +91,7 @@ export class Music implements ReadonlyMusic {
     const note = measure.notes[noteIndex];
     return { x: note.x, y: note.y, type: note.type };
   }
+
   noteHasAnnotation(
     measureIndex: number,
     noteIndex: number,
