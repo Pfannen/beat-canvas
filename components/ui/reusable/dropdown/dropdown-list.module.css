@@ -1,0 +1,21 @@
+.dropdown {
+	position: relative;
+	z-index: 2;
+}
+
+.ul {
+	position: absolute;
+	left: 0;
+	z-index: 1;
+	transition: all 0.5s;
+}
+
+.hide {
+	transform: translateY(-100%);
+	opacity: 0;
+}
+
+.show {
+	transform: translateY(0);
+	opacity: 1;
+}

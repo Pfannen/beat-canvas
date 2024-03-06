@@ -6,6 +6,8 @@ import { FunctionComponent, useEffect, useRef } from 'react';
 import { useMusic } from '@/components/providers/music';
 import VolumeManager from '@/components/ui/volume-manager';
 import { PlaybackManager } from '@/utils/audio/playback';
+import ImportScoreDropdown from '@/components/ui/taskbar/dropdown/import-score-dropdown';
+import ImportAudioDropdown from '@/components/ui/taskbar/dropdown/import-audio-dropdown';
 
 type ImportExportTestPageProps = {};
 
