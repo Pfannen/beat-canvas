@@ -4,10 +4,12 @@ import {
   NoteRenderData,
   TimeSignature,
 } from "@/components/providers/music/types";
-import { getNoteDuration } from "@/components/providers/music/utils";
 import { Rest } from "@/types/music/render-data";
 import { getDecimalPortion } from "@/utils";
 import { durationToRestType, isDownbeat } from "@/utils/music";
+import { ReadonlyMusic } from "../measure-data-container";
+import Measurement from "@/objects/measurement";
+import { MusicDisplayData } from "../music-display-data";
 
 type NoteComponent = { type: "note"; note: Note; renderData: NoteRenderData };
 type RestComponent = { type: "rest"; rest: Rest };
@@ -27,7 +29,7 @@ type MusicCallbacks = {
 };
 
 export class MusicIterator {
-  static iterate(
+  static staticIterate(
     measures: Measure[],
     measureRenderData: NoteRenderData[][],
     callbacks: MusicCallbacks,
@@ -62,6 +64,15 @@ export class MusicIterator {
       );
       cb({ attributes: measure.attributes, components }, i);
     });
+  }
+  static iterate(
+    music: ReadonlyMusic,
+    measurement: Measurement,
+    cb: IteratorCallback
+  ) {
+    const renderData = MusicDisplayData.attach(music, measurement);
+    const measures = music.getMeasures();
+    this.staticIterate(measures, renderData, music, cb);
   }
 }
 
