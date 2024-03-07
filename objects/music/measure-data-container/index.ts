@@ -13,7 +13,7 @@ export interface ReadonlyMusic {
   getMeasureNoteCount(measureIndex: number): number;
   getMeasureTimeSignature(measureIndex: number): TimeSignature;
   getMeasureAnnotations(measureIndex: number): Measure["attributes"];
-  getMeasures(): Measure[];
+  // getMeasures(): Measure[];
   getMeasureNotes(measureIndex: number): Note[];
   getNoteData(
     measureIndex: number,
@@ -86,14 +86,18 @@ export class Music implements ReadonlyMusic {
     return { beatsPerMeasure: 4, beatNote: 4 }; //Add time signauture data later
   }
 
+  // getMeasures(): Measure[] {
+  //   if (!this.measures) return [];
+  //   return this.measures.map((measure, i) => {
+  //     return {
+  //       attributes: { ...measure.attributes },
+  //       notes: this.getMeasureNotes(i),
+  //     };
+  //   });
+  // }
+
   getMeasures(): Measure[] {
-    if (!this.measures) return [];
-    return this.measures.map((measure, i) => {
-      return {
-        attributes: { ...measure.attributes },
-        notes: this.getMeasureNotes(i),
-      };
-    });
+    return this.measures || [];
   }
 
   getMeasureNotes(measureIndex: number): Note[] {
