@@ -1,6 +1,6 @@
 export const fractionToPercent = (val: number) => numToUnit(val, "%");
 
-export const numToUnit = (val: number, unit: "px" | "%") => {
+export const numToUnit = (val: number, unit: "px" | "%" | "deg") => {
   if (unit === "%") {
     val *= 100;
   }
@@ -9,3 +9,5 @@ export const numToUnit = (val: number, unit: "px" | "%") => {
 
 export const numIsUndefined = <T>(val?: number) =>
   val === undefined ? false : true;
+
+export const getDecimalPortion = (val: number) => val % 1;

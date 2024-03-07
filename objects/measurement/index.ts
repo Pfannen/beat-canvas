@@ -1,12 +1,27 @@
-import NotePosition, { MeasureUtils, NotePositionNote } from "../note-position";
+import { Note } from "@/components/providers/music/types";
+import { MeasureUnitConverter } from "./measure-unit-converter";
+import { NoteBeamCalculator } from "./note-beam-calculator";
+import MeasurePositions, {
+  MeasureUtils,
+  NotePositionNote,
+} from "./note-position";
+import { NoteDirection } from "@/lib/notes/types";
+
+export type BeamableNoteData = {
+  x: number;
+  y: number;
+  duration: number;
+  stemOffset?: number;
+}; //stemOffset is in measureUnits
 
 export default class Measurement {
   private bodyCt = 9;
   private aboveBelowCount: number;
-  private notePosition: NotePosition;
+  private notePosition: MeasurePositions;
   private startsWithLine: boolean;
   private lineCount: number;
   private spaceCount: number;
+  private unitConverter: MeasureUnitConverter;
   constructor(
     aboveBelowCount: number,
     wholeSegmentLength: number,
@@ -24,7 +39,7 @@ export default class Measurement {
       this.aboveBelowCount * 2 + this.bodyCt - 1,
       this.startsWithLine
     );
-    this.notePosition = new NotePosition(
+    this.notePosition = new MeasurePositions(
       componentCount,
       aboveBelowCount,
       wholeSegmentLength,
@@ -32,6 +47,13 @@ export default class Measurement {
       this.startsWithLine,
       lineToSpaceRatio
     );
+    this.unitConverter = new MeasureUnitConverter({
+      widthHeightRatio: 4 / 3,
+      segmentFraction: wholeSegmentLength,
+      height: measureHeight,
+      getYOffset: this.notePosition.getYOffset,
+      componentFractions: this.notePosition.heights,
+    });
   }
 
   public getLineCount() {
@@ -82,5 +104,40 @@ export default class Measurement {
 
   public getMiddleYPos() {
     return Math.floor(this.bodyCt / 2);
+  }
+
+  public getUnitConverter() {
+    return this.unitConverter;
+  }
+
+  public getNoteDirection(yPos: number) {
+    return yPos < this.getMiddleYPos() ? "up" : "down";
+  }
+
+  public getNoteBeamData(
+    notes: BeamableNoteData[],
+    direction: NoteDirection,
+    notesAreCentered = true
+  ) {
+    const coordinates = notes.map(({ x, y, duration, stemOffset }) => {
+      const center = notesAreCentered ? duration / 2 : 0;
+      const xPos = this.unitConverter.convert(
+        "xPos",
+        "measureUnit",
+        x + center
+      );
+      const yPos = this.unitConverter.convert("yPos", "measureUnit", y);
+      return { x: xPos, y: yPos + (stemOffset || 0) };
+    });
+    const data = NoteBeamCalculator.getPositionData(coordinates, direction, 25);
+    data.beamLength = this.unitConverter.convert(
+      "measureUnit",
+      "measureSpace",
+      data.beamLength
+    );
+    data.noteOffsets = data.noteOffsets.map((offset) => {
+      return this.unitConverter.convert("measureUnit", "measureSpace", offset);
+    });
+    return data;
   }
 }
