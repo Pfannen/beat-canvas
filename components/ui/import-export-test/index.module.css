@@ -1,14 +1,19 @@
 .container {
 	display: grid;
 	grid-template-columns: 2fr 1fr;
-  align-items: center;
-  gap: 1rem;
+	align-items: center;
+	gap: 1rem;
 	padding: 1rem;
 	border-bottom: 1px solid black;
-  background-color: #3D434F;
+	background-color: #3d434f;
 }
 
 .imports {
 	display: flex;
 	justify-content: space-between;
+}
+
+.play_btn {
+	width: fit-content;
+	justify-self: center;
 }

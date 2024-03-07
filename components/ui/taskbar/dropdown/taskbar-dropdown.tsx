@@ -5,11 +5,13 @@ import DropdownList from '../../reusable/dropdown/dropdown-list';
 interface TaskbarDropdownProps {
 	title: string;
 	children: ReactNode;
+	headerIcon?: ReactNode;
 }
 
 const TaskbarDropdown: FunctionComponent<TaskbarDropdownProps> = ({
 	title,
 	children,
+	headerIcon,
 }) => {
 	return (
 		<>
@@ -17,6 +19,8 @@ const TaskbarDropdown: FunctionComponent<TaskbarDropdownProps> = ({
 				title={title}
 				className={classes.dropdown}
 				selectionsClassName={classes.selections}
+				headerClassName={classes.header}
+				headerIcon={headerIcon}
 			>
 				{children}
 			</DropdownList>

@@ -5,6 +5,7 @@ import JSONBracesSVG from '../../svg/json-braces';
 import { exportJSONScore, exportMusicXMLScore } from '@/utils/import-export';
 import { MusicScore } from '@/types/music';
 import XMLBracesSVG from '../../svg/xml-braces';
+import ExportIconSVG from '../../svg/export-icon-svg';
 
 interface ExportScoreDropdownProps {
 	musicScore?: MusicScore;
@@ -14,7 +15,7 @@ const ExportScoreDropdown: FunctionComponent<ExportScoreDropdownProps> = ({
 	musicScore,
 }) => {
 	return (
-		<TaskbarDropdown title="Export">
+		<TaskbarDropdown title="Export" headerIcon={<ExportIconSVG />}>
 			<button
 				onClick={() => {
 					if (musicScore) exportJSONScore(musicScore);

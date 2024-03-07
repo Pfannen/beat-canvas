@@ -2,37 +2,58 @@ import { FunctionComponent, ReactNode, useState } from 'react';
 import classes from './dropdown-list.module.css';
 import DropdownHeader, { DropdownHeaderProps } from './dropdown-header';
 import { concatClassNames } from '@/utils/css';
+import DropdownArrow from '../../svg/dropdown-arrow';
 
-interface DropdownListProps
-	extends Omit<DropdownHeaderProps, 'headerClassName'> {
+interface DropdownListProps {
 	children: ReactNode;
+	title: string;
+	headerIcon?: ReactNode;
+	headerClassName?: string;
 	className?: string;
 	selectionsClassName?: string;
 }
 
 const DropdownList: FunctionComponent<DropdownListProps> = ({
 	children,
+	title,
+	headerIcon,
+	headerClassName,
 	className,
 	selectionsClassName,
-	...headerProps
 }) => {
-	const [show, setShow] = useState(true);
+	const [show, setShow] = useState(false);
 
 	return (
 		<div className={concatClassNames(className, classes.dropdown)}>
-			<DropdownHeader
-				{...headerProps}
+			<div
+				className={concatClassNames(classes.header, headerClassName)}
 				onClick={() => setShow((prev) => !prev)}
-			/>
-			<ul
+			>
+				{headerIcon && <div className={classes.icon}>{headerIcon}</div>}
+				<p>{title}</p>
+				<DropdownArrow
+					className={concatClassNames(
+						classes.arrow,
+						show ? classes.show : classes.hide
+					)}
+				/>
+			</div>
+			<div
 				className={concatClassNames(
-					selectionsClassName,
-					classes.ul,
+					classes.dummy_div,
 					show ? classes.show : classes.hide
 				)}
 			>
-				{children}
-			</ul>
+				<ul
+					className={concatClassNames(
+						selectionsClassName,
+						classes.ul,
+						show ? classes.show : classes.hide
+					)}
+				>
+					{children}
+				</ul>
+			</div>
 		</div>
 	);
 };

@@ -36,6 +36,7 @@ const ImportExportPage: FunctionComponent<ImportExportPageProps> = ({
 					if (playbackManager) playbackManager.play();
 					else if (musicScore && musicScore.parts) playMusicScore(musicScore);
 				}}
+				className={classes.play_btn}
 			>
 				Play
 			</TaskbarButton>

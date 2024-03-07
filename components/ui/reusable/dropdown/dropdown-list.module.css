@@ -1,21 +1,66 @@
 .dropdown {
 	position: relative;
+}
+
+.header {
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	gap: 16px;
+	width: 100%;
 	z-index: 2;
 }
 
-.ul {
+.header:hover {
+	cursor: pointer;
+}
+
+.icon {
+	height: 15px;
+	width: 15px;
+}
+
+.icon > * {
+	width: 100%;
+}
+
+.arrow {
+	transition: all 0.5s ease-out;
+}
+
+.dummy_div {
+	width: 100%;
 	position: absolute;
+
 	left: 0;
-	z-index: 1;
 	transition: all 0.5s;
 }
 
-.hide {
-	transform: translateY(-100%);
-	opacity: 0;
+.ul {
+	position: relative;
+	transition: all 0.5s;
+	left: 0;
 }
 
-.show {
+.ul.hide {
+	transform: translateY(-100%);
+}
+
+.ul.show {
 	transform: translateY(0);
-	opacity: 1;
+}
+
+.dummy_div.hide {
+	clip-path: rect(auto auto 0 auto);
+}
+
+.dummy_div.show {
+	/*Gives extra room to the child content in the event it has box-shadow*/
+	clip-path: rect(-10px calc(100% + 10px) calc(100% + 10px) -10px);
+}
+
+.arrow.show {
+	transform: rotateZ(180deg);
 }
