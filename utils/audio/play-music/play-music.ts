@@ -3,13 +3,16 @@ import { Measure } from '@/components/providers/music/types';
 import { MusicScore } from '@/types/music';
 import { playPart } from './play-part';
 import { getInstrument } from '../instruments';
-import { ToneInstrumentSpecifier } from '@/types/audio/instrument';
+import {
+	ToneInstrument,
+	ToneInstrumentSpecifier,
+} from '@/types/audio/instrument';
 import { IVolumeNodeModifier } from '@/types/audio/volume';
 
 // TODO: Look into multiple parts not each specifying metronome
 export const playMusicScore = (
 	score: MusicScore,
-	volumeNodeModifier?: IVolumeNodeModifier
+	getInstrumentNode?: (name: string) => ToneInstrument | null
 ) => {
 	const { title, parts } = score;
 	console.log('Now playing: ' + title);
@@ -19,12 +22,14 @@ export const playMusicScore = (
 	const musicStart = now() + 0.15;
 	for (const part of parts) {
 		const { attributes } = part;
-		const instrument = getInstrument(attributes.instrument);
+		let instrument: ToneInstrument;
 
-		if (volumeNodeModifier) {
-			volumeNodeModifier.addVolumeNode(attributes.id, instrument);
+		if (getInstrumentNode) {
+			instrument =
+				getInstrumentNode(attributes.instrument) ||
+				getInstrument(attributes.instrument).toDestination();
 		} else {
-			instrument.toDestination();
+			instrument = getInstrument(attributes.instrument).toDestination();
 		}
 
 		playPart(part, instrument, musicStart);

@@ -1,53 +1,32 @@
 import { FunctionComponent } from 'react';
 import classes from './VolumeManager.module.css';
 import { useMusic } from '@/components/providers/music';
-import { IVolumeValueModifer } from '@/types/audio/volume';
+import { IVolumeValueModifer, VolumePairs } from '@/types/audio/volume';
 
 interface VolumeManagerProps {
-	volumeModifier: IVolumeValueModifer;
+	modifyVolume: (audioId: string, volumePct: number) => void;
+	volumePairs: VolumePairs;
 }
 
 const VolumeManager: FunctionComponent<VolumeManagerProps> = ({
-	volumeModifier,
+	modifyVolume,
+	volumePairs,
 }) => {
-	const { getPartAttributes } = useMusic();
-
 	return (
 		<>
-			<p>Master</p>
-			<input
-				type="range"
-				onChange={(event) => {
-					volumeModifier.modifyVolume('master', +event.target.value / 100);
-				}}
-				defaultValue={50}
-				style={{ display: 'block' }}
-			/>
-			{getPartAttributes().map((attributes) => (
-				<div key={attributes.id}>
-					<p>{attributes.name}</p>
+			{volumePairs.map((attributes) => (
+				<div key={attributes.audioId}>
+					<p>{attributes.audioId}</p>
 					<input
 						type="range"
 						onChange={(event) => {
-							volumeModifier.modifyVolume(
-								attributes.id,
-								+event.target.value / 100
-							);
+							modifyVolume(attributes.audioId, +event.target.value / 100);
 						}}
 						defaultValue={50}
 						style={{ display: 'block' }}
 					/>
 				</div>
 			))}
-			<p>Player</p>
-			<input
-				type="range"
-				onChange={(event) => {
-					volumeModifier.modifyVolume('player', +event.target.value / 100);
-				}}
-				defaultValue={50}
-				style={{ display: 'block' }}
-			/>
 		</>
 	);
 };

@@ -1,30 +1,59 @@
-import { IVolumeValueModifer } from '@/types/audio/volume';
+import { IVolumeValueModifer, VolumePairs } from '@/types/audio/volume';
 import { VolumeManager } from './volume';
 import { MusicScore } from '@/types/music';
 import { Player, ToneAudioBuffer, context } from 'tone';
 import { playMusicScore } from './play-music/play-music';
+import { isOnClient } from '..';
+import { getInstrument } from './instruments';
+import { ToneInstrument } from '@/types/audio/instrument';
 
-export class PlaybackManager implements IVolumeValueModifer {
-	private volumeManager?: VolumeManager;
-	private tonePlayer?: Player;
+export class PlaybackManager extends VolumeManager {
+	private tonePlayer: Player | null = null;
 
 	playerNodeId = 'player';
 	musicScore?: MusicScore;
 
 	constructor(musicScore?: MusicScore) {
+		super();
 		this.musicScore = musicScore;
-		// this.volumeManager.addVolumeNode(this.playerNodeId, this.tonePlayer);
 	}
 
 	setMusicScore = (musicScore?: MusicScore) => {
+		if (this.musicScore) {
+			this.musicScore.parts.forEach((part) =>
+				this.removeVolumeNode(part.attributes.instrument)
+			);
+		}
+
 		this.musicScore = musicScore;
+		if (this.musicScore) {
+			this.musicScore.parts.forEach((part) =>
+				this.addVolumeNode(
+					part.attributes.instrument,
+					getInstrument(part.attributes.instrument)
+				)
+			);
+		}
 	};
 
 	setImportedAudio = async (
-		audioFile: File,
+		audioFile?: File,
 		completed?: (success: boolean) => void
 	) => {
-		this.setRequiredFields();
+		if (!isOnClient()) return;
+
+		if (!audioFile) {
+			this.tonePlayer?.dispose();
+			this.tonePlayer = null;
+			this.removeVolumeNode(this.playerNodeId);
+			if (completed) completed(true);
+			return;
+		}
+
+		if (!this.tonePlayer) {
+			this.tonePlayer = new Player();
+			this.addVolumeNode(this.playerNodeId, this.tonePlayer);
+		}
 
 		const reader = new FileReader();
 		reader.onload = async (e) => {
@@ -44,24 +73,14 @@ export class PlaybackManager implements IVolumeValueModifer {
 		reader.readAsArrayBuffer(audioFile);
 	};
 
+	private instrumentGetter = (name: string) => {
+		const node = this.getVolumeNode(name);
+		if (!node) return null;
+		else return node as ToneInstrument;
+	};
+
 	play = () => {
-		this.setRequiredFields();
-		if (this.musicScore) playMusicScore(this.musicScore, this.volumeManager);
+		if (this.musicScore) playMusicScore(this.musicScore, this.instrumentGetter);
 		if (this.tonePlayer) this.tonePlayer.start();
-	};
-
-	modifyVolume = (id: string, v: number) => {
-		this.setRequiredFields();
-		this.volumeManager!.modifyVolume(id, v);
-	};
-
-	// TODO: Look into not needing this - NextJS executes client components on the server,
-	// which causes certain features Tone needs to work not exist (like AudioBuffer)
-	private setRequiredFields = () => {
-		if (!this.volumeManager) this.volumeManager = new VolumeManager();
-		if (!this.tonePlayer) {
-			this.tonePlayer = new Player();
-			this.volumeManager.addVolumeNode(this.playerNodeId, this.tonePlayer);
-		}
 	};
 }
