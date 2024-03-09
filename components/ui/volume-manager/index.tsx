@@ -1,11 +1,11 @@
 import { FunctionComponent } from 'react';
 import classes from './VolumeManager.module.css';
 import { useMusic } from '@/components/providers/music';
-import { IVolumeValueModifer, VolumePairs } from '@/types/audio/volume';
+import { IVolumeValueModifer, VolumePair } from '@/types/audio/volume';
 
 interface VolumeManagerProps {
 	modifyVolume: (audioId: string, volumePct: number) => void;
-	volumePairs: VolumePairs;
+	volumePairs: VolumePair[];
 }
 
 const VolumeManager: FunctionComponent<VolumeManagerProps> = ({

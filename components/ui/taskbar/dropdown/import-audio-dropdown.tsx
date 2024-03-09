@@ -7,11 +7,11 @@ import MP3SVG from '../../svg/mp3';
 import MusicFolderSVG from '../../svg/music-folder-svg';
 
 interface ImportAudioDropdownProps {
-	playbackManager: PlaybackManager;
+	setImportedAudio: (audio: File) => void;
 }
 
 const ImportAudioDropdown: FunctionComponent<ImportAudioDropdownProps> = ({
-	playbackManager,
+	setImportedAudio,
 }) => {
 	const mp3InputRef = useRef<HTMLInputElement>(null);
 
@@ -31,9 +31,7 @@ const ImportAudioDropdown: FunctionComponent<ImportAudioDropdownProps> = ({
 						if (!mp3InputRef.current || !mp3InputRef.current.files) return;
 
 						const file = mp3InputRef.current.files[0];
-						playbackManager.setImportedAudio(file, (success) =>
-							console.log('Imported audio: ' + success)
-						);
+						setImportedAudio(file);
 					}}
 				/>
 				<p>mp3</p>

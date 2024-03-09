@@ -16,6 +16,7 @@ export const playMusicScore = (
 ) => {
 	const { title, parts } = score;
 	console.log('Now playing: ' + title);
+	console.log(score);
 
 	const instruments: ToneInstrumentSpecifier[] = [];
 

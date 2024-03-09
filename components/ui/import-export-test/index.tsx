@@ -14,30 +14,27 @@ import { PlaybackManager } from '@/utils/audio/playback';
 import ImportScoreDropdown from '../taskbar/dropdown/import-score-dropdown';
 import ImportAudioDropdown from '../taskbar/dropdown/import-audio-dropdown';
 import ExportScoreDropdown from '../taskbar/dropdown/export-score-dropdown';
+import { MusicScore } from '@/types/music';
 
 interface ImportExportPageProps {
-	playbackManager: PlaybackManager;
+	setScore: (score: MusicScore) => void;
+	setImportedAudio: (audio: File) => void;
+	play: () => void;
 }
 
 const ImportExportPage: FunctionComponent<ImportExportPageProps> = ({
-	playbackManager,
+	setScore,
+	setImportedAudio,
+	play,
 }) => {
-	const { musicScore, setNewMusicScore, replaceMeasures } = useMusic();
-
 	return (
 		<div className={classes.container}>
 			<div className={classes.imports}>
 				<ExportScoreDropdown />
-				<ImportScoreDropdown setScore={setNewMusicScore} />
-				<ImportAudioDropdown playbackManager={playbackManager} />
+				<ImportScoreDropdown setScore={setScore} />
+				<ImportAudioDropdown setImportedAudio={setImportedAudio} />
 			</div>
-			<TaskbarButton
-				onClick={() => {
-					if (playbackManager) playbackManager.play();
-					else if (musicScore && musicScore.parts) playMusicScore(musicScore);
-				}}
-				className={classes.play_btn}
-			>
+			<TaskbarButton onClick={play} className={classes.play_btn}>
 				Play
 			</TaskbarButton>
 		</div>

@@ -6,28 +6,36 @@ import { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { useMusic } from '@/components/providers/music';
 import VolumeManager from '@/components/ui/volume-manager';
 import { PlaybackManager } from '@/utils/audio/playback';
-import { VolumePairs } from '@/types/audio/volume';
+import { VolumePair } from '@/types/audio/volume';
+import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
 
 type ImportExportTestPageProps = {};
 
 const ImportExportTestPage: FunctionComponent<
 	ImportExportTestPageProps
 > = () => {
-	const [volumePairs, setVolumePairs] = useState<VolumePairs>([]);
-	const playbackManager = useRef(new PlaybackManager());
-	const music = useMusic();
-
-	useEffect(() => {
-		playbackManager.current.setMusicScore(music.musicScore);
-		setVolumePairs(playbackManager.current.getVolumePairs());
-	}, [music.musicScore]);
+	const {
+		setScore,
+		setImportedAudio,
+		playbackManager,
+		volumeModifier,
+		volumePairs,
+	} = usePlayback();
+	const { musicScore, setNewMusicScore, replaceMeasures } = useMusic();
 
 	return (
 		<>
-			<ImportExportPage playbackManager={playbackManager.current} />
+			<ImportExportPage
+				setScore={(score) => {
+					setScore(score);
+					setNewMusicScore(score);
+				}}
+				setImportedAudio={setImportedAudio}
+				play={playbackManager.play}
+			/>
 			<VolumeManager
 				volumePairs={volumePairs}
-				modifyVolume={playbackManager.current.modifyVolume}
+				modifyVolume={volumeModifier.modifyVolume}
 			/>
 		</>
 	);

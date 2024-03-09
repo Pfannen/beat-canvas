@@ -14,7 +14,7 @@ export const initializeMeasureAttributes = (initialMeasure: Measure) => {
 
 	const metronome = attributes.metronome || {
 		beatNote: 4,
-		beatsPerMinute: 105,
+		beatsPerMinute: 103,
 	};
 	const timeSignature = attributes.timeSignature || {
 		beatNote: 4,

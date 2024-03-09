@@ -22,7 +22,7 @@ export type VolumeManagerParams = {
 	defaultVolumePct?: number;
 };
 
-export type VolumePairs = {
+export type VolumePair = {
 	audioId: string;
 	volumePercentage: number;
-}[];
+};

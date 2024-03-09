@@ -4,7 +4,7 @@ import {
 	VolumeManagerParams,
 	VolumeNode,
 	VolumeNodeMap,
-	VolumePairs,
+	VolumePair,
 } from '@/types/audio/volume';
 import { Dynamic } from '@/types/music/note-annotations';
 import { Volume } from 'tone';
@@ -87,7 +87,7 @@ export class VolumeManager implements IVolumeNodeModifier, IVolumeValueModifer {
 	};
 
 	getVolumePairs = () => {
-		const volumePairs: VolumePairs = Object.keys(this.volumeMap).map((key) => {
+		const volumePairs: VolumePair[] = Object.keys(this.volumeMap).map((key) => {
 			const node = this.volumeMap[key];
 			const volumePercentage = this.decibelsToPercentage(node.volume.value);
 			return { audioId: key, volumePercentage: volumePercentage };

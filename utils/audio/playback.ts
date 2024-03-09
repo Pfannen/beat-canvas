@@ -1,4 +1,4 @@
-import { IVolumeValueModifer, VolumePairs } from '@/types/audio/volume';
+import { IVolumeValueModifer } from '@/types/audio/volume';
 import { VolumeManager } from './volume';
 import { MusicScore } from '@/types/music';
 import { Player, ToneAudioBuffer, context } from 'tone';
@@ -36,7 +36,7 @@ export class PlaybackManager extends VolumeManager {
 		}
 	};
 
-	setImportedAudio = async (
+	setImportedAudio = (
 		audioFile?: File,
 		completed?: (success: boolean) => void
 	) => {
