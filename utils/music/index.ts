@@ -19,46 +19,93 @@ const clefBasePitchOctave: { [key in Clef]: PitchOctave } = {
 		pitch: 'E',
 		octave: 4,
 	},
+	baritone: {
+		pitch: 'B',
+		octave: 2,
+	},
+	tenor: {
+		pitch: 'D',
+		octave: 3,
+	},
+	soprano: {
+		pitch: 'C',
+		octave: 4,
+	},
 };
 
 const cCharCode = 'C'.charCodeAt(0);
 const aCharCode = 'A'.charCodeAt(0);
 const gCharCode = 'G'.charCodeAt(0);
 
+const increaseOctave = (targetPitchCC: number, basePitchCC: number) => {
+	// Case 1: The base pitch is above a C AND target pitch is between a C and the base pitch
+	// This occurs when the target pitch wraps around a G and ends up between a C and the base pitch
+	// There's a more concise way to write this with only 2 ANDs, but this way is clearer
+	if (
+		basePitchCC > cCharCode &&
+		targetPitchCC >= cCharCode &&
+		targetPitchCC < basePitchCC
+	)
+		return true;
+	// Case 2: The base pitch is below a C AND either the target pitch is above or equal to a C OR the target pitch is less than the base pitch
+	// This occurs when the target pitch is a C or above OR wraps from a G to a pitch less than the base pitch
+	if (
+		basePitchCC < cCharCode &&
+		(targetPitchCC >= cCharCode || targetPitchCC < basePitchCC)
+	)
+		return true;
+};
+
+const decreaseOctave = (targetPitchCC: number, basePitchCC: number) => {
+	// Case 1: The base pitch is below a C AND target pitch is between a C and the base pitch
+	// This occurs when the target pitch wraps around an A and ends up between a C and the base pitch
+	// There's a more concise way to write this with only 2 ANDs, but this way is clearer
+	if (
+		basePitchCC < cCharCode &&
+		targetPitchCC < cCharCode &&
+		targetPitchCC > basePitchCC
+	)
+		return true;
+	// Case 2: The base pitch is a C or above AND the target pitch is below a C OR the target pitch is above the base pitch
+	// This occurs when the target pitch is below a C OR wraps around an A to a pitch greater than the the base pitch
+	if (
+		basePitchCC >= cCharCode &&
+		(targetPitchCC < cCharCode || targetPitchCC > basePitchCC)
+	)
+		return true;
+};
+
 export const getNoteFromYPos = (yPos: number, clef: Clef) => {
-	const { pitch, octave } = clefBasePitchOctave[clef];
+	const { pitch: basePitch, octave: baseOctave } = clefBasePitchOctave[clef];
+	const basePitchCC = basePitch.charCodeAt(0);
 
 	// If yPos is -1, floor(-1/7) is -1 and we don't want that
 	const octaveSteps = Math.floor(Math.abs(yPos) / 7) * Math.sign(yPos);
 	const pitchSteps = yPos % 7;
 
-	let targetOctave = octave + octaveSteps;
-	let targetPitch = pitch.charCodeAt(0) + pitchSteps;
+	let targetOctave = baseOctave + octaveSteps;
+	let targetPitchCC = basePitchCC + pitchSteps;
 
 	// Could've gone too far right with pitch
 	if (yPos > 0) {
-		if (targetPitch > gCharCode) {
-			const overflow = targetPitch - gCharCode;
+		if (targetPitchCC > gCharCode) {
+			const overflow = targetPitchCC - gCharCode;
 			// If we overflowed 1, that means we want an A
-			targetPitch = aCharCode + (overflow - 1);
+			targetPitchCC = aCharCode + (overflow - 1);
 		}
-		// If we had to scale up to reach the target pitch, that means anytime the target pitch is above or equal to a C and the base pitch is lower than a C, it's an octave higher
-		if (targetPitch >= cCharCode && pitch.charCodeAt(0) < cCharCode)
-			targetOctave += 1;
+		if (increaseOctave(targetPitchCC, basePitchCC)) targetOctave += 1;
 	}
 	// Could've gone too far left with pitch
 	else if (yPos < 0) {
-		if (targetPitch < aCharCode) {
-			const overflow = aCharCode - targetPitch;
+		if (targetPitchCC < aCharCode) {
+			const overflow = aCharCode - targetPitchCC;
 			// If we overflowed 1, that means we want a G
-			targetPitch = gCharCode - (overflow - 1);
+			targetPitchCC = gCharCode - (overflow - 1);
 		}
-		// If we had to scale down to reach the target pitch, that means anytime the target pitch is lower than a C and the base pitch is a C or higher, it's an octave lower
-		if (targetPitch < cCharCode && pitch.charCodeAt(0) >= cCharCode)
-			targetOctave -= 1;
+		if (decreaseOctave(targetPitchCC, basePitchCC)) targetOctave -= 1;
 	}
 	return {
-		pitch: String.fromCharCode(targetPitch),
+		pitch: String.fromCharCode(targetPitchCC),
 		octave: targetOctave,
 	} as PitchOctave;
 };

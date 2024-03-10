@@ -20,7 +20,13 @@ export type MusicPartAttributes = {
 	name: string;
 };
 
-export type Clef = 'treble' | 'alto' | 'bass';
+export type Clef =
+	| 'treble'
+	| 'alto'
+	| 'bass'
+	| 'baritone'
+	| 'tenor'
+	| 'soprano';
 
 export type MusicScore = {
 	title: string;
