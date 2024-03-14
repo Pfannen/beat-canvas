@@ -80,7 +80,13 @@ export class PlaybackManager extends VolumeManager {
 	};
 
 	play = () => {
-		if (this.musicScore) playMusicScore(this.musicScore, this.instrumentGetter);
-		if (this.tonePlayer) this.tonePlayer.start();
+		if (this.musicScore)
+			playMusicScore(this.musicScore, {
+				getInstrumentNode: this.instrumentGetter,
+				onPlay: () => {
+					if (this.tonePlayer) this.tonePlayer.start();
+				},
+			});
+		else if (this.tonePlayer) this.tonePlayer.start();
 	};
 }

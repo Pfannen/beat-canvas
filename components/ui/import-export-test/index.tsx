@@ -1,16 +1,8 @@
 'use client';
 
-import { FunctionComponent, useRef } from 'react';
+import { FunctionComponent } from 'react';
 import classes from './index.module.css';
 import TaskbarButton from '@/components/ui/taskbar/buttons/taskbar-button';
-import { playMusicScore } from '@/utils/audio/play-music/play-music';
-import {
-	exportJSONScore,
-	exportMusicXMLScore,
-	importMusicXMLScore,
-} from '@/utils/import-export';
-import { useMusic } from '@/components/providers/music';
-import { PlaybackManager } from '@/utils/audio/playback';
 import ImportScoreDropdown from '../taskbar/dropdown/import-score-dropdown';
 import ImportAudioDropdown from '../taskbar/dropdown/import-audio-dropdown';
 import ExportScoreDropdown from '../taskbar/dropdown/export-score-dropdown';
