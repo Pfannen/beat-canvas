@@ -4,6 +4,7 @@ import {
   IDrawingCanvas,
   MeasureOptions,
   NoteOptions,
+  RestOptions,
 } from "@/types/music-rendering/canvas";
 import { Coordinate } from "../measurement/types";
 
@@ -25,7 +26,9 @@ export class BeatCanvas implements IBeatCanvas {
   drawMeasure(options: MeasureOptions): void {
     throw new Error("Method not implemented.");
   }
-
+  drawRest(options: RestOptions): void {
+    throw new Error("Method not implemented.");
+  }
   private drawStem(options: StemOptions): void {
     const heightAddValue =
       options.direction === "up" ? options.height : -options.height;

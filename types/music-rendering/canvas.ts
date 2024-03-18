@@ -46,7 +46,13 @@ export type MeasureOptions = {
   attributes?: Partial<MeasureAttributes>;
 };
 
+export type RestOptions = {
+  type: NoteType;
+  center: Coordinate;
+};
+
 export interface IBeatCanvas {
   drawNote(options: NoteOptions): void;
   drawMeasure(options: MeasureOptions): void;
+  drawRest(options: RestOptions): void;
 }
