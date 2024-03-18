@@ -1,5 +1,5 @@
-import { MusicLayout } from "@/objects/pdf/music-layout";
-import { MusicDimensionParams } from "@/types/pdf/music-layout";
+import { MusicLayout } from "@/objects/music-rendering/pdf/music-layout";
+import { MusicDimensionParams } from "@/types/music-rendering/pdf/music-layout";
 
 const getParams = (p?: Partial<MusicDimensionParams>) => {
   const params = {

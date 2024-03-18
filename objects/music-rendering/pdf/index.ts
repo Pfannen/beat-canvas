@@ -1,5 +1,5 @@
 import { PDFDocument, PDFPage, PageSizes, drawLine } from "pdf-lib";
-import { Coordinate } from "../measurement/types";
+import { Coordinate } from "../../measurement/types";
 
 export const drawPDF = async () => {
   const pdfDoc = await PDFDocument.create();

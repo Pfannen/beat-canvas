@@ -1,4 +1,4 @@
-import { MusicDimensionParams } from "@/types/pdf/music-layout";
+import { MusicDimensionParams } from "@/types/music-rendering/pdf/music-layout";
 
 export class MusicLayout {
   static getDimensions(params: MusicDimensionParams) {

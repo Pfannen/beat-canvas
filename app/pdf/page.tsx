@@ -1,4 +1,4 @@
-import { drawPDF, pdfToUrl } from "@/objects/pdf";
+import { drawPDF, pdfToUrl } from "@/objects/music-rendering/pdf";
 import classes from "./index.module.css";
 import { FunctionComponent } from "react";
 
