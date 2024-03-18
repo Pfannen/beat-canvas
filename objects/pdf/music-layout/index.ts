@@ -22,7 +22,7 @@ export class MusicLayout {
 
     const measureNoteStartYOffset = measureContainerPaddingTop;
     const measureNoteEndYOffset =
-      measureContainerPaddingTop + measureContainerHeight;
+      measureContainerHeight - mesaureContainerPaddingBottom;
     const measureWidth = contentWidth / params.measuresPerLine;
     const firstPageLineCount = Math.floor(
       (contentHeight - params.minHeaderSpace) / measureContainerHeight
