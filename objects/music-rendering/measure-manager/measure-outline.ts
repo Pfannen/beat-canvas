@@ -15,6 +15,7 @@ type MeasureIndexData = {
 
 export type IterateMeasuresArgs = {
   startMeasureIndex: number;
+  measureCount: number;
   overrideMeasureWidth: (index: number, width: number) => void;
   getMeasureWidth: (index: number) => number;
 };
@@ -153,6 +154,7 @@ export class MeasureOutline {
     const line = this.getPageLine(pageNumber, lineNumber);
     const args: IterateMeasuresArgs = {
       startMeasureIndex: line.startMeasureIndex,
+      measureCount: line.measures.length,
       getMeasureWidth: this.getWidth.bind(this, line),
       overrideMeasureWidth: this.overrideMeasure.bind(this, line),
     };

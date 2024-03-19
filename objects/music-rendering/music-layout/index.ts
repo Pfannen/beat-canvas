@@ -1,7 +1,10 @@
-import { MusicDimensionParams } from "@/types/music-rendering/pdf/music-layout";
+import {
+  MusicDimensionData,
+  MusicDimensionParams,
+} from "@/types/music-rendering/music-layout";
 
 export class MusicLayout {
-  static getDimensions(params: MusicDimensionParams) {
+  static getDimensions(params: MusicDimensionParams): MusicDimensionData {
     const {
       pageDimensions,
       musicMargins,
@@ -46,6 +49,9 @@ export class MusicLayout {
       },
       pageDimensions: {
         headerHeight,
+        musicMargins,
+        width: pageDimensions.width,
+        height: pageDimensions.height,
         firstMeasureStart: {
           x: measureStartX,
           y: measureStartY,

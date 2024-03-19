@@ -1,5 +1,5 @@
 import { Margins, PageDimensions } from "@/types/music-rendering/pdf";
-import { MusicDimensionParams } from "@/types/music-rendering/pdf/music-layout";
+import { MusicDimensionParams } from "@/types/music-rendering/music-layout";
 import { PageSizes } from "pdf-lib";
 
 export class PageDimensionParams {

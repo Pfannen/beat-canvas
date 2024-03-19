@@ -1,0 +1,132 @@
+import { MeasureRenderData } from "@/types/music/render-data";
+import { IterateMeasuresCallback, MeasureOutline } from "./measure-outline";
+import { MusicDimensionData } from "@/types/music-rendering/music-layout";
+import { MeasureTimeSignautreCallback } from "@/types/music";
+import { serializeTimeSignature } from "@/utils/music";
+import { MeasureWidthCalculator } from "./measure-width-calculator";
+
+type TimeSignatureWidths = { [timeSig: string]: number };
+
+export class MeasureManager {
+  private measures: MeasureRenderData[];
+  private dimensionData: MusicDimensionData;
+  private measureOutline: MeasureOutline;
+  private getMeasureTimeSignature: MeasureTimeSignautreCallback;
+  private widthCalculator: MeasureWidthCalculator;
+  constructor(
+    measures: MeasureRenderData[],
+    dimensionData: MusicDimensionData,
+    getMeasureTimeSignature: MeasureTimeSignautreCallback
+  ) {
+    this.measures = measures;
+    this.dimensionData = dimensionData;
+    const { height, width } = this.dimensionData.measureDimensions;
+    this.measureOutline = new MeasureOutline(height);
+    this.getMeasureTimeSignature = getMeasureTimeSignature;
+    const firstMeasureTimeSig = getMeasureTimeSignature(0);
+    this.widthCalculator = new MeasureWidthCalculator(
+      width,
+      firstMeasureTimeSig
+    ); //Assuming 'width' is based on the time signature of first measure (maybe not the best idea? change later)
+  }
+
+  // Note: This doesn't take into account a measure who has a greater width due to time signature display, etc... (would need to know note display size and measure container size separately)
+  private setMeasureWidths(
+    widths: TimeSignatureWidths,
+    pageNumber: number,
+    lineNumber: number
+  ) {
+    const cb: IterateMeasuresCallback = (args, measureIndex) => {
+      const globalIndex = args.startMeasureIndex + measureIndex;
+      const timeSignature = this.getMeasureTimeSignature(globalIndex);
+      const serializedTimeSignature = serializeTimeSignature(timeSignature);
+      const width = widths[serializedTimeSignature];
+      args.overrideMeasureWidth(measureIndex, width);
+    };
+    this.measureOutline.iterateMeasures(pageNumber, lineNumber, cb);
+  }
+
+  private addWidthToMeasures(
+    width: number,
+    pageNumber: number,
+    lineNumber: number
+  ) {
+    const cb: IterateMeasuresCallback = (args, measureIndex) => {
+      const widthToAdd = width / args.measureCount;
+      const measureWidth = args.getMeasureWidth(measureIndex) + widthToAdd;
+      args.overrideMeasureWidth(measureIndex, measureWidth);
+    };
+    this.measureOutline.iterateMeasures(pageNumber, lineNumber, cb);
+  }
+
+  private getLineWidth(lineNumber: number) {
+    const { pageDimensions } = this.dimensionData;
+    if (lineNumber === 1) {
+      const rightMarginX =
+        pageDimensions.width - pageDimensions.musicMargins.right;
+      return rightMarginX - pageDimensions.firstMeasureStart.x;
+    } else {
+      return (
+        pageDimensions.width -
+        pageDimensions.musicMargins.left -
+        pageDimensions.musicMargins.right
+      );
+    }
+  }
+
+  private getMeasureInfo(measureIndex: number) {
+    const measure = this.measures[measureIndex];
+    const timeSignature = this.getMeasureTimeSignature(measureIndex);
+    const width = this.widthCalculator.getMeasureWidth(measure, timeSignature);
+    return { width, timeSignature };
+  }
+
+  private getWidthInfo(
+    width: number,
+    timeSig: string,
+    maxMeasureWidths: TimeSignatureWidths
+  ) {
+    let updateWidths = false;
+    const maxWidth = maxMeasureWidths[timeSig];
+    if (width <= maxWidth) {
+      width = maxWidth;
+    } else {
+      if (maxWidth !== undefined) {
+        updateWidths = true;
+      }
+      maxMeasureWidths[timeSig] = width;
+    }
+
+    return { width, updateWidths };
+  }
+
+  public getMeasureData(measureIndex: number) {
+    return this.measureOutline.getMeasureData(measureIndex);
+  }
+
+  public compute() {
+    const { pageDimensions, measureDimensions } = this.dimensionData;
+    let currentCoordinate = pageDimensions.firstMeasureStart;
+    let remainingWidth = this.getLineWidth(1);
+    let maxMeasureWidths: TimeSignatureWidths = {};
+    let pageNumber = 1;
+    let lineNumber = 1;
+    for (let i = 0; i < this.measures.length; i++) {
+      const { width, timeSignature } = this.getMeasureInfo(i);
+      if (width > remainingWidth) {
+        this.addWidthToMeasures(remainingWidth, pageNumber, lineNumber);
+        //Need to create new line (check if page needs to be created)
+      } else {
+        const { width: maxWidth, updateWidths } = this.getWidthInfo(
+          width,
+          serializeTimeSignature(timeSignature),
+          maxMeasureWidths
+        );
+        if (maxWidth > remainingWidth) {
+          this.addWidthToMeasures(remainingWidth, pageNumber, lineNumber);
+          //Need to create new line (check if page needs to be created)
+        }
+      }
+    }
+  }
+}

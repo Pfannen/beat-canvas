@@ -181,3 +181,6 @@ export const beamableSubdivisionLength = (timeSignature: TimeSignature) => {
   }
   return 1;
 };
+
+export const serializeTimeSignature = (timeSignature: TimeSignature) =>
+  `${timeSignature.beatsPerMeasure}/${timeSignature.beatNote}`;

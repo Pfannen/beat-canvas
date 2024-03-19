@@ -73,11 +73,9 @@ export class Music implements ReadonlyMusic {
     return this.measures[measureIndex].notes.length;
   }
 
-  getMeasureAnnotations(
-    measureIndex: number
-  ): Partial<MeasureAttributes> | undefined {
+  getMeasureAnnotations(measureIndex: number): Measure["attributes"] {
     if (this.measures) {
-      return { ...this.measures[measureIndex].attributes };
+      return this.measures[measureIndex].attributes;
     }
     return undefined;
   }
