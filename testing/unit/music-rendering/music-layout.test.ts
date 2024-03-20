@@ -1,23 +1,8 @@
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
-import { MusicDimensionParams } from "@/types/music-rendering/music-layout";
-
-const getParams = (p?: Partial<MusicDimensionParams>) => {
-  const params = {
-    pageDimensions: p?.pageDimensions || { width: 100, height: 100 },
-    musicMargins: p?.musicMargins || { top: 0, bottom: 0, left: 0, right: 0 },
-    minHeaderSpace: p?.minHeaderSpace || 0,
-    measuresPerLine: p?.measuresPerLine || 10,
-    linesPerPage: p?.linesPerPage || 10,
-    measurePaddingFractions: p?.measurePaddingFractions || {
-      top: 0,
-      bottom: 0,
-    },
-  };
-  return params;
-};
+import { getMusicDimensionParams } from "./utils";
 
 test("No Margins, Padding, or Header", () => {
-  const params = getParams();
+  const params = getMusicDimensionParams();
   const { measureDimensions, pageDimensions } =
     MusicLayout.getDimensions(params);
   expect(measureDimensions.height).toBe(10);
@@ -31,7 +16,7 @@ test("No Margins, Padding, or Header", () => {
 });
 
 test("Exact Header Space", () => {
-  const params = getParams({ minHeaderSpace: 10 });
+  const params = getMusicDimensionParams({ minHeaderSpace: 10 });
   const { measureDimensions, pageDimensions } =
     MusicLayout.getDimensions(params);
   expect(measureDimensions.height).toBe(10);
@@ -45,7 +30,7 @@ test("Exact Header Space", () => {
 });
 
 test("Rounded Header Space", () => {
-  const params = getParams({ minHeaderSpace: 11 });
+  const params = getMusicDimensionParams({ minHeaderSpace: 11 });
   const { measureDimensions, pageDimensions } =
     MusicLayout.getDimensions(params);
   expect(measureDimensions.height).toBe(10);
@@ -59,7 +44,7 @@ test("Rounded Header Space", () => {
 });
 
 test("Page Margins", () => {
-  const params = getParams({
+  const params = getMusicDimensionParams({
     musicMargins: { top: 10, bottom: 10, left: 10, right: 10 },
   });
   const { measureDimensions, pageDimensions } =
@@ -75,7 +60,7 @@ test("Page Margins", () => {
 });
 
 test("Page Margins and Measure Padding", () => {
-  const params = getParams({
+  const params = getMusicDimensionParams({
     musicMargins: { top: 10, bottom: 10, left: 10, right: 10 },
     measurePaddingFractions: { top: 0.1, bottom: 0.1 },
   });

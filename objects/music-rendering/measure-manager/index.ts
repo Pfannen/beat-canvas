@@ -28,6 +28,10 @@ export class MeasureManager {
       width,
       firstMeasureTimeSig
     ); //Assuming 'width' is based on the time signature of first measure (maybe not the best idea? change later)
+    this.measureOutline.addPage();
+    const x = this.dimensionData.pageDimensions.firstMeasureStart.x;
+    const y = this.dimensionData.pageDimensions.firstMeasureStart.y;
+    this.measureOutline.addLine(x, y);
   }
 
   // Note: This doesn't take into account a measure who has a greater width due to time signature display, etc... (would need to know note display size and measure container size separately)
