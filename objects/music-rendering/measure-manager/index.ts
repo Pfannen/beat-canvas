@@ -81,6 +81,23 @@ export class MeasureManager {
     return { width, timeSignature };
   }
 
+  private createNewLine(currentY: number) {
+    const { pageDimensions, measureDimensions } = this.dimensionData;
+    const pageYEnd = pageDimensions.height - pageDimensions.musicMargins.bottom;
+    const newLineXStart = pageDimensions.musicMargins.left;
+    let nextLineYStart = measureDimensions.height + currentY;
+    const nextLineYEnd = nextLineYStart + measureDimensions.height;
+    let isNewPage = false;
+    if (nextLineYEnd > pageYEnd) {
+      nextLineYStart = pageDimensions.musicMargins.top;
+      this.measureOutline.addPage();
+      isNewPage = true;
+    }
+    this.measureOutline.addLine(newLineXStart, nextLineYStart);
+    const startCoordinate = { x: newLineXStart, y: nextLineYStart };
+    return { startCoordinate, isNewPage };
+  }
+
   private getWidthInfo(
     width: number,
     timeSig: string,
@@ -105,28 +122,49 @@ export class MeasureManager {
   }
 
   public compute() {
-    const { pageDimensions, measureDimensions } = this.dimensionData;
+    const { pageDimensions } = this.dimensionData;
     let currentCoordinate = pageDimensions.firstMeasureStart;
     let remainingWidth = this.getLineWidth(1);
     let maxMeasureWidths: TimeSignatureWidths = {};
     let pageNumber = 1;
     let lineNumber = 1;
     for (let i = 0; i < this.measures.length; i++) {
-      const { width, timeSignature } = this.getMeasureInfo(i);
+      let { width, timeSignature } = this.getMeasureInfo(i);
+      const serialTimeSig = serializeTimeSignature(timeSignature);
+      let createNewLine = false;
       if (width > remainingWidth) {
-        this.addWidthToMeasures(remainingWidth, pageNumber, lineNumber);
-        //Need to create new line (check if page needs to be created)
+        createNewLine = true;
       } else {
         const { width: maxWidth, updateWidths } = this.getWidthInfo(
           width,
-          serializeTimeSignature(timeSignature),
+          serialTimeSig,
           maxMeasureWidths
         );
         if (maxWidth > remainingWidth) {
-          this.addWidthToMeasures(remainingWidth, pageNumber, lineNumber);
-          //Need to create new line (check if page needs to be created)
+          createNewLine = true;
+        } else {
+          if (updateWidths) {
+            this.setMeasureWidths(maxMeasureWidths, pageNumber, lineNumber);
+          }
+          width = maxWidth;
         }
       }
+      if (createNewLine) {
+        this.addWidthToMeasures(remainingWidth, pageNumber, lineNumber);
+        const { startCoordinate, isNewPage } = this.createNewLine(
+          currentCoordinate.y
+        );
+        if (isNewPage) {
+          pageNumber++;
+        }
+        lineNumber++;
+        currentCoordinate = startCoordinate;
+        remainingWidth = this.getLineWidth(lineNumber);
+        maxMeasureWidths = { [serialTimeSig]: width };
+      }
+      this.measureOutline.addMeasure(currentCoordinate.x, width);
+      currentCoordinate.x += width;
+      remainingWidth -= width;
     }
   }
 }

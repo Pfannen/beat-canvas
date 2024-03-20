@@ -82,14 +82,10 @@ export class MeasureOutline {
     this.pages.push([]);
   }
 
-  public addLine(xPos: number, yPos?: number) {
+  public addLine(xPos: number, yPos: number) {
     //If there was "addLineToPage", would need to recompute start measure indicies (don't see a need for that functionality)
     const lastPage = this.getLastPage();
     const prevLine = lastPage[lastPage.length - 1];
-    if (yPos === undefined) {
-      const prevLineY = prevLine?.endPoint.y || 0;
-      yPos = prevLineY + this.measureHeight;
-    }
     const startMeasureIndex =
       prevLine.startMeasureIndex + prevLine.measures.length;
     lastPage.push(
@@ -97,12 +93,13 @@ export class MeasureOutline {
     );
   }
 
-  public addMeasure(startXPos: number) {
+  public addMeasure(startXPos: number, width: number) {
     const pageNumber = this.pages.length;
     const page = this.getLastPage();
-    const lineNumber = page.length - 1;
+    const lineNumber = page.length;
     const lastLine = page[lineNumber - 1];
     lastLine.measures.push(startXPos);
+    lastLine.endPoint.x += startXPos + width;
     const index = lastLine.measures.length - 1;
     const measureIndex = lastLine.startMeasureIndex + index;
     this.measureIndexData.set(measureIndex, { pageNumber, lineNumber, index });
