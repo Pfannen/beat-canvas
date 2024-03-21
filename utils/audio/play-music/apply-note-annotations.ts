@@ -4,7 +4,7 @@ import {
 	NoteAnnotations,
 	NoteAudioAttributes,
 	NoteAttributesModifier,
-	PersistentNotePlayingAttributes,
+	PersistentInstrumentAttributes,
 } from '@/types/music/note-annotations';
 
 const staccatoApplier: NoteAttributesModifier = (attr, annotations) => {
@@ -89,7 +89,7 @@ export const annotationApplier: {
 export const constructNoteAttributes = (
 	pitchOctave: PitchOctave,
 	duration: number,
-	curPersistent: PersistentNotePlayingAttributes
+	curPersistent: PersistentInstrumentAttributes
 ) => {
 	const nA: NoteAudioAttributes = {
 		pitchOctave,

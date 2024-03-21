@@ -1,15 +1,14 @@
 import { IVolumeValueModifer } from '@/types/audio/volume';
 import { VolumeManager } from './volume';
 import { MusicScore } from '@/types/music';
-import { Player, ToneAudioBuffer, context } from 'tone';
-import { playMusicScore } from './play-music/play-music';
+import { Player, Players, ToneAudioBuffer, context } from 'tone';
+import { enqueueMusicScore, playMusicScore } from './play-music/play-music';
 import { isOnClient } from '..';
 import { getInstrument } from './instruments';
 import { ToneInstrument } from '@/types/audio/instrument';
 
 export class PlaybackManager extends VolumeManager {
-	private tonePlayer: Player | null = null;
-
+	private players: { [id in string]: Player } = {};
 	playerNodeId = 'player';
 	musicScore?: MusicScore;
 
@@ -18,22 +17,32 @@ export class PlaybackManager extends VolumeManager {
 		this.musicScore = musicScore;
 	}
 
-	setMusicScore = (musicScore?: MusicScore) => {
+	private loadAudioBuffers = async () => {
+		if (!this.musicScore) return;
+
+		const enqueuedBuffers = await enqueueMusicScore(
+			this.musicScore,
+			getInstrument
+		);
+
+		for (const { name, buffer } of enqueuedBuffers) {
+			const player = new Player();
+			player.buffer = buffer;
+			this.players[name] = player;
+			this.addVolumeNode(name, player);
+		}
+	};
+
+	setMusicScore = async (musicScore?: MusicScore) => {
 		if (this.musicScore) {
-			this.musicScore.parts.forEach((part) =>
-				this.removeVolumeNode(part.attributes.instrument)
-			);
+			this.musicScore.parts.forEach((part) => {
+				this.removeVolumeNode(part.attributes.instrument);
+				delete this.players[part.attributes.instrument];
+			});
 		}
 
 		this.musicScore = musicScore;
-		if (this.musicScore) {
-			this.musicScore.parts.forEach((part) =>
-				this.addVolumeNode(
-					part.attributes.instrument,
-					getInstrument(part.attributes.instrument)
-				)
-			);
-		}
+		if (this.musicScore) await this.loadAudioBuffers();
 	};
 
 	setImportedAudio = (
@@ -43,16 +52,17 @@ export class PlaybackManager extends VolumeManager {
 		if (!isOnClient()) return;
 
 		if (!audioFile) {
-			this.tonePlayer?.dispose();
-			this.tonePlayer = null;
+			delete this.players[this.playerNodeId];
 			this.removeVolumeNode(this.playerNodeId);
 			if (completed) completed(true);
 			return;
 		}
 
-		if (!this.tonePlayer) {
-			this.tonePlayer = new Player();
-			this.addVolumeNode(this.playerNodeId, this.tonePlayer);
+		let player = this.players[this.playerNodeId];
+		if (!player) {
+			player = new Player();
+			this.addVolumeNode(this.playerNodeId, player);
+			this.players[this.playerNodeId] = player;
 		}
 
 		const reader = new FileReader();
@@ -66,7 +76,7 @@ export class PlaybackManager extends VolumeManager {
 
 			const buffer = await context.decodeAudioData(audioData);
 			const toneAudioBuffer = new ToneAudioBuffer().set(buffer);
-			this.tonePlayer!.buffer = toneAudioBuffer;
+			player.buffer = toneAudioBuffer;
 			if (completed) completed(true);
 		};
 
@@ -80,13 +90,17 @@ export class PlaybackManager extends VolumeManager {
 	};
 
 	play = () => {
-		if (this.musicScore)
+		/* if (this.musicScore)
 			playMusicScore(this.musicScore, {
 				getInstrumentNode: this.instrumentGetter,
 				onPlay: () => {
 					if (this.tonePlayer) this.tonePlayer.start();
 				},
 			});
-		else if (this.tonePlayer) this.tonePlayer.start();
+		else if (this.tonePlayer) this.tonePlayer.start(); */
+
+		for (const player of Object.values(this.players)) {
+			player.start();
+		}
 	};
 }

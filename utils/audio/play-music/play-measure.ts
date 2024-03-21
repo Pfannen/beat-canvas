@@ -1,11 +1,11 @@
 import { Measure } from '@/components/providers/music/types';
 import { MeasureAttributes } from '@/types/music';
-import { Synth } from 'tone';
-import { playNote } from './play-note';
+import { enqueueNote, playNote } from './play-note';
 import { ToneInstrument } from '@/types/audio/instrument';
-import { PersistentNotePlayingAttributes } from '@/types/music/note-annotations';
+import { PersistentInstrumentAttributes } from '@/types/music/note-annotations';
 import { MeasureAttributesRetriever } from '@/utils/music/measure-attributes';
 import { dynamicToVelocity } from '../volume';
+import { EnqueueDetails } from '@/types/audio/play-music';
 
 export const initializeMeasureAttributes = (initialMeasure: Measure) => {
 	const attributes = initialMeasure.attributes
@@ -52,9 +52,10 @@ export const playMeasure = (
 	measure: Measure,
 	currentAttributes: MeasureAttributes,
 	instrument: ToneInstrument,
-	persistentAttr: PersistentNotePlayingAttributes,
+	persistentAttr: PersistentInstrumentAttributes,
 	curX: number,
-	now: number
+	now: number,
+	enqueue?: EnqueueDetails
 ) => {
 	const attrHelper = new MeasureAttributesRetriever(measure.attributes);
 	updateMeasureAttributes(currentAttributes, attrHelper.getNextAttributes(0));
@@ -68,13 +69,25 @@ export const playMeasure = (
 		// Temporary, dynamics should affect volume not velocity
 		persistentAttr.velocity = dynamicToVelocity(currentAttributes.dynamic);
 
-		playNote(note, currentAttributes, instrument, persistentAttr, curX, now);
+		if (enqueue) {
+			enqueueNote(
+				note,
+				currentAttributes,
+				instrument,
+				persistentAttr,
+				curX,
+				enqueue.baseSPB,
+				enqueue.transport
+			);
+		} else {
+			playNote(note, currentAttributes, instrument, persistentAttr, curX, now);
+		}
 	}
 
 	updateMeasureAttributes(
 		currentAttributes,
 		attrHelper.getNextAttributes(
-			curX + currentAttributes.timeSignature.beatsPerMeasure
+			currentAttributes.timeSignature.beatsPerMeasure
 		)
 	);
 };

@@ -14,8 +14,8 @@ export const usePlayback = () => {
 		setVolumePairs(newVolumePairs);
 	};
 
-	const setScore = (score: MusicScore) => {
-		playbackManager.current.setMusicScore(score);
+	const setScore = async (score: MusicScore) => {
+		await playbackManager.current.setMusicScore(score);
 		updateVolumePairs();
 	};
 

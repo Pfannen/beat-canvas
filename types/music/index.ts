@@ -57,5 +57,5 @@ export type MeasureAttributesMXML = MeasureAttributes & {
 	quarterNoteDivisions: number;
 };
 
-export type TimedMeasureAttributesMXML = TemporalMeasureAttributes &
+export type TemporalMeasureAttributesMXML = TemporalMeasureAttributes &
 	MeasureAttributesMXML;
