@@ -69,17 +69,13 @@ export class MeasureManager {
 
   private getLineWidth(lineNumber: number) {
     const { pageDimensions } = this.dimensionData;
+    const { musicMargins } = pageDimensions;
+    let contentSpace =
+      pageDimensions.width - (musicMargins.left + musicMargins.right);
     if (lineNumber === 1) {
-      const rightMarginX =
-        pageDimensions.width - pageDimensions.musicMargins.right;
-      return rightMarginX - pageDimensions.firstMeasureStart.x;
-    } else {
-      return (
-        pageDimensions.width -
-        pageDimensions.musicMargins.left -
-        pageDimensions.musicMargins.right
-      );
+      contentSpace -= pageDimensions.firstMeasureStart.x - musicMargins.left;
     }
+    return contentSpace;
   }
 
   private getMeasureInfo(measureIndex: number) {

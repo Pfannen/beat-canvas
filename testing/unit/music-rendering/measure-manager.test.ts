@@ -177,3 +177,78 @@ test("Page Break - Two Measures", () => {
   );
 });
 //#endregion
+
+//#region Margin Pages
+test("Margins - Single Measure", () => {
+  const mm = createMeasureManager(1, {
+    musicMargins: { bottom: 1, top: 1, left: 1, right: 1 },
+    pageDimensions: { width: 11, height: 11 },
+    measuresPerLine: 1,
+  });
+  mm.compute();
+  testMeasureData([{ start: { x: 1, y: 1 }, width: 9 }], mm);
+});
+
+test("Margins - Line Break", () => {
+  const mm = createMeasureManager(2, {
+    musicMargins: { bottom: 1, top: 1, left: 1, right: 1 },
+    pageDimensions: { width: 11, height: 11 },
+    measuresPerLine: 1,
+    linesPerPage: 2,
+  });
+  mm.compute();
+  testMeasureData(
+    [
+      { start: { x: 1, y: 1 }, width: 9 },
+      { start: { x: 1, y: 11 / 2 }, width: 9 },
+    ],
+    mm
+  );
+});
+
+test("Margins - Page Break", () => {
+  const mm = createMeasureManager(2, {
+    musicMargins: { bottom: 1, top: 1, left: 1, right: 1 },
+    pageDimensions: { width: 11, height: 11 },
+    measuresPerLine: 1,
+    linesPerPage: 1,
+  });
+  mm.compute();
+  testMeasureData(
+    [
+      { start: { x: 1, y: 1 }, pageNumber: 1, width: 9 },
+      { start: { x: 1, y: 1 }, pageNumber: 2, width: 9 },
+    ],
+    mm
+  );
+});
+
+test("Margins - Page Break Two Measures", () => {
+  let mCount = 0;
+  const widthCalc: IMeasureWidthCalculator = {
+    getMeasureWidth: (_, __) => {
+      mCount++;
+      return mCount <= 2 ? 1 : 9;
+    },
+  };
+  const mm = createMeasureManager(
+    3,
+    {
+      musicMargins: { bottom: 1, top: 1, left: 1, right: 1 },
+      pageDimensions: { width: 11, height: 11 },
+      measuresPerLine: 2,
+      linesPerPage: 1,
+    },
+    widthCalc
+  );
+  mm.compute();
+  testMeasureData(
+    [
+      { width: 9 / 2, pageNumber: 1, start: { x: 1, y: 1 } },
+      { width: 9 / 2, pageNumber: 1, start: { x: 1 + 9 / 2, y: 1 } },
+      { width: 9, pageNumber: 2, start: { x: 1, y: 1 } },
+    ],
+    mm
+  );
+});
+//#endregion
