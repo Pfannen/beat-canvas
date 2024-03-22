@@ -1,18 +1,31 @@
-import { PDFDocument, PDFPage, PageSizes, drawLine } from "pdf-lib";
+import { PDFDocument, PageSizes } from "pdf-lib";
 import { Coordinate } from "../../measurement/types";
+import { PDFLibDrawingCanvas } from "../pdf-lib-drawing-canvas";
+import { IDrawingCanvas } from "@/types/music-rendering/canvas";
+import { BeatCanvas } from "../beat-canvas";
 
 export const drawPDF = async () => {
   const pdfDoc = await PDFDocument.create();
   pdfDoc.addPage(PageSizes.A4);
 
   const page = pdfDoc.getPage(0);
+  const drawCanvas = PDFLibDrawingCanvas.getDrawingCanvas(page);
+  const beatCanvas = new BeatCanvas(drawCanvas);
   const { width, height } = page.getSize();
-  drawMeasureLines(page, {
-    start: { x: 0, y: height - 1 },
-    length: 50,
-    lineHeight: 3,
-    spaceHeight: 20,
+
+  beatCanvas.drawNote({
+    bodyCenter: { x: width / 2, y: height / 2 },
+    bodyHeight: 10,
+    direction: "up",
+    type: "quarter",
   });
+
+  // drawMeasureLines(drawCanvas, {
+  //   start: { x: 0, y: height },
+  //   length: 200,
+  //   lineHeight: 3,
+  //   spaceHeight: 20,
+  // });
 
   return await pdfDoc.save();
 };
@@ -22,24 +35,4 @@ export const pdfToUrl = (pdf: Uint8Array) => {
   pdf.forEach((byte) => pdfArray.push(byte));
   const base64 = btoa(String.fromCharCode(...pdfArray));
   return `data:application/pdf;base64,${base64}`;
-};
-
-const drawMeasureLines = (
-  page: PDFPage,
-  args: {
-    start: Coordinate;
-    length: number;
-    lineHeight: number;
-    spaceHeight: number;
-  }
-) => {
-  let start = args.start;
-  for (let i = 0; i < 5; i++) {
-    page.drawLine({
-      start,
-      end: { ...start, x: start.x + args.length },
-      thickness: args.lineHeight,
-    });
-    start = { ...start, y: start.y - args.spaceHeight };
-  }
 };

@@ -11,25 +11,35 @@ export type LineOptions = {
   thickness: number;
 };
 
+export type RectangleOptions = {
+  corner: Coordinate;
+  width: number;
+  height: number;
+  degreeRotation?: number;
+};
+
 export type CircleOptions = { center: Coordinate; diameter: number };
 
-export type OvalOptions = CircleOptions & {
+export type drawEllipseOptions = CircleOptions & {
   aspectRatio: number;
-  height: number;
 };
+
+export type SVGOptions = {};
 
 export interface IDrawingCanvas {
   drawLine(options: LineOptions): void;
   drawCircle(options: CircleOptions): void;
-  drawOval(options: OvalOptions): void;
+  drawRectangle(options: RectangleOptions): void;
+  drawEllipse(options: drawEllipseOptions): void;
+  drawSVG(options: SVGOptions): void;
 }
 
 export type NoteOptions = {
   type: NoteType;
   bodyCenter: Coordinate;
   bodyHeight: number;
-  stemWidth: number;
-  stemHeight: number;
+  // stemWidth: number;
+  // stemHeight: number;
   direction: NoteDirection;
   attributes?: NoteAttribute[];
 };

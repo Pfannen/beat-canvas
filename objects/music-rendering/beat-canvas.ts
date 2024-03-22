@@ -37,8 +37,8 @@ type BeatCanvasDrawOptions = {
 const tempDrawOptions: BeatCanvasDrawOptions = {
   noteBodyAspectRatio: 1.25,
   noteBodyAngle: -25,
-  stemHeightBodyFraction: 3,
-  stemWidthBodyFraction: 0.15,
+  stemHeightBodyFraction: 1.75,
+  stemWidthBodyFraction: 0.25,
 };
 
 export class BeatCanvas implements IBeatCanvas {
@@ -50,23 +50,19 @@ export class BeatCanvas implements IBeatCanvas {
 
   private drawStem(options: StemOptions): void {
     const widthRadius = options.bodyWidth / 2;
-    let start: Coordinate;
-    let end: Coordinate;
+    const { x, y } = options.bodyCenter;
+    const corner = { x: x - widthRadius, y };
+    let height = -options.stemHeight;
+    let width = options.stemWidth;
     if (options.direction === "up") {
-      const x = options.bodyCenter.x + (widthRadius - options.stemWidth);
-      const y = options.bodyCenter.y + options.stemHeight;
-      start = { x, y: options.bodyCenter.y };
-      end = { x, y };
-    } else {
-      const x = options.bodyCenter.x - widthRadius;
-      const y = options.bodyCenter.y - options.stemHeight;
-      start = { x, y };
-      end = { x, y: options.bodyCenter.y };
+      corner.x = x + widthRadius;
+      height *= -1;
+      width *= -1;
     }
-    this.canvas.drawLine({
-      start,
-      end,
-      thickness: options.stemWidth,
+    this.canvas.drawRectangle({
+      corner,
+      width,
+      height,
     });
   }
 
@@ -76,13 +72,17 @@ export class BeatCanvas implements IBeatCanvas {
     );
     const yOffset =
       spaceCount * options.spaceHeight + lineCount * options.lineHeight;
+
     const { x, y } = options.topLeft;
-    let currY = y + yOffset;
+    let currY = y - yOffset;
     for (let i = options.bodyCount; i > 0; i -= 2) {
-      const start = { x, y: currY };
-      const end = { x: x + options.width, y: currY };
-      this.canvas.drawLine({ start, end, thickness: options.lineHeight });
-      currY += options.lineHeight + options.spaceHeight;
+      const corner = { x, y: currY };
+      this.canvas.drawRectangle({
+        corner,
+        width: options.width,
+        height: -options.lineHeight,
+      });
+      currY -= options.lineHeight + options.spaceHeight;
     }
   }
 
@@ -93,9 +93,8 @@ export class BeatCanvas implements IBeatCanvas {
   drawNote(options: NoteOptions): void {
     const { noteBodyAspectRatio } = this.drawOptions;
     const bodyWidth = noteBodyAspectRatio * options.bodyHeight;
-    this.canvas.drawOval({
+    this.canvas.drawEllipse({
       center: options.bodyCenter,
-      height: options.bodyHeight,
       aspectRatio: noteBodyAspectRatio,
       diameter: options.bodyHeight,
     });
@@ -110,14 +109,12 @@ export class BeatCanvas implements IBeatCanvas {
       bodyWidth,
       direction: options.direction,
     });
-
-    throw new Error("Method not implemented.");
   }
 
   drawMeasure(options: MeasureOptions): void {
     const { x, y } = options.topLeft;
-    const yOffset = y + options.containerPadding.top;
-    this.drawMeasureLines({ ...options, topLeft: { x, y: yOffset } });
+    const offsetY = y + options.containerPadding.top;
+    this.drawMeasureLines({ ...options, topLeft: { x, y: offsetY } });
   }
 
   drawRest(options: RestOptions): void {
