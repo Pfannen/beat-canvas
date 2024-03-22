@@ -94,6 +94,22 @@ export class MeasureUtils {
       : this.getSecondComponentCount(componentsAboveBottom);
   }
 
+  static getAboveBodySpaceCount(aboveBelowCount: number) {
+    const halfCount = Math.floor(aboveBelowCount / 2);
+    return halfCount + (aboveBelowCount % 2);
+  }
+
+  static getAboveBodyLineCount(aboveBelowCount: number) {
+    return aboveBelowCount - this.getAboveBodySpaceCount(aboveBelowCount);
+  }
+
+  static getAboveBelowCounts(aboveBelowCount: number) {
+    return {
+      spaceCount: this.getAboveBodySpaceCount(aboveBelowCount),
+      lineCount: this.getAboveBodyLineCount(aboveBelowCount),
+    };
+  }
+
   static getLedgerComponentFractions(
     componentCount: number,
     lineToSpaceRatio: number,

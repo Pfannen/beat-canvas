@@ -10,7 +10,7 @@ export type Rest = { x: number; type: NoteType };
 
 export type NoteComponent = {
   type: "note";
-  note: Note;
+  note: Note; //*x is in terms of the segment it belongs to*
   renderData: NoteRenderData;
 };
 export type RestComponent = { type: "rest"; rest: Rest };

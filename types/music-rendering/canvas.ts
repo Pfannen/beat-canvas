@@ -3,6 +3,7 @@ import { NoteDirection } from "@/lib/notes/types";
 import { NoteAttribute } from "@/lib/notes/ui/note-attributes";
 import { Coordinate } from "@/objects/measurement/types";
 import { MeasureAttributes } from "../music";
+import { BlockDirection } from "./pdf";
 
 export type LineOptions = {
   start: Coordinate;
@@ -37,10 +38,12 @@ export type MeasureOptions = {
   topLeft: Coordinate;
   width: number;
   height: number;
+  containerPadding: BlockDirection<number>;
   lineHeight: number;
   spaceHeight: number;
   bodyCount: number;
   aboveBelowComponentCount: number;
+
   timeSignature?: TimeSignature;
   //keySignature?: KeySignature,
   attributes?: Partial<MeasureAttributes>;
