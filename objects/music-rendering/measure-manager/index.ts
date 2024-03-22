@@ -4,6 +4,7 @@ import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { MeasureTimeSignautreCallback } from "@/types/music";
 import { serializeTimeSignature } from "@/utils/music";
 import { MeasureWidthCalculator } from "./measure-width-calculator";
+import { IMeasureWidthCalculator } from "@/types/music-rendering";
 
 type TimeSignatureWidths = { [timeSig: string]: number };
 
@@ -12,22 +13,24 @@ export class MeasureManager {
   private dimensionData: MusicDimensionData;
   private measureOutline: MeasureOutline;
   private getMeasureTimeSignature: MeasureTimeSignautreCallback;
-  private widthCalculator: MeasureWidthCalculator;
+  private widthCalculator: IMeasureWidthCalculator;
   constructor(
     measures: MeasureRenderData[],
     dimensionData: MusicDimensionData,
+    measureWidthCalculator: IMeasureWidthCalculator,
     getMeasureTimeSignature: MeasureTimeSignautreCallback
   ) {
     this.measures = measures;
     this.dimensionData = dimensionData;
-    const { height, width } = this.dimensionData.measureDimensions;
+    const { height } = this.dimensionData.measureDimensions;
     this.measureOutline = new MeasureOutline(height);
     this.getMeasureTimeSignature = getMeasureTimeSignature;
-    const firstMeasureTimeSig = getMeasureTimeSignature(0);
-    this.widthCalculator = new MeasureWidthCalculator(
-      width,
-      firstMeasureTimeSig
-    ); //Assuming 'width' is based on the time signature of first measure (maybe not the best idea? change later)
+    // const firstMeasureTimeSig = getMeasureTimeSignature(0);
+    this.widthCalculator = measureWidthCalculator;
+    // this.widthCalculator = new MeasureWidthCalculator(
+    //   width,
+    //   firstMeasureTimeSig
+    // ); //Assuming 'width' is based on the time signature of first measure (maybe not the best idea? change later)
     this.measureOutline.addPage();
     const x = this.dimensionData.pageDimensions.firstMeasureStart.x;
     const y = this.dimensionData.pageDimensions.firstMeasureStart.y;
@@ -45,7 +48,7 @@ export class MeasureManager {
       const timeSignature = this.getMeasureTimeSignature(globalIndex);
       const serializedTimeSignature = serializeTimeSignature(timeSignature);
       const width = widths[serializedTimeSignature];
-      args.overrideMeasureWidth(measureIndex, width);
+      args.setMeasureWidth(measureIndex, width);
     };
     this.measureOutline.iterateMeasures(pageNumber, lineNumber, cb);
   }
@@ -57,8 +60,9 @@ export class MeasureManager {
   ) {
     const cb: IterateMeasuresCallback = (args, measureIndex) => {
       const widthToAdd = width / args.measureCount;
-      const measureWidth = args.getMeasureWidth(measureIndex) + widthToAdd;
-      args.overrideMeasureWidth(measureIndex, measureWidth);
+      const currentWidth = args.getMeasureWidth(measureIndex);
+      const measureWidth = currentWidth + widthToAdd;
+      args.setMeasureWidth(measureIndex, measureWidth);
     };
     this.measureOutline.iterateMeasures(pageNumber, lineNumber, cb);
   }
@@ -158,10 +162,10 @@ export class MeasureManager {
         const { startCoordinate, isNewPage } = this.createNewLine(
           currentCoordinate.y
         );
+        lineNumber++;
         if (isNewPage) {
           pageNumber++;
         }
-        lineNumber++;
         currentCoordinate = startCoordinate;
         remainingWidth = this.getLineWidth(lineNumber);
         maxMeasureWidths = { [serialTimeSig]: width };

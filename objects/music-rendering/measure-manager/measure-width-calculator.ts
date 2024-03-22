@@ -1,13 +1,13 @@
 import { TimeSignature } from "@/components/providers/music/types";
+import { IMeasureWidthCalculator } from "@/types/music-rendering";
 import { MeasureRenderData } from "@/types/music/render-data";
 import { serializeTimeSignature } from "@/utils/music";
 
-export class MeasureWidthCalculator {
+export class MeasureWidthCalculator implements IMeasureWidthCalculator {
   width: number;
   constructor(width: number, timeSignature: TimeSignature) {
     this.width = width * (1 / this.getWidthFraction(timeSignature)); // Convert width into 4/4 width (Example: timeSignature = 2/4, width = 100. Width will equal 200: (100 * 1/.5))
   }
-
   private getWidthFraction(timeSignature: TimeSignature) {
     return (
       timeSignatureWidthFractions[serializeTimeSignature(timeSignature)] || 1

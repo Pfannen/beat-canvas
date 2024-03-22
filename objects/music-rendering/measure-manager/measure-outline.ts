@@ -16,7 +16,7 @@ type MeasureIndexData = {
 export type IterateMeasuresArgs = {
   startMeasureIndex: number;
   measureCount: number;
-  overrideMeasureWidth: (index: number, width: number) => void;
+  setMeasureWidth: (index: number, width: number) => void;
   getMeasureWidth: (index: number) => number;
 };
 
@@ -78,6 +78,23 @@ export class MeasureOutline {
     };
   }
 
+  private getNextMeasureIndex() {
+    const lastPageNumber = this.pages.length;
+    const lastPage = this.getPage(lastPageNumber);
+    let lastLine;
+    if (lastPage.length === 0) {
+      const nextToLastPage = this.getPage(lastPageNumber - 1);
+      if (nextToLastPage) {
+        lastLine = nextToLastPage[nextToLastPage.length - 1];
+      } else {
+        return 0;
+      }
+    } else {
+      lastLine = lastPage[lastPage.length - 1];
+    }
+    return lastLine.startMeasureIndex + lastLine.measures.length;
+  }
+
   public addPage() {
     this.pages.push([]);
   }
@@ -86,9 +103,7 @@ export class MeasureOutline {
     //If there was "addLineToPage", would need to recompute start measure indicies (don't see a need for that functionality)
     const lastPage = this.getLastPage();
     const prevLine = lastPage[lastPage.length - 1];
-    const startMeasureIndex = prevLine
-      ? prevLine.startMeasureIndex + prevLine.measures.length
-      : 0;
+    const startMeasureIndex = this.getNextMeasureIndex();
     lastPage.push(
       this.createEmptyLine({ x: xPos, y: yPos }, startMeasureIndex)
     );
@@ -106,28 +121,29 @@ export class MeasureOutline {
     this.measureIndexData.set(measureIndex, { pageNumber, lineNumber, index });
   }
 
-  private overrideMeasure(
+  private _setMeasureWidth(
     line: MeasureLine,
     measureIndex: number,
     width: number
   ) {
+    const currentWidth = this.getWidth(line, measureIndex);
+    const extraWidth = width - currentWidth;
     const measureCount = line.measures.length;
-    if (measureIndex < measureCount - 1) {
-      line.measures[measureIndex + 1] = line.measures[measureIndex] + width;
-    } else {
-      line.endPoint.x = line.measures[measureIndex] + width;
+    line.endPoint.x += extraWidth;
+    for (let i = measureCount - 1; i > measureIndex; i--) {
+      line.measures[i] += extraWidth;
     }
   }
 
   /// Does not preserve other measure's widths but sets the measure at 'measureIndex' to the desired width
-  public overrideMeasureWidth(
+  public setMeasureWidth(
     pageNumber: number,
     lineNumber: number,
     measureIndex: number,
     width: number
   ) {
     const line = this.getPageLine(pageNumber, lineNumber);
-    this.overrideMeasure(line, measureIndex, width);
+    this._setMeasureWidth(line, measureIndex, width);
   }
 
   private getWidth(line: MeasureLine, measureIndex: number) {
@@ -154,7 +170,7 @@ export class MeasureOutline {
       startMeasureIndex: line.startMeasureIndex,
       measureCount: line.measures.length,
       getMeasureWidth: this.getWidth.bind(this, line),
-      overrideMeasureWidth: this.overrideMeasure.bind(this, line),
+      setMeasureWidth: this._setMeasureWidth.bind(this, line),
     };
     line.measures.forEach((_, i) => cb(args, i));
   }
@@ -171,6 +187,6 @@ export class MeasureOutline {
     const { start, end } = this.getMeasureCoordinates(line, indexData.index);
     const width = end.x - start.x;
     const aspectRatio = width / (measureHeight || this.measureHeight || 1);
-    return { start, end, width, aspectRatio };
+    return { start, end, width, aspectRatio, pageNumber: indexData.pageNumber };
   }
 }
