@@ -4,7 +4,7 @@ import {
 	MeasureImportHelper,
 	MeasureImportHelperMap,
 } from '@/types/import-export/import';
-import { MeasureAttributesMXML, Metronome, Pitch } from '@/types/music';
+import { MeasureAttributesMXML, Metronome, Pitch, Repeat } from '@/types/music';
 import {
 	getSingleElement,
 	validateElements,
@@ -16,6 +16,8 @@ import { convertImportedDuration, musicXMLToClef } from '@/utils/musicXML';
 import { Note } from '@/components/providers/music/types';
 import { assignTemporalMeasureAttributes } from '@/utils/music/measure-attributes';
 import { Dynamic } from '@/types/music/note-annotations';
+
+// #region misc attributes
 
 const noteImportHelper: MeasureImportHelper = (mD, el) => {
 	if (!verifyTagName(el, 'note')) return;
@@ -64,7 +66,11 @@ const metronomeImportHelper: MeasureImportHelper = (mD, el) => {
 	};
 	mD.currentAttributes.metronome = metronome;
 
-	assignTemporalMeasureAttributes(mD.newTemporalAttributes, { metronome }, mD.curX);
+	assignTemporalMeasureAttributes(
+		mD.newTemporalAttributes,
+		{ metronome },
+		mD.curX
+	);
 };
 
 const directionImportHelper: MeasureImportHelper = (mD, el) => {
@@ -107,7 +113,11 @@ const soundImportHelper: MeasureImportHelper = (mD, el) => {
 
 	mD.currentAttributes.metronome = metronome;
 
-	assignTemporalMeasureAttributes(mD.newTemporalAttributes, { metronome }, mD.curX);
+	assignTemporalMeasureAttributes(
+		mD.newTemporalAttributes,
+		{ metronome },
+		mD.curX
+	);
 };
 
 const backupImportHelper: MeasureImportHelper = (mD, el) => {
@@ -134,8 +144,50 @@ const dynamicsImportHelper: MeasureImportHelper = (mD, el) => {
 
 	const dynamic = el.children[0].tagName as Dynamic;
 	mD.currentAttributes.dynamic = dynamic;
-	assignTemporalMeasureAttributes(mD.newTemporalAttributes, { dynamic }, mD.curX);
+	assignTemporalMeasureAttributes(
+		mD.newTemporalAttributes,
+		{ dynamic },
+		mD.curX
+	);
 };
+
+const barlineImportHelper: MeasureImportHelper = (mD, el) => {
+	if (!verifyTagName(el, 'barline') || !el.children.length) return;
+
+	const { children } = el;
+	for (let i = 0; i < children.length; i++) {
+		const child = children[i];
+		if (child.tagName in measureImportHelperMap) {
+			measureImportHelperMap[child.tagName](mD, child);
+		}
+	}
+};
+
+const repeatImportHelper: MeasureImportHelper = (mD, el) => {
+	if (!verifyTagName(el, 'repeat') || !el.getAttribute('direction')) return;
+
+	const forward = el.getAttribute('direction') === 'forward';
+	const repeat: Repeat = { forward };
+	if (forward) {
+		mD.tbcAttributes.repeatMeasureNumber = mD.curMeasureNumber;
+	} else {
+		if (!('repeatMeasureNumber' in mD.tbcAttributes)) return;
+		repeat.jumpMeasure = mD.tbcAttributes.repeatMeasureNumber;
+		delete mD.tbcAttributes.repeatMeasureNumber;
+	}
+
+	assignTemporalMeasureAttributes(
+		mD.newTemporalAttributes,
+		{ repeat },
+		mD.curX
+	);
+};
+
+// #endregion
+
+// -----------------------------------------------------------------------------
+
+// #region attributes children
 
 const divisionsImportHelper: MeasureAttributesImportHelper = (
 	a,
@@ -181,6 +233,8 @@ const keySignatureImportHelper: MeasureAttributesImportHelper = (a, el) => {
 	a.keySignature = +fifthsXML!.textContent!;
 };
 
+// #endregion
+
 const attributesImportHelper: MeasureImportHelper = (mD, el) => {
 	const newAttributes: Partial<MeasureAttributesMXML> = {};
 
@@ -195,7 +249,11 @@ const attributesImportHelper: MeasureImportHelper = (mD, el) => {
 	Object.assign(mD.currentAttributes, newAttributes);
 	delete newAttributes.quarterNoteDivisions;
 
-	assignTemporalMeasureAttributes(mD.newTemporalAttributes, newAttributes, mD.curX);
+	assignTemporalMeasureAttributes(
+		mD.newTemporalAttributes,
+		newAttributes,
+		mD.curX
+	);
 };
 
 // TODO: Extract direction-specifc helpers into their own map
@@ -208,6 +266,8 @@ export const measureImportHelperMap: MeasureImportHelperMap = {
 	sound: soundImportHelper,
 	backup: backupImportHelper,
 	dynamics: dynamicsImportHelper,
+	barline: barlineImportHelper,
+	repeat: repeatImportHelper,
 };
 
 export const attributesImportHelperMap: MeasureAttributesImportHelperMap = {

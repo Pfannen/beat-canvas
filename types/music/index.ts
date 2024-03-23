@@ -28,6 +28,16 @@ export type Clef =
 	| 'tenor'
 	| 'soprano';
 
+export type Wedge = {
+	crescendo: boolean;
+	xDuration: number;
+};
+
+export type Repeat = {
+	forward: boolean;
+	jumpMeasure?: number;
+};
+
 export type MusicScore = {
 	title: string;
 	parts: MusicPart[];
@@ -44,6 +54,8 @@ export type MeasureAttributes = {
 	keySignature: number;
 	clef: Clef;
 	dynamic: Dynamic;
+	repeat: Repeat;
+	wedge: Wedge;
 };
 
 export type PartialMeasureAttributes = Partial<MeasureAttributes>;

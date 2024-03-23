@@ -20,10 +20,7 @@ export class PlaybackManager extends VolumeManager {
 	private loadAudioBuffers = async () => {
 		if (!this.musicScore) return;
 
-		const enqueuedBuffers = await enqueueMusicScore(
-			this.musicScore,
-			getInstrument
-		);
+		const enqueuedBuffers = await enqueueMusicScore(this.musicScore);
 
 		for (const { name, buffer } of enqueuedBuffers) {
 			const player = new Player();

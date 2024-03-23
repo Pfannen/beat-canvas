@@ -11,6 +11,7 @@ import { Measure, TimeSignature } from '@/components/providers/music/types';
 import {
 	MeasureImportDetails,
 	NoteImportDetails,
+	ToBeCompletedMeasureAttributes,
 } from '@/types/import-export/import';
 import { noteImportHelperMap } from './note-import-helpers';
 import { measureImportHelperMap } from './measure-import-helpers';
@@ -216,13 +217,17 @@ class ImportMusicXMLHelper {
 
 	static getMeasureDetails = (
 		measureXML: Element,
-		measureAttributes: MeasureAttributesMXML
+		curMeasureNumber: number,
+		measureAttributes: MeasureAttributesMXML,
+		tbcAttributes: ToBeCompletedMeasureAttributes
 	) => {
 		const measureDetails: MeasureImportDetails = {
 			currentAttributes: measureAttributes,
+			tbcAttributes,
 			newTemporalAttributes: [],
 			notes: [],
 			curX: 0,
+			curMeasureNumber,
 		};
 
 		const { children } = measureXML;

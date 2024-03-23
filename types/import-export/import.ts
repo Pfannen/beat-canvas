@@ -4,7 +4,9 @@ import {
 	MeasureAttributesMXML,
 	PartialMeasureAttributes,
 	Pitch,
+	Repeat,
 	TemporalMeasureAttributes,
+	Wedge,
 } from '../music';
 import { NoteAnnotations } from '../music/note-annotations';
 
@@ -15,7 +17,7 @@ export type NoteImportDetails = {
 	pitch?: Pitch;
 	// The note's octave, if the note isn't a rest
 	octave?: number;
-	// The note's duration as-is from the duration element 
+	// The note's duration as-is from the duration element
 	// Nullable because there's sometimes notes don't have a duration element for some reason
 	duration?: number;
 	// The note's annotations, if any
@@ -33,7 +35,6 @@ export type NoteImportHelperMap = {
 	[key in string]: NoteImportHelper;
 };
 
-
 export type NoteImportAnnotationsHelper = (
 	a: NoteAnnotations,
 	el: Element
@@ -50,6 +51,7 @@ export type NoteImportAnnotationsHelperMap = {
 export type MeasureImportDetails = {
 	// The current measure's attributes
 	currentAttributes: MeasureAttributesMXML;
+	tbcAttributes: ToBeCompletedMeasureAttributes;
 	// The attributes that are new to the measure - should also update currentAttributes if this is set
 	// Will be placed on the measure created from combining these properties
 	newTemporalAttributes: TemporalMeasureAttributes[];
@@ -58,6 +60,12 @@ export type MeasureImportDetails = {
 	// The current x-position within the measure
 	// Note, backup, and forward elements should adjust this property
 	curX: number;
+	curMeasureNumber: number;
+};
+
+export type ToBeCompletedMeasureAttributes = {
+	wedge?: Wedge & { start: number };
+	repeatMeasureNumber?: number;
 };
 
 export type MeasureImportHelper = (

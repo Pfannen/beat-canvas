@@ -50,10 +50,7 @@ export const playMusicScore = (
 	return instruments;
 };
 
-export const enqueueMusicScore = async (
-	score: MusicScore,
-	getInstrumentNode: (name: string) => ToneInstrument | null
-) => {
+export const enqueueMusicScore = async (score: MusicScore) => {
 	const { parts } = score;
 	const buffers: EnqueuedBuffer[] = [];
 
@@ -62,18 +59,10 @@ export const enqueueMusicScore = async (
 			const { attributes } = part;
 			let instrument: ToneInstrument;
 
-			if (getInstrumentNode) {
-				instrument =
-					getInstrumentNode(attributes.instrument) ||
-					getInstrument(attributes.instrument);
-			} else {
-				instrument = getInstrument(attributes.instrument);
-			}
-			
-			instrument = instrument.toDestination();
+			instrument = getInstrument(attributes.instrument).toDestination();
 			playPart(part, instrument, -1, transport);
 			transport.start(0);
-		}, 100, 1, 30000);
+		}, 100);
 
 		buffers.push({ name: part.attributes.name, buffer });
 	}

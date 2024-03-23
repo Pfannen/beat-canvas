@@ -64,10 +64,17 @@ const getMeasuresJS = (part: Element) => {
 
 	const measures: Measure[] = [];
 	const curAttr = Helper.getDefaultMeasureAttributes();
+	// to be completed attributes (wedge & repeats)
+	const tbcAttr = {};
 
 	for (let i = 0; i < measuresXML.length; i++) {
 		const measureXML = measuresXML[i];
-		const measureDetails = Helper.getMeasureDetails(measureXML, curAttr);
+		const measureDetails = Helper.getMeasureDetails(
+			measureXML,
+			i,
+			curAttr,
+			tbcAttr
+		);
 
 		const measure: Measure = {
 			notes: measureDetails.notes,
@@ -112,6 +119,8 @@ export const musicXMLToJSON = (musicXML: XMLDocument) => {
 		title: Helper.getScoreTitle(docEl) || 'Unknown Title',
 		parts: partsJS,
 	};
+
+	console.log(musicScore);
 
 	return musicScore;
 };
