@@ -67,7 +67,8 @@ export class BeatCanvas implements IBeatCanvas {
   }
 
   private drawMeasureLines(options: MeasureLinesOptions): void {
-    const { spaceCount, lineCount } = MeasureUtils.getAboveBelowCounts(
+    const { spaceCount, lineCount } = MeasureUtils.getComponentCountsBelow(
+      options.aboveBelowComponentCount,
       options.aboveBelowComponentCount
     );
     const yOffset =

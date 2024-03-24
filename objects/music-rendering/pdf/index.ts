@@ -1,7 +1,5 @@
 import { PDFDocument, PageSizes } from "pdf-lib";
-import { Coordinate } from "../../measurement/types";
 import { PDFLibDrawingCanvas } from "../pdf-lib-drawing-canvas";
-import { IDrawingCanvas } from "@/types/music-rendering/canvas";
 import { BeatCanvas } from "../beat-canvas";
 
 export const drawPDF = async () => {

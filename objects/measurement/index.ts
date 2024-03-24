@@ -1,4 +1,3 @@
-import { Note } from "@/components/providers/music/types";
 import { MeasureUnitConverter } from "./measure-unit-converter";
 import { NoteBeamCalculator } from "./note-beam-calculator";
 import MeasurePositions, {
@@ -6,6 +5,7 @@ import MeasurePositions, {
   NotePositionNote,
 } from "./note-position";
 import { NoteDirection } from "@/lib/notes/types";
+import { BODY_CT } from "./constants";
 
 export type BeamableNoteData = {
   x: number;
@@ -15,10 +15,8 @@ export type BeamableNoteData = {
 }; //stemOffset is in measureUnits
 
 export default class Measurement {
-  private bodyCt = 9;
   private aboveBelowCount: number;
   private notePosition: MeasurePositions;
-  private startsWithLine: boolean;
   private lineCount: number;
   private spaceCount: number;
   private unitConverter: MeasureUnitConverter;
@@ -29,22 +27,17 @@ export default class Measurement {
     lineToSpaceRatio?: number
   ) {
     this.aboveBelowCount = aboveBelowCount;
-    this.startsWithLine = aboveBelowCount % 2 === 0;
-    const componentCount = aboveBelowCount * 2 + this.bodyCt;
-    this.lineCount = MeasureUtils.getLineCount(
-      this.aboveBelowCount * 2 + this.bodyCt - 1,
-      this.startsWithLine
+    const { lineCount, spaceCount } = MeasureUtils.getMeasureComponentCounts(
+      this.aboveBelowCount,
+      BODY_CT
     );
-    this.spaceCount = MeasureUtils.getSpaceCount(
-      this.aboveBelowCount * 2 + this.bodyCt - 1,
-      this.startsWithLine
-    );
+    this.lineCount = lineCount;
+    this.spaceCount = spaceCount;
     this.notePosition = new MeasurePositions(
-      componentCount,
       aboveBelowCount,
+      BODY_CT,
       wholeSegmentLength,
       measureHeight,
-      this.startsWithLine,
       lineToSpaceRatio
     );
     this.unitConverter = new MeasureUnitConverter({
@@ -56,30 +49,19 @@ export default class Measurement {
     });
   }
 
-  public getLineCount() {
-    return this.lineCount;
+  public getComponentCounts() {
+    return { lineCount: this.lineCount, spaceCount: this.spaceCount };
   }
 
-  public getSpaceCount() {
-    return this.spaceCount;
-  }
-
-  public getAboveBelowLines() {
-    return MeasureUtils.getLineCount(
-      this.aboveBelowCount - 1,
-      this.startsWithLine
-    );
-  }
-
-  public getAboveBelowSpaces() {
-    return MeasureUtils.getSpaceCount(
-      this.aboveBelowCount - 1,
-      this.startsWithLine
+  public getAboveBelowCounts() {
+    return MeasureUtils.getComponentCountsBelow(
+      this.aboveBelowCount,
+      this.aboveBelowCount
     );
   }
 
   public isBodyPosition(yPos: number) {
-    return yPos < this.aboveBelowCount + this.bodyCt || yPos >= 0;
+    return yPos < this.aboveBelowCount + BODY_CT || yPos >= 0;
   }
 
   public getLineFraction() {
@@ -103,7 +85,7 @@ export default class Measurement {
   }
 
   public getMiddleYPos() {
-    return Math.floor(this.bodyCt / 2);
+    return Math.floor(BODY_CT / 2);
   }
 
   public getUnitConverter() {

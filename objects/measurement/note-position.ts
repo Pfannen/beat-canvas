@@ -1,31 +1,38 @@
+import { numIsEven } from "@/utils";
+
 export type NotePositionNote = { x: number; y: number; length: number };
 
 export type Offset = { x: number; y: number };
 
 export default class MeasurePositions {
+  private bodyCt: number;
   heights: ComponentFractions;
-  segmentLength: number;
-  startsWithLine: boolean;
-  measureHeight: number;
-  componentsBelowBody: number;
+  private segmentLength: number;
+  private measureHeight: number;
+  private aboveBelowCount: number;
   constructor(
-    componentCount: number,
-    componentsBelowBody: number,
+    aboveBelowCount: number,
+    bodyCt: number,
     wholeSegmentLength: number,
     measureHeight: number,
-    startWithLine = false,
     lineToSpaceRatio = 3
   ) {
+    this.bodyCt = bodyCt;
+    const componentCount = aboveBelowCount * 2 + this.bodyCt;
     this.heights = MeasureUtils.getLedgerComponentFractions(
       componentCount,
-      lineToSpaceRatio,
-      startWithLine
+      this.bodyCt,
+      lineToSpaceRatio
     );
-    this.componentsBelowBody = componentsBelowBody;
+    this.aboveBelowCount = aboveBelowCount;
     this.measureHeight = measureHeight;
     this.segmentLength = wholeSegmentLength; //Will be .25 if 4/4 time (1/4)
-    this.startsWithLine = startWithLine;
+    // this.startsWithLine = startWithLine;
     this.getYOffset = this.getYOffset.bind(this); //Since this method is passed as a delegate, "this" becomes undefined.
+  }
+
+  public getComponentFractions() {
+    return this.heights;
   }
 
   private isOnLine(yPos: number) {
@@ -35,14 +42,10 @@ export default class MeasurePositions {
   //Returns the value that is in the center of the component (line or space) that yPos represents
   public getYOffset(yPos: number) {
     //We shall assume yPos: 0 is the first line of the body (if yPos is negative the position is below the body)
-    const componentsAboveBottom = yPos + this.componentsBelowBody;
-    let spaceCount = MeasureUtils.getSpaceCount(
-      componentsAboveBottom,
-      this.startsWithLine
-    );
-    let lineCount = MeasureUtils.getLineCount(
-      componentsAboveBottom,
-      this.startsWithLine
+    const aboveBottomCount = yPos + this.aboveBelowCount;
+    let { spaceCount, lineCount } = MeasureUtils.getComponentCountsBelow(
+      aboveBottomCount,
+      this.aboveBelowCount
     );
     this.isOnLine(yPos) ? (lineCount -= 0.5) : (spaceCount -= 0.5);
     const spaceHeight = this.heights.space * this.measureHeight;
@@ -81,48 +84,58 @@ export class MeasureUtils {
   private static getSecondComponentCount(componentsAboveBottom: number) {
     return Math.floor((componentsAboveBottom + 1) / 2);
   }
-
-  static getSpaceCount(componentsAboveBottom: number, startsWithLine: boolean) {
-    return startsWithLine
-      ? this.getSecondComponentCount(componentsAboveBottom)
-      : this.getFirstComponentCount(componentsAboveBottom);
+  /// Non-inclusive
+  static getComponentCountsBelow(
+    aboveBottomCount: number,
+    aboveBelowCount: number,
+    bodyStartPosition = 0
+  ) {
+    const startsWithLine = this.bottomComponentIsLine(
+      aboveBelowCount,
+      bodyStartPosition
+    );
+    let lineCount = this.getFirstComponentCount(aboveBottomCount);
+    let spaceCount = this.getSecondComponentCount(aboveBottomCount);
+    if (startsWithLine) {
+      const temp = lineCount;
+      lineCount = spaceCount;
+      spaceCount = temp;
+    }
+    return { lineCount, spaceCount };
   }
 
-  static getLineCount(componentsAboveBottom: number, startsWithLine: boolean) {
-    return startsWithLine
-      ? this.getFirstComponentCount(componentsAboveBottom)
-      : this.getSecondComponentCount(componentsAboveBottom);
+  static getMeasureComponentCounts(
+    aboveBelowCount: number,
+    bodyCt: number,
+    bodyStartPosition = 0
+  ) {
+    const componentCount = aboveBelowCount + bodyCt;
+    return this.getComponentCountsBelow(
+      componentCount - 1,
+      aboveBelowCount,
+      bodyStartPosition
+    );
   }
 
-  static getAboveBodySpaceCount(aboveBelowCount: number) {
-    const halfCount = Math.floor(aboveBelowCount / 2);
-    return halfCount + (aboveBelowCount % 2);
-  }
-
-  static getAboveBodyLineCount(aboveBelowCount: number) {
-    return aboveBelowCount - this.getAboveBodySpaceCount(aboveBelowCount);
-  }
-
-  static getAboveBelowCounts(aboveBelowCount: number) {
-    return {
-      spaceCount: this.getAboveBodySpaceCount(aboveBelowCount),
-      lineCount: this.getAboveBodyLineCount(aboveBelowCount),
-    };
+  private static bottomComponentIsLine(
+    aboveBelowCount: number,
+    bodyStartPosition = 0
+  ) {
+    const bodyStartIsEven = numIsEven(bodyStartPosition);
+    const bottomIsEven = numIsEven(aboveBelowCount);
+    return bodyStartIsEven === bottomIsEven;
   }
 
   static getLedgerComponentFractions(
     componentCount: number,
-    lineToSpaceRatio: number,
-    startWithLine: boolean
+    bodyCt: number,
+    lineToSpaceRatio: number
   ): ComponentFractions {
-    const lineCount = MeasureUtils.getLineCount(
-      componentCount - 1,
-      startWithLine
+    const { lineCount, spaceCount } = MeasureUtils.getMeasureComponentCounts(
+      componentCount - bodyCt,
+      bodyCt
     );
-    const spaceCount = MeasureUtils.getSpaceCount(
-      componentCount - 1,
-      startWithLine
-    );
+
     const linePercentage = lineCount / componentCount; //The percentage of the container that ALL of the lines get
     const spacePercentage = 1 - linePercentage; //The percentage of the container that ALL of the spaces get
 

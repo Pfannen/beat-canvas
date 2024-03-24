@@ -28,9 +28,8 @@ const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = ({
   const { measures } = useMusic();
   const linePercent = measurement.getLineFraction() * 100;
   const spacePercent = measurement.getSpaceFraction() * 100;
-  const padding =
-    measurement.getAboveBelowLines() * linePercent +
-    measurement.getAboveBelowSpaces() * spacePercent;
+  const { lineCount, spaceCount } = measurement.getAboveBelowCounts();
+  const padding = lineCount * linePercent + spaceCount * spacePercent;
   const bodyPercent = 1 - padding * 2;
   const noteComponents = getMeasureItems(measures, measurement);
   return (

@@ -11,3 +11,5 @@ export const numIsUndefined = <T>(val?: number) =>
   val === undefined ? false : true;
 
 export const getDecimalPortion = (val: number) => val % 1;
+
+export const numIsEven = (num: number) => num % 2 === 0;
