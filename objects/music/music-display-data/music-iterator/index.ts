@@ -1,6 +1,5 @@
 import {
   Measure,
-  Note,
   NoteDisplayData,
   TimeSignature,
 } from "@/components/providers/music/types";
@@ -11,9 +10,6 @@ import {
 } from "@/types/music/render-data";
 import { getDecimalPortion } from "@/utils";
 import { durationToRestType, isDownbeat } from "@/utils/music";
-import { Music } from "../../measure-data-container";
-import Measurement from "@/objects/measurement";
-import { NoteDisplayDataAttcher } from "../note-display-data-attacher";
 
 export type MusicIteratorCallback = (
   measureData: MeasureRenderData,
@@ -27,13 +23,17 @@ type MusicCallbacks = {
 };
 
 export class MusicIterator {
-  static staticIterate(
+  static iterate(
     measures: Measure[],
-    measureRenderData: NoteDisplayData[][],
+    noteDisplayData: NoteDisplayData[][],
     callbacks: MusicCallbacks,
-    cb: MusicIteratorCallback
+    cb: MusicIteratorCallback,
+    startIndex = 0,
+    endIndex?: number
   ) {
-    measures.forEach((measure, i) => {
+    endIndex = endIndex || measures.length;
+    for (let i = startIndex; i < endIndex; i++) {
+      const measure = measures[i];
       const timeSignature = callbacks.getMeasureTimeSignature(i);
       const subdivisionLength = callbacks.getMeasureSubdivisionLength(i);
       let restStart = 0;
@@ -49,7 +49,7 @@ export class MusicIterator {
         components.push({
           type: "note",
           note,
-          renderData: measureRenderData[i][j],
+          renderData: noteDisplayData[i][j],
         });
         restStart = note.x + callbacks.getNoteDuration(i, j);
       });
@@ -61,16 +61,7 @@ export class MusicIterator {
         timeSignature
       );
       cb({ attributes: measure.attributes, components }, i);
-    });
-  }
-  static iterate(
-    music: Music,
-    measurement: Measurement,
-    cb: MusicIteratorCallback
-  ) {
-    const renderData = NoteDisplayDataAttcher.initialize(music);
-    const measures = music.getMeasures();
-    this.staticIterate(measures, renderData, music, cb);
+    }
   }
 }
 

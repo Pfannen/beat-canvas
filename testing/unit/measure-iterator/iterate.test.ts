@@ -1,10 +1,11 @@
 import { Note } from "@/components/providers/music/types";
-import { Music } from "@/objects/music/measure-data-container";
+import { Music } from "@/objects/music/readonly-music";
 import {
   MusicIterator,
   MusicIteratorCallback,
 } from "@/objects/music/music-display-data/music-iterator";
 import { getGenericMeasurementObj } from "@/testing/utils/music";
+import { NoteDisplayDataAttcher } from "@/objects/music/music-display-data/note-display-data-attacher";
 
 const getArgs = (notes: Note[]) => {
   const music = new Music();
@@ -16,8 +17,9 @@ const runIteratorTest = (
   notes: Note[],
   testCallback: MusicIteratorCallback
 ) => {
-  const { music, measurement } = getArgs(notes);
-  MusicIterator.iterate(music, measurement, testCallback);
+  const { music } = getArgs(notes);
+  const noteDisplayData = NoteDisplayDataAttcher.initialize(music);
+  MusicIterator.iterate(music.measures!, noteDisplayData, music, testCallback);
 };
 
 type TestData = { componentType: string; type?: string } | undefined;
@@ -49,7 +51,8 @@ const runMeasureTest = (notes: Note[], truths: TestData[]) => {
       }
     });
   };
-  MusicIterator.iterate(music, measurement, callback);
+  const noteDisplayData = NoteDisplayDataAttcher.initialize(music);
+  MusicIterator.iterate(music.measures!, noteDisplayData, music, callback);
 };
 
 //#region Full Measures

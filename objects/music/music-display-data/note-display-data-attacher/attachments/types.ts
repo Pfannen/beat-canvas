@@ -1,5 +1,5 @@
 import { NoteDisplayData } from "@/components/providers/music/types";
-import { ReadonlyMusic } from "../../measure-data-container";
+import { ReadonlyMusic } from "../../../readonly-music";
 
 export type DisplayDataAttachmentContext = {
   music: ReadonlyMusic;

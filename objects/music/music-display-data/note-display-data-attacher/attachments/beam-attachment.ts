@@ -1,13 +1,26 @@
 import { NoteDisplayData } from "@/components/providers/music/types";
 import Measurement, { BeamableNoteData } from "@/objects/measurement";
-import { isBeamable } from "../../../../utils/music";
-import { getDecimalPortion } from "../../../../utils";
+import { isBeamable } from "../../../../../utils/music";
+import { getDecimalPortion } from "../../../../../utils";
 import { DisplayDataAttacher } from "./types";
+import { NoteDirection } from "@/lib/notes/types";
+import { Measurements } from "@/objects/measurement/measurements";
+import { NoteBeamCalculator } from "@/objects/measurement/note-beam-calculator";
+
+export type AttachBeamDataContext = {
+  measurements: Measurements;
+  getMeasureDimensions: (measureIndex: number) => {
+    height: number;
+    width: number;
+  };
+};
 
 export const attachBeamData =
-  (measurement: Measurement): DisplayDataAttacher =>
+  (context: AttachBeamDataContext): DisplayDataAttacher =>
   ({ music, noteDisplayData, measureIndex }) => {
+    const { height, width } = context.getMeasureDimensions(measureIndex);
     const subdivisionLength = music.getMeasureSubdivisionLength(measureIndex);
+    const { beatsPerMeasure } = music.getMeasureTimeSignature(measureIndex);
     const noteCount = music.getMeasureNoteCount(measureIndex);
     let currentDivision = 0; // The current subdivision of the measure the notes in beamStack are in (dont want to beam notes across "segments")
     let beamStack: BeamableNoteData[] = []; // The notes that should be beamed together
@@ -53,20 +66,34 @@ export const attachBeamData =
           noteDisplayData,
           startNoteIndex,
           beamStack,
-          measurement
+          context.measurements,
+          height,
+          width,
+          beatsPerMeasure
         );
         startNoteIndex = i;
         beamStack = currNote ? [currNote] : [];
       }
     }
-    processBeamStack(noteDisplayData, startNoteIndex, beamStack, measurement);
+    processBeamStack(
+      noteDisplayData,
+      startNoteIndex,
+      beamStack,
+      context.measurements,
+      height,
+      width,
+      beatsPerMeasure
+    );
   };
 
 const processBeamStack = (
   noteData: NoteDisplayData[],
   startNoteIndex: number,
   beamStack: BeamableNoteData[],
-  measurement: Measurement
+  measurements: Measurements,
+  measureHeight: number,
+  measureWidth: number,
+  beatsPerMeasure: number
 ) => {
   //If there is actually more than one note to beam
   if (beamStack.length > 1) {
@@ -75,7 +102,14 @@ const processBeamStack = (
       if (noteData[i + startNoteIndex].noteDirection === "up") upCount++;
     }
     const direction = beamStack.length / 2 < upCount ? "up" : "down"; //All notes should be the same direction so this will make the direction whatever the most common direction was
-    const data = measurement.getNoteBeamData(beamStack, direction);
+    const data = getNoteBeamData(
+      beamStack,
+      direction,
+      measurements,
+      measureHeight,
+      measureWidth,
+      beatsPerMeasure
+    );
     const firstNote = noteData[startNoteIndex];
     firstNote.beamData = { angle: data.beamAngle, length: data.beamLength }; //Give the first note in the stack the data
     for (let i = 0; i < beamStack.length; i++) {
@@ -100,4 +134,23 @@ const noteStartEndDivisions = (
     end--;
 
   return { start, end };
+};
+
+const getNoteBeamData = (
+  notes: BeamableNoteData[],
+  direction: NoteDirection,
+  measurements: Measurements,
+  measureHeight: number,
+  measureWidth: number,
+  beatsPerMeasure: number
+) => {
+  const coordinates = notes.map(({ x, y, duration, stemOffset }) => {
+    const xPos =
+      Measurements.getXFractionOffset(x, duration, beatsPerMeasure) *
+      measureWidth;
+    const yPos = measurements.getYFractionOffset(y) * measureHeight;
+
+    return { x: xPos, y: yPos + (stemOffset || 0) };
+  });
+  return NoteBeamCalculator.getPositionData(coordinates, direction, 25);
 };

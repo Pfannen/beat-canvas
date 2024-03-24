@@ -1,17 +1,21 @@
 import { NoteDisplayData } from "@/components/providers/music/types";
-import { ReadonlyMusic } from "../../measure-data-container";
-import { DisplayDataAttacher } from "../attachments/types";
+import { ReadonlyMusic } from "../../readonly-music";
+import { DisplayDataAttacher } from "./attachments/types";
 
 export class NoteDisplayDataAttcher {
   static attach(
     music: ReadonlyMusic,
-    noteDisplayData: NoteDisplayData[],
+    noteDisplayMeasures: NoteDisplayData[][],
     attachments: DisplayDataAttacher[]
   ) {
     const measureCount = music.getMeasureCount();
     for (let i = 0; i < measureCount; i++) {
       attachments.forEach((del) => {
-        del({ music, measureIndex: i, noteDisplayData });
+        del({
+          music,
+          measureIndex: i,
+          noteDisplayData: noteDisplayMeasures[i],
+        });
       });
     }
   }
