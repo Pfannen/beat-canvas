@@ -21,7 +21,7 @@ export type NoteImportDetails = {
 	// Nullable because there's sometimes notes don't have a duration element for some reason
 	duration?: number;
 	// The note's annotations, if any
-	annotations?: NoteAnnotations;
+	annotations: NoteAnnotations;
 };
 
 // Takes in the current note's details and an element that's a child of the current note element
@@ -60,11 +60,15 @@ export type MeasureImportDetails = {
 	// The current x-position within the measure
 	// Note, backup, and forward elements should adjust this property
 	curX: number;
+	// The current measure's number
 	curMeasureNumber: number;
+	// The previously parsed note's duration
+	// Currently required for notes that are chords so curX can be updated correctly
+	prevNoteDur: number;
 };
 
 export type ToBeCompletedMeasureAttributes = {
-	wedge?: Wedge & { start: number };
+	wedge?: Wedge;
 	repeatMeasureNumber?: number;
 };
 

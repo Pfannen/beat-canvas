@@ -30,13 +30,23 @@ export type Clef =
 
 export type Wedge = {
 	crescendo: boolean;
-	xDuration: number;
+	// Don't need to store start values because it's indicated by the measure attributes it's apart of
+	measureEnd: number;
+	xEnd: number;
 };
 
-export type Repeat = {
-	forward: boolean;
-	jumpMeasure?: number;
+type ForwardRepeat = {
+	forward: true;
 };
+
+type BackwardRepeat = {
+	forward: false;
+	jumpMeasure: number;
+	repeatCount: number;
+	remainingRepeats: number;
+};
+
+export type Repeat = ForwardRepeat | BackwardRepeat;
 
 export type MusicScore = {
 	title: string;
@@ -54,8 +64,8 @@ export type MeasureAttributes = {
 	keySignature: number;
 	clef: Clef;
 	dynamic: Dynamic;
-	repeat: Repeat;
-	wedge: Wedge;
+	repeat?: Repeat;
+	wedge?: Wedge;
 };
 
 export type PartialMeasureAttributes = Partial<MeasureAttributes>;

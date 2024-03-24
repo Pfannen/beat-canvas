@@ -4,7 +4,13 @@ import {
 	MeasureImportHelper,
 	MeasureImportHelperMap,
 } from '@/types/import-export/import';
-import { MeasureAttributesMXML, Metronome, Pitch, Repeat } from '@/types/music';
+import {
+	MeasureAttributesMXML,
+	Metronome,
+	Pitch,
+	Repeat,
+	Wedge,
+} from '@/types/music';
 import {
 	getSingleElement,
 	validateElements,
@@ -45,10 +51,22 @@ const noteImportHelper: MeasureImportHelper = (mD, el) => {
 		};
 		if (annotations && Object.keys(annotations).length > 0)
 			note.annotations = annotations;
+
+		// If the current note is a chord, its x position isn't mD.curX because the first note in the chord
+		// already advanced mD.curX and a note marked as a chord doesn't advance the x position
+		if (annotations.chord) {
+			note.x = mD.curX - mD.prevNoteDur;
+		}
+
 		mD.notes.push(note);
 	}
 
-	mD.curX += trueDuration;
+	// If the note is a chord, it doesn't advance the x position
+	// That's done by the first note of the chord, which doesn't have the chord annotation
+	if (!annotations.chord) {
+		mD.curX += trueDuration;
+		mD.prevNoteDur = trueDuration;
+	}
 };
 
 const metronomeImportHelper: MeasureImportHelper = (mD, el) => {
@@ -120,6 +138,31 @@ const soundImportHelper: MeasureImportHelper = (mD, el) => {
 	);
 };
 
+const wedgeImportHelper: MeasureImportHelper = (mD, el) => {
+	if (!verifyTagName(el, 'wedge') || !el.hasAttribute('type')) return;
+
+	const wedgeType = el.getAttribute('type');
+	if (wedgeType === 'stop') {
+		if (!('wedge' in mD.tbcAttributes)) return;
+
+		mD.tbcAttributes.wedge!.measureEnd = mD.curMeasureNumber;
+		mD.tbcAttributes.wedge!.xEnd = mD.curX;
+		delete mD.tbcAttributes.wedge;
+	} else {
+		const wedge: Wedge = {
+			crescendo: wedgeType === 'crescendo',
+			measureEnd: mD.curMeasureNumber,
+			xEnd: mD.curX,
+		};
+		mD.tbcAttributes.wedge = wedge;
+		assignTemporalMeasureAttributes(
+			mD.newTemporalAttributes,
+			{ wedge },
+			mD.curX
+		);
+	}
+};
+
 const backupImportHelper: MeasureImportHelper = (mD, el) => {
 	if (
 		!verifyTagName(el, 'backup') ||
@@ -164,15 +207,27 @@ const barlineImportHelper: MeasureImportHelper = (mD, el) => {
 };
 
 const repeatImportHelper: MeasureImportHelper = (mD, el) => {
-	if (!verifyTagName(el, 'repeat') || !el.getAttribute('direction')) return;
+	if (!verifyTagName(el, 'repeat') || !el.hasAttribute('direction')) return;
 
 	const forward = el.getAttribute('direction') === 'forward';
-	const repeat: Repeat = { forward };
+
+	let repeat: Repeat;
 	if (forward) {
+		repeat = { forward };
 		mD.tbcAttributes.repeatMeasureNumber = mD.curMeasureNumber;
 	} else {
 		if (!('repeatMeasureNumber' in mD.tbcAttributes)) return;
-		repeat.jumpMeasure = mD.tbcAttributes.repeatMeasureNumber;
+
+		let repeatCount = 1;
+		if (el.hasAttribute('times')) repeatCount = +el.getAttribute('times')!;
+
+		const jumpMeasure = mD.tbcAttributes.repeatMeasureNumber!;
+		repeat = {
+			forward: false,
+			jumpMeasure,
+			repeatCount,
+			remainingRepeats: repeatCount,
+		};
 		delete mD.tbcAttributes.repeatMeasureNumber;
 	}
 
@@ -268,6 +323,7 @@ export const measureImportHelperMap: MeasureImportHelperMap = {
 	dynamics: dynamicsImportHelper,
 	barline: barlineImportHelper,
 	repeat: repeatImportHelper,
+	wedge: wedgeImportHelper,
 };
 
 export const attributesImportHelperMap: MeasureAttributesImportHelperMap = {

@@ -84,6 +84,7 @@ export const annotationApplier: {
 	accidental: accidentalApplier,
 	accent: accentApplier,
 	dynamic: dynamicApplier,
+	chord: () => {},
 };
 
 export const constructNoteAttributes = (

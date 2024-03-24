@@ -6,7 +6,8 @@ export type NoteAnnotation =
 	| 'staccato'
 	| 'slur'
 	| 'dynamic'
-	| 'accidental';
+	| 'accidental'
+	| 'chord';
 
 export type Slur = 'start' | 'stop';
 
@@ -30,6 +31,7 @@ export type NoteAnnotations = {
 	accent?: Accent;
 	dynamic?: Dynamic;
 	accidental?: Accidental;
+	chord?: true;
 };
 
 export type PersistentInstrumentAttributes = {

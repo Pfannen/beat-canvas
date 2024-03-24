@@ -7,11 +7,6 @@ export type PlayParams = Partial<{
 	onPlay: () => void;
 }>;
 
-export type EnqueueDetails = {
-	transport: Transport;
-	baseSPB: number;
-};
-
 export type EnqueuedBuffer = {
 	name: string;
 	buffer: ToneAudioBuffer;

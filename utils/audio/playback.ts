@@ -2,7 +2,7 @@ import { IVolumeValueModifer } from '@/types/audio/volume';
 import { VolumeManager } from './volume';
 import { MusicScore } from '@/types/music';
 import { Player, Players, ToneAudioBuffer, context } from 'tone';
-import { enqueueMusicScore, playMusicScore } from './play-music/play-music';
+import { enqueueMusicScore } from './play-music/play-music';
 import { isOnClient } from '..';
 import { getInstrument } from './instruments';
 import { ToneInstrument } from '@/types/audio/instrument';

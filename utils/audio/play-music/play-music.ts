@@ -1,71 +1,31 @@
-import { Offline, Transport, Volume, now } from 'tone';
+import { Offline, Player } from 'tone';
 import { Measure } from '@/components/providers/music/types';
 import { MusicScore } from '@/types/music';
-import { playPart } from './play-part';
+import { enqueuePart } from './play-part';
 import { getInstrument } from '../instruments';
-import {
-	ToneInstrument,
-	ToneInstrumentSpecifier,
-} from '@/types/audio/instrument';
-import { IVolumeNodeModifier } from '@/types/audio/volume';
-import { EnqueuedBuffer, PlayParams } from '@/types/audio/play-music';
-
-// TODO: Look into multiple parts not each specifying metronome
-export const playMusicScore = (
-	score: MusicScore,
-	playParams: PlayParams = {}
-) => {
-	const { title, parts } = score;
-	const { getInstrumentNode, onPlay } = playParams;
-	console.log('Now playing: ' + title);
-	console.log(score);
-
-	const instruments: ToneInstrumentSpecifier[] = [];
-	const musicStart = now() + 0.15;
-
-	Transport.start();
-	if (onPlay)
-		Transport.scheduleOnce((time) => {
-			if (onPlay) onPlay();
-			console.log({ time, musicStart });
-		}, 0.15);
-
-	for (const part of parts) {
-		const { attributes } = part;
-		let instrument: ToneInstrument;
-
-		if (getInstrumentNode) {
-			instrument =
-				getInstrumentNode(attributes.instrument) ||
-				getInstrument(attributes.instrument).toDestination();
-		} else {
-			instrument = getInstrument(attributes.instrument).toDestination();
-		}
-
-		playPart(part, instrument, musicStart);
-
-		instruments.push({ id: part.attributes.id, instrument });
-	}
-
-	return instruments;
-};
+import { ToneInstrument } from '@/types/audio/instrument';
+import { EnqueuedBuffer } from '@/types/audio/play-music';
 
 export const enqueueMusicScore = async (score: MusicScore) => {
 	const { parts } = score;
 	const buffers: EnqueuedBuffer[] = [];
 
+	console.time('Loading parts...');
 	for (const part of parts) {
 		const buffer = await Offline(({ transport }) => {
 			const { attributes } = part;
 			let instrument: ToneInstrument;
 
 			instrument = getInstrument(attributes.instrument).toDestination();
-			playPart(part, instrument, -1, transport);
+			enqueuePart(part, instrument, transport);
+
 			transport.start(0);
-		}, 100);
+			// Sampling rate (last argument) plays a significant role in the time it takes to render a part
+		}, 100, 1, 15000);
 
 		buffers.push({ name: part.attributes.name, buffer });
 	}
+	console.timeEnd('Loading parts...');
 
 	return buffers;
 };
@@ -151,3 +111,43 @@ export const ohWhatANightScore: MusicScore = {
 		},
 	],
 };
+
+/* // TODO: Look into multiple parts not each specifying metronome
+export const playMusicScore = (
+	score: MusicScore,
+	playParams: PlayParams = {}
+) => {
+	const { title, parts } = score;
+	const { getInstrumentNode, onPlay } = playParams;
+	console.log('Now playing: ' + title);
+	console.log(score);
+
+	const instruments: ToneInstrumentSpecifier[] = [];
+	const musicStart = now() + 0.15;
+
+	Transport.start();
+	if (onPlay)
+		Transport.scheduleOnce((time) => {
+			if (onPlay) onPlay();
+			console.log({ time, musicStart });
+		}, 0.15);
+
+	for (const part of parts) {
+		const { attributes } = part;
+		let instrument: ToneInstrument;
+
+		if (getInstrumentNode) {
+			instrument =
+				getInstrumentNode(attributes.instrument) ||
+				getInstrument(attributes.instrument).toDestination();
+		} else {
+			instrument = getInstrument(attributes.instrument).toDestination();
+		}
+
+		playPart(part, instrument, musicStart);
+
+		instruments.push({ id: part.attributes.id, instrument });
+	}
+
+	return instruments;
+}; */

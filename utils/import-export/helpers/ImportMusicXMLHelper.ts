@@ -202,7 +202,7 @@ class ImportMusicXMLHelper {
 	};
 
 	static getNoteDetails = (noteXML: Element) => {
-		const noteDetails: NoteImportDetails = {};
+		const noteDetails: NoteImportDetails = { annotations: {} };
 		const { children } = noteXML;
 
 		for (let i = 0; i < children.length; i++) {
@@ -228,6 +228,7 @@ class ImportMusicXMLHelper {
 			notes: [],
 			curX: 0,
 			curMeasureNumber,
+			prevNoteDur: 0,
 		};
 
 		const { children } = measureXML;

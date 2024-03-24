@@ -28,7 +28,7 @@ const polySynth = () => new Tone.PolySynth();
 const sampler = () => new Tone.Sampler();
 
 export const getInstrument = (name: string): ToneInstrument => {
-	const instrument = synth();
+	const instrument = polySynth();
 
 	return instrument;
 };
