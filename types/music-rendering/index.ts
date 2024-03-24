@@ -16,3 +16,5 @@ export interface IMeasureWidthCalculator {
     timeSignature: TimeSignature
   ): number;
 }
+
+export type MeasureComponentValues<T = number> = { line: T; space: T };
