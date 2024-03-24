@@ -1,7 +1,7 @@
 import {
   Measure,
   Note,
-  NoteRenderData,
+  NoteDisplayData,
   NoteType,
   TimeSignature,
 } from "@/components/providers/music/types";
@@ -11,7 +11,7 @@ export type Rest = { x: number; type: NoteType };
 export type NoteComponent = {
   type: "note";
   note: Note; //*x is in terms of the segment it belongs to*
-  renderData: NoteRenderData;
+  renderData: NoteDisplayData;
 };
 export type RestComponent = { type: "rest"; rest: Rest };
 

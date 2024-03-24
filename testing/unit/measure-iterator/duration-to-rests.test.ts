@@ -1,4 +1,4 @@
-import { getRestsForDuration } from "@/objects/music/music-iterator";
+import { getRestsForDuration } from "@/objects/music/music-display-data/music-iterator";
 import {
   NoteType,
   TimeSignature,

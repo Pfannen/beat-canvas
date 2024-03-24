@@ -23,12 +23,12 @@ export type Note = {
   annotations?: NoteAnnotations;
 };
 
-export type NoteRenderData = {
+export type NoteDisplayData = {
   stemOffset?: number;
   noteDirection: NoteDirection;
-} & Partial<RenderData>;
+} & Partial<DisplayData>;
 
-export type RenderData = {
+export type DisplayData = {
   beamData: { angle: number; length: number };
   slurData: { x: number; y: number };
   nonBodyData: { numLines: number; isOnLine: boolean; isAboveBody: boolean }; // If this is undefined the note is a body component (where this information doesn't apply)

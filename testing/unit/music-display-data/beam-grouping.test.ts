@@ -1,8 +1,8 @@
-import { Note, NoteRenderData } from "@/components/providers/music/types";
+import { Note, NoteDisplayData } from "@/components/providers/music/types";
 import Measurement from "@/objects/measurement";
 import { Music } from "@/objects/music/measure-data-container";
-import { initializeMeasureRenderData } from "@/objects/music/music-display-data";
-import { attachBeamData } from "@/objects/music/music-display-data/modifiers/beam-modifier";
+import { attachBeamData } from "@/objects/music/music-display-data/attachments/beam-attachment";
+import { NoteDisplayDataAttcher } from "@/objects/music/music-display-data/note-display-data-attacher";
 
 const componentsBelowBody = 5;
 const segmentFraction = 0.25;
@@ -15,7 +15,7 @@ const measurement = new Measurement(
 );
 
 const testTruthyBeamData = (
-  notes: NoteRenderData[],
+  notes: NoteDisplayData[],
   beamDataIndicies: Set<number>
 ) => {
   notes.forEach((note, i) => {
@@ -28,7 +28,7 @@ const testTruthyBeamData = (
 const getAttachmentArgs = (notes: Note[]) => {
   const music = new Music();
   music.setMeasures([{ notes }]);
-  const renderData = initializeMeasureRenderData(music, measurement, 0);
+  const renderData = NoteDisplayDataAttcher.initialize(music);
   return { music, renderData, measureIndex: 0 };
 };
 
@@ -39,9 +39,9 @@ test("Successful Beaming - 1 division", () => {
     { x: 0.5, y: 0, type: "eighth" },
   ];
   const { music, renderData, measureIndex } = getAttachmentArgs(notes);
-
-  attachBeamData(music, renderData, measureIndex, measurement);
-  testTruthyBeamData(renderData, new Set([0]));
+  const noteDisplayData = renderData[measureIndex];
+  attachBeamData(measurement)({ music, noteDisplayData, measureIndex });
+  testTruthyBeamData(noteDisplayData, new Set([0]));
 });
 
 test("Successful Beaming - 2 separate divisions", () => {
@@ -53,9 +53,9 @@ test("Successful Beaming - 2 separate divisions", () => {
     { x: 2.5, y: 0, type: "eighth" },
   ];
   const { music, renderData, measureIndex } = getAttachmentArgs(notes);
-
-  attachBeamData(music, renderData, measureIndex, measurement);
-  testTruthyBeamData(renderData, new Set([0, 3]));
+  const noteDisplayData = renderData[measureIndex];
+  attachBeamData(measurement)({ music, noteDisplayData, measureIndex });
+  testTruthyBeamData(noteDisplayData, new Set([0, 3]));
 });
 //#endregion
 
@@ -69,9 +69,9 @@ test("No Beaming - Rests between each beamable note", () => {
     { x: 2, y: 0, type: "sixteenth" },
   ];
   const { music, renderData, measureIndex } = getAttachmentArgs(notes);
-
-  attachBeamData(music, renderData, measureIndex, measurement);
-  testTruthyBeamData(renderData, new Set());
+  const noteDisplayData = renderData[measureIndex];
+  attachBeamData(measurement)({ music, noteDisplayData, measureIndex });
+  testTruthyBeamData(noteDisplayData, new Set());
 });
 
 test("No Beaming - No beamable notes", () => {
@@ -82,9 +82,9 @@ test("No Beaming - No beamable notes", () => {
     { x: 3, y: 0, type: "quarter" },
   ];
   const { music, renderData, measureIndex } = getAttachmentArgs(notes);
-
-  attachBeamData(music, renderData, measureIndex, measurement);
-  testTruthyBeamData(renderData, new Set());
+  const noteDisplayData = renderData[measureIndex];
+  attachBeamData(measurement)({ music, noteDisplayData, measureIndex });
+  testTruthyBeamData(noteDisplayData, new Set());
 });
 
 test("No Beaming - Non beamable and beamable alternation", () => {
@@ -95,9 +95,9 @@ test("No Beaming - Non beamable and beamable alternation", () => {
     { x: 2.5, y: 0, type: "eighth" },
   ];
   const { music, renderData, measureIndex } = getAttachmentArgs(notes);
-
-  attachBeamData(music, renderData, measureIndex, measurement);
-  testTruthyBeamData(renderData, new Set());
+  const noteDisplayData = renderData[measureIndex];
+  attachBeamData(measurement)({ music, noteDisplayData, measureIndex });
+  testTruthyBeamData(noteDisplayData, new Set());
 });
 //#endregion
 
@@ -109,9 +109,9 @@ test("Note Direction - Majority up", () => {
     { x: 0.5, y: 0, type: "sixteenth" },
   ];
   const { music, renderData, measureIndex } = getAttachmentArgs(notes);
-
-  attachBeamData(music, renderData, measureIndex, measurement);
-  renderData.forEach((note) => expect(note.noteDirection).toBe("up"));
+  const noteDisplayData = renderData[measureIndex];
+  attachBeamData(measurement)({ music, noteDisplayData, measureIndex });
+  noteDisplayData.forEach((note) => expect(note.noteDirection).toBe("up"));
 });
 
 test("Note Direction - Majority down", () => {
@@ -121,7 +121,8 @@ test("Note Direction - Majority down", () => {
     { x: 0.5, y: 8, type: "sixteenth" },
   ];
   const { music, renderData, measureIndex } = getAttachmentArgs(notes);
-  attachBeamData(music, renderData, measureIndex, measurement);
-  renderData.forEach((note) => expect(note.noteDirection).toBe("down"));
+  const noteDisplayData = renderData[measureIndex];
+  attachBeamData(measurement)({ music, noteDisplayData, measureIndex });
+  noteDisplayData.forEach((note) => expect(note.noteDirection).toBe("down"));
 });
 //#endregion

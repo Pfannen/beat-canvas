@@ -3,7 +3,7 @@ import { Music } from "@/objects/music/measure-data-container";
 import {
   MusicIterator,
   MusicIteratorCallback,
-} from "@/objects/music/music-iterator";
+} from "@/objects/music/music-display-data/music-iterator";
 import { getGenericMeasurementObj } from "@/testing/utils/music";
 
 const getArgs = (notes: Note[]) => {

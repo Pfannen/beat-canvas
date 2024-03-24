@@ -4,7 +4,7 @@ import {
   TimeSignature,
 } from "@/components/providers/music/types";
 import { getNoteDuration } from "@/components/providers/music/utils";
-import { MeasureAttributes } from "@/types/music";
+import { NoteDirection } from "@/lib/notes/types";
 import { NoteAnnotation } from "@/types/music/note-annotations";
 import { beamableSubdivisionLength } from "@/utils/music";
 
@@ -25,27 +25,28 @@ export interface ReadonlyMusic {
     annotation: NoteAnnotation
   ): boolean;
   getNoteDuration(measureIndex: number, noteIndex: number): number;
+  getNoteDirection(measureIndex: number, noteIndex: number): NoteDirection;
   getMeasureSubdivisionLength(measureIndex: number): number;
 }
 
 export class Music implements ReadonlyMusic {
   measures?: Measure[];
 
-  checkMeasures() {
+  private checkMeasures() {
     if (!this.measures) {
       throw new Error("Music: Measures are not defined");
     }
   }
 
-  isValidMeasureIndex(i: number) {
+  private isValidMeasureIndex(i: number) {
     return -1 < i && i < this.measures!.length;
   }
 
-  isValidNoteIndex(notes: Measure["notes"], i: number) {
+  private isValidNoteIndex(notes: Measure["notes"], i: number) {
     return -1 < i && i < notes.length;
   }
 
-  checkIndicies(measureIndex: number, noteIndex?: number): Measure {
+  private checkIndicies(measureIndex: number, noteIndex?: number): Measure {
     this.checkMeasures();
     if (!this.isValidMeasureIndex(measureIndex)) {
       throw new Error(
@@ -142,5 +143,11 @@ export class Music implements ReadonlyMusic {
     return beamableSubdivisionLength(
       this.getMeasureTimeSignature(measureIndex)
     );
+  }
+
+  getNoteDirection(measureIndex: number, noteIndex: number): NoteDirection {
+    const measure = this.measures![measureIndex];
+    const note = measure.notes[noteIndex];
+    return note.y < 4 ? "up" : "down";
   }
 }
