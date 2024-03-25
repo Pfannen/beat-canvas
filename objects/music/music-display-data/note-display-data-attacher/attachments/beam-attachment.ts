@@ -1,5 +1,5 @@
 import { NoteDisplayData } from "@/components/providers/music/types";
-import Measurement, { BeamableNoteData } from "@/objects/measurement";
+import { BeamableNoteData } from "@/objects/measurement";
 import { isBeamable } from "../../../../../utils/music";
 import { getDecimalPortion } from "../../../../../utils";
 import { DisplayDataAttacher } from "./types";
