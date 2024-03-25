@@ -9,6 +9,7 @@ import { ToneInstrument } from '@/types/audio/instrument';
 import { PersistentInstrumentAttributes } from '@/types/music/note-annotations';
 import { Transport } from 'tone/build/esm/core/clock/Transport';
 import { getSecondsPerBeat } from '@/utils/music';
+import { flattenMeasures } from '@/utils/music/measures/flatten-measures';
 
 export const enqueuePart = (
 	part: MusicPart,
@@ -28,11 +29,12 @@ export const enqueuePart = (
 	updateInstrument(instrument, persistentAttr.instrumentProps);
 
 	const baseSPB = getSecondsPerBeat(attributes.metronome.beatsPerMinute);
+	const flattenedMeasures = flattenMeasures(measures);
 
 	let curX = 0;
 	let totalMeasuresEnqueued = 0;
-	for (let i = 0; i < measures.length; i++) {
-		const measure = measures[i];
+	for (let i = 0; i < flattenedMeasures.length; i++) {
+		const measure = flattenedMeasures[i];
 
 		const nextMeasure = enqueueMeasure(
 			measure,
@@ -44,11 +46,10 @@ export const enqueuePart = (
 			transport
 		);
 
-		if (nextMeasure >= 0) i = nextMeasure - 1;
+		//if (nextMeasure >= 0) i = nextMeasure - 1;
 		totalMeasuresEnqueued++;
 
 		const { beatsPerMeasure } = attributes.timeSignature;
-		console.log(beatsPerMeasure);
 		curX += beatsPerMeasure;
 	}
 };

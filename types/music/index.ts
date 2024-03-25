@@ -48,6 +48,14 @@ type BackwardRepeat = {
 
 export type Repeat = ForwardRepeat | BackwardRepeat;
 
+export type RepeatEndingType = 'start' | 'stop' | 'discontinue' | 'start-stop';
+
+// Maps an ending number (1st ending, 2nd ending, etc.) to the measure number that it ends at
+// The ending starts at the measure the object is located in
+export type RepeatEndings = {
+	[ending in number]: number;
+};
+
 export type MusicScore = {
 	title: string;
 	parts: MusicPart[];
@@ -65,6 +73,7 @@ export type MeasureAttributes = {
 	clef: Clef;
 	dynamic: Dynamic;
 	repeat?: Repeat;
+	repeatEndings?: RepeatEndings;
 	wedge?: Wedge;
 };
 

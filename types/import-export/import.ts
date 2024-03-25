@@ -5,6 +5,7 @@ import {
 	PartialMeasureAttributes,
 	Pitch,
 	Repeat,
+	RepeatEndings,
 	TemporalMeasureAttributes,
 	Wedge,
 } from '../music';
@@ -51,6 +52,7 @@ export type NoteImportAnnotationsHelperMap = {
 export type MeasureImportDetails = {
 	// The current measure's attributes
 	currentAttributes: MeasureAttributesMXML;
+	// Attributes that are yet to be completed because they require another attribute existing that completes them
 	tbcAttributes: ToBeCompletedMeasureAttributes;
 	// The attributes that are new to the measure - should also update currentAttributes if this is set
 	// Will be placed on the measure created from combining these properties
@@ -70,6 +72,11 @@ export type MeasureImportDetails = {
 export type ToBeCompletedMeasureAttributes = {
 	wedge?: Wedge;
 	repeatMeasureNumber?: number;
+	// Maps an ending to object initially created for it
+	// Should update the ending when its end is found by indexing into tbcAttributes
+	// and changing the end measure value of the correct ending to the current measure's number
+	// and deleting the entry in the tbcAttributes
+	repeatEndings?: { [ending in number]: RepeatEndings };
 };
 
 export type MeasureImportHelper = (

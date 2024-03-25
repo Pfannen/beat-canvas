@@ -20,8 +20,9 @@ export const enqueueMusicScore = async (score: MusicScore) => {
 			enqueuePart(part, instrument, transport);
 
 			transport.start(0);
+			// Record time (first argument) affects the time it takes to render by how much you move it
 			// Sampling rate (last argument) plays a significant role in the time it takes to render a part
-		}, 100, 1, 15000);
+		}, 200, 1, 15000);
 
 		buffers.push({ name: part.attributes.name, buffer });
 	}
