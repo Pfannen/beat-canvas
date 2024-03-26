@@ -1,4 +1,5 @@
 import {
+	HelperAttributesArg,
 	MeasureAttributesImportHelper,
 	MeasureAttributesImportHelperMap,
 	MeasureImportHelper,
@@ -84,13 +85,14 @@ const metronomeImportHelper: MeasureImportHelper = (mD, el) => {
 		beatNote: 4,
 		beatsPerMinute: +perMinuteXML!.textContent!,
 	};
-	mD.currentAttributes.metronome = metronome;
 
+	mD.newDynamicAttributes.metronome = metronome;
+	/* mD.currentAttributes.metronome = metronome;
 	assignTemporalMeasureAttributes(
 		mD.newTemporalAttributes,
 		{ metronome },
 		mD.curX
-	);
+	); */
 };
 
 const directionImportHelper: MeasureImportHelper = (mD, el) => {
@@ -131,13 +133,13 @@ const soundImportHelper: MeasureImportHelper = (mD, el) => {
 		beatsPerMinute: tempo,
 	};
 
-	mD.currentAttributes.metronome = metronome;
-
-	assignTemporalMeasureAttributes(
+	mD.newDynamicAttributes.metronome = metronome;
+	//mD.currentAttributes.metronome = metronome;
+	/* assignTemporalMeasureAttributes(
 		mD.newTemporalAttributes,
 		{ metronome },
 		mD.curX
-	);
+	); */
 };
 
 const wedgeImportHelper: MeasureImportHelper = (mD, el) => {
@@ -156,12 +158,14 @@ const wedgeImportHelper: MeasureImportHelper = (mD, el) => {
 			measureEnd: mD.curMeasureNumber,
 			xEnd: mD.curX,
 		};
+
 		mD.tbcAttributes.wedge = wedge;
-		assignTemporalMeasureAttributes(
+		mD.newDynamicAttributes.wedge = wedge;
+		/* assignTemporalMeasureAttributes(
 			mD.newTemporalAttributes,
 			{ wedge },
 			mD.curX
-		);
+		); */
 	}
 };
 
@@ -188,12 +192,13 @@ const dynamicsImportHelper: MeasureImportHelper = (mD, el) => {
 	if (!verifyTagName(el, 'dynamics') || !el.children.length) return;
 
 	const dynamic = el.children[0].tagName as Dynamic;
-	mD.currentAttributes.dynamic = dynamic;
+	mD.newDynamicAttributes.dynamic = dynamic;
+	/* mD.currentAttributes.dynamic = dynamic;
 	assignTemporalMeasureAttributes(
 		mD.newTemporalAttributes,
 		{ dynamic },
 		mD.curX
-	);
+	); */
 };
 
 const barlineImportHelper: MeasureImportHelper = (mD, el) => {
@@ -242,11 +247,12 @@ const repeatImportHelper: MeasureImportHelper = (mD, el) => {
 		delete mD.tbcAttributes.repeatMeasureNumber;
 	}
 
-	assignTemporalMeasureAttributes(
+	mD.newStaticAttributes.repeat = repeat;
+	/* assignTemporalMeasureAttributes(
 		mD.newTemporalAttributes,
 		{ repeat },
 		mD.curX
-	);
+	); */
 };
 
 // TODO: Address multiple numbers being in the 'number' attribute
@@ -273,13 +279,13 @@ const endingImportHelper: MeasureImportHelper = (mD, el) => {
 		};
 		mD.tbcAttributes.repeatEndings[endingNumber] = repeatEndings;
 
-		// We place all measure attributes at the last possible position that are not temporal
 		// (if we encounter an ending, we understand that as the whole measure being in that ending)
-		assignTemporalMeasureAttributes(
+		mD.newStaticAttributes.repeatEndings = repeatEndings;
+		/* assignTemporalMeasureAttributes(
 			mD.newTemporalAttributes,
 			{ repeatEndings },
 			mD.currentAttributes.timeSignature.beatsPerMeasure
-		);
+		); */
 	} else if (type === 'stop' || type === 'discontinue') {
 		// Check if endingNumber is present in repeatEndings
 		// Then check if endingNumber is present in the repeatEndings that endingNumber was mapped to
@@ -319,7 +325,7 @@ const timeSignatureImportHelper: MeasureAttributesImportHelper = (a, el) => {
 
 	if (!validateElements([beatsXML, beatTypeXML], true)) return null;
 
-	a.timeSignature = {
+	a.static.timeSignature = {
 		beatNote: +beatTypeXML!.textContent!,
 		beatsPerMeasure: +beatsXML!.textContent!,
 	};
@@ -332,7 +338,7 @@ const clefImportHelper: MeasureAttributesImportHelper = (a, el) => {
 	const lineXML = getSingleElement(el, 'line');
 	if (!validateElements([signXML, lineXML], true)) return null;
 
-	a.clef = musicXMLToClef(
+	a.static.clef = musicXMLToClef(
 		signXML!.textContent! as Pitch,
 		+lineXML!.textContent!
 	);
@@ -343,30 +349,36 @@ const keySignatureImportHelper: MeasureAttributesImportHelper = (a, el) => {
 
 	const fifthsXML = getSingleElement(el, 'fifths', true);
 	if (!fifthsXML) return;
-	a.keySignature = +fifthsXML!.textContent!;
+	a.static.keySignature = +fifthsXML!.textContent!;
 };
 
 // #endregion
 
 const attributesImportHelper: MeasureImportHelper = (mD, el) => {
-	const newAttributes: Partial<MeasureAttributesMXML> = {};
+	const attributes: HelperAttributesArg = {
+		static: mD.newStaticAttributes,
+		dynamic: mD.newDynamicAttributes,
+	};
 
 	const { children } = el;
 	for (let i = 0; i < children.length; i++) {
 		const child = children[i];
 		if (child.tagName in attributesImportHelperMap) {
-			attributesImportHelperMap[child.tagName](newAttributes, child);
+			attributesImportHelperMap[child.tagName](attributes, child);
 		}
 	}
 
-	Object.assign(mD.currentAttributes, newAttributes);
-	delete newAttributes.quarterNoteDivisions;
+	if (attributes.quarterNoteDivisions)
+		mD.currentAttributes.quarterNoteDivisions = attributes.quarterNoteDivisions;
 
-	assignTemporalMeasureAttributes(
+	/* Object.assign(mD.currentAttributes, newAttributes);
+	delete newAttributes.quarterNoteDivisions; */
+
+	/* assignTemporalMeasureAttributes(
 		mD.newTemporalAttributes,
 		newAttributes,
 		mD.curX
-	);
+	); */
 };
 
 // TODO: Extract direction-specifc helpers into their own map

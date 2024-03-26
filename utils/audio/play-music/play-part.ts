@@ -4,12 +4,13 @@ import {
 	getInstrument,
 	updateInstrument,
 } from '../instruments';
-import { enqueueMeasure, initializeMeasureAttributes } from './play-measure';
+import { enqueueMeasure } from './play-measure';
 import { ToneInstrument } from '@/types/audio/instrument';
 import { PersistentInstrumentAttributes } from '@/types/music/note-annotations';
 import { Transport } from 'tone/build/esm/core/clock/Transport';
 import { getSecondsPerBeat } from '@/utils/music';
 import { flattenMeasures } from '@/utils/music/measures/flatten-measures';
+import { initializeMeasureAttributes } from '@/utils/music/measures/measure-generator';
 
 export const enqueuePart = (
 	part: MusicPart,
@@ -36,7 +37,7 @@ export const enqueuePart = (
 	for (let i = 0; i < flattenedMeasures.length; i++) {
 		const measure = flattenedMeasures[i];
 
-		const nextMeasure = enqueueMeasure(
+		enqueueMeasure(
 			measure,
 			attributes,
 			instrument,
@@ -46,7 +47,6 @@ export const enqueuePart = (
 			transport
 		);
 
-		//if (nextMeasure >= 0) i = nextMeasure - 1;
 		totalMeasuresEnqueued++;
 
 		const { beatsPerMeasure } = attributes.timeSignature;

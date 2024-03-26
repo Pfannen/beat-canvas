@@ -1,14 +1,17 @@
 import {
+	DynamicMeasureAttributes,
 	MeasureAttributes,
 	PartialMeasureAttributes,
+	StaticMeasureAttributes,
 	TemporalMeasureAttributes,
+	staticMeasureAttributesKeys,
 } from '@/types/music';
 
 export class MeasureAttributesRetriever {
 	private index = 0;
 	private length = 0;
 
-	constructor(public timedMeasureAttributes?: TemporalMeasureAttributes[]) {
+	constructor(private timedMeasureAttributes?: TemporalMeasureAttributes[]) {
 		if (timedMeasureAttributes) this.length = timedMeasureAttributes.length;
 	}
 
@@ -22,11 +25,13 @@ export class MeasureAttributesRetriever {
 
 export const assignTemporalMeasureAttributes = (
 	curAttributes: TemporalMeasureAttributes[],
-	newAttributes: PartialMeasureAttributes,
+	newAttributes: Partial<DynamicMeasureAttributes>,
 	x: number
 ) => {
+	if (Object.keys(newAttributes).length === 0) return;
+
 	if (curAttributes.length === 0) {
-		const attrCopy: PartialMeasureAttributes = {};
+		const attrCopy: Partial<DynamicMeasureAttributes> = {};
 		Object.assign(attrCopy, newAttributes);
 		curAttributes.push({ x, attributes: attrCopy });
 		return;
@@ -38,7 +43,7 @@ export const assignTemporalMeasureAttributes = (
 	if (curAttributes[idx].x === x) {
 		Object.assign(curAttributes[idx].attributes, newAttributes);
 	} else {
-		const attrCopy: PartialMeasureAttributes = {};
+		const attrCopy: Partial<DynamicMeasureAttributes> = {};
 		Object.assign(attrCopy, newAttributes);
 		const timedMeasureAttributes: TemporalMeasureAttributes = {
 			x,
@@ -48,3 +53,19 @@ export const assignTemporalMeasureAttributes = (
 		curAttributes.splice(idx, 0, timedMeasureAttributes);
 	}
 };
+
+/* export const assignStaticMeasureAttributes = (
+	sourceSMA: Partial<StaticMeasureAttributes>,
+	targetSMA: StaticMeasureAttributes
+) => {
+	const sourceKeys = Object.keys(sourceSMA) as Array<
+		keyof StaticMeasureAttributes
+	>;
+
+	for (const key of sourceKeys) {
+		if (staticMeasureAttributesKeys.has(key)) {
+			// idk how to remove red
+			targetSMA[key] = sourceSMA[key];
+		}
+	}
+}; */

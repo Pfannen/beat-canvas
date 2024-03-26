@@ -1,4 +1,7 @@
-import { TemporalMeasureAttributes } from '@/types/music';
+import {
+	StaticMeasureAttributes,
+	TemporalMeasureAttributes,
+} from '@/types/music';
 import { NoteAnnotations } from '@/types/music/note-annotations';
 
 export type NoteType =
@@ -30,5 +33,6 @@ export type TimeSignature = {
 
 export type Measure = {
 	notes: Note[];
-	attributes?: TemporalMeasureAttributes[];
+	temporalAttributes?: TemporalMeasureAttributes[];
+	staticAttributes?: Partial<StaticMeasureAttributes>;
 };

@@ -9,7 +9,7 @@ type RepeatState = {
 	repeatCount: number;
 };
 
-export const getNonTemporalAttributes = (
+/* export const getNonTemporalAttributes = (
 	measure: Measure,
 	beatsPerMeasure: number
 ) => {
@@ -26,7 +26,7 @@ export const getNonTemporalAttributes = (
 		nonTemporalAttributes.repeatEndings = lastAttr.repeatEndings;
 	return nonTemporalAttributes;
 };
-
+ */
 const applyRepeat = (
 	measures: Measure[],
 	flattenedMeasures: Measure[],
@@ -50,7 +50,6 @@ const applyRepeat = (
 const updateRepeatState = (
 	measure: Measure,
 	measureNumber: number,
-	beatsPerMeasure: number,
 	repeatState: RepeatState
 ) => {
 	if (
@@ -59,21 +58,17 @@ const updateRepeatState = (
 	)
 		repeatState.forward[1]++;
 
-	if (!measure.attributes) return;
+	if (!measure.staticAttributes) return;
 
-	const { attributes } = measure;
-	if (attributes.length === 0) return;
+	const { staticAttributes } = measure;
 
-	if (attributes[0].x === 0) {
+	if (staticAttributes.repeat && staticAttributes.repeat.forward) {
 		repeatState.forward = [measureNumber, measureNumber];
 		repeatState.endings = {};
 		repeatState.repeatCount = -1;
 	}
 
-	const { repeat, repeatEndings } = getNonTemporalAttributes(
-		measure,
-		beatsPerMeasure
-	);
+	const { repeat, repeatEndings } = staticAttributes;
 
 	if (repeat && !repeat.forward) {
 		repeatState.repeatCount = repeat.repeatCount;
@@ -101,7 +96,7 @@ export const flattenMeasures = (measures: Measure[]) => {
 	for (let i = 0; i < measures.length; i++) {
 		const measure = measures[i];
 		flattenedMeasures.push(measure);
-		updateRepeatState(measure, i, 4, repeatState);
+		updateRepeatState(measure, i, repeatState);
 		applyRepeat(measures, flattenedMeasures, repeatState);
 	}
 

@@ -1,11 +1,13 @@
 import { Note } from '@/components/providers/music/types';
 import {
+	DynamicMeasureAttributes,
 	MeasureAttributes,
 	MeasureAttributesMXML,
 	PartialMeasureAttributes,
 	Pitch,
 	Repeat,
 	RepeatEndings,
+	StaticMeasureAttributes,
 	TemporalMeasureAttributes,
 	Wedge,
 } from '../music';
@@ -56,7 +58,9 @@ export type MeasureImportDetails = {
 	tbcAttributes: ToBeCompletedMeasureAttributes;
 	// The attributes that are new to the measure - should also update currentAttributes if this is set
 	// Will be placed on the measure created from combining these properties
-	newTemporalAttributes: TemporalMeasureAttributes[];
+	//newTemporalAttributes: TemporalMeasureAttributes[];
+	newStaticAttributes: Partial<StaticMeasureAttributes>;
+	newDynamicAttributes: Partial<DynamicMeasureAttributes>;
 	// The measure's notes
 	notes: Note[];
 	// The current x-position within the measure
@@ -88,8 +92,14 @@ export type MeasureImportHelperMap = {
 	[key in string]: MeasureImportHelper;
 };
 
+export type HelperAttributesArg = {
+	static: Partial<StaticMeasureAttributes>;
+	dynamic: Partial<DynamicMeasureAttributes>;
+	quarterNoteDivisions?: number;
+};
+
 export type MeasureAttributesImportHelper = (
-	attributes: Partial<MeasureAttributesMXML>,
+	attributes: HelperAttributesArg,
 	el: Element
 ) => void;
 

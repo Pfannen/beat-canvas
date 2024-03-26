@@ -66,7 +66,32 @@ export type Metronome = {
 	beatsPerMinute: number;
 };
 
-export type MeasureAttributes = {
+export const staticMeasureAttributesKeys = new Set<
+	keyof StaticMeasureAttributes
+>(['timeSignature', 'keySignature', 'clef', 'repeat', 'repeatEndings']);
+
+export const dynamicMeasureAttributesKeys = new Set<
+	keyof DynamicMeasureAttributes
+>(['metronome', 'dynamic', 'wedge']);
+
+export type StaticMeasureAttributes = {
+	timeSignature: TimeSignature;
+	keySignature: number;
+	clef: Clef;
+	repeat?: Repeat;
+	repeatEndings?: RepeatEndings;
+};
+
+export type DynamicMeasureAttributes = {
+	metronome: Metronome;
+	dynamic: Dynamic;
+	wedge?: Wedge;
+};
+
+export type MeasureAttributes = StaticMeasureAttributes &
+	DynamicMeasureAttributes;
+
+/* export type MeasureAttributes = {
 	metronome: Metronome;
 	timeSignature: TimeSignature;
 	keySignature: number;
@@ -75,13 +100,13 @@ export type MeasureAttributes = {
 	repeat?: Repeat;
 	repeatEndings?: RepeatEndings;
 	wedge?: Wedge;
-};
+}; */
 
 export type PartialMeasureAttributes = Partial<MeasureAttributes>;
 
 export type TemporalMeasureAttributes = {
 	x: number;
-	attributes: Partial<MeasureAttributes>;
+	attributes: Partial<DynamicMeasureAttributes>;
 };
 
 export type MeasureAttributesMXML = MeasureAttributes & {
