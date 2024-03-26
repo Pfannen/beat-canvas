@@ -30,7 +30,7 @@ export interface ReadonlyMusic {
 }
 
 export class Music implements ReadonlyMusic {
-  measures?: Measure[];
+  private measures?: Measure[];
 
   private checkMeasures() {
     if (!this.measures) {

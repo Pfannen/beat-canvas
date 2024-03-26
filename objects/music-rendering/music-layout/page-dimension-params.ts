@@ -25,9 +25,9 @@ export class PageDimensionParams {
 type MarginSize = "small" | "medium" | "large";
 
 const marginSizeToFraction: { [key in MarginSize]: number } = {
-  small: 0.15,
-  medium: 0.3,
-  large: 0.5,
+  small: 0.05,
+  medium: 0.075,
+  large: 0.1,
 };
 
 const getMarginSize = (

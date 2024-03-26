@@ -34,7 +34,8 @@ export class MusicLayout {
       contentHeight - firstPageLineCount * measureContainerHeight;
 
     const measureStartX = musicMargins.left;
-    const measureStartY = musicMargins.top + headerHeight;
+    const measureStartY =
+      pageDimensions.height - musicMargins.top - headerHeight;
 
     return {
       measureDimensions: {

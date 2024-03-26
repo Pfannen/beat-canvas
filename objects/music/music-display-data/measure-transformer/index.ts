@@ -67,7 +67,7 @@ export class MeasureTransformer {
       throw new Error("MeasureTransformer: Display data has not been computed");
     }
     MusicIterator.iterate(
-      this.music.measures!,
+      this.music.getMeasures(),
       this.noteDisplayData,
       this.music,
       cb

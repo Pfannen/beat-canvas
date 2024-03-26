@@ -36,8 +36,8 @@ export class MeasureComponents {
   ): MeasureComponentValues {
     const startsWithLine = this.bottomComponentIsLine();
     let lineCount = MeasureComponents.getFirstComponentCount(position);
-    let spaceCount = MeasureComponents.getSecondComponentCount(position);
-    if (startsWithLine) {
+    let spaceCount = MeasureComponents.getSecondComponentCount(position) - 1;
+    if (!startsWithLine) {
       const temp = lineCount;
       lineCount = spaceCount;
       spaceCount = temp;
@@ -47,7 +47,7 @@ export class MeasureComponents {
 
   public getMeasureComponentCounts(): MeasureComponentValues {
     const componentCount = this.aboveBelowCount * 2 + this.bodyCt;
-    return this.getComponentCountsBelowPosition(componentCount - 1);
+    return this.getComponentCountsBelowPosition(componentCount);
   }
 
   public componentsBelowPosition(position: number) {
@@ -56,7 +56,7 @@ export class MeasureComponents {
 
   public positionIsOnLine(position: number) {
     const bodyStartIsEven = numIsEven(this.bodyStartPosition);
-    const positionIsEven = numIsEven(position);
+    const positionIsEven = numIsEven(position - this.bodyStartPosition);
     return bodyStartIsEven === positionIsEven;
   }
 }

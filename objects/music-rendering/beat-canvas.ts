@@ -114,7 +114,7 @@ export class BeatCanvas implements IBeatCanvas {
 
   drawMeasure(options: MeasureOptions): void {
     const { x, y } = options.topLeft;
-    const offsetY = y + options.containerPadding.top;
+    const offsetY = y - options.containerPadding.top;
     this.drawMeasureLines({ ...options, topLeft: { x, y: offsetY } });
   }
 

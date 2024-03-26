@@ -37,9 +37,11 @@ export class Measurements {
   public getYFractionOffset(yPos: number) {
     //We shall assume yPos: 0 is the first line of the body (if yPos is negative the position is below the body)
     const position = this.measureComponents.componentsBelowPosition(yPos);
+
     let { line: lineCount, space: spaceCount } =
       this.measureComponents.getComponentCountsBelowPosition(position);
     const isOnLine = this.measureComponents.positionIsOnLine(position);
+    console.log(isOnLine);
     isOnLine ? (lineCount -= 0.5) : (spaceCount -= 0.5);
     const { line: lineFraction, space: spaceFraction } =
       this.componentFractionHeights;
@@ -53,6 +55,10 @@ export class Measurements {
   ) {
     const centerOfLength = noteLength / 2;
     return (xPos + centerOfLength) / beatsPerMeasure;
+  }
+
+  public getComponentFractions() {
+    return this.componentFractionHeights;
   }
 
   //   public getYAbsolutePosition(yPos: number, measureHeight: number){
