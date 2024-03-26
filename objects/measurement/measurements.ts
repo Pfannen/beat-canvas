@@ -9,7 +9,7 @@ export class Measurements {
     bodyCt: number,
     lineToSpaceRatio: number
   ) {
-    this.measureComponents = new MeasureComponents(aboveBelowCount, bodyCt, 0);
+    this.measureComponents = new MeasureComponents(aboveBelowCount, bodyCt);
     this.componentFractionHeights =
       this.getLedgerComponentFractions(lineToSpaceRatio);
   }
@@ -36,12 +36,9 @@ export class Measurements {
 
   public getYFractionOffset(yPos: number) {
     //We shall assume yPos: 0 is the first line of the body (if yPos is negative the position is below the body)
-    const position = this.measureComponents.componentsBelowPosition(yPos);
-
     let { line: lineCount, space: spaceCount } =
-      this.measureComponents.getComponentCountsBelowPosition(position);
-    const isOnLine = this.measureComponents.positionIsOnLine(position);
-    console.log(isOnLine);
+      this.measureComponents.getComponentCountsBelowYPos(yPos);
+    const isOnLine = this.measureComponents.yPosIsOnLine(yPos);
     isOnLine ? (lineCount -= 0.5) : (spaceCount -= 0.5);
     const { line: lineFraction, space: spaceFraction } =
       this.componentFractionHeights;

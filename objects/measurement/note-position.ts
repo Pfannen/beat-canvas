@@ -88,8 +88,9 @@ export class MeasureUtils {
   static getComponentCountsBelow(
     aboveBottomCount: number,
     aboveBelowCount: number,
-    bodyStartPosition = 0
+    bodyStartPosition?: number
   ) {
+    if (bodyStartPosition === undefined) bodyStartPosition = aboveBelowCount;
     const startsWithLine = this.bottomComponentIsLine(
       aboveBelowCount,
       bodyStartPosition
@@ -107,8 +108,9 @@ export class MeasureUtils {
   static getMeasureComponentCounts(
     aboveBelowCount: number,
     bodyCt: number,
-    bodyStartPosition = 0
+    bodyStartPosition?: number
   ) {
+    if (bodyStartPosition === undefined) bodyStartPosition = aboveBelowCount;
     const componentCount = aboveBelowCount + bodyCt;
     return this.getComponentCountsBelow(
       componentCount - 1,
@@ -119,7 +121,7 @@ export class MeasureUtils {
 
   private static bottomComponentIsLine(
     aboveBelowCount: number,
-    bodyStartPosition = 0
+    bodyStartPosition: number
   ) {
     const bodyStartIsEven = numIsEven(bodyStartPosition);
     const bottomIsEven = numIsEven(aboveBelowCount);

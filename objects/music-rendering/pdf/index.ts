@@ -1,46 +1,34 @@
-import { PDFDocument, PageSizes } from "pdf-lib";
-import { PDFLibDrawingCanvas } from "../pdf-lib-drawing-canvas";
-import { BeatCanvas } from "../beat-canvas";
+import { PageSizes } from "pdf-lib";
 import { MeasureRenderer } from "../measure-renderer";
 import { Music } from "@/objects/music/readonly-music";
+import { Measure } from "@/components/providers/music/types";
+import { PDFLibDrawingCanvasManager } from "../pdf-lib-drawing-canvas/manager";
 
 export const drawPDF = async () => {
-  const pdfDoc = await PDFDocument.create();
-  pdfDoc.addPage(PageSizes.A4);
-
-  const page = pdfDoc.getPage(0);
-  const drawCanvas = PDFLibDrawingCanvas.getDrawingCanvas(page);
-  const beatCanvas = new BeatCanvas(drawCanvas);
+  const pdfLibManager = new PDFLibDrawingCanvasManager(PageSizes.A4);
+  await pdfLibManager.initializeCanvas();
   const music = new Music();
-  music.setMeasures([
-    {
+  const measures: Measure[] = [];
+  const measureCount = 26;
+  for (let i = 0; i < measureCount; i++) {
+    measures.push({
       notes: [
-        { x: 0, y: 0, type: "quarter" },
-        { x: 1, y: 0, type: "quarter" },
-        { x: 2, y: 0, type: "quarter" },
-        { x: 3, y: 0, type: "quarter" },
+        { x: 0, y: 1, type: "quarter" },
+        { x: 1, y: 2, type: "quarter" },
+        { x: 2, y: 3, type: "quarter" },
+        { x: 3, y: -1, type: "quarter" },
       ],
-    },
-  ]);
-  const renderer = new MeasureRenderer(music, beatCanvas, 6);
+    });
+  }
+  music.setMeasures(measures);
+  const renderer = new MeasureRenderer(
+    music,
+    6,
+    pdfLibManager.getBeatCanvasForPage.bind(pdfLibManager)
+  );
   renderer.render();
-  // const { width, height } = page.getSize();
 
-  // beatCanvas.drawNote({
-  //   bodyCenter: { x: width / 2, y: height / 2 },
-  //   bodyHeight: 10,
-  //   direction: "up",
-  //   type: "quarter",
-  // });
-
-  // drawMeasureLines(drawCanvas, {
-  //   start: { x: 0, y: height },
-  //   length: 200,
-  //   lineHeight: 3,
-  //   spaceHeight: 20,
-  // });
-
-  return await pdfDoc.save();
+  return await pdfLibManager.getPDF()!.save();
 };
 
 export const pdfToUrl = (pdf: Uint8Array) => {

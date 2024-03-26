@@ -6,9 +6,7 @@ type PDFProps = {};
 
 const PDF: FunctionComponent<PDFProps> = async () => {
   const pdf = await drawPDF();
-  return (
-    <iframe src={pdfToUrl(pdf)} width={"700px"} height={"1000px"}></iframe>
-  );
+  return <iframe src={pdfToUrl(pdf)} width={"100%"} height={"1000px"}></iframe>;
 };
 
 export default PDF;

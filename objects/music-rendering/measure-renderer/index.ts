@@ -9,18 +9,24 @@ import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
 import { BODY_CT } from "@/objects/measurement/constants";
 
+type BeatCanvasDel = (pageNumber: number) => BeatCanvas;
+
 export class MeasureRenderer {
   private bodyCt = BODY_CT;
   private aboveBelowCount: number;
   private music: Music;
-  private beatCanvas: BeatCanvas;
+  private getBeatCanvasForPage: BeatCanvasDel;
   private transformer: MeasureTransformer;
   private measureManager!: MeasureManager;
   private musicDimensions: MusicDimensionData;
   private measurements: Measurements;
-  constructor(music: Music, beatCanvas: BeatCanvas, aboveBelowCount: number) {
+  constructor(
+    music: Music,
+    aboveBelowCount: number,
+    getBeatCanvasForPage: BeatCanvasDel
+  ) {
     this.music = music;
-    this.beatCanvas = beatCanvas;
+    this.getBeatCanvasForPage = getBeatCanvasForPage;
     this.transformer = new MeasureTransformer(music);
     const pageParams = PageDimensionParams.genericSheetMusic();
     this.musicDimensions = MusicLayout.getDimensions(pageParams);
@@ -55,7 +61,8 @@ export class MeasureRenderer {
       const noteContainerHeight = height - padding.top - padding.bottom;
       const lineHeight = lineFraction * noteContainerHeight;
       const spaceHeight = spaceFraction * noteContainerHeight;
-      this.beatCanvas.drawMeasure({
+      const beatCanvas = this.getBeatCanvasForPage(measureData.pageNumber);
+      beatCanvas.drawMeasure({
         topLeft: measureData.start,
         width: measureData.width,
         height,
@@ -86,7 +93,7 @@ export class MeasureRenderer {
           const offset = this.measurements.getYFractionOffset(note.y);
           const centerY = noteContainerHeight * offset + measureBottom.y;
           const center = { x: centerX, y: centerY };
-          this.beatCanvas.drawNote({
+          beatCanvas.drawNote({
             bodyCenter: center,
             type,
             direction: renderData.noteDirection,

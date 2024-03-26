@@ -4,15 +4,9 @@ import { numIsEven } from "@/utils";
 export class MeasureComponents {
   private aboveBelowCount: number;
   private bodyCt: number;
-  private bodyStartPosition: number;
-  constructor(
-    aboveBelowCount: number,
-    bodyCt: number,
-    bodyStartPosition: number
-  ) {
+  constructor(aboveBelowCount: number, bodyCt: number) {
     this.aboveBelowCount = aboveBelowCount;
     this.bodyCt = bodyCt;
-    this.bodyStartPosition = bodyStartPosition;
   }
 
   //If startsWithLine is true this returns the number of lines
@@ -26,17 +20,16 @@ export class MeasureComponents {
   }
 
   private bottomComponentIsLine() {
-    const bodyStartIsEven = numIsEven(this.bodyStartPosition);
-    const bottomIsEven = numIsEven(this.aboveBelowCount);
-    return bodyStartIsEven === bottomIsEven;
+    return numIsEven(this.aboveBelowCount);
   }
 
-  public getComponentCountsBelowPosition(
-    position: number
-  ): MeasureComponentValues {
+  public getComponentCountsBelowYPos(yPos: number): MeasureComponentValues {
+    const absolutePosition = yPos + this.aboveBelowCount;
     const startsWithLine = this.bottomComponentIsLine();
-    let lineCount = MeasureComponents.getFirstComponentCount(position);
-    let spaceCount = MeasureComponents.getSecondComponentCount(position) - 1;
+    let lineCount =
+      MeasureComponents.getFirstComponentCount(absolutePosition) - 1;
+    let spaceCount =
+      MeasureComponents.getSecondComponentCount(absolutePosition);
     if (!startsWithLine) {
       const temp = lineCount;
       lineCount = spaceCount;
@@ -46,17 +39,14 @@ export class MeasureComponents {
   }
 
   public getMeasureComponentCounts(): MeasureComponentValues {
-    const componentCount = this.aboveBelowCount * 2 + this.bodyCt;
-    return this.getComponentCountsBelowPosition(componentCount);
+    return this.getComponentCountsBelowYPos(this.aboveBelowCount + this.bodyCt);
   }
 
-  public componentsBelowPosition(position: number) {
-    return this.aboveBelowCount - this.bodyStartPosition + position;
+  public componentsBelowYPos(yPos: number) {
+    return this.aboveBelowCount + yPos;
   }
 
-  public positionIsOnLine(position: number) {
-    const bodyStartIsEven = numIsEven(this.bodyStartPosition);
-    const positionIsEven = numIsEven(position - this.bodyStartPosition);
-    return bodyStartIsEven === positionIsEven;
+  public yPosIsOnLine(yPos: number) {
+    return numIsEven(yPos);
   }
 }
