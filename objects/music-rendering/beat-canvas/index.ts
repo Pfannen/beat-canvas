@@ -1,4 +1,3 @@
-import { NoteDirection } from "@/lib/notes/types";
 import {
   IBeatCanvas,
   IDrawingCanvas,
@@ -6,48 +5,22 @@ import {
   NoteOptions,
   RestOptions,
 } from "@/types/music-rendering/canvas";
-import { Coordinate } from "../measurement/types";
-import { MeasureUtils } from "../measurement/note-position";
-
-type StemOptions = {
-  bodyWidth: number;
-  bodyCenter: Coordinate;
-  stemWidth: number;
-  stemHeight: number;
-  direction: NoteDirection;
-};
-
-type MeasureLinesOptions = Pick<
-  MeasureOptions,
-  | "aboveBelowComponentCount"
-  | "topLeft"
-  | "lineHeight"
-  | "spaceHeight"
-  | "bodyCount"
-  | "width"
->;
-
-type BeatCanvasNoteDrawOptions = {
-  noteBodyAspectRatio: number;
-  noteBodyAngle: number;
-  stemHeightBodyFraction: number;
-  stemWidthBodyFraction: number;
-};
-
-type BeatCanvasMeasureDrawOptions = {
-  endBarWidthLineFraction: number;
-};
-
-type BeatCanvasDrawOptions = {
-  note: BeatCanvasNoteDrawOptions;
-  measure: BeatCanvasMeasureDrawOptions;
-};
+import { MeasureUtils } from "../../measurement/note-position";
+import {
+  BeamFlagOptions,
+  BeatCanvasDrawOptions,
+  BeatCanvasMeasureDrawOptions,
+  BeatCanvasNoteDrawOptions,
+  MeasureLinesOptions,
+  StemOptions,
+} from "./types";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
   noteBodyAngle: 15,
   stemHeightBodyFraction: 3,
   stemWidthBodyFraction: 0.15,
+  flagHeightBodyFraction: 0.5,
 };
 
 const tempMeasureDrawOptions: BeatCanvasMeasureDrawOptions = {
@@ -66,7 +39,7 @@ export class BeatCanvas implements IBeatCanvas {
     this.canvas = canvas;
   }
 
-  private drawStem(options: StemOptions): void {
+  private drawStem(options: StemOptions) {
     const widthRadius = options.bodyWidth / 2;
     const { x, y } = options.bodyCenter;
     const corner = { x: x - widthRadius, y };
@@ -82,6 +55,7 @@ export class BeatCanvas implements IBeatCanvas {
       width,
       height,
     });
+    return { endOfStem: { x: corner.x, y: corner.y + height } };
   }
 
   private drawMeasureLines(options: MeasureLinesOptions) {
@@ -111,7 +85,14 @@ export class BeatCanvas implements IBeatCanvas {
     };
   }
 
-  private drawBeamFlag(): void {}
+  private drawBeamFlag(options: BeamFlagOptions): void {
+    this.canvas.drawRectangle({
+      corner: options.corner,
+      height: options.width,
+      width: options.height,
+      degreeRotation: -options.angle,
+    });
+  }
 
   private drawNoteFlag(): void {}
 
@@ -125,16 +106,27 @@ export class BeatCanvas implements IBeatCanvas {
       degreeRotation: this.drawOptions.note.noteBodyAngle,
     });
     const stemHeight =
-      options.bodyHeight * this.drawOptions.note.stemHeightBodyFraction;
+      options.bodyHeight * this.drawOptions.note.stemHeightBodyFraction +
+      (options.stemOffset || 0);
     const stemWidth =
       options.bodyHeight * this.drawOptions.note.stemWidthBodyFraction;
-    this.drawStem({
+    const { endOfStem } = this.drawStem({
       bodyCenter: options.bodyCenter,
       stemHeight,
       stemWidth,
       bodyWidth,
-      direction: options.direction,
+      direction: options.noteDirection,
     });
+    if (options.beamData) {
+      const { beamData } = options;
+      this.drawBeamFlag({
+        corner: endOfStem,
+        width: beamData.length,
+        height:
+          options.bodyHeight * this.drawOptions.note.flagHeightBodyFraction,
+        angle: beamData.angle,
+      });
+    }
   }
 
   drawMeasure(options: MeasureOptions): void {

@@ -1,4 +1,8 @@
-import { NoteType, TimeSignature } from "@/components/providers/music/types";
+import {
+  NoteDisplayData,
+  NoteType,
+  TimeSignature,
+} from "@/components/providers/music/types";
 import { NoteDirection } from "@/lib/notes/types";
 import { NoteAttribute } from "@/lib/notes/ui/note-attributes";
 import { Coordinate } from "@/objects/measurement/types";
@@ -41,9 +45,8 @@ export type NoteOptions = {
   bodyHeight: number;
   // stemWidth: number;
   // stemHeight: number;
-  direction: NoteDirection;
   attributes?: NoteAttribute[];
-};
+} & NoteDisplayData;
 
 export type MeasureOptions = {
   topLeft: Coordinate;

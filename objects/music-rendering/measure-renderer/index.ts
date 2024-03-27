@@ -34,19 +34,38 @@ export class MeasureRenderer {
     this.measurements = new Measurements(aboveBelowCount, this.bodyCt, 3);
   }
 
+  private getMeasureDimensions(measureIndex: number) {
+    const { width } = this.measureManager.getMeasureData(measureIndex);
+    return { height: this.musicDimensions.measureDimensions.height, width };
+  }
+
   private initializeMeasureManager() {
-    const renderData = this.transformer.getMeasureRenderData();
     const widthCalc = new MeasureWidthCalculator(
       this.musicDimensions.measureDimensions.width,
       this.music.getMeasureTimeSignature(0)
     );
+    const getMeasureWidth = (measureIndex: number) => {
+      return widthCalc.getMeasureWidth(
+        { components: [], attributes: [] },
+        { beatsPerMeasure: 4, beatNote: 4 }
+      );
+    };
     this.measureManager = new MeasureManager(
-      renderData,
+      this.music.getMeasureCount(),
       this.musicDimensions,
-      widthCalc,
+      getMeasureWidth,
       this.music.getMeasureTimeSignature.bind(this.music)
     );
     this.measureManager.compute();
+    this.transformer.computeDisplayData([
+      {
+        attacher: "beam-data",
+        context: {
+          measurements: this.measurements,
+          getMeasureDimensions: this.getMeasureDimensions.bind(this),
+        },
+      },
+    ]);
   }
 
   public render() {
@@ -94,9 +113,10 @@ export class MeasureRenderer {
           const centerY = noteContainerHeight * offset + measureBottom.y;
           const center = { x: centerX, y: centerY };
           beatCanvas.drawNote({
+            ...renderData,
             bodyCenter: center,
             type,
-            direction: renderData.noteDirection,
+            noteDirection: renderData.noteDirection,
             bodyHeight: spaceHeight,
           });
           noteIndex++;

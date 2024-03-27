@@ -57,3 +57,5 @@ export type TimedMeasureAttributesMXML = TemporalMeasureAttributes &
 export type MeasureTimeSignautreCallback = (
   measureIndex: number
 ) => TimeSignature;
+
+export type MeasureWidthCallback = (measureIndex: number) => number;

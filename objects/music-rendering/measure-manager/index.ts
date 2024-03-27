@@ -1,7 +1,10 @@
 import { MeasureRenderData } from "@/types/music/render-data";
 import { IterateMeasuresCallback, MeasureOutline } from "./measure-outline";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
-import { MeasureTimeSignautreCallback } from "@/types/music";
+import {
+  MeasureTimeSignautreCallback,
+  MeasureWidthCallback,
+} from "@/types/music";
 import { serializeTimeSignature } from "@/utils/music";
 import { MeasureWidthCalculator } from "./measure-width-calculator";
 import { IMeasureWidthCalculator } from "@/types/music-rendering";
@@ -9,25 +12,25 @@ import { IMeasureWidthCalculator } from "@/types/music-rendering";
 type TimeSignatureWidths = { [timeSig: string]: number };
 
 export class MeasureManager {
-  private measures: MeasureRenderData[];
+  private measureCount: number;
   private dimensionData: MusicDimensionData;
   private measureOutline: MeasureOutline;
   private getMeasureTimeSignature: MeasureTimeSignautreCallback;
-  private widthCalculator: IMeasureWidthCalculator;
+  private getMeasureWidth: MeasureWidthCallback;
   private pxTolerence = 1;
   constructor(
-    measures: MeasureRenderData[],
+    measureCount: number,
     dimensionData: MusicDimensionData,
-    measureWidthCalculator: IMeasureWidthCalculator,
+    getMeasureWidth: MeasureWidthCallback,
     getMeasureTimeSignature: MeasureTimeSignautreCallback
   ) {
-    this.measures = measures;
+    this.measureCount = measureCount;
     this.dimensionData = dimensionData;
     const { height } = this.dimensionData.measureDimensions;
     this.measureOutline = new MeasureOutline(height);
     this.getMeasureTimeSignature = getMeasureTimeSignature;
     // const firstMeasureTimeSig = getMeasureTimeSignature(0);
-    this.widthCalculator = measureWidthCalculator;
+    this.getMeasureWidth = getMeasureWidth;
     // this.widthCalculator = new MeasureWidthCalculator(
     //   width,
     //   firstMeasureTimeSig
@@ -80,9 +83,8 @@ export class MeasureManager {
   }
 
   private getMeasureInfo(measureIndex: number) {
-    const measure = this.measures[measureIndex];
     const timeSignature = this.getMeasureTimeSignature(measureIndex);
-    const width = this.widthCalculator.getMeasureWidth(measure, timeSignature);
+    const width = this.getMeasureWidth(measureIndex);
     return { width, timeSignature };
   }
 
@@ -133,7 +135,7 @@ export class MeasureManager {
     let lineNumber = 1;
     let remainingWidth = this.getLineWidth(pageNumber, lineNumber);
     let maxMeasureWidths: TimeSignatureWidths = {};
-    for (let i = 0; i < this.measures.length; i++) {
+    for (let i = 0; i < this.measureCount; i++) {
       let { width, timeSignature } = this.getMeasureInfo(i);
       const serialTimeSig = serializeTimeSignature(timeSignature);
       let createNewLine = false;
