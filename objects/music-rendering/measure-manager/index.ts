@@ -14,6 +14,7 @@ export class MeasureManager {
   private measureOutline: MeasureOutline;
   private getMeasureTimeSignature: MeasureTimeSignautreCallback;
   private widthCalculator: IMeasureWidthCalculator;
+  private pxTolerence = 1;
   constructor(
     measures: MeasureRenderData[],
     dimensionData: MusicDimensionData,
@@ -136,7 +137,7 @@ export class MeasureManager {
       let { width, timeSignature } = this.getMeasureInfo(i);
       const serialTimeSig = serializeTimeSignature(timeSignature);
       let createNewLine = false;
-      if (width > remainingWidth) {
+      if (!isWithinTolerence(remainingWidth, width, this.pxTolerence)) {
         createNewLine = true;
       } else {
         const { width: maxWidth, updateWidths } = this.getWidthInfo(
@@ -144,7 +145,7 @@ export class MeasureManager {
           serialTimeSig,
           maxMeasureWidths
         );
-        if (maxWidth > remainingWidth) {
+        if (!isWithinTolerence(remainingWidth, maxWidth, this.pxTolerence)) {
           createNewLine = true;
         } else {
           if (updateWidths) {
@@ -173,3 +174,13 @@ export class MeasureManager {
     }
   }
 }
+
+const isWithinTolerence = (
+  valOne: number,
+  valTwo: number,
+  tolerence: number
+) => {
+  const difference = valOne - valTwo;
+  if (difference < 0) return tolerence > -difference;
+  return true;
+};

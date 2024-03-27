@@ -27,18 +27,36 @@ type MeasureLinesOptions = Pick<
   | "width"
 >;
 
-type BeatCanvasDrawOptions = {
+type BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: number;
   noteBodyAngle: number;
   stemHeightBodyFraction: number;
   stemWidthBodyFraction: number;
 };
 
-const tempDrawOptions: BeatCanvasDrawOptions = {
-  noteBodyAspectRatio: 1.25,
-  noteBodyAngle: -25,
-  stemHeightBodyFraction: 1.75,
-  stemWidthBodyFraction: 0.25,
+type BeatCanvasMeasureDrawOptions = {
+  endBarWidthLineFraction: number;
+};
+
+type BeatCanvasDrawOptions = {
+  note: BeatCanvasNoteDrawOptions;
+  measure: BeatCanvasMeasureDrawOptions;
+};
+
+const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
+  noteBodyAspectRatio: 1.5,
+  noteBodyAngle: 15,
+  stemHeightBodyFraction: 3,
+  stemWidthBodyFraction: 0.15,
+};
+
+const tempMeasureDrawOptions: BeatCanvasMeasureDrawOptions = {
+  endBarWidthLineFraction: 1.25,
+};
+
+const tempDrawOptions = {
+  note: tempNoteDrawOptions,
+  measure: tempMeasureDrawOptions,
 };
 
 export class BeatCanvas implements IBeatCanvas {
@@ -66,7 +84,7 @@ export class BeatCanvas implements IBeatCanvas {
     });
   }
 
-  private drawMeasureLines(options: MeasureLinesOptions): void {
+  private drawMeasureLines(options: MeasureLinesOptions) {
     const { spaceCount, lineCount } = MeasureUtils.getComponentCountsBelow(
       options.aboveBelowComponentCount,
       options.aboveBelowComponentCount
@@ -75,7 +93,8 @@ export class BeatCanvas implements IBeatCanvas {
       spaceCount * options.spaceHeight + lineCount * options.lineHeight;
 
     const { x, y } = options.topLeft;
-    let currY = y - yOffset;
+    const startY = y - yOffset;
+    let currY = startY;
     for (let i = options.bodyCount; i > 0; i -= 2) {
       const corner = { x, y: currY };
       this.canvas.drawRectangle({
@@ -85,6 +104,11 @@ export class BeatCanvas implements IBeatCanvas {
       });
       currY -= options.lineHeight + options.spaceHeight;
     }
+    currY += options.spaceHeight + options.lineHeight / 2; //+options.lineHeight/2 to provide room for tolerence when drawing things at the start of the measure body
+    return {
+      bodyStartYPos: currY,
+      bodyHeight: startY - currY,
+    };
   }
 
   private drawBeamFlag(): void {}
@@ -92,17 +116,18 @@ export class BeatCanvas implements IBeatCanvas {
   private drawNoteFlag(): void {}
 
   drawNote(options: NoteOptions): void {
-    const { noteBodyAspectRatio } = this.drawOptions;
+    const { noteBodyAspectRatio } = this.drawOptions.note;
     const bodyWidth = noteBodyAspectRatio * options.bodyHeight;
     this.canvas.drawEllipse({
       center: options.bodyCenter,
       aspectRatio: noteBodyAspectRatio,
       diameter: options.bodyHeight,
+      degreeRotation: this.drawOptions.note.noteBodyAngle,
     });
     const stemHeight =
-      options.bodyHeight * this.drawOptions.stemHeightBodyFraction;
+      options.bodyHeight * this.drawOptions.note.stemHeightBodyFraction;
     const stemWidth =
-      options.bodyHeight * this.drawOptions.stemWidthBodyFraction;
+      options.bodyHeight * this.drawOptions.note.stemWidthBodyFraction;
     this.drawStem({
       bodyCenter: options.bodyCenter,
       stemHeight,
@@ -115,7 +140,18 @@ export class BeatCanvas implements IBeatCanvas {
   drawMeasure(options: MeasureOptions): void {
     const { x, y } = options.topLeft;
     const offsetY = y - options.containerPadding.top;
-    this.drawMeasureLines({ ...options, topLeft: { x, y: offsetY } });
+    const { bodyStartYPos, bodyHeight } = this.drawMeasureLines({
+      ...options,
+      topLeft: { x, y: offsetY },
+    });
+    const { endBarWidthLineFraction } = this.drawOptions.measure;
+    const endBarWidth = options.lineHeight * endBarWidthLineFraction;
+    const corner = { x: x + options.width - endBarWidth, y: bodyStartYPos };
+    this.canvas.drawRectangle({
+      corner,
+      height: bodyHeight - options.lineHeight / 2,
+      width: endBarWidth,
+    });
   }
 
   drawRest(options: RestOptions): void {

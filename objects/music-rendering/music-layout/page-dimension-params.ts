@@ -14,9 +14,9 @@ export class PageDimensionParams {
         left: "medium",
         right: "medium",
       }),
-      minHeaderSpace: 0.15 * pageDimensions.height,
-      measuresPerLine: 4,
-      linesPerPage: 9,
+      minHeaderSpace: 0.1 * pageDimensions.height,
+      measuresPerLine: 2,
+      linesPerPage: 7,
       measurePaddingFractions: { top: 0.1, bottom: 0.2 },
     };
   }

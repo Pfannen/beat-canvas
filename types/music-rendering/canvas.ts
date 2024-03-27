@@ -22,6 +22,7 @@ export type CircleOptions = { center: Coordinate; diameter: number };
 
 export type drawEllipseOptions = CircleOptions & {
   aspectRatio: number;
+  degreeRotation?: number;
 };
 
 export type SVGOptions = {};

@@ -55,6 +55,9 @@ export class PDFLibDrawingCanvas {
         y,
         xScale: width / 2,
         yScale: options.diameter / 2,
+        rotate: options.degreeRotation
+          ? degrees(options.degreeRotation)
+          : undefined,
       });
     };
   };
