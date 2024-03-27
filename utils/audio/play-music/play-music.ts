@@ -12,17 +12,22 @@ export const enqueueMusicScore = async (score: MusicScore) => {
 
 	console.time('Loading parts...');
 	for (const part of parts) {
-		const buffer = await Offline(({ transport }) => {
-			const { attributes } = part;
-			let instrument: ToneInstrument;
+		const buffer = await Offline(
+			({ transport }) => {
+				const { attributes } = part;
+				let instrument: ToneInstrument;
 
-			instrument = getInstrument(attributes.instrument).toDestination();
-			enqueuePart(part, instrument, transport);
+				instrument = getInstrument(attributes.instrument).toDestination();
+				enqueuePart(part, instrument, transport);
 
-			transport.start(0);
-			// Record time (first argument) affects the time it takes to render by how much you move it
-			// Sampling rate (last argument) plays a significant role in the time it takes to render a part
-		}, 200, 1, 15000);
+				transport.start(0);
+				// Record time (first argument) affects the time it takes to render by how much you move it
+				// Sampling rate (last argument) plays a significant role in the time it takes to render a part
+			},
+			200,
+			1,
+			7500
+		);
 
 		buffers.push({ name: part.attributes.name, buffer });
 	}
@@ -33,7 +38,15 @@ export const enqueueMusicScore = async (score: MusicScore) => {
 
 export const ohWhatANight: Measure[] = [
 	{
-		attributes: [
+		staticAttributes: {
+			timeSignature: {
+				beatNote: 4,
+				beatsPerMeasure: 4,
+			},
+			keySignature: 0,
+			clef: 'bass',
+		},
+		temporalAttributes: [
 			{
 				x: 0,
 				attributes: {
@@ -41,12 +54,6 @@ export const ohWhatANight: Measure[] = [
 						beatNote: 4,
 						beatsPerMinute: 106,
 					},
-					timeSignature: {
-						beatNote: 4,
-						beatsPerMeasure: 4,
-					},
-					keySignature: 0,
-					clef: 'bass',
 				},
 			},
 		],

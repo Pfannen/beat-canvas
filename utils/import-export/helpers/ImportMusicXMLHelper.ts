@@ -242,6 +242,7 @@ class ImportMusicXMLHelper {
 			if (child.tagName in measureImportHelperMap) {
 				measureImportHelperMap[child.tagName](mDetails, child);
 			}
+			Object.assign(mDetails.currentAttributes, mDetails.newStaticAttributes);
 
 			assignTemporalMeasureAttributes(
 				temporalAttributes,
@@ -257,8 +258,6 @@ class ImportMusicXMLHelper {
 			)
 				break;
 		}
-
-		Object.assign(mDetails.currentAttributes, mDetails.newStaticAttributes);
 
 		return {
 			temporalAttributes,

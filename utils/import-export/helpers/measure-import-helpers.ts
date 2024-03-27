@@ -87,12 +87,6 @@ const metronomeImportHelper: MeasureImportHelper = (mD, el) => {
 	};
 
 	mD.newDynamicAttributes.metronome = metronome;
-	/* mD.currentAttributes.metronome = metronome;
-	assignTemporalMeasureAttributes(
-		mD.newTemporalAttributes,
-		{ metronome },
-		mD.curX
-	); */
 };
 
 const directionImportHelper: MeasureImportHelper = (mD, el) => {
@@ -134,12 +128,6 @@ const soundImportHelper: MeasureImportHelper = (mD, el) => {
 	};
 
 	mD.newDynamicAttributes.metronome = metronome;
-	//mD.currentAttributes.metronome = metronome;
-	/* assignTemporalMeasureAttributes(
-		mD.newTemporalAttributes,
-		{ metronome },
-		mD.curX
-	); */
 };
 
 const wedgeImportHelper: MeasureImportHelper = (mD, el) => {
@@ -161,11 +149,6 @@ const wedgeImportHelper: MeasureImportHelper = (mD, el) => {
 
 		mD.tbcAttributes.wedge = wedge;
 		mD.newDynamicAttributes.wedge = wedge;
-		/* assignTemporalMeasureAttributes(
-			mD.newTemporalAttributes,
-			{ wedge },
-			mD.curX
-		); */
 	}
 };
 
@@ -183,6 +166,8 @@ const backupImportHelper: MeasureImportHelper = (mD, el) => {
 		duration,
 		mD.currentAttributes.timeSignature.beatNote
 	);
+	/* console.log('Backup curX: ' + mD.curX);
+	console.log('Backup notes parsed: ' + mD.notes.length); */
 	mD.curX -= trueDuration;
 
 	//mD.curX = mD.currentAttributes.timeSignature.beatsPerMeasure;

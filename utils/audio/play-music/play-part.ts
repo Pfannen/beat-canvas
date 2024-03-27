@@ -9,8 +9,13 @@ import { ToneInstrument } from '@/types/audio/instrument';
 import { PersistentInstrumentAttributes } from '@/types/music/note-annotations';
 import { Transport } from 'tone/build/esm/core/clock/Transport';
 import { getSecondsPerBeat } from '@/utils/music';
-import { flattenMeasures } from '@/utils/music/measures/flatten-measures';
-import { initializeMeasureAttributes } from '@/utils/music/measures/measure-generator';
+import { expandMeasures } from '@/utils/music/measures/expand-measures';
+import {
+	initializeMeasureAttributes,
+	noteAttributeGenerator,
+} from '@/utils/music/measures/measure-generator';
+import { enqueueNote } from './play-note';
+import { dynamicToVelocity } from '../volume';
 
 export const enqueuePart = (
 	part: MusicPart,
@@ -30,12 +35,33 @@ export const enqueuePart = (
 	updateInstrument(instrument, persistentAttr.instrumentProps);
 
 	const baseSPB = getSecondsPerBeat(attributes.metronome.beatsPerMinute);
-	const flattenedMeasures = flattenMeasures(measures);
+	const expandedMeasures = expandMeasures(measures);
 
-	let curX = 0;
+	for (const {
+		currentAttributes,
+		newAttributes,
+		note,
+		measureStartX,
+	} of noteAttributeGenerator(expandedMeasures)) {
+		persistentAttr.velocity = dynamicToVelocity(currentAttributes.dynamic);
+
+		if (note) {
+			enqueueNote(
+				note,
+				currentAttributes,
+				instrument,
+				persistentAttr,
+				measureStartX,
+				baseSPB,
+				transport
+			);
+		}
+	}
+
+	/* let curX = 0;
 	let totalMeasuresEnqueued = 0;
-	for (let i = 0; i < flattenedMeasures.length; i++) {
-		const measure = flattenedMeasures[i];
+	for (let i = 0; i < expandedMeasures.length; i++) {
+		const measure = expandedMeasures[i];
 
 		enqueueMeasure(
 			measure,
@@ -51,7 +77,7 @@ export const enqueuePart = (
 
 		const { beatsPerMeasure } = attributes.timeSignature;
 		curX += beatsPerMeasure;
-	}
+	} */
 };
 
 /* export const playPart = (

@@ -25,7 +25,6 @@ export const enqueueMeasure = (
 		currentAttributes
 	)) {
 		persistentAttr.velocity = dynamicToVelocity(currentAttributes.dynamic);
-
 		enqueueNote(
 			note,
 			currentAttributes,
@@ -36,38 +35,7 @@ export const enqueueMeasure = (
 			transport
 		);
 	}
-
-	/* updateMeasureAttributes(currentAttributes, measure.staticAttributes);
-
-	const attrHelper = new MeasureAttributesRetriever(measure.temporalAttributes);
-	let newAttributes = attrHelper.getNextAttributes(0);
-	updateMeasureAttributes(currentAttributes, newAttributes);
-
-	const { notes } = measure;
-	for (const note of notes) {
-		newAttributes = attrHelper.getNextAttributes(note.x);
-		updateMeasureAttributes(currentAttributes, newAttributes);
-
-		// Temporary, dynamics should affect volume not velocity
-		persistentAttr.velocity = dynamicToVelocity(currentAttributes.dynamic);
-
-		enqueueNote(
-			note,
-			currentAttributes,
-			instrument,
-			persistentAttr,
-			curX,
-			baseSPB,
-			transport
-		);
-	}
-
-	newAttributes = attrHelper.getNextAttributes(
-		currentAttributes.timeSignature.beatsPerMeasure
-	);
-	updateMeasureAttributes(currentAttributes, newAttributes); */
-
-	//return parseRepeat(newAttributes?.repeat);
+	console.log(measure.staticAttributes?.timeSignature?.beatsPerMeasure);
 };
 
 /* export const playMeasure = (
