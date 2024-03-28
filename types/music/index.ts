@@ -67,11 +67,11 @@ export type Metronome = {
 };
 
 export const staticMeasureAttributesKeys = new Set<
-	keyof StaticMeasureAttributes
+	keyof MeasureAttributes
 >(['timeSignature', 'keySignature', 'clef', 'repeat', 'repeatEndings']);
 
 export const dynamicMeasureAttributesKeys = new Set<
-	keyof DynamicMeasureAttributes
+	keyof MeasureAttributes
 >(['metronome', 'dynamic', 'wedge']);
 
 export type StaticMeasureAttributes = {

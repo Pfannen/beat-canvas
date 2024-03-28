@@ -1,7 +1,7 @@
-import { Measure, Note } from "../../components/providers/music/types";
-import { SegmentData } from "../../components/ui/measure/types";
-import { measuresToSegmentArray } from "../../utils/segments/measuresToSegments";
-import { minimalSegmentGenerator } from "../../utils/segments/segment-gen-1";
+import { Measure, Note } from "../../../components/providers/music/types";
+import { SegmentData } from "../../../components/ui/measure/types";
+import { measuresToSegmentArray } from "../../../utils/segments/measuresToSegments";
+import { minimalSegmentGenerator } from "../../../utils/segments/segment-gen-1";
 
 const sameNote = (note1: Note, note2: Note) => {
   return (
