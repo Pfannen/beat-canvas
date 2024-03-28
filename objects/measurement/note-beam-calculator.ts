@@ -68,7 +68,10 @@ export class NoteBeamCalculator {
     const noteOffsets = [startNoteOffset];
     for (let i = 1; i < noteCoordinates.length - 1; i++) {
       const note = noteCoordinates[i];
-      noteOffsets.push(Math.abs(note.y - intersectFn(note)));
+      const intersection = intersectFn(note);
+      const offset = Math.abs(note.y - intersection);
+      console.log(intersection);
+      noteOffsets.push(offset);
     }
     noteOffsets.push(endNoteOffset);
     return {
