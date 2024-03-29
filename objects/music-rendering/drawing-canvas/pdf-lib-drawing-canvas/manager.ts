@@ -1,7 +1,7 @@
 import { IDrawingCanvas } from "@/types/music-rendering/canvas";
 import { PDFDocument } from "pdf-lib";
 import { PDFLibDrawingCanvas } from ".";
-import { BeatCanvas } from "../beat-canvas";
+import { BeatCanvas } from "../../beat-canvas";
 
 export class PDFLibDrawingCanvasManager {
   private pdfDoc?: PDFDocument;

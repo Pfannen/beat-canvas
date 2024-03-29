@@ -33,7 +33,7 @@ export class PDFLibDrawingCanvas {
         width: options.width,
         height: options.height,
         rotate: options.degreeRotation
-          ? degrees(options.degreeRotation)
+          ? degrees(-options.degreeRotation)
           : undefined,
       });
     };
@@ -56,7 +56,7 @@ export class PDFLibDrawingCanvas {
         xScale: width / 2,
         yScale: options.diameter / 2,
         rotate: options.degreeRotation
-          ? degrees(options.degreeRotation)
+          ? degrees(-options.degreeRotation)
           : undefined,
       });
     };

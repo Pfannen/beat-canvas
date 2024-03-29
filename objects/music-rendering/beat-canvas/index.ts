@@ -17,7 +17,7 @@ import {
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
-  noteBodyAngle: 15,
+  noteBodyAngle: -15,
   stemHeightBodyFraction: 3,
   stemWidthBodyFraction: 0.15,
   flagHeightBodyFraction: 0.5,
@@ -88,9 +88,9 @@ export class BeatCanvas implements IBeatCanvas {
   private drawBeamFlag(options: BeamFlagOptions): void {
     this.canvas.drawRectangle({
       corner: options.corner,
-      height: options.width,
-      width: options.height,
-      degreeRotation: -options.angle,
+      height: options.height,
+      width: options.width,
+      degreeRotation: options.angle,
     });
   }
 
@@ -119,11 +119,14 @@ export class BeatCanvas implements IBeatCanvas {
     });
     if (options.beamData) {
       const { beamData } = options;
+      const width =
+        options.bodyHeight * this.drawOptions.note.flagHeightBodyFraction;
+      const height = beamData.length;
+
       this.drawBeamFlag({
         corner: endOfStem,
-        width: beamData.length,
-        height:
-          options.bodyHeight * this.drawOptions.note.flagHeightBodyFraction,
+        width,
+        height,
         angle: beamData.angle,
       });
     }
