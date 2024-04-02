@@ -17,7 +17,7 @@ const ImportExportTestPage: FunctionComponent<
 	const {
 		setScore,
 		setImportedAudio,
-		playbackManager,
+		playMusic,
 		volumeModifier,
 		volumePairs,
 	} = usePlayback();
@@ -31,7 +31,7 @@ const ImportExportTestPage: FunctionComponent<
 					setNewMusicScore(score);
 				}}
 				setImportedAudio={setImportedAudio}
-				play={playbackManager.play}
+				play={playMusic}
 			/>
 			<VolumeManager
 				volumePairs={volumePairs}

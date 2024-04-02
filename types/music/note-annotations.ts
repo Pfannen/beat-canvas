@@ -44,7 +44,7 @@ export type PartialPIA = {
 	velocity?: number;
 };
 
-export type NoteAudioAttributes = {
+export type NoteEnqueueData = {
 	pitchOctave: PitchOctave;
 	duration: number;
 	persistentAttributes: {
@@ -54,7 +54,11 @@ export type NoteAudioAttributes = {
 	};
 };
 
-export type NoteAttributesModifier = (
-	noteAttributes: NoteAudioAttributes,
+export type NoteAnnotationApplier = (
+	noteEnqueueData: NoteEnqueueData,
 	annotations: NoteAnnotations
 ) => void;
+
+export type NoteAnnotationApplierMap = {
+	[key in NoteAnnotation]: NoteAnnotationApplier;
+};

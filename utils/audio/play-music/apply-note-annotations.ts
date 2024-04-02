@@ -2,12 +2,13 @@ import { PitchOctave } from '@/types/music';
 import {
 	NoteAnnotation,
 	NoteAnnotations,
-	NoteAudioAttributes,
-	NoteAttributesModifier,
+	NoteEnqueueData,
+	NoteAnnotationApplier,
 	PersistentInstrumentAttributes,
+	NoteAnnotationApplierMap,
 } from '@/types/music/note-annotations';
 
-const staccatoApplier: NoteAttributesModifier = (attr, annotations) => {
+const staccatoApplier: NoteAnnotationApplier = (attr, annotations) => {
 	if (!annotations.staccato) return;
 
 	attr.duration /= 2;
@@ -15,7 +16,7 @@ const staccatoApplier: NoteAttributesModifier = (attr, annotations) => {
 	applyToNote.instrumentProps.release = 0.5;
 };
 
-const slurApplier: NoteAttributesModifier = (attr, annotations) => {
+const slurApplier: NoteAnnotationApplier = (attr, annotations) => {
 	const { slur } = annotations;
 	if (!slur) return;
 
@@ -29,7 +30,7 @@ const slurApplier: NoteAttributesModifier = (attr, annotations) => {
 	}
 };
 
-const accidentalApplier: NoteAttributesModifier = (attr, annotations) => {
+const accidentalApplier: NoteAnnotationApplier = (attr, annotations) => {
 	const { accidental } = annotations;
 	if (accidental) {
 		if (accidental === 'flat') attr.pitchOctave.accidental = 'b';
@@ -38,7 +39,7 @@ const accidentalApplier: NoteAttributesModifier = (attr, annotations) => {
 	}
 };
 
-const accentApplier: NoteAttributesModifier = (attr, annotations) => {
+const accentApplier: NoteAnnotationApplier = (attr, annotations) => {
 	const { accent } = annotations;
 	if (!accent) return;
 
@@ -50,7 +51,7 @@ const accentApplier: NoteAttributesModifier = (attr, annotations) => {
 	pA.applyToNote.velocity = newVelocity;
 };
 
-const dynamicApplier: NoteAttributesModifier = (attr, annotations) => {
+const dynamicApplier: NoteAnnotationApplier = (attr, annotations) => {
 	const { dynamic } = annotations;
 	if (!dynamic) return;
 
@@ -65,20 +66,18 @@ const dynamicApplier: NoteAttributesModifier = (attr, annotations) => {
 };
 
 export const applyNoteAnnotations = (
-	noteAttributes: NoteAudioAttributes,
+	noteEnqueueData: NoteEnqueueData,
 	annotations?: NoteAnnotations
 ) => {
 	if (!annotations) return;
 
 	const keys = Object.keys(annotations) as (keyof NoteAnnotations)[];
 	for (const key of keys) {
-		annotationApplier[key](noteAttributes, annotations);
+		applierMap[key](noteEnqueueData, annotations);
 	}
 };
 
-export const annotationApplier: {
-	[key in NoteAnnotation]: NoteAttributesModifier;
-} = {
+export const applierMap: NoteAnnotationApplierMap = {
 	staccato: staccatoApplier,
 	slur: slurApplier,
 	accidental: accidentalApplier,
@@ -92,7 +91,7 @@ export const constructNoteAttributes = (
 	duration: number,
 	curPersistent: PersistentInstrumentAttributes
 ) => {
-	const nA: NoteAudioAttributes = {
+	const nA: NoteEnqueueData = {
 		pitchOctave,
 		duration,
 		persistentAttributes: {

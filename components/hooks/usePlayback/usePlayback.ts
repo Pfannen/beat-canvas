@@ -24,8 +24,12 @@ export const usePlayback = () => {
 		playbackManager.current.setImportedAudio(audioFile, updateVolumePairs);
 	};
 
+	const playMusic = () => {
+		playbackManager.current.play();
+	};
+
 	// Update volume pairs when component is rendered
-	// Doing so in the useState initializer causes hydration issues due to 
+	// Doing so in the useState initializer causes hydration issues due to
 	// playback manager only doing certain things when being ran on the client
 	useEffect(updateVolumePairs, []);
 
@@ -33,7 +37,7 @@ export const usePlayback = () => {
 		volumePairs,
 		setScore,
 		setImportedAudio,
-		playbackManager: playbackManager.current,
+		playMusic,
 		volumeModifier,
 	};
 };
