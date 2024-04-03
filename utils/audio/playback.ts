@@ -9,7 +9,7 @@ import { ToneInstrument } from '@/types/audio/instrument';
 
 export class PlaybackManager extends VolumeManager {
 	private players: { [id in string]: Player } = {};
-	playerNodeId = 'player';
+	playerNodeId = 'Imported Audio';
 	musicScore?: MusicScore;
 
 	constructor(musicScore?: MusicScore) {
