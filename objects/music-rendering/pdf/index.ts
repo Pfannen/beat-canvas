@@ -1,8 +1,10 @@
-import { PDFDocument, PageSizes, degrees } from "pdf-lib";
+import { PageSizes } from "pdf-lib";
 import { MeasureRenderer } from "../measure-renderer";
 import { Music } from "@/objects/music/readonly-music";
 import { Measure } from "@/components/providers/music/types";
 import { PDFLibDrawingCanvasManager } from "../drawing-canvas/pdf-lib-drawing-canvas/manager";
+import { PageDimensionParams } from "../music-layout/page-dimension-params";
+import { MusicLayout } from "../music-layout";
 
 export const drawPDF = async () => {
   const pdfLibManager = new PDFLibDrawingCanvasManager(PageSizes.A4);
@@ -23,10 +25,13 @@ export const drawPDF = async () => {
       ],
     });
   }
+  const pageParams = PageDimensionParams.genericSheetMusic();
+  const dimensions = MusicLayout.getDimensions(pageParams);
   music.setMeasures(measures);
   const renderer = new MeasureRenderer(
     music,
     6,
+    dimensions,
     pdfLibManager.getBeatCanvasForPage.bind(pdfLibManager)
   );
   renderer.render();

@@ -1,6 +1,7 @@
 import { Coordinate } from "@/objects/measurement/types";
 import { MeasureRenderData } from "../music/render-data";
 import { TimeSignature } from "@/components/providers/music/types";
+import { IBeatCanvas } from "./canvas";
 
 export type MeasureDrawData = {
   start: Coordinate;
@@ -18,3 +19,11 @@ export interface IMeasureWidthCalculator {
 }
 
 export type MeasureComponentValues<T = number> = { line: T; space: T };
+
+export type BeatCanvasDel = (pageNumber: number) => IBeatCanvas;
+
+export type MusicUnitConverter = (
+  xValue: number,
+  yValue: number,
+  aspectRatio: number
+) => { xValue: number; yValue: number };

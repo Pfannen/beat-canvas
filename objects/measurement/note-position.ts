@@ -111,12 +111,14 @@ export class MeasureUtils {
     bodyStartPosition?: number
   ) {
     if (bodyStartPosition === undefined) bodyStartPosition = aboveBelowCount;
-    const componentCount = aboveBelowCount + bodyCt;
-    return this.getComponentCountsBelow(
+    const componentCount = aboveBelowCount * 2 + bodyCt;
+    const firstComponentIsLine = this.bottomComponentIsLine(aboveBelowCount, 0);
+    const counts = this.getComponentCountsBelow(
       componentCount - 1,
       aboveBelowCount,
       bodyStartPosition
     );
+    return { ...counts, firstComponentIsLine };
   }
 
   private static bottomComponentIsLine(

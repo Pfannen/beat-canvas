@@ -38,6 +38,7 @@ export class Measurements {
     //We shall assume yPos: 0 is the first line of the body (if yPos is negative the position is below the body)
     let { line: lineCount, space: spaceCount } =
       this.measureComponents.getComponentCountsBelowYPos(yPos);
+    console.log(yPos, lineCount, spaceCount);
     const isOnLine = this.measureComponents.yPosIsOnLine(yPos);
     isOnLine ? (lineCount -= 0.5) : (spaceCount -= 0.5);
     const { line: lineFraction, space: spaceFraction } =

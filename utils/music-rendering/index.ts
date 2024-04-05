@@ -2,6 +2,8 @@ import { Measure } from "@/components/providers/music/types";
 import { BeatCanvas } from "@/objects/music-rendering/beat-canvas";
 import { ReactDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
+import { MusicLayout } from "@/objects/music-rendering/music-layout";
+import { PageDimensionParams } from "@/objects/music-rendering/music-layout/page-dimension-params";
 import { Music } from "@/objects/music/readonly-music";
 import { IBeatCanvas } from "@/types/music-rendering/canvas";
 
@@ -9,9 +11,16 @@ export const renderMeasures = (
   measures: Measure[],
   getBeatCanvasForPage: (pageNum: number) => IBeatCanvas
 ) => {
+  const pageParams = PageDimensionParams.genericSheetMusic();
+  const dimensions = MusicLayout.getDimensions(pageParams);
   const music = new Music();
   music.setMeasures(measures);
-  const renderer = new MeasureRenderer(music, 6, getBeatCanvasForPage);
+  const renderer = new MeasureRenderer(
+    music,
+    6,
+    dimensions,
+    getBeatCanvasForPage
+  );
   renderer.render();
 };
 

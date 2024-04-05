@@ -42,6 +42,7 @@ export type NoteOptions = {
   type: NoteType;
   bodyCenter: Coordinate;
   bodyHeight: number;
+  noteIndex: number;
   // stemWidth: number;
   // stemHeight: number;
   attributes?: NoteAttribute[];
@@ -56,7 +57,7 @@ export type MeasureOptions = {
   spaceHeight: number;
   bodyCount: number;
   aboveBelowComponentCount: number;
-
+  measureIndex: number;
   timeSignature?: TimeSignature;
   //keySignature?: KeySignature,
   attributes?: Partial<MeasureAttributes>;

@@ -1,15 +1,11 @@
 import { MeasureTransformer } from "@/objects/music/music-display-data/measure-transformer";
 import { Music } from "@/objects/music/readonly-music";
 import { MeasureManager } from "../measure-manager";
-import { PageDimensionParams } from "../music-layout/page-dimension-params";
-import { MusicLayout } from "../music-layout";
 import { MeasureWidthCalculator } from "../measure-manager/measure-width-calculator";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
 import { BODY_CT } from "@/objects/measurement/constants";
-import { IBeatCanvas } from "@/types/music-rendering/canvas";
-
-type BeatCanvasDel = (pageNumber: number) => IBeatCanvas;
+import { BeatCanvasDel, MusicUnitConverter } from "@/types/music-rendering";
 
 export class MeasureRenderer {
   private bodyCt = BODY_CT;
@@ -20,16 +16,19 @@ export class MeasureRenderer {
   private measureManager!: MeasureManager;
   private musicDimensions: MusicDimensionData;
   private measurements: Measurements;
+  private unitConverter?: MusicUnitConverter;
   constructor(
     music: Music,
     aboveBelowCount: number,
-    getBeatCanvasForPage: BeatCanvasDel
+    musicDimensions: MusicDimensionData,
+    getBeatCanvasForPage: BeatCanvasDel,
+    unitConverter?: MusicUnitConverter
   ) {
     this.music = music;
+    this.musicDimensions = musicDimensions;
     this.getBeatCanvasForPage = getBeatCanvasForPage;
+    this.unitConverter = unitConverter;
     this.transformer = new MeasureTransformer(music);
-    const pageParams = PageDimensionParams.genericSheetMusic();
-    this.musicDimensions = MusicLayout.getDimensions(pageParams);
     this.aboveBelowCount = aboveBelowCount;
     this.measurements = new Measurements(aboveBelowCount, this.bodyCt, 3);
   }
@@ -90,6 +89,7 @@ export class MeasureRenderer {
         spaceHeight,
         bodyCount: this.bodyCt,
         aboveBelowComponentCount: this.aboveBelowCount,
+        measureIndex,
       });
       const measureBottom = {
         x: measureData.start.x,
@@ -120,6 +120,7 @@ export class MeasureRenderer {
             type,
             noteDirection: renderData.noteDirection,
             bodyHeight: spaceHeight,
+            noteIndex,
           });
           noteIndex++;
         } else {
