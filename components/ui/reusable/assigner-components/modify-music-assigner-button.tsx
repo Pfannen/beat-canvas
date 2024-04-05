@@ -1,25 +1,25 @@
 import { FunctionComponent, ReactNode, SVGProps } from 'react';
 import classes from './modify-music-assigner.module.css';
-import AssignerButton from '.';
+import AssignerButton from './assigner-button';
 import { concatClassNames } from '@/utils/css';
 
 interface ModifyMusicAssignerProps {
-	onClick: () => void;
-	children: FunctionComponent<SVGProps<SVGSVGElement>>;
+	children: ReactNode;
+	onClick?: () => void;
 	active?: boolean;
 }
 
 const ModifyMusicAssigner: FunctionComponent<ModifyMusicAssignerProps> = ({
-	onClick,
+	children,
 	active,
-	children: Children,
+	onClick,
 }) => {
 	return (
 		<AssignerButton
 			className={concatClassNames(classes.btn, !active && classes.inactive)}
 			onClick={onClick}
 		>
-			{<Children fill="#012345" />}
+			{children}
 		</AssignerButton>
 	);
 };

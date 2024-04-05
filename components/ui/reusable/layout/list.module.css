@@ -1,0 +1,11 @@
+.list {
+	justify-items: start;
+	display: grid;
+	grid-template-columns: repeat(
+		auto-fill,
+		var(--list-item-width, var(--list-item-height, 25px))
+	);
+	grid-template-rows: var(--list-item-height, var(--list-item-width, 25px));
+	gap: var(--list-gap, 16px);
+	padding: var(--list-padding, 16px);
+}

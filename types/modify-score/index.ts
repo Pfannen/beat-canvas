@@ -18,6 +18,7 @@ export interface IMusicAssignerButton {
 
 export interface INoteAssignerButton extends IMusicAssignerButton {
 	assigner: NoteAnnotationAssigner;
+	annotations?: NoteAnnotations;
 }
 
 export interface IMeasureAssignerButton extends IMusicAssignerButton {

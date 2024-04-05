@@ -32,6 +32,7 @@ export type NoteAnnotations = {
 	dynamic?: Dynamic;
 	accidental?: Accidental;
 	chord?: true;
+	dotted?: true;
 };
 
 export type PersistentInstrumentAttributes = {

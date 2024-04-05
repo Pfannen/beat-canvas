@@ -8,19 +8,15 @@ import VolumeManager from '@/components/ui/volume-manager';
 import { PlaybackManager } from '@/utils/audio/playback';
 import { VolumePair } from '@/types/audio/volume';
 import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
+import AnnotationsAssignerButtonSet from '@/components/ui/reusable/assigner-components/annotations/annotations-assigner-button-set';
 
 type ImportExportTestPageProps = {};
 
 const ImportExportTestPage: FunctionComponent<
 	ImportExportTestPageProps
 > = () => {
-	const {
-		setScore,
-		setImportedAudio,
-		playMusic,
-		volumeModifier,
-		volumePairs,
-	} = usePlayback();
+	const { setScore, setImportedAudio, playMusic, volumeModifier, volumePairs } =
+		usePlayback();
 	const { musicScore, setNewMusicScore, replaceMeasures } = useMusic();
 
 	return (
@@ -37,6 +33,7 @@ const ImportExportTestPage: FunctionComponent<
 				volumePairs={volumePairs}
 				modifyVolume={volumeModifier.modifyVolume}
 			/>
+			<AnnotationsAssignerButtonSet />
 		</>
 	);
 };

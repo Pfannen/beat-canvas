@@ -1,4 +1,4 @@
-import { NoteType } from '@/components/providers/music/types';
+import { Measure, NoteType } from '@/components/providers/music/types';
 import { Clef, PitchOctave } from '@/types/music';
 
 export const getSecondsPerBeat = (bpm: number) => 1 / (bpm / 60);
