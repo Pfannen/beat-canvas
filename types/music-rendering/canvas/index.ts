@@ -55,8 +55,11 @@ export type MeasureOptions = {
   containerPadding: BlockDirection<number>;
   lineHeight: number;
   spaceHeight: number;
-  bodyCount: number;
-  aboveBelowComponentCount: number;
+  lineCount: number;
+  spaceCount: number;
+  bodyStartPos: number;
+  bodyEndPos: number;
+  topComponentIsLine: boolean;
   measureIndex: number;
   timeSignature?: TimeSignature;
   //keySignature?: KeySignature,

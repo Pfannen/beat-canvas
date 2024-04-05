@@ -36,14 +36,11 @@ export class Measurements {
 
   public getYFractionOffset(yPos: number) {
     //We shall assume yPos: 0 is the first line of the body (if yPos is negative the position is below the body)
-    let { line: lineCount, space: spaceCount } =
-      this.measureComponents.getComponentCountsBelowYPos(yPos);
-    console.log(yPos, lineCount, spaceCount);
-    const isOnLine = this.measureComponents.yPosIsOnLine(yPos);
-    isOnLine ? (lineCount -= 0.5) : (spaceCount -= 0.5);
+    let { line, space, isOnLine } = this.measureComponents.getYPosInfo(yPos);
+    isOnLine ? (line += 0.5) : (space += 0.5);
     const { line: lineFraction, space: spaceFraction } =
       this.componentFractionHeights;
-    return spaceCount * spaceFraction + lineCount * lineFraction;
+    return space * spaceFraction + line * lineFraction;
   }
 
   public static getXFractionOffset(
@@ -59,8 +56,11 @@ export class Measurements {
     return this.componentFractionHeights;
   }
 
-  //   public getYAbsolutePosition(yPos: number, measureHeight: number){
-  //     const fractionOffset = this.getYFractionOffset(yPos);
-  //     return fractionOffset
-  //   }
+  public topComponentIsLine() {
+    return this.measureComponents.isBottomComponentLine();
+  }
+
+  public getMeasureComponentCounts() {
+    return this.measureComponents.getMeasureComponentCounts();
+  }
 }

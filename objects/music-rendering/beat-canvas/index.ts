@@ -5,7 +5,6 @@ import {
   NoteOptions,
   RestOptions,
 } from "@/types/music-rendering/canvas";
-import { MeasureUtils } from "../../measurement/note-position";
 import {
   BeamFlagOptions,
   BeatCanvasDrawOptions,
@@ -36,10 +35,10 @@ const tempDrawOptions = {
 type MeasureLineContext = {
   width: number;
   height: number;
-  component: "line" | "space";
+  isLine: boolean;
   corner: Coordinate;
-  yPos: number;
   isBody: boolean;
+  absoluteYPos: number;
 };
 
 type MeasureLineIteratorDel = (context: MeasureLineContext) => void;
@@ -75,48 +74,44 @@ export class BeatCanvas implements IBeatCanvas {
     del: MeasureLineIteratorDel,
     iterateAboveBelow = false
   ) {
-    const { spaceCount, lineCount, firstComponentIsLine } =
-      MeasureUtils.getMeasureComponentCounts(
-        options.aboveBelowComponentCount,
-        options.bodyCount
-      );
-    const componentCount = spaceCount + lineCount;
-    let yPos = options.bodyCount + options.aboveBelowComponentCount - 1;
-    console.log(yPos, componentCount);
-    let isLine = firstComponentIsLine;
+    const componentCount = options.lineCount + options.spaceCount;
+    let isLine = options.topComponentIsLine;
     const { x, y } = options.topLeft;
     let currY = y;
     let bodyEndY = 0;
     let bodyStartY = 0;
-    for (let i = 0; i < componentCount; i++) {
+    for (let yPos = componentCount; yPos > 0; yPos--) {
       const corner = { x, y: currY };
-      const isBody = yPos > -1 && yPos < options.bodyCount;
-      let component: "space" | "line" = "space";
-      let height = -options.spaceHeight;
+      const isBody = yPos >= options.bodyStartPos && yPos <= options.bodyEndPos;
+      let height = options.spaceHeight;
       if (isLine) {
-        height = -options.lineHeight;
-        component = "line";
+        height = options.lineHeight;
       }
-      del({ width: options.width, height, yPos, isBody, corner, component });
-      if (yPos === 0) {
+      del({
+        width: options.width,
+        height,
+        isBody,
+        corner,
+        isLine,
+        absoluteYPos: yPos,
+      });
+      if (yPos === options.bodyStartPos) {
         bodyStartY = currY;
-      } else if (yPos === options.bodyCount - 1) {
+      } else if (yPos === options.bodyEndPos) {
         bodyEndY = currY;
       }
       isLine = !isLine;
-      yPos--;
-      currY += height; //the height is negative so adding subtracts
+      currY -= height;
     }
     return {
-      bodyStartYPos: bodyStartY + options.lineHeight / 2,
+      bodyStartYPos: bodyStartY - options.lineHeight / 2,
       bodyHeight: bodyEndY - bodyStartY,
     };
   }
 
   private drawMeasureLines(options: MeasureLinesOptions) {
     const iteratorDel: MeasureLineIteratorDel = (context) => {
-      if (context.isBody && context.component === "line") {
-        console.log(context.yPos);
+      if (context.isBody && context.isLine) {
         this.canvas.drawRectangle({
           corner: context.corner,
           width: context.width,
@@ -195,30 +190,3 @@ export class BeatCanvas implements IBeatCanvas {
     throw new Error("Method not implemented.");
   }
 }
-
-// private drawMeasureLines(options: MeasureLinesOptions) {
-//   const { spaceCount, lineCount } = MeasureUtils.getComponentCountsBelow(
-//     options.aboveBelowComponentCount,
-//     options.aboveBelowComponentCount
-//   );
-//   const yOffset =
-//     spaceCount * options.spaceHeight + lineCount * options.lineHeight;
-
-//   const { x, y } = options.topLeft;
-//   const startY = y - yOffset;
-//   let currY = startY;
-//   for (let i = options.bodyCount; i > 0; i -= 2) {
-//     const corner = { x, y: currY };
-//     this.canvas.drawRectangle({
-//       corner,
-//       width: options.width,
-//       height: -options.lineHeight,
-//     });
-//     currY -= options.lineHeight + options.spaceHeight;
-//   }
-//   currY += options.spaceHeight + options.lineHeight / 2; //+options.lineHeight/2 to provide room for tolerence when drawing things at the start of the measure body
-//   return {
-//     bodyStartYPos: currY,
-//     bodyHeight: startY - currY,
-//   };
-// }

@@ -19,12 +19,15 @@ export type BeamFlagOptions = {
 
 export type MeasureLinesOptions = Pick<
   MeasureOptions,
-  | "aboveBelowComponentCount"
   | "topLeft"
   | "lineHeight"
   | "spaceHeight"
-  | "bodyCount"
   | "width"
+  | "spaceCount"
+  | "lineCount"
+  | "topComponentIsLine"
+  | "bodyEndPos"
+  | "bodyStartPos"
 >;
 
 export type BeatCanvasNoteDrawOptions = {

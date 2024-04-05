@@ -80,6 +80,10 @@ export class MeasureRenderer {
       const lineHeight = lineFraction * noteContainerHeight;
       const spaceHeight = spaceFraction * noteContainerHeight;
       const beatCanvas = this.getBeatCanvasForPage(measureData.pageNumber);
+      const { line, space } = this.measurements.getMeasureComponentCounts();
+      const componentCount = line + space;
+      const bodyEndPos = componentCount - this.aboveBelowCount;
+      const bodyStartPos = bodyEndPos - (this.bodyCt - 1);
       beatCanvas.drawMeasure({
         topLeft: measureData.start,
         width: measureData.width,
@@ -87,9 +91,12 @@ export class MeasureRenderer {
         containerPadding: padding,
         lineHeight,
         spaceHeight,
-        bodyCount: this.bodyCt,
-        aboveBelowComponentCount: this.aboveBelowCount,
+        lineCount: line,
+        spaceCount: space,
+        bodyEndPos,
+        bodyStartPos,
         measureIndex,
+        topComponentIsLine: this.measurements.topComponentIsLine(),
       });
       const measureBottom = {
         x: measureData.start.x,
