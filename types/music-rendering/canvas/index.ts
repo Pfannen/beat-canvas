@@ -3,11 +3,10 @@ import {
   NoteType,
   TimeSignature,
 } from "@/components/providers/music/types";
-import { NoteDirection } from "@/lib/notes/types";
 import { NoteAttribute } from "@/lib/notes/ui/note-attributes";
 import { Coordinate } from "@/objects/measurement/types";
-import { MeasureAttributes } from "../music";
-import { BlockDirection } from "./pdf";
+import { BlockDirection } from "../pdf";
+import { MeasureAttributes } from "@/types/music";
 
 export type LineOptions = {
   start: Coordinate;
@@ -24,7 +23,7 @@ export type RectangleOptions = {
 
 export type CircleOptions = { center: Coordinate; diameter: number };
 
-export type drawEllipseOptions = CircleOptions & {
+export type EllipseOptions = CircleOptions & {
   aspectRatio: number;
   degreeRotation?: number;
 };
@@ -35,7 +34,7 @@ export interface IDrawingCanvas {
   drawLine(options: LineOptions): void;
   drawCircle(options: CircleOptions): void;
   drawRectangle(options: RectangleOptions): void;
-  drawEllipse(options: drawEllipseOptions): void;
+  drawEllipse(options: EllipseOptions): void;
   drawSVG(options: SVGOptions): void;
 }
 

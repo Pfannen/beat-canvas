@@ -1,15 +1,15 @@
 import { UnitMeasurement } from "@/types";
-import {
-  CircleOptions,
-  IDrawingCanvas,
-  LineOptions,
-  RectangleOptions,
-  SVGOptions,
-  drawEllipseOptions,
-} from "@/types/music-rendering/canvas";
+import { IDrawingCanvas } from "@/types/music-rendering/canvas";
 import { PolymorphicComponentProps } from "@/types/polymorphic";
 import { ElementType, FunctionComponent, ReactElement } from "react";
 import { CoordinateStyleCreator } from "./utils";
+import {
+  HTMLCircleOptions,
+  HTMLEllipseOptions,
+  HTMLLineOptions,
+  HTMLRectangleOptions,
+  HTMLSVGOptions,
+} from "@/types/music-rendering/canvas/html";
 
 export class ReactDrawingCanvas implements IDrawingCanvas {
   private unit: UnitMeasurement;
@@ -18,7 +18,7 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     this.unit = unit;
   }
 
-  drawElement<C extends ElementType = "div">({
+  drawElement<C extends ElementType>({
     as,
     ...restProps
   }: PolymorphicComponentProps<C>) {
@@ -26,44 +26,59 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     this.components.push(<C {...restProps} />);
   }
 
-  drawLine(options: LineOptions): void {
+  drawLine<C extends ElementType = "div">(options: HTMLLineOptions<C>): void {
     throw new Error("Method not implemented.");
   }
 
-  drawCircle(options: CircleOptions): void {
+  drawCircle<C extends ElementType = "div">(
+    options: HTMLCircleOptions<C>
+  ): void {
     throw new Error("Method not implemented.");
   }
 
-  drawRectangle(options: RectangleOptions): void {
+  drawRectangle<C extends ElementType = "div">({
+    corner,
+    width,
+    height,
+    degreeRotation,
+    ...restProps
+  }: HTMLRectangleOptions<C>): void {
     const styleCreator = new CoordinateStyleCreator(
-      options.corner,
-      options.width,
-      options.height,
+      corner,
+      width,
+      height,
       this.unit
     );
     styleCreator.styles.addBackgroundColor("black");
-    if (options.degreeRotation)
-      styleCreator.styles.addRotation(options.degreeRotation);
-    this.drawElement({ style: styleCreator.styles.getStyle() });
+    if (degreeRotation) styleCreator.styles.addRotation(degreeRotation);
+    this.drawElement<any>({
+      ...restProps,
+      style: styleCreator.styles.getStyle(),
+    });
   }
 
-  drawEllipse(options: drawEllipseOptions): void {
-    const width = options.aspectRatio * options.diameter;
+  drawEllipse<C extends ElementType = "div">({
+    aspectRatio,
+    diameter,
+    center,
+    degreeRotation,
+    ...restProps
+  }: HTMLEllipseOptions<C>): void {
+    const width = aspectRatio * diameter;
     const styleCreator = new CoordinateStyleCreator(
-      options.center,
+      center,
       width,
-      options.diameter,
+      diameter,
       this.unit
     );
     styleCreator.styles.center();
     styleCreator.styles.addBackgroundColor("black");
-    if (options.degreeRotation)
-      styleCreator.styles.addRotation(options.degreeRotation);
+    if (degreeRotation) styleCreator.styles.addRotation(degreeRotation);
     styleCreator.styles.addBorderRadius("50%");
-    this.drawElement({ style: styleCreator.getStyle() });
+    this.drawElement<any>({ ...restProps, style: styleCreator.getStyle() });
   }
 
-  drawSVG(options: SVGOptions): void {
+  drawSVG(options: HTMLSVGOptions): void {
     throw new Error("Method not implemented.");
   }
 
