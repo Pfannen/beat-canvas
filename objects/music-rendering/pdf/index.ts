@@ -9,17 +9,17 @@ export const drawPDF = async () => {
   await pdfLibManager.initializeCanvas();
   const music = new Music();
   const measures: Measure[] = [];
-  const measureCount = 1;
+  const measureCount = 20;
   for (let i = 0; i < measureCount; i++) {
     measures.push({
       notes: [
         { x: 0, y: -1, type: "eighth" },
         { x: 0.5, y: 1, type: "eighth" },
-        { x: 2, y: -1, type: "sixteenth" },
-        { x: 2.25, y: -3, type: "sixteenth" },
-        { x: 2.5, y: -1, type: "sixteenth" },
+        { x: 1, y: 10, type: "quarter" },
+        { x: 2, y: -1, type: "eighth" },
+        { x: 2.5, y: -1, type: "eighth" },
         { x: 3, y: -1, type: "eighth" },
-        { x: 3.5, y: -3, type: "eighth" },
+        { x: 3.5, y: -1, type: "eighth" },
       ],
     });
   }

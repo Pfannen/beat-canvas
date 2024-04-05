@@ -8,7 +8,7 @@ import {
   drawEllipseOptions,
 } from "@/types/music-rendering/canvas";
 import { PolymorphicComponentProps } from "@/types/polymorphic";
-import { ElementType, ReactElement } from "react";
+import { ElementType, FunctionComponent, ReactElement } from "react";
 import { CoordinateStyleCreator } from "./utils";
 
 export class ReactDrawingCanvas implements IDrawingCanvas {
@@ -42,6 +42,8 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
       this.unit
     );
     styleCreator.styles.addBackgroundColor("black");
+    if (options.degreeRotation)
+      styleCreator.styles.addRotation(options.degreeRotation);
     this.drawElement({ style: styleCreator.styles.getStyle() });
   }
 
@@ -57,11 +59,16 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     styleCreator.styles.addBackgroundColor("black");
     if (options.degreeRotation)
       styleCreator.styles.addRotation(options.degreeRotation);
-    this.drawElement({ style: styleCreator.styles.getStyle() });
+    styleCreator.styles.addBorderRadius("50%");
+    this.drawElement({ style: styleCreator.getStyle() });
   }
 
   drawSVG(options: SVGOptions): void {
     throw new Error("Method not implemented.");
+  }
+
+  getComponents(): FunctionComponent {
+    return () => this.components;
   }
 
   createCanvas<C extends ElementType = "div">({
@@ -69,6 +76,11 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     ...restProps
   }: PolymorphicComponentProps<C>) {
     const C = as || "div";
-    return <C {...restProps}>{this.components}</C>;
+    const MeasureComponents = this.getComponents();
+    return (
+      <C {...restProps}>
+        <MeasureComponents />
+      </C>
+    );
   }
 }

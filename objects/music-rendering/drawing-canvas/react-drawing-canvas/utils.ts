@@ -51,6 +51,7 @@ export class CoordinateStyleCreator {
     this.styles.modifyTransformOrigin(
       this.getDirectionData(xAxisValue, yAxisValue)
     );
+    this.styles.addPosition("absolute");
   }
 
   private getDirectionData(
@@ -74,6 +75,10 @@ export class CoordinateStyleCreator {
       this.adjustedCoordinate.y += this.yAxisValue;
       this.adjustedYValue *= -1;
     }
+  }
+
+  public getStyle() {
+    return this.styles.getStyle();
   }
 }
 
@@ -124,6 +129,10 @@ export class StyleCreator {
 
   public addRotation = (degree: number) => {
     this.style["rotate"] = `${degree}deg`;
+  };
+
+  public addPosition = (position: CSSProperties["position"]) => {
+    this.style["position"] = position;
   };
 
   // Other styling functions can be added as needed

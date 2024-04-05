@@ -31,7 +31,6 @@ export class PDFLibDrawingCanvasManager {
   }
 
   public getDrawingCanvasForPage(pageNumber: number) {
-    this.checkPDFDoc();
     const pageGap = pageNumber - this.pageCount;
     for (let i = pageGap; i > 0; i--) {
       // Generate needed pages to get "pageNumber" number of pages

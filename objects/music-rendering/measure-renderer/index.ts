@@ -4,12 +4,12 @@ import { MeasureManager } from "../measure-manager";
 import { PageDimensionParams } from "../music-layout/page-dimension-params";
 import { MusicLayout } from "../music-layout";
 import { MeasureWidthCalculator } from "../measure-manager/measure-width-calculator";
-import { BeatCanvas } from "../beat-canvas";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
 import { BODY_CT } from "@/objects/measurement/constants";
+import { IBeatCanvas } from "@/types/music-rendering/canvas";
 
-type BeatCanvasDel = (pageNumber: number) => BeatCanvas;
+type BeatCanvasDel = (pageNumber: number) => IBeatCanvas;
 
 export class MeasureRenderer {
   private bodyCt = BODY_CT;
