@@ -135,6 +135,10 @@ export class StyleCreator {
     this.style["position"] = position;
   };
 
+  public addOpacity = (opacity: number) => {
+    if (opacity !== 1) this.style["opacity"] = opacity;
+  };
+
   // Other styling functions can be added as needed
 
   public getStyle = () => {

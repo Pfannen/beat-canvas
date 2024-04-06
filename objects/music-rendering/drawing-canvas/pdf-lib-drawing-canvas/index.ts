@@ -27,14 +27,13 @@ export class PDFLibDrawingCanvas {
   ) => {
     return (options) => {
       const { x, y } = options.corner;
+      const rotation = options.drawOptions?.degreeRotation;
       page.drawRectangle({
         x,
         y,
         width: options.width,
         height: options.height,
-        rotate: options.degreeRotation
-          ? degrees(-options.degreeRotation)
-          : undefined,
+        rotate: rotation ? degrees(-rotation) : undefined,
       });
     };
   };
@@ -50,14 +49,13 @@ export class PDFLibDrawingCanvas {
     return (options) => {
       const { x, y } = options.center;
       const width = options.diameter * options.aspectRatio;
+      const rotation = options.drawOptions?.degreeRotation;
       page.drawEllipse({
         x,
         y,
         xScale: width / 2,
         yScale: options.diameter / 2,
-        rotate: options.degreeRotation
-          ? degrees(-options.degreeRotation)
-          : undefined,
+        rotate: rotation ? degrees(-rotation) : undefined,
       });
     };
   };

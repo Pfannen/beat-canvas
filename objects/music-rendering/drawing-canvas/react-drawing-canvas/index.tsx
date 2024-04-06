@@ -1,8 +1,8 @@
 import { UnitMeasurement } from "@/types";
-import { IDrawingCanvas } from "@/types/music-rendering/canvas";
+import { DrawOptions, IDrawingCanvas } from "@/types/music-rendering/canvas";
 import { PolymorphicComponentProps } from "@/types/polymorphic";
 import { ElementType, FunctionComponent, ReactElement } from "react";
-import { CoordinateStyleCreator } from "./utils";
+import { CoordinateStyleCreator, StyleCreator } from "./utils";
 import {
   HTMLCircleOptions,
   HTMLEllipseOptions,
@@ -16,6 +16,17 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
   private components: ReactElement[] = [];
   constructor(unit: UnitMeasurement) {
     this.unit = unit;
+  }
+
+  private static attachDrawOptions(
+    options: Partial<DrawOptions> | undefined,
+    style: StyleCreator
+  ) {
+    if (options) {
+      style.addOpacity(options.opacity === undefined ? 1 : 0);
+      if (options.degreeRotation) style.addRotation(options.degreeRotation);
+    }
+    style.addBackgroundColor(options?.color || "black");
   }
 
   drawElement<C extends ElementType>({
@@ -41,6 +52,7 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     width,
     height,
     degreeRotation,
+    drawOptions,
     ...restProps
   }: HTMLRectangleOptions<C>): void {
     const styleCreator = new CoordinateStyleCreator(
@@ -49,8 +61,7 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
       height,
       this.unit
     );
-    styleCreator.styles.addBackgroundColor("black");
-    if (degreeRotation) styleCreator.styles.addRotation(degreeRotation);
+    ReactDrawingCanvas.attachDrawOptions(drawOptions, styleCreator.styles);
     this.drawElement<any>({
       ...restProps,
       style: styleCreator.styles.getStyle(),
@@ -62,6 +73,7 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     diameter,
     center,
     degreeRotation,
+    drawOptions,
     ...restProps
   }: HTMLEllipseOptions<C>): void {
     const width = aspectRatio * diameter;
@@ -72,8 +84,7 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
       this.unit
     );
     styleCreator.styles.center();
-    styleCreator.styles.addBackgroundColor("black");
-    if (degreeRotation) styleCreator.styles.addRotation(degreeRotation);
+    ReactDrawingCanvas.attachDrawOptions(drawOptions, styleCreator.styles);
     styleCreator.styles.addBorderRadius("50%");
     this.drawElement<any>({ ...restProps, style: styleCreator.getStyle() });
   }

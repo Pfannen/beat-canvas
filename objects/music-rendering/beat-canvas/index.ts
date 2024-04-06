@@ -1,19 +1,19 @@
+import { IDrawingCanvas } from "@/types/music-rendering/canvas";
 import {
+  BeatCanvasNoteDrawOptions,
+  BeatCanvasMeasureDrawOptions,
   IBeatCanvas,
-  IDrawingCanvas,
-  MeasureOptions,
+  BeatCanvasDrawOptions,
+  StemOptions,
+  MeasureLinesOptions,
+  BeamFlagOptions,
   NoteOptions,
   RestOptions,
-} from "@/types/music-rendering/canvas";
-import {
-  BeamFlagOptions,
-  BeatCanvasDrawOptions,
-  BeatCanvasMeasureDrawOptions,
-  BeatCanvasNoteDrawOptions,
-  MeasureLinesOptions,
-  StemOptions,
-} from "./types";
-import { Coordinate } from "@/objects/measurement/types";
+  MeasureOptions,
+  MeasureLineIteratorDel,
+  MeasureAreaData,
+} from "@/types/music-rendering/canvas/beat-canvas";
+import { BlockDirection } from "@/types/music-rendering/pdf";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
@@ -32,44 +32,16 @@ const tempDrawOptions = {
   measure: tempMeasureDrawOptions,
 };
 
-type MeasureLineContext = {
-  width: number;
-  height: number;
-  isLine: boolean;
-  corner: Coordinate;
-  isBody: boolean;
-  absoluteYPos: number;
-};
-
-type MeasureLineIteratorDel = (context: MeasureLineContext) => void;
-
-export class BeatCanvas implements IBeatCanvas {
-  private canvas: IDrawingCanvas;
+export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
+  implements IBeatCanvas
+{
+  protected canvas: T;
   private drawOptions: BeatCanvasDrawOptions = tempDrawOptions;
-  constructor(canvas: IDrawingCanvas) {
+  constructor(canvas: T) {
     this.canvas = canvas;
   }
 
-  private drawStem(options: StemOptions) {
-    const widthRadius = options.bodyWidth / 2;
-    const { x, y } = options.bodyCenter;
-    const corner = { x: x - widthRadius, y };
-    let height = -options.stemHeight;
-    let width = options.stemWidth;
-    if (options.direction === "up") {
-      corner.x = x + widthRadius;
-      height *= -1;
-      width *= -1;
-    }
-    this.canvas.drawRectangle({
-      corner,
-      width,
-      height,
-    });
-    return { endOfStem: { x: corner.x, y: corner.y + height } };
-  }
-
-  private static iterateMeasureLines(
+  protected static iterateMeasureLines(
     options: MeasureLinesOptions,
     del: MeasureLineIteratorDel,
     iterateAboveBelow = false
@@ -109,7 +81,43 @@ export class BeatCanvas implements IBeatCanvas {
     };
   }
 
-  private drawMeasureLines(options: MeasureLinesOptions) {
+  protected static getMeasureContainerHeight(options: MeasureAreaData) {
+    return (
+      this.getMeasureNoteAreaHeight(options) +
+      options.containerPadding.top +
+      options.containerPadding.bottom
+    );
+  }
+
+  protected static getMeasureNoteAreaHeight(
+    options: Omit<MeasureAreaData, "containerPadding">
+  ) {
+    return (
+      options.spaceCount * options.spaceHeight +
+      options.lineCount * options.lineHeight
+    );
+  }
+
+  private drawStem(options: StemOptions) {
+    const widthRadius = options.bodyWidth / 2;
+    const { x, y } = options.bodyCenter;
+    const corner = { x: x - widthRadius, y };
+    let height = -options.stemHeight;
+    let width = options.stemWidth;
+    if (options.direction === "up") {
+      corner.x = x + widthRadius;
+      height *= -1;
+      width *= -1;
+    }
+    this.canvas.drawRectangle({
+      corner,
+      width,
+      height,
+    });
+    return { endOfStem: { x: corner.x, y: corner.y + height } };
+  }
+
+  protected drawMeasureLines(options: MeasureLinesOptions) {
     const iteratorDel: MeasureLineIteratorDel = (context) => {
       if (context.isBody && context.isLine) {
         this.canvas.drawRectangle({
@@ -127,7 +135,7 @@ export class BeatCanvas implements IBeatCanvas {
       corner: options.corner,
       height: options.height,
       width: options.width,
-      degreeRotation: options.angle,
+      drawOptions: { degreeRotation: options.angle },
     });
   }
 
@@ -140,7 +148,7 @@ export class BeatCanvas implements IBeatCanvas {
       center: options.bodyCenter,
       aspectRatio: noteBodyAspectRatio,
       diameter: options.bodyHeight,
-      degreeRotation: this.drawOptions.note.noteBodyAngle,
+      drawOptions: { degreeRotation: this.drawOptions.note.noteBodyAngle },
     });
     const stemHeight =
       options.bodyHeight * this.drawOptions.note.stemHeightBodyFraction +
