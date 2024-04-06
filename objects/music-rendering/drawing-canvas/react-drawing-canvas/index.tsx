@@ -1,10 +1,11 @@
 import { UnitMeasurement } from "@/types";
-import { DrawOptions, IDrawingCanvas } from "@/types/music-rendering/canvas";
+import { IDrawingCanvas } from "@/types/music-rendering/canvas";
 import { PolymorphicComponentProps } from "@/types/polymorphic";
 import { ElementType, FunctionComponent, ReactElement } from "react";
 import { CoordinateStyleCreator, StyleCreator } from "./utils";
 import {
   HTMLCircleOptions,
+  HTMLDrawOptions,
   HTMLEllipseOptions,
   HTMLLineOptions,
   HTMLRectangleOptions,
@@ -19,12 +20,13 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
   }
 
   private static attachDrawOptions(
-    options: Partial<DrawOptions> | undefined,
+    options: Partial<HTMLDrawOptions> | undefined,
     style: StyleCreator
   ) {
     if (options) {
       style.addOpacity(options.opacity === undefined ? 1 : 0);
       if (options.degreeRotation) style.addRotation(options.degreeRotation);
+      if (options.cursor) style.addCursor(options.cursor);
     }
     style.addBackgroundColor(options?.color || "black");
   }

@@ -1,11 +1,12 @@
+"use client";
+
 import { Measure } from "@/components/providers/music/types";
-import { BeatCanvas } from "@/objects/music-rendering/beat-canvas";
-import { ReactDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas";
+import { ClickableBeatCanvas } from "@/objects/music-rendering/beat-canvas/clickable-beat-canvas";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
 import { PageDimensionParams } from "@/objects/music-rendering/music-layout/page-dimension-params";
 import { Music } from "@/objects/music/readonly-music";
-import { IBeatCanvas } from "@/types/music-rendering/canvas";
+import { IBeatCanvas } from "@/types/music-rendering/canvas/beat-canvas";
 
 export const renderMeasures = (
   measures: Measure[],
@@ -31,10 +32,14 @@ export const drawMockMeasures = (
 };
 
 export const getHTMLCanvas = () => {
-  const drawingCanvas = new ReactDrawingCanvas("px");
-  const beatCanvas = new BeatCanvas(drawingCanvas);
+  // const drawingCanvas = new ReactDrawingCanvas("px");
+  const beatCanvas = new ClickableBeatCanvas(
+    "px",
+    () => 1,
+    (i) => console.log(i)
+  );
   drawMockMeasures(() => beatCanvas);
-  return drawingCanvas.createCanvas({
+  return beatCanvas.createCanvas({
     style: { position: "relative", width: "595.28px", height: "841.89px" },
   });
 };

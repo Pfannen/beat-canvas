@@ -1,3 +1,5 @@
+"use client";
+
 import { UnitMeasurement } from "@/types";
 import { BeatCanvas } from "..";
 import { ReactDrawingCanvas } from "../../drawing-canvas/react-drawing-canvas";
@@ -40,15 +42,32 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
   }
 
   drawMeasure(options: MeasureOptions): void {
-    this.drawMeasureLines(options);
-    const height = BeatCanvas.getMeasureContainerHeight(options);
+    const { x, y } = options.topLeft;
+    const offsetY = y - options.containerPadding.top;
+    const { bodyStartYPos, bodyHeight } = this.drawMeasureLines({
+      ...options,
+      topLeft: { x, y: offsetY },
+    });
+    const { endBarWidthLineFraction } = this.drawOptions.measure;
+    const endBarWidth = options.lineHeight * endBarWidthLineFraction;
+    const corner = { x: x + options.width - endBarWidth, y: bodyStartYPos };
+    this.canvas.drawRectangle({
+      corner,
+      height: bodyHeight - options.lineHeight / 2,
+      width: endBarWidth,
+    });
+    const height = -BeatCanvas.getMeasureContainerHeight(options);
     const width = options.width;
     this.canvas.drawRectangle({
       corner: options.topLeft,
       width,
       height,
-      drawOptions: { opacity: 0 },
+      drawOptions: { opacity: 0, cursor: "pointer" },
+      onClick: this.onMeasureClick.bind(null, options.measureIndex),
     });
-    options.measureIndex;
+  }
+
+  public createCanvas(options: any) {
+    return this.canvas.createCanvas(options);
   }
 }

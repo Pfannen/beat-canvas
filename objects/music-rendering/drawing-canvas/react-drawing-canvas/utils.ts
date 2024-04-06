@@ -139,6 +139,10 @@ export class StyleCreator {
     if (opacity !== 1) this.style["opacity"] = opacity;
   };
 
+  public addCursor = (cursor: CSSProperties["cursor"]) => {
+    this.style["cursor"] = cursor;
+  };
+
   // Other styling functions can be added as needed
 
   public getStyle = () => {

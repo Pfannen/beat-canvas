@@ -13,7 +13,6 @@ import {
   MeasureLineIteratorDel,
   MeasureAreaData,
 } from "@/types/music-rendering/canvas/beat-canvas";
-import { BlockDirection } from "@/types/music-rendering/pdf";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
@@ -36,7 +35,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
   implements IBeatCanvas
 {
   protected canvas: T;
-  private drawOptions: BeatCanvasDrawOptions = tempDrawOptions;
+  protected drawOptions: BeatCanvasDrawOptions = tempDrawOptions;
   constructor(canvas: T) {
     this.canvas = canvas;
   }
