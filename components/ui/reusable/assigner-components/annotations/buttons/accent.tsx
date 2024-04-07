@@ -1,10 +1,10 @@
 import { FunctionComponent } from 'react';
 import classes from './AccentAssigner.module.css';
-import { INoteAssignerButton } from '@/types/modify-score';
+import { INoteAnnotationAssignerButton } from '@/types/modify-score/assigner';
 import ModifyMusicAssigner from '../../modify-music-assigner-button';
 import AccentSVG from '@/components/ui/svg/annotations/accent-svg';
 
-interface AccentAssignerProps extends INoteAssignerButton {}
+interface AccentAssignerProps extends INoteAnnotationAssignerButton {}
 
 const AccentAssigner: FunctionComponent<AccentAssignerProps> = ({
 	active,

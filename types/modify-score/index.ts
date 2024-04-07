@@ -10,17 +10,3 @@ export type MeasureAttributeAssigner = <K extends keyof MeasureAttributes>(
 	key: K,
 	value?: MeasureAttributes[K]
 ) => void;
-
-export interface IMusicAssignerButton {
-	active?: boolean;
-	assigner: NoteAnnotationAssigner | MeasureAttributeAssigner;
-}
-
-export interface INoteAssignerButton extends IMusicAssignerButton {
-	assigner: NoteAnnotationAssigner;
-	annotations?: NoteAnnotations;
-}
-
-export interface IMeasureAssignerButton extends IMusicAssignerButton {
-	assigner: MeasureAttributeAssigner;
-}

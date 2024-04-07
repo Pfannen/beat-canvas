@@ -1,11 +1,29 @@
 .list {
 	justify-items: start;
+	align-items: stretch;
 	display: grid;
-	grid-template-columns: repeat(
-		auto-fill,
-		var(--list-item-width, var(--list-item-height, 25px))
-	);
-	grid-template-rows: var(--list-item-height, var(--list-item-width, 25px));
 	gap: var(--list-gap, 16px);
 	padding: var(--list-padding, 16px);
+}
+
+.list.column {
+	grid-template-columns: repeat(
+		var(--auto, auto-fit),
+		var(--list-item-width, var(--list-item-height, minmax(50px, 1fr)))
+	);
+	grid-template-rows: var(
+		--list-item-height,
+		var(--list-item-width, minmax(50px, 1fr))
+	);
+}
+
+.list.row {
+	grid-template-columns: var(
+		--list-item-width,
+		var(--list-item-height, minmax(50px, 1fr))
+	);
+	grid-template-rows: repeat(
+		var(--auto, auto-fit),
+		var(--list-item-height, var(--list-item-width, minmax(50px, 1fr)))
+	);
 }

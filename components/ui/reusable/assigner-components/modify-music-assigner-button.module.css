@@ -2,6 +2,8 @@
 	border-radius: 4px;
 	padding: 6px;
 	background-color: var(--text-primary);
+	width: calc(100% - 12px); /* Not sure why padding isn't being included in width and height calculation */
+	height: calc(100% - 12px);
 }
 
 .btn * {

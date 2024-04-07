@@ -12,7 +12,10 @@ const AssignerButtonSet: FunctionComponent<AssignerButtonSetProps> = ({
 	return (
 		<LayoutList
 			className={classes.set_container}
-			layoutProps={{ '--list-item-width': '35px' }}
+			layoutProps={{
+				'--list-item-width': '35px',
+				'--list-item-height': 'repeat(auto-fit, 35px)',
+			}}
 		>
 			{children}
 		</LayoutList>

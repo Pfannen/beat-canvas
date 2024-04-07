@@ -1,11 +1,11 @@
 import { FunctionComponent } from 'react';
 import classes from './DottedAssigner.module.css';
-import { INoteAssignerButton } from '@/types/modify-score';
+import { INoteAnnotationAssignerButton } from '@/types/modify-score/assigner';
 import ModifyMusicAssigner from '../../modify-music-assigner-button';
 import AccentSVG from '@/components/ui/svg/annotations/accent-svg';
 import DottedSVG from '@/components/ui/svg/annotations/dotted-svg';
 
-interface DottedAssignerProps extends INoteAssignerButton {}
+interface DottedAssignerProps extends INoteAnnotationAssignerButton {}
 
 const DottedAssigner: FunctionComponent<DottedAssignerProps> = ({
 	active,

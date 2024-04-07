@@ -15,11 +15,13 @@ export type LayoutListCSSProps = {
 };
 
 interface LayoutListProps extends HTMLAttributes<HTMLUListElement> {
+	direction?: 'column' | 'row';
 	children?: ReactNode;
 	layoutProps?: Partial<LayoutListCSSProps>;
 }
 
 const LayoutList: FunctionComponent<LayoutListProps> = ({
+	direction = 'column',
 	children,
 	className,
 	layoutProps = {},
@@ -27,7 +29,7 @@ const LayoutList: FunctionComponent<LayoutListProps> = ({
 }) => {
 	return (
 		<ul
-			className={concatClassNames(classes.list, className)}
+			className={concatClassNames(classes.list, classes[direction], className)}
 			{...props}
 			style={layoutProps as CSSProperties}
 		>
