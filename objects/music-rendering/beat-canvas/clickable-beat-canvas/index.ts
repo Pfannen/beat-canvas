@@ -11,21 +11,31 @@ import {
 import {
   AbsolutePositionConverter,
   ClickDelegate,
-} from "@/types/music-rendering/canvas/clickable-canvas";
+} from "@/types/music-rendering/canvas/clickable-beat-canvas";
+import { MeasureOverlay } from "./handler-strategies/overlay/strategies";
 
 export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
-  private onMeasureClick: ClickDelegate;
   private absolutePosToYPos: AbsolutePositionConverter;
-
+  private measureOverlays?: MeasureOverlay[];
   constructor(
     unit: UnitMeasurement,
     absolutePosToYPos: AbsolutePositionConverter,
-    onMeasureClick: ClickDelegate
+    measureHandlers?: ClickDelegate[]
   ) {
     const drawingCanvas = new ReactDrawingCanvas(unit);
     super(drawingCanvas);
     this.absolutePosToYPos = absolutePosToYPos;
-    this.onMeasureClick = onMeasureClick;
+    measureHandlers?.forEach((handler) => {
+      if (!this.measureOverlays) {
+        this.measureOverlays = [];
+      }
+      this.measureOverlays.push(
+        new MeasureOverlay(
+          drawingCanvas.drawRectangle.bind(drawingCanvas),
+          handler
+        )
+      );
+    });
   }
 
   protected drawMeasureLines(options: MeasureLinesOptions) {
@@ -41,30 +51,24 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
     return BeatCanvas.iterateMeasureLines(options, iteratorDel);
   }
 
+  private invokeMeasureOverlays(options: MeasureOptions) {
+    if (this.measureOverlays) {
+      const height = -BeatCanvas.getMeasureContainerHeight(options);
+      const width = options.width;
+      this.measureOverlays.forEach((overlay) => {
+        overlay.createOverlay({
+          topLeft: options.topLeft,
+          width,
+          height,
+          indentifiers: { measureIndex: options.measureIndex },
+        });
+      });
+    }
+  }
+
   drawMeasure(options: MeasureOptions): void {
-    const { x, y } = options.topLeft;
-    const offsetY = y - options.containerPadding.top;
-    const { bodyStartYPos, bodyHeight } = this.drawMeasureLines({
-      ...options,
-      topLeft: { x, y: offsetY },
-    });
-    const { endBarWidthLineFraction } = this.drawOptions.measure;
-    const endBarWidth = options.lineHeight * endBarWidthLineFraction;
-    const corner = { x: x + options.width - endBarWidth, y: bodyStartYPos };
-    this.canvas.drawRectangle({
-      corner,
-      height: bodyHeight - options.lineHeight / 2,
-      width: endBarWidth,
-    });
-    const height = -BeatCanvas.getMeasureContainerHeight(options);
-    const width = options.width;
-    this.canvas.drawRectangle({
-      corner: options.topLeft,
-      width,
-      height,
-      drawOptions: { opacity: 0, cursor: "pointer" },
-      onClick: this.onMeasureClick.bind(null, options.measureIndex),
-    });
+    super.drawMeasure(options);
+    this.invokeMeasureOverlays(options);
   }
 
   public createCanvas(options: any) {
