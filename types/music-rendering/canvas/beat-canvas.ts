@@ -35,6 +35,7 @@ export type MeasureLinesOptions = Pick<
   | "topComponentIsLine"
   | "bodyEndPos"
   | "bodyStartPos"
+  | "measureIndex"
 >;
 
 export type MeasureAreaData = Pick<

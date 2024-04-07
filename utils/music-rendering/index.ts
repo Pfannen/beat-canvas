@@ -33,9 +33,12 @@ export const drawMockMeasures = (
 
 export const getHTMLCanvas = () => {
   // const drawingCanvas = new ReactDrawingCanvas("px");
-  const beatCanvas = new ClickableBeatCanvas("px", () => 1, [
-    (i) => console.log(i),
-  ]);
+  const beatCanvas = new ClickableBeatCanvas(
+    "px",
+    () => 1,
+    undefined,
+    (mIndex, yPos) => console.log({ mIndex, yPos })
+  );
   drawMockMeasures(() => beatCanvas);
   return beatCanvas.createCanvas({
     style: { position: "relative", width: "595.28px", height: "841.89px" },

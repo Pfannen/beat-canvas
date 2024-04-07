@@ -11,40 +11,53 @@ import {
 import {
   AbsolutePositionConverter,
   ClickDelegate,
+  MeasureComponentClickDel,
 } from "@/types/music-rendering/canvas/clickable-beat-canvas";
 import { MeasureOverlay } from "./handler-strategies/overlay/strategies";
+import { MeasureComponentAttachment } from "./handler-strategies/attachment";
+import { ComponentProps } from "@/types/polymorphic";
 
 export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
   private absolutePosToYPos: AbsolutePositionConverter;
-  private measureOverlays?: MeasureOverlay[];
+  private clickHandlers: ClickHandlers;
   constructor(
     unit: UnitMeasurement,
     absolutePosToYPos: AbsolutePositionConverter,
-    measureHandlers?: ClickDelegate[]
+    measureHandler?: ClickDelegate,
+    mComponentHandler?: MeasureComponentClickDel
   ) {
     const drawingCanvas = new ReactDrawingCanvas(unit);
     super(drawingCanvas);
     this.absolutePosToYPos = absolutePosToYPos;
-    measureHandlers?.forEach((handler) => {
-      if (!this.measureOverlays) {
-        this.measureOverlays = [];
-      }
-      this.measureOverlays.push(
-        new MeasureOverlay(
-          drawingCanvas.drawRectangle.bind(drawingCanvas),
-          handler
-        )
-      );
-    });
+    this.clickHandlers = new ClickHandlers(
+      drawingCanvas,
+      measureHandler,
+      mComponentHandler
+    );
   }
 
   protected drawMeasureLines(options: MeasureLinesOptions) {
+    const drawAllComponents = !!this.clickHandlers.measureComponentAttachment;
     const iteratorDel: MeasureLineIteratorDel = (context) => {
-      if (context.isBody && context.isLine) {
+      if (drawAllComponents || (context.isBody && context.isLine)) {
+        let props: ComponentProps<"div"> = {};
+        if (drawAllComponents) {
+          props = this.clickHandlers.measureComponentAttachment!.attachHandler({
+            measureIndex: options.measureIndex,
+            absoluteYPos: context.absoluteYPos,
+          });
+        }
+        const color = !context.isLine
+          ? "white"
+          : context.isBody
+          ? "black"
+          : "#d3d3d3";
         this.canvas.drawRectangle({
           corner: context.corner,
           width: context.width,
           height: -context.height,
+          drawOptions: { color },
+          ...props,
         });
       }
     };
@@ -52,16 +65,14 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
   }
 
   private invokeMeasureOverlays(options: MeasureOptions) {
-    if (this.measureOverlays) {
+    if (this.clickHandlers.measureOverlay) {
       const height = -BeatCanvas.getMeasureContainerHeight(options);
       const width = options.width;
-      this.measureOverlays.forEach((overlay) => {
-        overlay.createOverlay({
-          topLeft: options.topLeft,
-          width,
-          height,
-          indentifiers: { measureIndex: options.measureIndex },
-        });
+      this.clickHandlers.measureOverlay.createOverlay({
+        topLeft: options.topLeft,
+        width,
+        height,
+        indentifiers: { measureIndex: options.measureIndex },
       });
     }
   }
@@ -75,3 +86,57 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
     return this.canvas.createCanvas(options);
   }
 }
+
+class ClickHandlers {
+  private drawRectangle: ReactDrawingCanvas["drawRectangle"];
+  public measureOverlay?: MeasureOverlay;
+  public measureComponentAttachment?: MeasureComponentAttachment;
+
+  constructor(
+    canvas: ReactDrawingCanvas,
+    measureHandler?: ClickDelegate,
+    mComponentHandler?: MeasureComponentClickDel
+  ) {
+    this.drawRectangle = canvas.drawRectangle.bind(canvas);
+    this.initializeMeasureOverlay(measureHandler);
+    this.initializeMeasureComponentAttchment(mComponentHandler);
+  }
+
+  private initializeMeasureOverlay(measureHandler?: ClickDelegate) {
+    if (measureHandler) {
+      this.measureOverlay = new MeasureOverlay(
+        this.drawRectangle,
+        measureHandler
+      );
+    }
+  }
+
+  private initializeMeasureComponentAttchment(
+    mComponentHandler?: MeasureComponentClickDel
+  ) {
+    if (mComponentHandler) {
+      this.measureComponentAttachment = new MeasureComponentAttachment(
+        mComponentHandler
+      );
+    }
+  }
+}
+
+// class BeatCanvasClickMethods {
+//   static getDrawMeasure(
+//     handler: ClickDelegate,
+//     drawRectangle: ReactDrawingCanvas["drawRectangle"]
+//   ) {
+//     const measureOverlay = new MeasureOverlay(drawRectangle, handler);
+//     return (options: MeasureOptions) => {
+//       const height = -BeatCanvas.getMeasureContainerHeight(options);
+//       const width = options.width;
+//       this.clickHandlers.measureOverlay.createOverlay({
+//         topLeft: options.topLeft,
+//         width,
+//         height,
+//         indentifiers: { measureIndex: options.measureIndex },
+//       });
+//     }
+//   }
+// }
