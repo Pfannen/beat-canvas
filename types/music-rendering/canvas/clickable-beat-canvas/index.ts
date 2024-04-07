@@ -2,14 +2,22 @@ import { UnitConverter } from "@/types";
 import { Coordinate } from "@/objects/measurement/types";
 import { ComponentProps } from "react";
 
-export type ClickDelegate = (index: number) => void;
+export type ClickDelegate<T> = (index: T) => void;
 
-export type NoteClickDel = (measureIndex: number, noteIndex: number) => void;
+export type NoteClickArgs = { measureIndex: number; noteIndex: number };
 
-export type MeasureComponentClickDel = (
-  measureIndex: number,
-  yPos: number
-) => void;
+export type NoteClickDel = ClickDelegate<NoteClickArgs>;
+
+export type MeasureClickArgs = { measureIndex: number };
+
+export type MeasureClickDel = ClickDelegate<MeasureClickArgs>;
+
+export type MeasureComponentClickArgs = {
+  measureIndex: number;
+  absoluteYPos: number;
+};
+
+export type MeasureCompClickDel = ClickDelegate<MeasureComponentClickArgs>;
 
 export type AbsolutePositionConverter = UnitConverter<number, number>;
 
@@ -17,7 +25,7 @@ export type ClickableOverlayContext<T> = {
   topLeft: Coordinate;
   width: number;
   height: number;
-  indentifiers: T;
+  identifiers: T;
 };
 
 export interface IClickableOverlay<T> {
@@ -25,7 +33,7 @@ export interface IClickableOverlay<T> {
 }
 
 export interface IClickHandlerAttachment<T, E> {
-  attachHandler(indentifiers: T): E;
+  attachHandler(identifiers: T): E;
 }
 
 export type MeasureIdentifier = { measureIndex: number };

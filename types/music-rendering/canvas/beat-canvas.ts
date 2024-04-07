@@ -24,6 +24,11 @@ export type BeamFlagOptions = {
   width: number;
 };
 
+export type NoteAreaOptions = Pick<
+  NoteOptions,
+  "stemOffset" | "bodyHeight" | "bodyCenter"
+>;
+
 export type MeasureLinesOptions = Pick<
   MeasureOptions,
   | "topLeft"

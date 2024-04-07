@@ -1,3 +1,4 @@
+import { Coordinate } from "@/objects/measurement/types";
 import { IDrawingCanvas } from "@/types/music-rendering/canvas";
 import {
   BeatCanvasNoteDrawOptions,
@@ -12,6 +13,7 @@ import {
   MeasureOptions,
   MeasureLineIteratorDel,
   MeasureAreaData,
+  NoteAreaOptions,
 } from "@/types/music-rendering/canvas/beat-canvas";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
@@ -97,6 +99,8 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     );
   }
 
+  protected static getNoteDimensions(options: NoteAreaOptions) {}
+
   private drawStem(options: StemOptions) {
     const widthRadius = options.bodyWidth / 2;
     const { x, y } = options.bodyCenter;
@@ -140,27 +144,38 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
 
   private drawNoteFlag(): void {}
 
-  drawNote(options: NoteOptions): void {
+  private getNoteBodyWidth(bodyHeight: number) {
     const { noteBodyAspectRatio } = this.drawOptions.note;
-    const bodyWidth = noteBodyAspectRatio * options.bodyHeight;
+    const width = noteBodyAspectRatio * bodyHeight;
+    return width;
+  }
+
+  protected drawNoteBody(options: NoteOptions): void {
     this.canvas.drawEllipse({
       center: options.bodyCenter,
-      aspectRatio: noteBodyAspectRatio,
+      aspectRatio: this.drawOptions.note.noteBodyAspectRatio,
       diameter: options.bodyHeight,
       drawOptions: { degreeRotation: this.drawOptions.note.noteBodyAngle },
     });
+  }
+
+  protected drawNoteStem(options: NoteOptions) {
+    const width = this.getNoteBodyWidth(options.bodyHeight);
     const stemHeight =
       options.bodyHeight * this.drawOptions.note.stemHeightBodyFraction +
-      (options.stemOffset || 0);
+      Math.abs(options.stemOffset || 0);
     const stemWidth =
       options.bodyHeight * this.drawOptions.note.stemWidthBodyFraction;
-    const { endOfStem } = this.drawStem({
+    return this.drawStem({
       bodyCenter: options.bodyCenter,
       stemHeight,
       stemWidth,
-      bodyWidth,
+      bodyWidth: width,
       direction: options.noteDirection,
     });
+  }
+
+  protected drawBeamData(options: NoteOptions, endOfStem: Coordinate) {
     if (options.beamData) {
       const { beamData } = options;
       const width =
@@ -174,6 +189,12 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
         angle: beamData.angle,
       });
     }
+  }
+
+  drawNote(options: NoteOptions): void {
+    this.drawNoteBody(options);
+    const { endOfStem } = this.drawNoteStem(options);
+    this.drawBeamData(options, endOfStem);
   }
 
   drawMeasure(options: MeasureOptions): void {

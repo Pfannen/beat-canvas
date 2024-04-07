@@ -1,7 +1,7 @@
 import { ReactDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas";
 import {
-  ClickDelegate,
   ClickableOverlayContext,
+  MeasureClickDel,
   MeasureIdentifier,
   NoteClickDel,
   NoteIdentifier,
@@ -9,19 +9,16 @@ import {
 import { ClickableOverlay } from ".";
 
 export class MeasureOverlay extends ClickableOverlay<MeasureIdentifier> {
-  private onMeasureClick: ClickDelegate;
+  private onMeasureClick: MeasureClickDel;
   constructor(
     drawRectangle: ReactDrawingCanvas["drawRectangle"],
-    onMeasureClick: ClickDelegate
+    onMeasureClick: MeasureClickDel
   ) {
     super(drawRectangle);
     this.onMeasureClick = onMeasureClick;
   }
   createOverlay(context: ClickableOverlayContext<MeasureIdentifier>): void {
-    const onClick = this.onMeasureClick.bind(
-      null,
-      context.indentifiers.measureIndex
-    );
+    const onClick = this.onMeasureClick.bind(null, context.identifiers);
     this.drawOverlay(context, onClick);
   }
 }
@@ -36,11 +33,7 @@ export class NoteOverlay extends ClickableOverlay<NoteIdentifier> {
     this.onNoteClick = onNoteClick;
   }
   createOverlay(context: ClickableOverlayContext<NoteIdentifier>): void {
-    const onClick = this.onNoteClick.bind(
-      null,
-      context.indentifiers.measureIndex,
-      context.indentifiers.noteIndex
-    );
+    const onClick = this.onNoteClick.bind(null, context.identifiers);
     this.drawOverlay(context, onClick);
   }
 }

@@ -32,13 +32,9 @@ export const drawMockMeasures = (
 };
 
 export const getHTMLCanvas = () => {
-  // const drawingCanvas = new ReactDrawingCanvas("px");
-  const beatCanvas = new ClickableBeatCanvas(
-    "px",
-    () => 1,
-    undefined,
-    (mIndex, yPos) => console.log({ mIndex, yPos })
-  );
+  const onMeasureClick = (identifiers: any) => console.log(identifiers);
+  const onComponentClick = (identifiers: any) => console.log(identifiers);
+  const beatCanvas = new ClickableBeatCanvas("px", undefined, onComponentClick);
   drawMockMeasures(() => beatCanvas);
   return beatCanvas.createCanvas({
     style: { position: "relative", width: "595.28px", height: "841.89px" },
@@ -47,17 +43,17 @@ export const getHTMLCanvas = () => {
 
 const createMockMeasures = () => {
   const measures: Measure[] = [];
-  const measureCount = 10;
+  const measureCount = 1;
   for (let i = 0; i < measureCount; i++) {
     measures.push({
       notes: [
         { x: 0, y: -1, type: "eighth" },
         { x: 0.5, y: 1, type: "eighth" },
-        { x: 1, y: 10, type: "quarter" },
-        { x: 2, y: -1, type: "eighth" },
-        { x: 2.5, y: -1, type: "eighth" },
-        { x: 3, y: -1, type: "eighth" },
-        { x: 3.5, y: -1, type: "eighth" },
+        // { x: 1, y: 10, type: "quarter" },
+        // { x: 2, y: -1, type: "eighth" },
+        // { x: 2.5, y: -1, type: "eighth" },
+        // { x: 3, y: -1, type: "eighth" },
+        // { x: 3.5, y: -1, type: "eighth" },
       ],
     });
   }

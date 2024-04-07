@@ -119,8 +119,6 @@ export class MeasureRenderer {
           const offset = this.measurements.getYFractionOffset(note.y);
           const centerY = noteContainerHeight * offset + measureBottom.y;
           const center = { x: centerX, y: centerY };
-          if (renderData.stemOffset)
-            console.log(noteIndex, renderData.stemOffset);
           beatCanvas.drawNote({
             ...renderData,
             bodyCenter: center,
