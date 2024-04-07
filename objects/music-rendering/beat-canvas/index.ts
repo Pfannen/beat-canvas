@@ -117,7 +117,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
       width,
       height,
     });
-    return { endOfStem: { x: corner.x, y: corner.y + height } };
+    return { x: corner.x, y: corner.y + height };
   }
 
   protected drawMeasureLines(options: MeasureLinesOptions) {
@@ -144,7 +144,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
 
   private drawNoteFlag(): void {}
 
-  private getNoteBodyWidth(bodyHeight: number) {
+  protected getNoteBodyWidth(bodyHeight: number) {
     const { noteBodyAspectRatio } = this.drawOptions.note;
     const width = noteBodyAspectRatio * bodyHeight;
     return width;
@@ -191,10 +191,12 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     }
   }
 
-  drawNote(options: NoteOptions): void {
+  drawNote(options: NoteOptions) {
     this.drawNoteBody(options);
-    const { endOfStem } = this.drawNoteStem(options);
+    const endOfStem = this.drawNoteStem(options);
     this.drawBeamData(options, endOfStem);
+
+    return endOfStem;
   }
 
   drawMeasure(options: MeasureOptions): void {

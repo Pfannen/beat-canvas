@@ -1,7 +1,7 @@
 import { Coordinate } from "@/objects/measurement/types";
 import { MeasureRenderData } from "../music/render-data";
 import { TimeSignature } from "@/components/providers/music/types";
-import { IBeatCanvas } from "./canvas";
+import { IBeatCanvas } from "./canvas/beat-canvas";
 
 export type MeasureDrawData = {
   start: Coordinate;

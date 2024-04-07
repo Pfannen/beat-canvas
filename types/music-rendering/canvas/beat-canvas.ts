@@ -69,6 +69,7 @@ export type NoteOptions = {
   type: NoteType;
   bodyCenter: Coordinate;
   bodyHeight: number;
+  measureIndex: number;
   noteIndex: number;
   // stemWidth: number;
   // stemHeight: number;
@@ -99,9 +100,9 @@ export type RestOptions = {
 };
 
 export interface IBeatCanvas {
-  drawNote(options: NoteOptions): void;
-  drawMeasure(options: MeasureOptions): void;
-  drawRest(options: RestOptions): void;
+  drawNote(options: NoteOptions): any;
+  drawMeasure(options: MeasureOptions): any;
+  drawRest(options: RestOptions): any;
 }
 
 /* **** */

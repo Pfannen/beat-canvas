@@ -7,8 +7,12 @@ import { MeasureLineIteratorDel } from "@/types/music-rendering/canvas/beat-canv
 import {
   MeasureClickDel,
   MeasureCompClickDel,
+  NoteClickDel,
 } from "@/types/music-rendering/canvas/clickable-beat-canvas";
-import { MeasureOverlay } from "./handler-strategies/overlay/strategies";
+import {
+  MeasureOverlay,
+  NoteOverlay,
+} from "./handler-strategies/overlay/strategies";
 import { MeasureComponentAttachment } from "./handler-strategies/attachment";
 
 export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
@@ -16,13 +20,15 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
   constructor(
     unit: UnitMeasurement,
     measureHandler?: MeasureClickDel,
-    mComponentHandler?: MeasureCompClickDel
+    mComponentHandler?: MeasureCompClickDel,
+    noteClickHandler?: NoteClickDel
   ) {
     const drawingCanvas = new ReactDrawingCanvas(unit);
     super(drawingCanvas);
     this.drawRectangle = drawingCanvas.drawRectangle.bind(drawingCanvas);
     this.setDrawMeasure(measureHandler);
     this.setDrawMeasureLines(mComponentHandler);
+    this.setDrawNote(noteClickHandler);
   }
 
   private setDrawMeasure(measureHandler?: MeasureClickDel) {
@@ -74,7 +80,37 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
     }
   }
 
-  // private setDrawNote();
+  private setDrawNote(noteClickHandler?: NoteClickDel) {
+    if (noteClickHandler) {
+      const noteOverlay = new NoteOverlay(this.drawRectangle, noteClickHandler);
+      this.drawNote = (options) => {
+        const endOfStem = super.drawNote(options);
+        const width = this.getNoteBodyWidth(options.bodyHeight);
+        let height;
+        let y, x;
+        if (endOfStem.y < options.bodyCenter.y) {
+          y = options.bodyCenter.y + options.bodyHeight / 2;
+          x = endOfStem.x;
+          height = y - endOfStem.y;
+        } else {
+          y = endOfStem.y;
+          x = endOfStem.x - width;
+          height = y - (options.bodyCenter.y - options.bodyHeight / 2);
+        }
+        const topLeft = { x, y };
+        noteOverlay.createOverlay({
+          topLeft,
+          width,
+          height: -height,
+          identifiers: {
+            measureIndex: options.measureIndex,
+            noteIndex: options.noteIndex,
+          },
+        });
+        return endOfStem;
+      };
+    }
+  }
 
   public createCanvas(options: any) {
     return this.canvas.createCanvas(options);

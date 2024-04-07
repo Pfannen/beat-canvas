@@ -126,6 +126,7 @@ export class MeasureRenderer {
             noteDirection: renderData.noteDirection,
             bodyHeight: spaceHeight,
             noteIndex,
+            measureIndex,
           });
           noteIndex++;
         } else {
