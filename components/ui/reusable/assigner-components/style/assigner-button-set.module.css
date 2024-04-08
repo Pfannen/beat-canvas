@@ -1,0 +1,16 @@
+.set {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.title {
+	margin-bottom: 8px;
+}
+
+.buttons {
+	border-radius: 8px;
+	border: 2px solid black;
+	width: 100%;
+}

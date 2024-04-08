@@ -1,6 +1,8 @@
 import { Measure, TimeSignature } from '@/components/providers/music/types';
 import { Dynamic } from './note-annotations';
 
+export const numberNoteTypes = [1, 2, 4, 8, 16, 32, 64];
+
 export type Pitch = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 
 export type PitchOctave = {
@@ -66,13 +68,19 @@ export type Metronome = {
 	beatsPerMinute: number;
 };
 
-export const staticMeasureAttributesKeys = new Set<
-	keyof MeasureAttributes
->(['timeSignature', 'keySignature', 'clef', 'repeat', 'repeatEndings']);
+export const staticMeasureAttributesKeys = new Set<keyof MeasureAttributes>([
+	'timeSignature',
+	'keySignature',
+	'clef',
+	'repeat',
+	'repeatEndings',
+]);
 
-export const dynamicMeasureAttributesKeys = new Set<
-	keyof MeasureAttributes
->(['metronome', 'dynamic', 'wedge']);
+export const dynamicMeasureAttributesKeys = new Set<keyof MeasureAttributes>([
+	'metronome',
+	'dynamic',
+	'wedge',
+]);
 
 export type StaticMeasureAttributes = {
 	timeSignature: TimeSignature;

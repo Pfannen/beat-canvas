@@ -11,19 +11,13 @@
 		var(--auto, auto-fit),
 		var(--list-item-width, var(--list-item-height, minmax(50px, 1fr)))
 	);
-	grid-template-rows: var(
-		--list-item-height,
-		var(--list-item-width, minmax(50px, 1fr))
-	);
+	grid-auto-rows: var(--list-item-height, auto);
 }
 
 .list.row {
-	grid-template-columns: var(
-		--list-item-width,
-		var(--list-item-height, minmax(50px, 1fr))
-	);
 	grid-template-rows: repeat(
 		var(--auto, auto-fit),
 		var(--list-item-height, var(--list-item-width, minmax(50px, 1fr)))
 	);
+	grid-auto-columns: var(--list-item-width, auto);
 }

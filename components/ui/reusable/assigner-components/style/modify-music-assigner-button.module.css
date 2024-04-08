@@ -1,9 +1,13 @@
 .btn {
+	box-sizing: border-box;
 	border-radius: 4px;
 	padding: 6px;
 	background-color: var(--text-primary);
-	width: calc(100% - 12px); /* Not sure why padding isn't being included in width and height calculation */
-	height: calc(100% - 12px);
+	/* Don't necesarily need the following 2 properties; useful for quickly testing new buttons without having an SVG */
+	color: var(--surface-primary);
+	text-align: center;
+	width: 100%;
+	height: 100%;
 }
 
 .btn * {

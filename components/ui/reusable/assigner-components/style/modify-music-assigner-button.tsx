@@ -1,6 +1,6 @@
 import { FunctionComponent, ReactNode, SVGProps } from 'react';
 import classes from './modify-music-assigner-button.module.css';
-import AssignerButton from './assigner-button';
+import AssignerButton from '../assigner-button';
 import { concatClassNames } from '@/utils/css';
 
 interface ModifyMusicAssignerProps {

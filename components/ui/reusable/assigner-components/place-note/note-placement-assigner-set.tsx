@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
-import classes from './NotePlacementAssignerButtonSet.module.css';
-import AssignerButtonSet from '../assigner-button-set';
+import classes from './NotePlacementAssignerSet.module.css';
+import AssignerButtonSet from '../style/assigner-button-set';
 import NotePlacementAssigner from './buttons/note-placement-assigner';
 import QuarterNoteSVG from '@/components/ui/svg/notes/quarter-note';
 import {
@@ -11,13 +11,16 @@ import { useMusic } from '@/components/providers/music';
 import { Note, NoteType } from '@/components/providers/music/types';
 import { addNote } from '@/components/providers/music/hooks/useMeasures/utils';
 import EighthNoteSVG from '@/components/ui/svg/notes/eigth-note';
+import WholeNoteSVG from '@/components/ui/svg/notes/whole-note';
+import HalfNoteSVG from '@/components/ui/svg/notes/half-note';
+import SixteenthNoteSVG from '@/components/ui/svg/notes/sixteenth-note';
 
-interface NotePlacementAssignerButtonSetProps {
+interface NotePlacementAssignerSetProps {
 	liftExecuter?: ExecuteAssignerDelegate;
 }
 
-const NotePlacementAssignerButtonSet: FunctionComponent<
-	NotePlacementAssignerButtonSetProps
+const NotePlacementAssignerSet: FunctionComponent<
+	NotePlacementAssignerSetProps
 > = ({ liftExecuter }) => {
 	const { invokeMeasureModifier } = useMusic();
 
@@ -41,15 +44,24 @@ const NotePlacementAssignerButtonSet: FunctionComponent<
 	};
 
 	return (
-		<AssignerButtonSet>
+		<AssignerButtonSet title="Note Placement">
+			<NotePlacementAssigner assigner={assigner} noteType="whole">
+				<WholeNoteSVG />
+			</NotePlacementAssigner>
+			<NotePlacementAssigner assigner={assigner} noteType="half">
+				<HalfNoteSVG />
+			</NotePlacementAssigner>
 			<NotePlacementAssigner assigner={assigner} noteType="quarter">
 				<QuarterNoteSVG />
 			</NotePlacementAssigner>
 			<NotePlacementAssigner assigner={assigner} noteType="eighth">
 				<EighthNoteSVG />
 			</NotePlacementAssigner>
+			<NotePlacementAssigner assigner={assigner} noteType="sixteenth">
+				<SixteenthNoteSVG />
+			</NotePlacementAssigner>
 		</AssignerButtonSet>
 	);
 };
 
-export default NotePlacementAssignerButtonSet;
+export default NotePlacementAssignerSet;

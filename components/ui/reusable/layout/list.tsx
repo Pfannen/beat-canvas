@@ -12,6 +12,7 @@ export type LayoutListCSSProps = {
 	'--list-item-height': string;
 	'--list-gap': string;
 	'--list-padding': string;
+	'--auto': 'auto-fit' | 'auto-fill';
 };
 
 interface LayoutListProps extends HTMLAttributes<HTMLUListElement> {

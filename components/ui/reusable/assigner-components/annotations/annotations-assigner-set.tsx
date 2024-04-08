@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
-import classes from './AnnotationsAssignerButtonSet.module.css';
-import AssignerButtonSet from '../assigner-button-set';
+import classes from './AnnotationsAssignerSet.module.css';
+import AssignerButtonSet from '../style/assigner-button-set';
 import AccentAssigner from './buttons/accent';
 import { NoteAnnotationAssigner } from '@/types/modify-score';
 import { useMusic } from '@/components/providers/music';
@@ -11,16 +11,16 @@ import {
 	PlacementData,
 } from '@/types/modify-score/assigner';
 
-interface AnnotationsAssignerButtonSetProps {
+interface AnnotationsAssignerSetProps {
 	liftExecuter?: ExecuteAssignerDelegate;
 	selectedNote?: { measureIndex: number; noteIndex: number };
 }
 
-const AnnotationsAssignerButtonSet: FunctionComponent<
-	AnnotationsAssignerButtonSetProps
+const AnnotationsAssignerSet: FunctionComponent<
+	AnnotationsAssignerSetProps
 > = ({ liftExecuter, selectedNote }) => {
 	const { invokeMeasureModifier } = useMusic();
-	
+
 	const annotationAssigner: NoteAnnotationAssigner = (key, value?) => {
 		console.log({ key, value });
 
@@ -31,7 +31,7 @@ const AnnotationsAssignerButtonSet: FunctionComponent<
 					modifyNoteAnnotationAdapter(
 						key,
 						value,
-						placementData.measureIndex,
+						selectedNote.measureIndex,
 						selectedNote.noteIndex
 					)
 				);
@@ -51,11 +51,11 @@ const AnnotationsAssignerButtonSet: FunctionComponent<
 	};
 
 	return (
-		<AssignerButtonSet>
+		<AssignerButtonSet title={'Note Annotations'}>
 			<AccentAssigner assigner={annotationAssigner} />
 			<DottedAssigner assigner={annotationAssigner} />
 		</AssignerButtonSet>
 	);
 };
 
-export default AnnotationsAssignerButtonSet;
+export default AnnotationsAssignerSet;
