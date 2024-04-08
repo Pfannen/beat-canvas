@@ -1,23 +1,23 @@
-import { Measure, TimeSignature } from '@/components/providers/music/types';
-import { Dynamic } from './note-annotations';
+import { Measure, TimeSignature } from "@/components/providers/music/types";
+import { Dynamic } from "./note-annotations";
 
-export type Pitch = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
+export type Pitch = "A" | "B" | "C" | "D" | "E" | "F" | "G";
 
 export type PitchOctave = {
-	pitch: Pitch;
-	octave: number;
-	accidental?: 'b' | '#';
+  pitch: Pitch;
+  octave: number;
+  accidental?: "b" | "#";
 };
 
 export type MusicPart = {
-	attributes: MusicPartAttributes;
-	measures: Measure[];
+  attributes: MusicPartAttributes;
+  measures: Measure[];
 };
 
 export type MusicPartAttributes = {
-	instrument: string;
-	id: string;
-	name: string;
+  instrument: string;
+  id: string;
+  name: string;
 };
 
 export type Clef =
@@ -57,13 +57,13 @@ export type RepeatEndings = {
 };
 
 export type MusicScore = {
-	title: string;
-	parts: MusicPart[];
+  title: string;
+  parts: MusicPart[];
 };
 
 export type Metronome = {
-	beatNote: number;
-	beatsPerMinute: number;
+  beatNote: number;
+  beatsPerMinute: number;
 };
 
 export const staticMeasureAttributesKeys = new Set<
@@ -110,8 +110,15 @@ export type TemporalMeasureAttributes = {
 };
 
 export type MeasureAttributesMXML = MeasureAttributes & {
-	quarterNoteDivisions: number;
+  quarterNoteDivisions: number;
 };
+
+
+export type MeasureTimeSignautreCallback = (
+  measureIndex: number
+) => TimeSignature;
+
+export type MeasureWidthCallback = (measureIndex: number) => number;
 
 export type TemporalMeasureAttributesMXML = TemporalMeasureAttributes &
 	MeasureAttributesMXML;

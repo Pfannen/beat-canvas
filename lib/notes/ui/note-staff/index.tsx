@@ -6,6 +6,7 @@ import AbsoluteContainer from "../absolute-container";
 
 type NoteStaffProps = {
   heightMultiplier: number;
+  widthMultiplier: number;
   direction: NoteDirection;
   children?: ReactNode;
   hide?: boolean;
@@ -13,6 +14,7 @@ type NoteStaffProps = {
 
 const NoteStaff: FunctionComponent<NoteStaffProps> = ({
   heightMultiplier,
+  widthMultiplier,
   direction,
   children,
   hide,
@@ -24,6 +26,7 @@ const NoteStaff: FunctionComponent<NoteStaffProps> = ({
       style={
         {
           "--height": fractionToPercent(heightMultiplier),
+          "--width": fractionToPercent(widthMultiplier),
         } as CSSProperties
       }
       {...getAxisInfo(direction)}

@@ -3,8 +3,10 @@ import { FunctionComponent } from "react";
 import { useMusic } from "@/components/providers/music";
 import DisplayMeasure from "./display-measure";
 import { concatClassNames } from "@/utils/css";
-import Measurement from "@/objects/music/measurement";
 import { getMeasureItems } from "./utils";
+import Measurement from "@/objects/measurement";
+
+const aspectRatio = 4 / 3;
 
 const measurement = new Measurement(5, 0.25, 1);
 
@@ -26,9 +28,8 @@ const DisplayMeasures: FunctionComponent<DisplayMeasuresProps> = ({
   const { measures } = useMusic();
   const linePercent = measurement.getLineFraction() * 100;
   const spacePercent = measurement.getSpaceFraction() * 100;
-  const padding =
-    measurement.getAboveBelowLines() * linePercent +
-    measurement.getAboveBelowSpaces() * spacePercent;
+  const { lineCount, spaceCount } = measurement.getAboveBelowCounts();
+  const padding = lineCount * linePercent + spaceCount * spacePercent;
   const bodyPercent = 1 - padding * 2;
   const noteComponents = getMeasureItems(measures, measurement);
   return (

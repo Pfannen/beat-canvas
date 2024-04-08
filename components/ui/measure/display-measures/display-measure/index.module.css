@@ -1,6 +1,7 @@
 .container {
   position: relative;
   height: 100%;
+  aspect-ratio: 4/3;
   min-width: 300px;
   max-width: 500px;
 }
