@@ -6,7 +6,8 @@ export type NoteAnnotation =
 	| 'staccato'
 	| 'slur'
 	| 'dynamic'
-	| 'accidental';
+	| 'accidental'
+	| 'chord';
 
 export type Slur = 'start' | 'stop';
 
@@ -30,14 +31,15 @@ export type NoteAnnotations = {
 	accent?: Accent;
 	dynamic?: Dynamic;
 	accidental?: Accidental;
+	chord?: true;
 };
 
-export type PersistentNotePlayingAttributes = {
+export type PersistentInstrumentAttributes = {
 	instrumentProps: InstrumentProps;
 	velocity: number;
 };
 
-export type PartialPNPA = {
+export type PartialPIA = {
 	instrumentProps: Partial<InstrumentProps>;
 	velocity?: number;
 };
@@ -46,9 +48,9 @@ export type NoteAudioAttributes = {
 	pitchOctave: PitchOctave;
 	duration: number;
 	persistentAttributes: {
-		cur: PersistentNotePlayingAttributes;
-		applyToNote: PartialPNPA;
-		persist: PartialPNPA;
+		cur: PersistentInstrumentAttributes;
+		applyToNote: PartialPIA;
+		persist: PartialPIA;
 	};
 };
 

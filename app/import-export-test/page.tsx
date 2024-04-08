@@ -2,27 +2,41 @@
 
 import ImportExportPage from '@/components/ui/import-export-test';
 import classes from './index.module.css';
-import { FunctionComponent, useEffect, useRef } from 'react';
+import { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { useMusic } from '@/components/providers/music';
 import VolumeManager from '@/components/ui/volume-manager';
 import { PlaybackManager } from '@/utils/audio/playback';
+import { VolumePair } from '@/types/audio/volume';
+import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
 
 type ImportExportTestPageProps = {};
 
 const ImportExportTestPage: FunctionComponent<
 	ImportExportTestPageProps
 > = () => {
-	const playbackManager = useRef(new PlaybackManager());
-	const music = useMusic();
-
-	useEffect(() => {
-		playbackManager.current.setMusicScore(music.musicScore);
-	}, [music.musicScore]);
+	const {
+		setScore,
+		setImportedAudio,
+		playbackManager,
+		volumeModifier,
+		volumePairs,
+	} = usePlayback();
+	const { musicScore, setNewMusicScore, replaceMeasures } = useMusic();
 
 	return (
 		<>
-			<ImportExportPage playbackManager={playbackManager.current} />
-			<VolumeManager volumeModifier={playbackManager.current} />
+			<ImportExportPage
+				setScore={(score) => {
+					setScore(score);
+					setNewMusicScore(score);
+				}}
+				setImportedAudio={setImportedAudio}
+				play={playbackManager.play}
+			/>
+			<VolumeManager
+				volumePairs={volumePairs}
+				modifyVolume={volumeModifier.modifyVolume}
+			/>
 		</>
 	);
 };

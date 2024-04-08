@@ -64,17 +64,23 @@ const getMeasuresJS = (part: Element) => {
 
 	const measures: Measure[] = [];
 	const curAttr = Helper.getDefaultMeasureAttributes();
+	// to be completed attributes (wedge & repeats)
+	const tbcAttr = {};
 
 	for (let i = 0; i < measuresXML.length; i++) {
 		const measureXML = measuresXML[i];
-		const measureDetails = Helper.getMeasureDetails(measureXML, curAttr);
+		const { temporalAttributes, notes, staticAttributes } =
+			Helper.getMeasureDetails(measureXML, i, curAttr, tbcAttr);
 
 		const measure: Measure = {
-			notes: measureDetails.notes,
+			notes,
 		};
 
-		if (measureDetails.newTemporalAttributes.length > 0) {
-			measure.attributes = measureDetails.newTemporalAttributes;
+		if (temporalAttributes.length > 0) {
+			measure.temporalAttributes = temporalAttributes;
+		}
+		if (Object.keys(staticAttributes).length > 0) {
+			measure.staticAttributes = staticAttributes;
 		}
 
 		measures.push(measure);
@@ -112,6 +118,8 @@ export const musicXMLToJSON = (musicXML: XMLDocument) => {
 		title: Helper.getScoreTitle(docEl) || 'Unknown Title',
 		parts: partsJS,
 	};
+
+	console.log(musicScore);
 
 	return musicScore;
 };

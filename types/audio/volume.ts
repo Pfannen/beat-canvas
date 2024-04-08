@@ -21,3 +21,8 @@ export type VolumeManagerParams = {
 	maxDecibels?: number;
 	defaultVolumePct?: number;
 };
+
+export type VolumePair = {
+	audioId: string;
+	volumePercentage: number;
+};

@@ -4,9 +4,11 @@ import {
 	VolumeManagerParams,
 	VolumeNode,
 	VolumeNodeMap,
+	VolumePair,
 } from '@/types/audio/volume';
 import { Dynamic } from '@/types/music/note-annotations';
 import { Volume } from 'tone';
+import { isOnClient } from '..';
 
 export class VolumeManager implements IVolumeNodeModifier, IVolumeValueModifer {
 	private minDecibels = -30;
@@ -21,12 +23,15 @@ export class VolumeManager implements IVolumeNodeModifier, IVolumeValueModifer {
 	masterVolumeId = 'master';
 
 	private volumeMap: VolumeNodeMap = {};
-	private masterVolume = new Volume(this.defaultDecibels).toDestination();
+	private masterVolume?: Volume;
 
 	constructor(volumeParams?: VolumeManagerParams) {
 		if (volumeParams) Object.assign(this, volumeParams);
-		this.masterVolume.volume.value = this.defaultDecibels;
-		this.volumeMap[this.masterVolumeId] = this.masterVolume;
+		if (isOnClient()) {
+			this.masterVolume = new Volume(this.defaultDecibels).toDestination();
+			this.masterVolume.volume.value = this.defaultDecibels;
+			this.volumeMap[this.masterVolumeId] = this.masterVolume;
+		}
 	}
 
 	static getVolumeValue = (
@@ -43,6 +48,12 @@ export class VolumeManager implements IVolumeNodeModifier, IVolumeValueModifer {
 		const volume = volumeWithOffset - maxDecibelOffset;
 
 		return volume;
+	};
+
+	decibelsToPercentage = (decibels: number) => {
+		const offset = this.minDecibels * -1;
+		const max = this.maxDecibels + offset;
+		return (decibels + offset) / max;
 	};
 
 	modifyVolume = (audioId: string, volumePct: number) => {
@@ -63,13 +74,26 @@ export class VolumeManager implements IVolumeNodeModifier, IVolumeValueModifer {
 	};
 
 	addVolumeNode = (audioId: string, volumeNode: VolumeNode) => {
-		volumeNode.connect(this.masterVolume);
+		if (this.masterVolume) volumeNode.connect(this.masterVolume);
 		volumeNode.volume.value = this.defaultDecibels;
 		this.volumeMap[audioId] = volumeNode;
 	};
 
+	getVolumeNode = (audioId: string) => this.volumeMap[audioId];
+
 	removeVolumeNode = (audioId: string) => {
+		if (audioId === this.masterVolumeId) return;
 		delete this.volumeMap[audioId];
+	};
+
+	getVolumePairs = () => {
+		const volumePairs: VolumePair[] = Object.keys(this.volumeMap).map((key) => {
+			const node = this.volumeMap[key];
+			const volumePercentage = this.decibelsToPercentage(node.volume.value);
+			return { audioId: key, volumePercentage: volumePercentage };
+		});
+
+		return volumePairs;
 	};
 }
 

@@ -33,15 +33,17 @@ const durationImportHelper: NoteImportHelper = (nD, el) => {
 
 const accidentalMarkImportHelper: NoteImportAnnotationsHelper = (a, el) => {
 	if (!verifyTagName(el, 'accidental-mark') || !el.textContent) return;
-
 	a.accidental = el.textContent as Accidental;
 };
 
 const accidentalImportHelper: NoteImportHelper = (nD, el) => {
 	if (!verifyTagName(el, 'accidental') || !el.textContent) return;
-
-	if (!nD.annotations) nD.annotations = {};
 	nD.annotations.accidental = el.textContent as Accidental;
+};
+
+const chordImportHelper: NoteImportHelper = (nD, el) => {
+	if (!verifyTagName(el, 'chord')) return;
+	nD.annotations.chord = true;
 };
 
 const articulationsImportHelper: NoteImportAnnotationsHelper = (a, el) => {
@@ -101,7 +103,6 @@ const notationsImportHelper: NoteImportHelper = (nD, el) => {
 		return;
 	}
 
-	if (!nD.annotations) nD.annotations = {};
 	const { children } = el;
 	for (let i = 0; i < children.length; i++) {
 		const child = children[i];
@@ -116,6 +117,7 @@ export const noteImportHelperMap: NoteImportHelperMap = {
 	duration: durationImportHelper,
 	notations: notationsImportHelper,
 	accidental: accidentalImportHelper,
+	chord: chordImportHelper,
 };
 
 export const notationsImportHelperMap: NoteImportAnnotationsHelperMap = {

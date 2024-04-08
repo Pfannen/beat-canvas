@@ -4,6 +4,7 @@ import {
 	MusicPartAttributes,
 	Pitch,
 	PitchOctave,
+	TemporalMeasureAttributes,
 } from '@/types/music';
 import { getElements, getSingleElement, validateElements } from './xml-helpers';
 import { convertImportedDuration, musicXMLToClef } from '@/utils/musicXML';
@@ -11,9 +12,11 @@ import { Measure, TimeSignature } from '@/components/providers/music/types';
 import {
 	MeasureImportDetails,
 	NoteImportDetails,
+	ToBeCompletedMeasureAttributes,
 } from '@/types/import-export/import';
 import { noteImportHelperMap } from './note-import-helpers';
 import { measureImportHelperMap } from './measure-import-helpers';
+import { assignTemporalMeasureAttributes } from '@/utils/music/measures/measure-attributes';
 
 class ImportMusicXMLHelper {
 	static getScoreTitle = (root: Element) => {
@@ -201,7 +204,7 @@ class ImportMusicXMLHelper {
 	};
 
 	static getNoteDetails = (noteXML: Element) => {
-		const noteDetails: NoteImportDetails = {};
+		const noteDetails: NoteImportDetails = { annotations: {} };
 		const { children } = noteXML;
 
 		for (let i = 0; i < children.length; i++) {
@@ -216,31 +219,53 @@ class ImportMusicXMLHelper {
 
 	static getMeasureDetails = (
 		measureXML: Element,
-		measureAttributes: MeasureAttributesMXML
+		curMeasureNumber: number,
+		measureAttributes: MeasureAttributesMXML,
+		tbcAttributes: ToBeCompletedMeasureAttributes
 	) => {
-		const measureDetails: MeasureImportDetails = {
+		const mDetails: MeasureImportDetails = {
 			currentAttributes: measureAttributes,
-			newTemporalAttributes: [],
+			tbcAttributes,
+			//newTemporalAttributes: [],
+			newStaticAttributes: {},
+			newDynamicAttributes: {},
 			notes: [],
 			curX: 0,
+			curMeasureNumber,
+			prevNoteDur: 0,
 		};
 
+		const temporalAttributes: TemporalMeasureAttributes[] = [];
 		const { children } = measureXML;
 		for (let i = 0; i < children.length; i++) {
 			const child = children[i];
 			if (child.tagName in measureImportHelperMap) {
-				measureImportHelperMap[child.tagName](measureDetails, child);
+				measureImportHelperMap[child.tagName](mDetails, child);
 			}
+			Object.assign(mDetails.currentAttributes, mDetails.newStaticAttributes);
+
+			assignTemporalMeasureAttributes(
+				temporalAttributes,
+				mDetails.newDynamicAttributes,
+				mDetails.curX
+			);
+			Object.assign(mDetails.currentAttributes, mDetails.newDynamicAttributes);
+			mDetails.newDynamicAttributes = {};
 
 			// TODO: Having equal-to can screw up backup elements, look into this
 			if (
-				measureDetails.curX >
-				measureDetails.currentAttributes.timeSignature.beatsPerMeasure
+				mDetails.curX > mDetails.currentAttributes.timeSignature.beatsPerMeasure
 			)
 				break;
 		}
 
-		return measureDetails;
+		return {
+			temporalAttributes,
+			notes: mDetails.notes,
+			staticAttributes: mDetails.newStaticAttributes,
+			currentAttributes: mDetails.currentAttributes,
+			tbcAttributes,
+		};
 	};
 }
 

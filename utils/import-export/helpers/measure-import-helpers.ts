@@ -1,10 +1,19 @@
 import {
+	HelperAttributesArg,
 	MeasureAttributesImportHelper,
 	MeasureAttributesImportHelperMap,
 	MeasureImportHelper,
 	MeasureImportHelperMap,
 } from '@/types/import-export/import';
-import { MeasureAttributesMXML, Metronome, Pitch } from '@/types/music';
+import {
+	MeasureAttributesMXML,
+	Metronome,
+	Pitch,
+	Repeat,
+	RepeatEndingType,
+	RepeatEndings,
+	Wedge,
+} from '@/types/music';
 import {
 	getSingleElement,
 	validateElements,
@@ -14,8 +23,10 @@ import Helper from './ImportMusicXMLHelper';
 import { durationToNoteType, getYPosFromNote } from '@/utils/music';
 import { convertImportedDuration, musicXMLToClef } from '@/utils/musicXML';
 import { Note } from '@/components/providers/music/types';
-import { assignTemporalMeasureAttributes } from '@/utils/music/measure-attributes';
+import { assignTemporalMeasureAttributes } from '@/utils/music/measures/measure-attributes';
 import { Dynamic } from '@/types/music/note-annotations';
+
+// #region misc attributes
 
 const noteImportHelper: MeasureImportHelper = (mD, el) => {
 	if (!verifyTagName(el, 'note')) return;
@@ -43,10 +54,22 @@ const noteImportHelper: MeasureImportHelper = (mD, el) => {
 		};
 		if (annotations && Object.keys(annotations).length > 0)
 			note.annotations = annotations;
+
+		// If the current note is a chord, its x position isn't mD.curX because the first note in the chord
+		// already advanced mD.curX and a note marked as a chord doesn't advance the x position
+		if (annotations.chord) {
+			note.x = mD.curX - mD.prevNoteDur;
+		}
+
 		mD.notes.push(note);
 	}
 
-	mD.curX += trueDuration;
+	// If the note is a chord, it doesn't advance the x position
+	// That's done by the first note of the chord, which doesn't have the chord annotation
+	if (!annotations.chord) {
+		mD.curX += trueDuration;
+		mD.prevNoteDur = trueDuration;
+	}
 };
 
 const metronomeImportHelper: MeasureImportHelper = (mD, el) => {
@@ -62,9 +85,8 @@ const metronomeImportHelper: MeasureImportHelper = (mD, el) => {
 		beatNote: 4,
 		beatsPerMinute: +perMinuteXML!.textContent!,
 	};
-	mD.currentAttributes.metronome = metronome;
 
-	assignTemporalMeasureAttributes(mD.newTemporalAttributes, { metronome }, mD.curX);
+	mD.newDynamicAttributes.metronome = metronome;
 };
 
 const directionImportHelper: MeasureImportHelper = (mD, el) => {
@@ -105,9 +127,29 @@ const soundImportHelper: MeasureImportHelper = (mD, el) => {
 		beatsPerMinute: tempo,
 	};
 
-	mD.currentAttributes.metronome = metronome;
+	mD.newDynamicAttributes.metronome = metronome;
+};
 
-	assignTemporalMeasureAttributes(mD.newTemporalAttributes, { metronome }, mD.curX);
+const wedgeImportHelper: MeasureImportHelper = (mD, el) => {
+	if (!verifyTagName(el, 'wedge') || !el.hasAttribute('type')) return;
+
+	const wedgeType = el.getAttribute('type');
+	if (wedgeType === 'stop') {
+		if (!('wedge' in mD.tbcAttributes)) return;
+
+		mD.tbcAttributes.wedge!.measureEnd = mD.curMeasureNumber;
+		mD.tbcAttributes.wedge!.xEnd = mD.curX;
+		delete mD.tbcAttributes.wedge;
+	} else {
+		const wedge: Wedge = {
+			crescendo: wedgeType === 'crescendo',
+			measureEnd: mD.curMeasureNumber,
+			xEnd: mD.curX,
+		};
+
+		mD.tbcAttributes.wedge = wedge;
+		mD.newDynamicAttributes.wedge = wedge;
+	}
 };
 
 const backupImportHelper: MeasureImportHelper = (mD, el) => {
@@ -124,6 +166,8 @@ const backupImportHelper: MeasureImportHelper = (mD, el) => {
 		duration,
 		mD.currentAttributes.timeSignature.beatNote
 	);
+	/* console.log('Backup curX: ' + mD.curX);
+	console.log('Backup notes parsed: ' + mD.notes.length); */
 	mD.curX -= trueDuration;
 
 	//mD.curX = mD.currentAttributes.timeSignature.beatsPerMeasure;
@@ -133,9 +177,121 @@ const dynamicsImportHelper: MeasureImportHelper = (mD, el) => {
 	if (!verifyTagName(el, 'dynamics') || !el.children.length) return;
 
 	const dynamic = el.children[0].tagName as Dynamic;
-	mD.currentAttributes.dynamic = dynamic;
-	assignTemporalMeasureAttributes(mD.newTemporalAttributes, { dynamic }, mD.curX);
+	mD.newDynamicAttributes.dynamic = dynamic;
+	/* mD.currentAttributes.dynamic = dynamic;
+	assignTemporalMeasureAttributes(
+		mD.newTemporalAttributes,
+		{ dynamic },
+		mD.curX
+	); */
 };
+
+const barlineImportHelper: MeasureImportHelper = (mD, el) => {
+	if (!verifyTagName(el, 'barline') || !el.children.length) return;
+
+	const { children } = el;
+	for (let i = 0; i < children.length; i++) {
+		const child = children[i];
+		if (child.tagName in measureImportHelperMap) {
+			measureImportHelperMap[child.tagName](mD, child);
+		}
+	}
+};
+
+const repeatImportHelper: MeasureImportHelper = (mD, el) => {
+	if (!verifyTagName(el, 'repeat') || !el.hasAttribute('direction')) return;
+
+	const forward = el.getAttribute('direction') === 'forward';
+
+	let repeat: Repeat;
+	if (forward) {
+		repeat = { forward };
+		mD.tbcAttributes.repeatMeasureNumber = mD.curMeasureNumber;
+		// Found a forward repeat, measures up until a backward repeat can be an ending
+		mD.tbcAttributes.repeatEndings = {};
+	} else {
+		if (!('repeatMeasureNumber' in mD.tbcAttributes)) return;
+
+		let repeatCount = 1;
+		if (el.hasAttribute('times')) repeatCount = +el.getAttribute('times')!;
+
+		const jumpMeasure = mD.tbcAttributes.repeatMeasureNumber!;
+		repeat = {
+			forward: false,
+			jumpMeasure,
+			repeatCount,
+			remainingRepeats: repeatCount,
+		};
+
+		// Found a backward repeat, measures up until the next forward repeat can't be an ending
+		if (mD.tbcAttributes.repeatEndings) {
+			if (Object.keys(mD.tbcAttributes.repeatEndings).length === 0) {
+				delete mD.tbcAttributes.repeatEndings;
+			}
+		}
+		delete mD.tbcAttributes.repeatMeasureNumber;
+	}
+
+	mD.newStaticAttributes.repeat = repeat;
+	/* assignTemporalMeasureAttributes(
+		mD.newTemporalAttributes,
+		{ repeat },
+		mD.curX
+	); */
+};
+
+// TODO: Address multiple numbers being in the 'number' attribute
+const endingImportHelper: MeasureImportHelper = (mD, el) => {
+	// In the repeat import helper, we provide and remove a storage location for endings
+	// depending on the type of repeat found
+	// If tbcAttributes doesn't have the repeatEndings key, that means this ending element shouldn't be parsed
+	if (
+		!verifyTagName(el, 'ending') ||
+		!el.hasAttribute('number') ||
+		!el.hasAttribute('type') ||
+		!mD.tbcAttributes.repeatEndings
+	)
+		return;
+
+	const endingNumber = +el.getAttribute('number')!;
+	const type = el.getAttribute('type')! as RepeatEndingType;
+
+	// TODO: After parsing multiple numbers from the number attribute, loop through them
+	// and make repeatEndings[endingNumber] point to the created ending
+	if (type === 'start') {
+		const repeatEndings: RepeatEndings = {
+			[endingNumber]: mD.curMeasureNumber,
+		};
+		mD.tbcAttributes.repeatEndings[endingNumber] = repeatEndings;
+
+		// (if we encounter an ending, we understand that as the whole measure being in that ending)
+		mD.newStaticAttributes.repeatEndings = repeatEndings;
+		/* assignTemporalMeasureAttributes(
+			mD.newTemporalAttributes,
+			{ repeatEndings },
+			mD.currentAttributes.timeSignature.beatsPerMeasure
+		); */
+	} else if (type === 'stop' || type === 'discontinue') {
+		// Check if endingNumber is present in repeatEndings
+		// Then check if endingNumber is present in the repeatEndings that endingNumber was mapped to
+		// RepeatEndings are modeled with an object because a measure can be apart of multiple endings
+		if (
+			!(endingNumber in mD.tbcAttributes.repeatEndings) ||
+			!(endingNumber in mD.tbcAttributes.repeatEndings[endingNumber])
+		)
+			return;
+
+		mD.tbcAttributes.repeatEndings[endingNumber][endingNumber] =
+			mD.curMeasureNumber;
+		delete mD.tbcAttributes.repeatEndings[endingNumber];
+	}
+};
+
+// #endregion
+
+// -----------------------------------------------------------------------------
+
+// #region attributes children
 
 const divisionsImportHelper: MeasureAttributesImportHelper = (
 	a,
@@ -154,7 +310,7 @@ const timeSignatureImportHelper: MeasureAttributesImportHelper = (a, el) => {
 
 	if (!validateElements([beatsXML, beatTypeXML], true)) return null;
 
-	a.timeSignature = {
+	a.static.timeSignature = {
 		beatNote: +beatTypeXML!.textContent!,
 		beatsPerMeasure: +beatsXML!.textContent!,
 	};
@@ -167,7 +323,7 @@ const clefImportHelper: MeasureAttributesImportHelper = (a, el) => {
 	const lineXML = getSingleElement(el, 'line');
 	if (!validateElements([signXML, lineXML], true)) return null;
 
-	a.clef = musicXMLToClef(
+	a.static.clef = musicXMLToClef(
 		signXML!.textContent! as Pitch,
 		+lineXML!.textContent!
 	);
@@ -178,24 +334,36 @@ const keySignatureImportHelper: MeasureAttributesImportHelper = (a, el) => {
 
 	const fifthsXML = getSingleElement(el, 'fifths', true);
 	if (!fifthsXML) return;
-	a.keySignature = +fifthsXML!.textContent!;
+	a.static.keySignature = +fifthsXML!.textContent!;
 };
 
+// #endregion
+
 const attributesImportHelper: MeasureImportHelper = (mD, el) => {
-	const newAttributes: Partial<MeasureAttributesMXML> = {};
+	const attributes: HelperAttributesArg = {
+		static: mD.newStaticAttributes,
+		dynamic: mD.newDynamicAttributes,
+	};
 
 	const { children } = el;
 	for (let i = 0; i < children.length; i++) {
 		const child = children[i];
 		if (child.tagName in attributesImportHelperMap) {
-			attributesImportHelperMap[child.tagName](newAttributes, child);
+			attributesImportHelperMap[child.tagName](attributes, child);
 		}
 	}
 
-	Object.assign(mD.currentAttributes, newAttributes);
-	delete newAttributes.quarterNoteDivisions;
+	if (attributes.quarterNoteDivisions)
+		mD.currentAttributes.quarterNoteDivisions = attributes.quarterNoteDivisions;
 
-	assignTemporalMeasureAttributes(mD.newTemporalAttributes, newAttributes, mD.curX);
+	/* Object.assign(mD.currentAttributes, newAttributes);
+	delete newAttributes.quarterNoteDivisions; */
+
+	/* assignTemporalMeasureAttributes(
+		mD.newTemporalAttributes,
+		newAttributes,
+		mD.curX
+	); */
 };
 
 // TODO: Extract direction-specifc helpers into their own map
@@ -208,6 +376,10 @@ export const measureImportHelperMap: MeasureImportHelperMap = {
 	sound: soundImportHelper,
 	backup: backupImportHelper,
 	dynamics: dynamicsImportHelper,
+	barline: barlineImportHelper,
+	repeat: repeatImportHelper,
+	wedge: wedgeImportHelper,
+	ending: endingImportHelper,
 };
 
 export const attributesImportHelperMap: MeasureAttributesImportHelperMap = {

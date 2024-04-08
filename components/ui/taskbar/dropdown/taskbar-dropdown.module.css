@@ -1,0 +1,41 @@
+.dropdown {
+	width: fit-content;
+	min-width: 150px;
+	box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.192);
+	border-radius: 8px;
+	/* border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px; */
+	padding-inline: 12px;
+	background-color: white;
+}
+
+.header {
+	padding-block: 12px;
+}
+
+.selections {
+	display: flex;
+	flex-direction: column;
+	padding-block: 8px;
+	gap: 8px;
+	width: 100%;
+	box-shadow: 0 4px 2px 2px rgba(0, 0, 0, 0.192);
+	border-radius: 8px;
+	border-top-right-radius: 0px;
+	border-top-left-radius: 0px;
+	border-top: 1px solid black;
+	padding-inline: 12px;
+	background-color: white;
+	top: -6px;
+}
+
+.selections svg {
+	width: 20px;
+	height: 20px;
+}
+
+.selections > * {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}

@@ -1,4 +1,4 @@
-export const fractionToPercent = (val: number) => numToUnit(val, "%");
+export const fractionToPercent = (val: number) => numToUnit(val, '%');
 
 export const numToUnit = (val: number, unit: "px" | "%" | "deg") => {
   if (unit === "%") {
@@ -13,3 +13,5 @@ export const numIsUndefined = <T>(val?: number) =>
 export const getDecimalPortion = (val: number) => val % 1;
 
 export const numIsEven = (num: number) => num % 2 === 0;
+
+export const isOnClient = () => typeof window !== 'undefined';

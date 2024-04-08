@@ -14,7 +14,7 @@ interface AudioTestProps {}
 const AudioTest: FunctionComponent<AudioTestProps> = () => {
 	return (
 		<>
-			<TaskbarButton onClick={playMusicScore.bind(null, ohWhatANightScore)}>
+			<TaskbarButton onClick={playMusicScore.bind(null, ohWhatANightScore, {})}>
 				Play
 			</TaskbarButton>
 		</>
