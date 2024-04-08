@@ -22,8 +22,4 @@ export type MeasureComponentValues<T = number> = { line: T; space: T };
 
 export type BeatCanvasDel = (pageNumber: number) => IBeatCanvas;
 
-export type MusicUnitConverter = (
-  xValue: number,
-  yValue: number,
-  aspectRatio: number
-) => { xValue: number; yValue: number };
+export type MusicUnitConverter = (xValue: number) => number;

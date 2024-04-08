@@ -2,6 +2,7 @@ import {
   MusicDimensionData,
   MusicDimensionParams,
 } from "@/types/music-rendering/music-layout";
+import { PageDimensionParams } from "./page-dimension-params";
 
 export class MusicLayout {
   static getDimensions(params: MusicDimensionParams): MusicDimensionData {
@@ -59,5 +60,13 @@ export class MusicLayout {
         },
       },
     };
+  }
+
+  static getGenericSheetMusicDimensions() {
+    return this.getDimensions(PageDimensionParams.genericSheetMusic());
+  }
+
+  static getHomePageDimensions(aspectRatio: number) {
+    return this.getDimensions(PageDimensionParams.homePageMusic(aspectRatio));
   }
 }

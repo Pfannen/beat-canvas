@@ -20,6 +20,18 @@ export class PageDimensionParams {
       measurePaddingFractions: { top: 0.1, bottom: 0.2 },
     };
   }
+
+  static homePageMusic(aspectRatio: number): MusicDimensionParams {
+    const pageDimensions = { width: aspectRatio * 100, height: 100 };
+    return {
+      pageDimensions,
+      musicMargins: { top: 0, bottom: 0, left: 0, right: 0 },
+      minHeaderSpace: 0,
+      measuresPerLine: 3,
+      linesPerPage: 7,
+      measurePaddingFractions: { top: 0.1, bottom: 0.2 },
+    };
+  }
 }
 
 type MarginSize = "small" | "medium" | "large";

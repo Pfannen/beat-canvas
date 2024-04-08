@@ -31,14 +31,9 @@ export const drawMockMeasures = (
   renderMeasures(createMockMeasures(), getBeatCanvasForPage);
 };
 
-const notes = [];
-
-export const getHTMLCanvas = () => {
-  const onMeasureClick = (identifiers: any) => console.log(identifiers);
-  const onComponentClick = (identifiers: any) => console.log(identifiers);
-  // const onNoteClick = (identifiers: any) => ({onClick});
+export const getHTMLCanvas = (aspectRatio: number) => {
   const beatCanvas = new ClickableBeatCanvas(
-    "px",
+    "%",
     undefined,
     undefined,
     (identifiers) => {
@@ -49,25 +44,34 @@ export const getHTMLCanvas = () => {
       };
     }
   );
-  drawMockMeasures(() => beatCanvas);
+  const music = new Music();
+  music.setMeasures(createMockMeasures());
+  const renderer = new MeasureRenderer(
+    music,
+    6,
+    MusicLayout.getHomePageDimensions(aspectRatio),
+    () => beatCanvas,
+    (xValue) => xValue / aspectRatio
+  );
+  renderer.render();
   return beatCanvas.createCanvas({
-    style: { position: "relative", width: "595.28px", height: "841.89px" },
+    style: { position: "relative", width: "100%", height: "100%" },
   });
 };
 
 const createMockMeasures = () => {
   const measures: Measure[] = [];
-  const measureCount = 1;
+  const measureCount = 2;
   for (let i = 0; i < measureCount; i++) {
     measures.push({
       notes: [
         { x: 0, y: -1, type: "eighth" },
         { x: 0.5, y: 1, type: "eighth" },
-        // { x: 1, y: 10, type: "quarter" },
-        // { x: 2, y: -1, type: "eighth" },
-        // { x: 2.5, y: -1, type: "eighth" },
-        // { x: 3, y: -1, type: "eighth" },
-        // { x: 3.5, y: -1, type: "eighth" },
+        { x: 1, y: 10, type: "quarter" },
+        { x: 2, y: -1, type: "eighth" },
+        { x: 2.5, y: -1, type: "eighth" },
+        { x: 3, y: -1, type: "eighth" },
+        { x: 3.5, y: -1, type: "eighth" },
       ],
     });
   }

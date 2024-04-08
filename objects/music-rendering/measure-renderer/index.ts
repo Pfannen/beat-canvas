@@ -16,18 +16,15 @@ export class MeasureRenderer {
   private measureManager!: MeasureManager;
   private musicDimensions: MusicDimensionData;
   private measurements: Measurements;
-  private unitConverter?: MusicUnitConverter;
   constructor(
     music: Music,
     aboveBelowCount: number,
     musicDimensions: MusicDimensionData,
-    getBeatCanvasForPage: BeatCanvasDel,
-    unitConverter?: MusicUnitConverter
+    getBeatCanvasForPage: BeatCanvasDel
   ) {
     this.music = music;
     this.musicDimensions = musicDimensions;
     this.getBeatCanvasForPage = getBeatCanvasForPage;
-    this.unitConverter = unitConverter;
     this.transformer = new MeasureTransformer(music);
     this.aboveBelowCount = aboveBelowCount;
     this.measurements = new Measurements(aboveBelowCount, this.bodyCt, 3);
@@ -73,7 +70,9 @@ export class MeasureRenderer {
     renderData.forEach((measure, measureIndex) => {
       const timeSig = this.music.getMeasureTimeSignature(measureIndex);
       const measureData = this.measureManager.getMeasureData(measureIndex);
+      let measureWidth = measureData.width;
       const { height, padding } = this.musicDimensions.measureDimensions;
+
       const { line: lineFraction, space: spaceFraction } =
         this.measurements.getComponentFractions();
       const noteContainerHeight = height - padding.top - padding.bottom;
@@ -86,7 +85,7 @@ export class MeasureRenderer {
       const bodyStartPos = bodyEndPos - (this.bodyCt - 1);
       beatCanvas.drawMeasure({
         topLeft: measureData.start,
-        width: measureData.width,
+        width: measureWidth,
         height,
         containerPadding: padding,
         lineHeight,
@@ -109,7 +108,7 @@ export class MeasureRenderer {
           const type = note.type;
           const duration = this.music.getNoteDuration(measureIndex, noteIndex);
           const centerX =
-            measureData.width *
+            measureWidth *
               Measurements.getXFractionOffset(
                 note.x,
                 duration,
