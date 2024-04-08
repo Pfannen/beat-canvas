@@ -1,23 +1,25 @@
 import { UnitConverter } from "@/types";
 import { Coordinate } from "@/objects/measurement/types";
-import { ComponentProps } from "react";
+import { ComponentProps } from "@/types/polymorphic";
 
-export type ClickDelegate<T> = (index: T) => void;
+export type PropDelegate<T> = (data: T) => ComponentProps<"div">;
 
-export type NoteClickArgs = { measureIndex: number; noteIndex: number };
+export type NoteIdentifier = { measureIndex: number; noteIndex: number };
 
-export type NoteClickDel = ClickDelegate<NoteClickArgs>;
+export type NotePropDel = PropDelegate<NoteIdentifier>;
 
-export type MeasureClickArgs = { measureIndex: number };
+export type MeasureIdentifier = { measureIndex: number };
 
-export type MeasureClickDel = ClickDelegate<MeasureClickArgs>;
+export type MeasurePropDel = PropDelegate<MeasureIdentifier>;
 
-export type MeasureComponentClickArgs = {
+export type MeasureComponentIdentifier = {
   measureIndex: number;
   absoluteYPos: number;
+  isLine: boolean;
+  isBody: boolean;
 };
 
-export type MeasureCompClickDel = ClickDelegate<MeasureComponentClickArgs>;
+export type MeasureCompPropDel = PropDelegate<MeasureComponentIdentifier>;
 
 export type AbsolutePositionConverter = UnitConverter<number, number>;
 
@@ -25,18 +27,4 @@ export type ClickableOverlayContext = {
   topLeft: Coordinate;
   width: number;
   height: number;
-  onClick: () => void;
-};
-
-export interface IClickHandlerAttachment<T, E> {
-  attachHandler(identifiers: T): E;
-}
-
-export type MeasureIdentifier = { measureIndex: number };
-
-export type NoteIdentifier = { measureIndex: number; noteIndex: number };
-
-export type MeasureComponentIdentifier = {
-  measureIndex: number;
-  absoluteYPos: number;
 };

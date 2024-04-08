@@ -31,15 +31,23 @@ export const drawMockMeasures = (
   renderMeasures(createMockMeasures(), getBeatCanvasForPage);
 };
 
+const notes = [];
+
 export const getHTMLCanvas = () => {
   const onMeasureClick = (identifiers: any) => console.log(identifiers);
   const onComponentClick = (identifiers: any) => console.log(identifiers);
-  const onNoteClick = (identifiers: any) => console.log(identifiers);
+  // const onNoteClick = (identifiers: any) => ({onClick});
   const beatCanvas = new ClickableBeatCanvas(
     "px",
     undefined,
     undefined,
-    onNoteClick
+    (identifiers) => {
+      return {
+        onClick: () => {
+          console.log(identifiers);
+        },
+      };
+    }
   );
   drawMockMeasures(() => beatCanvas);
   return beatCanvas.createCanvas({

@@ -11,7 +11,7 @@ export class ClickableOverlay {
 
   public createOverlay(
     context: ClickableOverlayContext,
-    props?: Omit<HTMLRectangleOptions<"div">, "onClick" | "corner">
+    props?: Omit<HTMLRectangleOptions<"div">, "corner" | "width" | "height">
   ) {
     const drawOptions = props?.drawOptions
       ? props.drawOptions
@@ -19,7 +19,6 @@ export class ClickableOverlay {
     this.drawRectangle({
       ...props,
       drawOptions,
-      onClick: context.onClick,
       corner: context.topLeft,
       width: context.width,
       height: context.height,
