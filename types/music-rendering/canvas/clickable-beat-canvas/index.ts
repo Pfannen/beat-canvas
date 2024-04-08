@@ -21,16 +21,12 @@ export type MeasureCompClickDel = ClickDelegate<MeasureComponentClickArgs>;
 
 export type AbsolutePositionConverter = UnitConverter<number, number>;
 
-export type ClickableOverlayContext<T> = {
+export type ClickableOverlayContext = {
   topLeft: Coordinate;
   width: number;
   height: number;
-  identifiers: T;
+  onClick: () => void;
 };
-
-export interface IClickableOverlay<T> {
-  createOverlay(context: ClickableOverlayContext<T>): void;
-}
 
 export interface IClickHandlerAttachment<T, E> {
   attachHandler(identifiers: T): E;

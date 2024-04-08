@@ -9,14 +9,11 @@ import {
   MeasureCompClickDel,
   NoteClickDel,
 } from "@/types/music-rendering/canvas/clickable-beat-canvas";
-import {
-  MeasureOverlay,
-  NoteOverlay,
-} from "./handler-strategies/overlay/strategies";
 import { MeasureComponentAttachment } from "./handler-strategies/attachment";
+import { ClickableOverlay } from "./handler-strategies/clickable-overlay";
 
 export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
-  private drawRectangle: ReactDrawingCanvas["drawRectangle"];
+  private overlay: ClickableOverlay;
   constructor(
     unit: UnitMeasurement,
     measureHandler?: MeasureClickDel,
@@ -25,7 +22,9 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
   ) {
     const drawingCanvas = new ReactDrawingCanvas(unit);
     super(drawingCanvas);
-    this.drawRectangle = drawingCanvas.drawRectangle.bind(drawingCanvas);
+    this.overlay = new ClickableOverlay(
+      drawingCanvas.drawRectangle.bind(drawingCanvas)
+    );
     this.setDrawMeasure(measureHandler);
     this.setDrawMeasureLines(mComponentHandler);
     this.setDrawNote(noteClickHandler);
@@ -33,19 +32,17 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
 
   private setDrawMeasure(measureHandler?: MeasureClickDel) {
     if (measureHandler) {
-      const measureOverlay = new MeasureOverlay(
-        this.drawRectangle,
-        measureHandler
-      );
       this.drawMeasure = (options) => {
         super.drawMeasure(options);
         const height = -BeatCanvas.getMeasureContainerHeight(options);
         const width = options.width;
-        measureOverlay.createOverlay({
+        this.overlay.createOverlay({
           topLeft: options.topLeft,
           width,
           height,
-          identifiers: { measureIndex: options.measureIndex },
+          onClick: measureHandler.bind(null, {
+            measureIndex: options.measureIndex,
+          }),
         });
       };
     }
@@ -82,7 +79,6 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
 
   private setDrawNote(noteClickHandler?: NoteClickDel) {
     if (noteClickHandler) {
-      const noteOverlay = new NoteOverlay(this.drawRectangle, noteClickHandler);
       this.drawNote = (options) => {
         const endOfStem = super.drawNote(options);
         const width = this.getNoteBodyWidth(options.bodyHeight);
@@ -98,14 +94,14 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
           height = y - (options.bodyCenter.y - options.bodyHeight / 2);
         }
         const topLeft = { x, y };
-        noteOverlay.createOverlay({
+        this.overlay.createOverlay({
           topLeft,
           width,
           height: -height,
-          identifiers: {
+          onClick: noteClickHandler.bind(null, {
             measureIndex: options.measureIndex,
             noteIndex: options.noteIndex,
-          },
+          }),
         });
         return endOfStem;
       };
