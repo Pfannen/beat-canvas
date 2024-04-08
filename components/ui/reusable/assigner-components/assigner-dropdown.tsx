@@ -7,17 +7,18 @@ import {
 import classes from './assigner-dropdown.module.css';
 import ModifyMusicAssigner from './style/modify-music-assigner-button';
 import AssignerInputLayout from './style/assigner-input-layout';
+import AssignerDropdownField, {
+	DropdownItem,
+} from './style/assigner-dropdown-field';
 
-type DropdownItem = {
-	displayValue: string;
-	value: string;
+export type DropdownItemDisplay = DropdownItem & {
 	el: ReactNode;
 };
 
 interface AssignerDropdownProps {
 	onClick: (value: string) => void;
 	label: string;
-	children: DropdownItem[];
+	children: DropdownItemDisplay[];
 }
 
 const AssignerDropdown: FunctionComponent<AssignerDropdownProps> = ({
@@ -25,7 +26,9 @@ const AssignerDropdown: FunctionComponent<AssignerDropdownProps> = ({
 	label,
 	children,
 }) => {
-	const [selectedItem, setSelectedItem] = useState<DropdownItem>(children[0]);
+	const [selectedItem, setSelectedItem] = useState<DropdownItemDisplay>(
+		children[0]
+	);
 
 	const onOptionSelected: ChangeEventHandler<HTMLSelectElement> = (event) => {
 		const newSelectedItem = children[event.target.selectedIndex];
@@ -35,13 +38,9 @@ const AssignerDropdown: FunctionComponent<AssignerDropdownProps> = ({
 	return (
 		<AssignerInputLayout>
 			<label htmlFor={label}>{label}: </label>
-			<select id={label} onChange={onOptionSelected}>
-				{children.map(({ value, displayValue }) => (
-					<option key={value} value={value}>
-						{displayValue}
-					</option>
-				))}
-			</select>
+			<AssignerDropdownField id={label} onChange={onOptionSelected}>
+				{children}
+			</AssignerDropdownField>
 			<ModifyMusicAssigner onClick={onClick.bind(null, selectedItem.value)}>
 				{selectedItem.el}
 			</ModifyMusicAssigner>

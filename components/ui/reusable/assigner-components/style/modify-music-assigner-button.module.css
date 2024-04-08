@@ -10,7 +10,7 @@
 	height: 100%;
 }
 
-.btn * {
+.btn > * {
 	height: 100%;
 	width: 100%;
 	fill: var(--surface-primary);

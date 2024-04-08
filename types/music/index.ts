@@ -1,7 +1,19 @@
-import { Measure, TimeSignature } from '@/components/providers/music/types';
+import {
+	Measure,
+	NoteType,
+	TimeSignature,
+} from '@/components/providers/music/types';
 import { Dynamic } from './note-annotations';
 
 export const numberNoteTypes = [1, 2, 4, 8, 16, 32, 64];
+export const nameNoteTypes: NoteType[] = [
+	'whole',
+	'half',
+	'quarter',
+	'eighth',
+	'sixteenth',
+	'thirtysecond',
+];
 
 export type Pitch = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 

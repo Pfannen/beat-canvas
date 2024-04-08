@@ -4,6 +4,7 @@ import AssignerInputLayout from '../style/assigner-input-layout';
 import AssignerInputField from '../style/assigner-input-field';
 import { numberNoteTypes } from '@/types/music';
 import ModifyMusicAssigner from '../style/modify-music-assigner-button';
+import AssignerDropdownField from '../style/assigner-dropdown-field';
 
 interface TimeSignatureAssignerProps {
 	onClick: (beatsPerMeasure: number, beatNote: number) => void;
@@ -44,16 +45,17 @@ const TimeSignatureAssigner: FunctionComponent<TimeSignatureAssignerProps> = ({
 					ref1={inputRef}
 				/>{' '}
 				/{' '}
-				<select
+				<AssignerDropdownField
 					onChange={(e) => setBeatNote(parseInt(e.target.value))}
 					defaultValue={4}
 				>
-					{numberNoteTypes.map((num) => (
-						<option key={num + 'ts'} value={num}>
-							{num}
-						</option>
-					))}
-				</select>
+					{
+						numberNoteTypes.map((num) => ({
+							value: num,
+							displayValue: num,
+						})) as [] // makes ts stop complaining
+					}
+				</AssignerDropdownField>
 			</div>
 			<ModifyMusicAssigner
 				onClick={onClick.bind(null, beatsPerMeasure, beatNote)}

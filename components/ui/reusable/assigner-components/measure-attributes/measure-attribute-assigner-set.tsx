@@ -14,6 +14,7 @@ import { addNote } from '@/components/providers/music/hooks/useMeasures/utils';
 import { modifyMeasureAttributesAdapter } from '@/utils/music/modify-score/music-hook-helpers';
 import AssignerDropdown from '../assigner-dropdown';
 import TimeSignatureAssigner from './time-signature-assigner';
+import MetronomeAssigner from './metronome-assigner';
 
 // Purely for testing purposes
 const dynamics: Dynamic[] = ['p', 'pp', 'mp', 'mf', 'fp', 'f', 'ff'];
@@ -82,6 +83,11 @@ const MeasureAttributeAssignerSet: FunctionComponent<
 					onClick={(bpm, bn) => {
 						assigner('timeSignature', { beatsPerMeasure: bpm, beatNote: bn });
 					}}
+				/>
+				<MetronomeAssigner
+					onClick={(bpm, bn) =>
+						assigner('metronome', { beatsPerMinute: bpm, beatNote: bn })
+					}
 				/>
 			</div>
 		</div>
