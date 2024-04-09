@@ -14,7 +14,8 @@
 }
 
 .selected {
-  background-color: rgba(144, 238, 144, 0.3);
+  background-color: rgba(144, 238, 144, 0.3) !important;
+  opacity: 1 !important;
 }
 
 .not_selected {

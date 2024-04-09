@@ -4,9 +4,12 @@ import { BeatCanvas } from "..";
 import { ReactDrawingCanvas } from "../../drawing-canvas/react-drawing-canvas";
 import {
   MeasureLineIteratorDel,
+  MeasureLinesOptions,
+  MeasureOptions,
   NoteOptions,
 } from "@/types/music-rendering/canvas/beat-canvas";
 import {
+  BeatCanvasPropDelegates,
   MeasureCompPropDel,
   MeasurePropDel,
   NotePropDel,
@@ -15,25 +18,25 @@ import { ClickableOverlay } from "./clickable-overlay";
 
 export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
   private overlay: ClickableOverlay;
-  private dNote!: BeatCanvas["drawNote"];
+  private intermDrawNote!: BeatCanvas["drawNote"];
+  private intermDrawMeasures!: BeatCanvas["drawMeasure"];
+  private intermDrawMeasureLines!: BeatCanvas["drawMeasureLines"]; //This is a protected method, need to store it outside of the beat canvas property
   constructor(
     drawingCanvas: ReactDrawingCanvas,
-    measureHandler?: MeasurePropDel,
-    mComponentHandler?: MeasureCompPropDel,
-    notePropHandler?: NotePropDel
+    delegates?: BeatCanvasPropDelegates
   ) {
     super(drawingCanvas);
     this.overlay = new ClickableOverlay(
       drawingCanvas.drawRectangle.bind(drawingCanvas)
     );
-    this.setDrawMeasure(measureHandler);
-    this.setDrawMeasureLines(mComponentHandler);
-    this.setDrawNote(notePropHandler);
+    this.setDrawMeasure(delegates?.getMeasureProps);
+    this.setDrawMeasureLines(delegates?.getMeasureComponentProps);
+    this.setDrawNote(delegates?.getNoteProps);
   }
 
   private setDrawMeasure(measureHandler?: MeasurePropDel) {
     if (measureHandler) {
-      this.drawMeasure = (options) => {
+      this.intermDrawMeasures = (options) => {
         const props = measureHandler({ measureIndex: options.measureIndex });
         super.drawMeasure(options);
         const height = -BeatCanvas.getMeasureContainerHeight(options);
@@ -47,12 +50,14 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
           props
         );
       };
+    } else {
+      this.intermDrawMeasures = super.drawMeasure;
     }
   }
 
   private setDrawMeasureLines(mComponentHandler?: MeasureCompPropDel) {
     if (mComponentHandler) {
-      this.drawMeasureLines = (options) => {
+      this.intermDrawMeasureLines = (options) => {
         const iteratorDel: MeasureLineIteratorDel = (context) => {
           const props = mComponentHandler({
             measureIndex: options.measureIndex,
@@ -75,12 +80,14 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
         };
         return BeatCanvas.iterateMeasureLines(options, iteratorDel);
       };
+    } else {
+      this.intermDrawMeasureLines = super.drawMeasureLines;
     }
   }
 
   private setDrawNote(notePropHandler?: NotePropDel) {
     if (notePropHandler) {
-      this.dNote = (options) => {
+      this.intermDrawNote = (options) => {
         const endOfStem = super.drawNote(options);
         const width = this.getNoteBodyWidth(options.bodyHeight);
         let height;
@@ -110,12 +117,23 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
         return endOfStem;
       };
     } else {
-      this.dNote = super.drawNote;
+      this.intermDrawNote = super.drawNote;
     }
   }
 
+  protected drawMeasureLines(options: MeasureLinesOptions): {
+    bodyStartYPos: number;
+    bodyHeight: number;
+  } {
+    return this.intermDrawMeasureLines(options);
+  }
+
+  drawMeasure(options: MeasureOptions): void {
+    return this.intermDrawMeasures(options);
+  }
+
   drawNote(options: NoteOptions): { x: number; y: number } {
-    return this.dNote(options);
+    return this.intermDrawNote(options);
   }
 
   public createCanvas(options: any) {

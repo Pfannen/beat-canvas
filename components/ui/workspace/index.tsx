@@ -8,11 +8,13 @@ import ModifiableMeasures from "../measure/segmented-measure/modifiable-measures
 import { clickBehavior } from "../measure/utils";
 import useWorkSpace from "./hooks/useWorkspace";
 import ControlButtons, { ControlButton } from "./control-buttons";
+import MusicCanvas from "../home/music-canvas";
 
 type WorkspaceProps = {};
 
 const Workspace: FunctionComponent<WorkspaceProps> = () => {
   const ws = useWorkSpace();
+  console.log(ws.getSelectedMeasures());
 
   const buttons: ControlButton[] = [
     {
@@ -49,7 +51,7 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
   return (
     <>
       <ControlButtons buttons={buttons} />
-      <div className={classes.measures}>
+      {/* <div className={classes.measures}>
         <DisplayMeasures
           onMeasureClick={ws.onMeasureClick}
           className={classes.measure}
@@ -59,7 +61,23 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
             ws.isSelectedMeasures() ? classes.not_selected : undefined
           }
         />
-      </div>
+      </div> */}
+      <MusicCanvas
+        aspectRatio={0.75}
+        propDelegates={{
+          getMeasureProps: ({ measureIndex }) => {
+            console.log(ws.isMeasureSelected(measureIndex));
+            return {
+              onClick: () => {
+                ws.onMeasureClick(measureIndex);
+              },
+              className: ws.isMeasureSelected(measureIndex)
+                ? classes.selected
+                : "",
+            };
+          },
+        }}
+      />
       <ReactModal
         isOpen={modalShouldOpen}
         onRequestClose={ws.mode.clear}

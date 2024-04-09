@@ -28,3 +28,11 @@ export type ClickableOverlayContext = {
   width: number;
   height: number;
 };
+
+export type PropDelegates = {
+  getMeasureProps: MeasurePropDel;
+  getNoteProps: NotePropDel;
+  getMeasureComponentProps: MeasureCompPropDel;
+};
+
+export type BeatCanvasPropDelegates = Partial<PropDelegates>;
