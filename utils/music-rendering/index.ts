@@ -1,7 +1,6 @@
 "use client";
 
 import { Measure } from "@/components/providers/music/types";
-import { ClickableBeatCanvas } from "@/objects/music-rendering/beat-canvas/clickable-beat-canvas";
 import { RelativeClickableBeatCanvas } from "@/objects/music-rendering/beat-canvas/relative-clickable-beat-canvas";
 import { ReactDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
@@ -51,14 +50,12 @@ export const getHTMLCanvas = (aspectRatio: number) => {
   );
   const music = new Music();
   const dimensions = MusicLayout.getHomePageDimensions(aspectRatio);
-  console.log("DIM", dimensions.pageDimensions.firstMeasureStart, aspectRatio);
   music.setMeasures(createMockMeasures());
   const renderer = new MeasureRenderer(music, 6, dimensions, () => beatCanvas);
   renderer.render();
   return beatCanvas.createCanvas({
     style: { position: "relative", width: "100%", height: "100%" },
   });
-  return null;
 };
 
 const createMockMeasures = () => {
