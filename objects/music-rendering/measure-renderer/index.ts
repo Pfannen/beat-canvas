@@ -23,7 +23,10 @@ export class MeasureRenderer {
     getBeatCanvasForPage: BeatCanvasDel
   ) {
     this.music = music;
-    this.musicDimensions = musicDimensions;
+    this.musicDimensions = {
+      pageDimensions: { ...musicDimensions.pageDimensions },
+      measureDimensions: { ...musicDimensions.measureDimensions },
+    };
     this.getBeatCanvasForPage = getBeatCanvasForPage;
     this.transformer = new MeasureTransformer(music);
     this.aboveBelowCount = aboveBelowCount;
@@ -42,7 +45,7 @@ export class MeasureRenderer {
     );
     const getMeasureWidth = (measureIndex: number) => {
       return widthCalc.getMeasureWidth(
-        { components: [], attributes: [] },
+        { components: [] },
         { beatsPerMeasure: 4, beatNote: 4 }
       );
     };
@@ -70,7 +73,6 @@ export class MeasureRenderer {
     renderData.forEach((measure, measureIndex) => {
       const timeSig = this.music.getMeasureTimeSignature(measureIndex);
       const measureData = this.measureManager.getMeasureData(measureIndex);
-      let measureWidth = measureData.width;
       const { height, padding } = this.musicDimensions.measureDimensions;
 
       const { line: lineFraction, space: spaceFraction } =
@@ -83,9 +85,10 @@ export class MeasureRenderer {
       const componentCount = line + space;
       const bodyEndPos = componentCount - this.aboveBelowCount;
       const bodyStartPos = bodyEndPos - (this.bodyCt - 1);
+
       beatCanvas.drawMeasure({
-        topLeft: measureData.start,
-        width: measureWidth,
+        topLeft: { ...measureData.start },
+        width: measureData.width,
         height,
         containerPadding: padding,
         lineHeight,
@@ -108,7 +111,7 @@ export class MeasureRenderer {
           const type = note.type;
           const duration = this.music.getNoteDuration(measureIndex, noteIndex);
           const centerX =
-            measureWidth *
+            measureData.width *
               Measurements.getXFractionOffset(
                 note.x,
                 duration,

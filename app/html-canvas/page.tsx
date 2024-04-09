@@ -7,7 +7,7 @@ import { FunctionComponent } from "react";
 type HTMLCanvasProps = {};
 
 const HTMLCanvas: FunctionComponent<HTMLCanvasProps> = () => {
-  const canvas = getHTMLCanvas(0.5);
+  const canvas = getHTMLCanvas(0.75);
   return <div className={classes.canvas}>{canvas}</div>;
 };
 

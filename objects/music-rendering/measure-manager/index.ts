@@ -1,4 +1,3 @@
-import { MeasureRenderData } from "@/types/music/render-data";
 import { IterateMeasuresCallback, MeasureOutline } from "./measure-outline";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import {
@@ -6,8 +5,6 @@ import {
   MeasureWidthCallback,
 } from "@/types/music";
 import { serializeTimeSignature } from "@/utils/music";
-import { MeasureWidthCalculator } from "./measure-width-calculator";
-import { IMeasureWidthCalculator } from "@/types/music-rendering";
 
 type TimeSignatureWidths = { [timeSig: string]: number };
 

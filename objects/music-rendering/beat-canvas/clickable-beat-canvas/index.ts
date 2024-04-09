@@ -1,9 +1,11 @@
 "use client";
 
-import { UnitMeasurement } from "@/types";
 import { BeatCanvas } from "..";
 import { ReactDrawingCanvas } from "../../drawing-canvas/react-drawing-canvas";
-import { MeasureLineIteratorDel } from "@/types/music-rendering/canvas/beat-canvas";
+import {
+  MeasureLineIteratorDel,
+  NoteOptions,
+} from "@/types/music-rendering/canvas/beat-canvas";
 import {
   MeasureCompPropDel,
   MeasurePropDel,
@@ -13,13 +15,13 @@ import { ClickableOverlay } from "./clickable-overlay";
 
 export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
   private overlay: ClickableOverlay;
+  private dNote!: BeatCanvas["drawNote"];
   constructor(
-    unit: UnitMeasurement,
+    drawingCanvas: ReactDrawingCanvas,
     measureHandler?: MeasurePropDel,
     mComponentHandler?: MeasureCompPropDel,
     notePropHandler?: NotePropDel
   ) {
-    const drawingCanvas = new ReactDrawingCanvas(unit);
     super(drawingCanvas);
     this.overlay = new ClickableOverlay(
       drawingCanvas.drawRectangle.bind(drawingCanvas)
@@ -78,7 +80,7 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
 
   private setDrawNote(notePropHandler?: NotePropDel) {
     if (notePropHandler) {
-      this.drawNote = (options) => {
+      this.dNote = (options) => {
         const endOfStem = super.drawNote(options);
         const width = this.getNoteBodyWidth(options.bodyHeight);
         let height;
@@ -107,7 +109,13 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
         );
         return endOfStem;
       };
+    } else {
+      this.dNote = super.drawNote;
     }
+  }
+
+  drawNote(options: NoteOptions): { x: number; y: number } {
+    return this.dNote(options);
   }
 
   public createCanvas(options: any) {

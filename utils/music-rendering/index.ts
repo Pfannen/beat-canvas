@@ -2,6 +2,8 @@
 
 import { Measure } from "@/components/providers/music/types";
 import { ClickableBeatCanvas } from "@/objects/music-rendering/beat-canvas/clickable-beat-canvas";
+import { RelativeClickableBeatCanvas } from "@/objects/music-rendering/beat-canvas/relative-clickable-beat-canvas";
+import { ReactDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
 import { PageDimensionParams } from "@/objects/music-rendering/music-layout/page-dimension-params";
@@ -32,8 +34,11 @@ export const drawMockMeasures = (
 };
 
 export const getHTMLCanvas = (aspectRatio: number) => {
-  const beatCanvas = new ClickableBeatCanvas(
-    "%",
+  const drawingCanvas = new ReactDrawingCanvas("%");
+  const converter = (xValue: number) => xValue / aspectRatio;
+  const beatCanvas = new RelativeClickableBeatCanvas(
+    converter,
+    drawingCanvas,
     undefined,
     undefined,
     (identifiers) => {
@@ -45,18 +50,15 @@ export const getHTMLCanvas = (aspectRatio: number) => {
     }
   );
   const music = new Music();
+  const dimensions = MusicLayout.getHomePageDimensions(aspectRatio);
+  console.log("DIM", dimensions.pageDimensions.firstMeasureStart, aspectRatio);
   music.setMeasures(createMockMeasures());
-  const renderer = new MeasureRenderer(
-    music,
-    6,
-    MusicLayout.getHomePageDimensions(aspectRatio),
-    () => beatCanvas,
-    (xValue) => xValue / aspectRatio
-  );
+  const renderer = new MeasureRenderer(music, 6, dimensions, () => beatCanvas);
   renderer.render();
   return beatCanvas.createCanvas({
     style: { position: "relative", width: "100%", height: "100%" },
   });
+  return null;
 };
 
 const createMockMeasures = () => {
