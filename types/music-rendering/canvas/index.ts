@@ -1,13 +1,13 @@
 import { Coordinate } from "@/objects/measurement/types";
 
-export type DrawOptions = {
+export type DrawOptions<T> = {
   color: string;
   opacity: number;
   degreeRotation: number;
-};
+} & T;
 
-export type OptionsWithDrawOptions<T> = T & {
-  drawOptions?: Partial<DrawOptions>;
+export type OptionsWithDrawOptions<T, U> = T & {
+  drawOptions?: Partial<DrawOptions<U>>;
 };
 
 export type LineOptions = {
@@ -16,7 +16,7 @@ export type LineOptions = {
   thickness: number;
 };
 
-export type LineDrawOptions = OptionsWithDrawOptions<LineOptions>;
+export type LineDrawOptions<T = {}> = OptionsWithDrawOptions<LineOptions, T>;
 
 export type RectangleOptions = {
   corner: Coordinate;
@@ -24,20 +24,29 @@ export type RectangleOptions = {
   height: number;
 };
 
-export type RectangleDrawOptions = OptionsWithDrawOptions<RectangleOptions>;
+export type RectangleDrawOptions<T = {}> = OptionsWithDrawOptions<
+  RectangleOptions,
+  T
+>;
 
 export type CircleOptions = {
   center: Coordinate;
   diameter: number;
 };
 
-export type CircleDrawOptions = OptionsWithDrawOptions<CircleOptions>;
+export type CircleDrawOptions<T = {}> = OptionsWithDrawOptions<
+  CircleOptions,
+  T
+>;
 
 export type EllipseOptions = CircleOptions & {
   aspectRatio: number;
 };
 
-export type EllipseDrawOptions = OptionsWithDrawOptions<EllipseOptions>;
+export type EllipseDrawOptions<T = {}> = OptionsWithDrawOptions<
+  EllipseOptions,
+  T
+>;
 
 export type SVGOptions = {};
 

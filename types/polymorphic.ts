@@ -2,11 +2,15 @@ import { ComponentPropsWithoutRef, ElementType } from "react";
 
 type AsProp<C extends ElementType> = { as?: C };
 
-export type ComponentProps<C extends ElementType, Props = {}> = Omit<
+export type OmittedComponentProps<C extends ElementType, Props = {}> = Omit<
   ComponentPropsWithoutRef<C>,
   keyof Props
-> &
-  Props;
+>;
+
+export type ComponentProps<
+  C extends ElementType,
+  Props = {}
+> = OmittedComponentProps<C, Props> & Props;
 
 export type PolymorphicComponentProps<
   C extends ElementType,

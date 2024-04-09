@@ -1,7 +1,12 @@
 import { UnitMeasurement } from "@/types";
 import { IDrawingCanvas } from "@/types/music-rendering/canvas";
 import { PolymorphicComponentProps } from "@/types/polymorphic";
-import { ElementType, FunctionComponent, ReactElement } from "react";
+import {
+  ComponentProps,
+  ElementType,
+  FunctionComponent,
+  ReactElement,
+} from "react";
 import { CoordinateStyleCreator, StyleCreator } from "./utils";
 import {
   HTMLCircleOptions,
@@ -11,6 +16,7 @@ import {
   HTMLRectangleOptions,
   HTMLSVGOptions,
 } from "@/types/music-rendering/canvas/html";
+import { concatClassNames } from "@/utils/css";
 
 export class ReactDrawingCanvas implements IDrawingCanvas {
   private unit: UnitMeasurement;
@@ -31,32 +37,38 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     style.addBackgroundColor(options?.color || "black");
   }
 
-  drawElement<C extends ElementType>({
-    as,
-    ...restProps
-  }: PolymorphicComponentProps<C>) {
-    const C = as || "div";
-    this.components.push(<C {...restProps} />);
+  private createStyledElement(
+    styles: StyleCreator,
+    props: ComponentProps<"div">
+  ) {
+    const { style, classNames } = styles.getStyle();
+    const className = concatClassNames(...classNames, props.className);
+    this.drawElement({
+      ...props,
+      style,
+      className,
+    });
   }
 
-  drawLine<C extends ElementType = "div">(options: HTMLLineOptions<C>): void {
+  drawElement(props: ComponentProps<"div">) {
+    this.components.push(<div {...props} />);
+  }
+
+  drawLine(options: HTMLLineOptions): void {
     throw new Error("Method not implemented.");
   }
 
-  drawCircle<C extends ElementType = "div">(
-    options: HTMLCircleOptions<C>
-  ): void {
+  drawCircle(options: HTMLCircleOptions): void {
     throw new Error("Method not implemented.");
   }
 
-  drawRectangle<C extends ElementType = "div">({
+  drawRectangle({
     corner,
     width,
     height,
-    degreeRotation,
     drawOptions,
-    ...restProps
-  }: HTMLRectangleOptions<C>): void {
+    props,
+  }: HTMLRectangleOptions): void {
     const styleCreator = new CoordinateStyleCreator(
       corner,
       width,
@@ -64,20 +76,16 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
       this.unit
     );
     ReactDrawingCanvas.attachDrawOptions(drawOptions, styleCreator.styles);
-    this.drawElement<any>({
-      ...restProps,
-      style: styleCreator.styles.getStyle(),
-    });
+    this.createStyledElement(styleCreator.styles, props);
   }
 
-  drawEllipse<C extends ElementType = "div">({
+  drawEllipse({
     aspectRatio,
     diameter,
     center,
-    degreeRotation,
     drawOptions,
-    ...restProps
-  }: HTMLEllipseOptions<C>): void {
+    props,
+  }: HTMLEllipseOptions): void {
     const width = aspectRatio * diameter;
     const styleCreator = new CoordinateStyleCreator(
       center,
@@ -88,7 +96,7 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     styleCreator.styles.center();
     ReactDrawingCanvas.attachDrawOptions(drawOptions, styleCreator.styles);
     styleCreator.styles.addBorderRadius("50%");
-    this.drawElement<any>({ ...restProps, style: styleCreator.getStyle() });
+    this.createStyledElement(styleCreator.styles, props);
   }
 
   drawSVG(options: HTMLSVGOptions): void {

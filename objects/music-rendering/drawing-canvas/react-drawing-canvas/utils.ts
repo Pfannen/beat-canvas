@@ -9,23 +9,6 @@ export type DimensionDirections = {
   y: DimensionDirection;
 };
 
-// export const adjustPosition = (
-//   coordinate: Coordinate,
-//   xAxisValue: number,
-//   yAxisValue: number
-// ) => {
-//   const newCoordinate = { ...coordinate };
-//   if (xAxisValue < 0) {
-//     newCoordinate.x += xAxisValue;
-//     xAxisValue *= -1;
-//   }
-//   if (yAxisValue < 0) {
-//     newCoordinate.y += yAxisValue;
-//     yAxisValue *= -1;
-//   }
-//   return { newCoordinate, xAxisValue, yAxisValue };
-// };
-
 export class CoordinateStyleCreator {
   private coordinate: Coordinate;
   private xAxisValue: number;
@@ -84,6 +67,7 @@ export class CoordinateStyleCreator {
 
 export class StyleCreator {
   private style: CSSProperties = {};
+  private classNames: string[] = [];
   private unit: UnitMeasurement;
 
   constructor(unit: UnitMeasurement) {
@@ -146,10 +130,11 @@ export class StyleCreator {
   // Other styling functions can be added as needed
 
   public getStyle = () => {
-    return this.style;
+    return { style: this.style, classNames: this.classNames };
   };
 
   public clearStyle = () => {
     this.style = {};
+    this.classNames = [];
   };
 }

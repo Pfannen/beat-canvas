@@ -1,39 +1,40 @@
-import { PolymorphicComponentProps } from "@/types/polymorphic";
 import { CSSProperties, ElementType } from "react";
 import {
-  CircleOptions,
+  CircleDrawOptions,
   DrawOptions,
-  EllipseOptions,
-  LineOptions,
-  RectangleOptions,
+  EllipseDrawOptions,
+  LineDrawOptions,
+  RectangleDrawOptions,
   SVGOptions,
 } from ".";
+import { OmittedComponentProps } from "@/types/polymorphic";
 
-export type HTMLDrawOptions = DrawOptions & { cursor: CSSProperties["cursor"] };
+export type HTMLDrawOptions = DrawOptions<ExtraDrawOptions>;
 
-export type HTMLOptions<T, C extends ElementType> = Omit<
-  PolymorphicComponentProps<C, T & { drawOptions?: Partial<HTMLDrawOptions> }>,
-  "style"
+export type ExtraDrawOptions = { cursor: CSSProperties["cursor"] };
+
+export type HTMLOptions<T, C extends ElementType> = T & {
+  props: OmittedComponentProps<C, T>;
+};
+
+export type HTMLLineOptions = HTMLOptions<
+  LineDrawOptions<ExtraDrawOptions>,
+  "div"
 >;
 
-export type HTMLLineOptions<C extends ElementType> = HTMLOptions<
-  LineOptions,
-  C
+export type HTMLRectangleOptions = HTMLOptions<
+  RectangleDrawOptions<ExtraDrawOptions>,
+  "div"
 >;
 
-export type HTMLRectangleOptions<C extends ElementType> = HTMLOptions<
-  RectangleOptions,
-  C
+export type HTMLCircleOptions = HTMLOptions<
+  CircleDrawOptions<ExtraDrawOptions>,
+  "div"
 >;
 
-export type HTMLCircleOptions<C extends ElementType> = HTMLOptions<
-  CircleOptions,
-  C
->;
-
-export type HTMLEllipseOptions<C extends ElementType> = HTMLOptions<
-  EllipseOptions,
-  C
+export type HTMLEllipseOptions = HTMLOptions<
+  EllipseDrawOptions<ExtraDrawOptions>,
+  "div"
 >;
 
 export type HTMLSVGOptions = SVGOptions;

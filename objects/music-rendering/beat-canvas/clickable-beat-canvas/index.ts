@@ -75,7 +75,7 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
             width: context.width,
             height: -context.height,
             drawOptions: { color },
-            ...props,
+            props,
           });
         };
         return BeatCanvas.iterateMeasureLines(options, iteratorDel);
