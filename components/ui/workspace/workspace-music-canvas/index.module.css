@@ -1,0 +1,9 @@
+.selected {
+  background-color: rgba(144, 238, 144, 0.3);
+  opacity: 1;
+}
+
+.not_selected {
+  opacity: 0.1;
+  background-color: gray;
+}

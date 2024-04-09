@@ -9,17 +9,19 @@ import {
   BeatCanvasPropDelegates,
   PropDelegates,
 } from "@/types/music-rendering/canvas/clickable-beat-canvas";
+import { Measure } from "@/components/providers/music/types";
 
 type MusicDisplayProps = {
   aspectRatio: number;
   propDelegates?: BeatCanvasPropDelegates;
+  measures: Measure[];
 };
 
 const MusicDisplay: FunctionComponent<MusicDisplayProps> = ({
   aspectRatio,
   propDelegates,
+  measures,
 }) => {
-  const { measures } = useMusic();
   const music = new Music();
   music.setMeasures(measures);
   return getHTMLCanvas(aspectRatio, music, propDelegates);
