@@ -38,3 +38,10 @@ export type HTMLEllipseOptions = HTMLOptions<
 >;
 
 export type HTMLSVGOptions = SVGOptions;
+
+export type DimensionDirection = "positive" | "negative";
+
+export type DimensionDirections = {
+  x: DimensionDirection;
+  y: DimensionDirection;
+};

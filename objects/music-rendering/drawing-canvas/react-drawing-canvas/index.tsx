@@ -7,7 +7,7 @@ import {
   FunctionComponent,
   ReactElement,
 } from "react";
-import { CoordinateStyleCreator, StyleCreator } from "./utils";
+import { CoordinateStyleCreator } from "./utils";
 import {
   HTMLCircleOptions,
   HTMLDrawOptions,
@@ -17,6 +17,7 @@ import {
   HTMLSVGOptions,
 } from "@/types/music-rendering/canvas/html";
 import { concatClassNames } from "@/utils/css";
+import { StyleCreator } from "./style-creator";
 
 export class ReactDrawingCanvas implements IDrawingCanvas {
   private unit: UnitMeasurement;
@@ -42,7 +43,7 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     props: ComponentProps<"div">
   ) {
     const { style, classNames } = styles.getStyle();
-    const className = concatClassNames(...classNames, props.className);
+    const className = concatClassNames(...classNames, props?.className);
     this.drawElement({
       ...props,
       style,

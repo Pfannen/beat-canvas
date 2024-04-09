@@ -1,0 +1,43 @@
+/*"--style-c"*/
+
+.dim {
+  height: var(--style-c-height);
+  width: var(--style-c-width);
+}
+
+.placement {
+  left: var(--style-c-left);
+  bottom: var(--style-c-bottom);
+}
+
+.center {
+  transform: translate(-50%, 50%);
+}
+
+.t-origin {
+  transform-origin: var(--style-c-t-origin);
+}
+
+.border-radius {
+  border-radius: var(--style-c-border-radius);
+}
+
+.bg-color {
+  background-color: var(--style-c-bg-color);
+}
+
+.degree-rotation {
+  rotate: var(--style-c-degree-rotation);
+}
+
+.position {
+  position: var(--style-c-position);
+}
+
+.opacity {
+  opacity: var(--style-c-opacity);
+}
+
+.cursor {
+  cursor: var(--style-c-cursor);
+}
