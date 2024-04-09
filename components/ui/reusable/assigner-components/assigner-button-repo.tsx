@@ -5,16 +5,17 @@ import AnnotationsAssignerSet from './annotations/annotations-assigner-set';
 import NotePlacementAssignerSet from './place-note/note-placement-assigner-set';
 import MeasureAttributeAssignerSet from './measure-attributes/measure-attribute-assigner-set';
 import {
-	ExecuteAssignerDelegate,
-	PlacementData,
+	AssignerLifter,
+	CurriedAssigner,
+	SelectionData,
 } from '@/types/modify-score/assigner';
 
 interface AssignerButtonRepoProps {}
 
 const AssignerButtonRepo: FunctionComponent<AssignerButtonRepoProps> = () => {
-	const delegateRef = useRef<(p: PlacementData) => boolean>();
+	const delegateRef = useRef<CurriedAssigner>();
 
-	const liftExecuter: ExecuteAssignerDelegate = (assigner) => {
+	const liftExecuter: AssignerLifter = (assigner) => {
 		console.log('Execute this method: ' + assigner);
 		delegateRef.current = assigner;
 	};

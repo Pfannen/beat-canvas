@@ -5,13 +5,13 @@ import ModifyMusicAssigner from '../style/modify-music-assigner-button';
 import DynamicAssigner from './buttons/dynamic';
 import { MeasureAttributeAssigner } from '@/types/modify-score';
 import { Dynamic } from '@/types/music/note-annotations';
-import {
-	ExecuteAssignerDelegate,
-	PlacementData,
-} from '@/types/modify-score/assigner';
+import { AssignerLifter, SelectionData } from '@/types/modify-score/assigner';
 import { useMusic } from '@/components/providers/music';
 import { addNote } from '@/components/providers/music/hooks/useMeasures/utils';
-import { modifyMeasureAttributesAdapter } from '@/utils/music/modify-score/music-hook-helpers';
+import {
+	curriedModifyMeasureAttribute,
+	modifyMeasureAttributesAdapter,
+} from '@/utils/music/modify-score/music-hook-helpers';
 import AssignerDropdown from '../assigner-dropdown';
 import TimeSignatureAssigner from './time-signature-assigner';
 import MetronomeAssigner from './metronome-assigner';
@@ -21,28 +21,18 @@ const dynamics: Dynamic[] = ['p', 'pp', 'mp', 'mf', 'fp', 'f', 'ff'];
 const keySignatures: string[] = ['C', 'F', 'Bb', 'Eb', 'Ab', 'Db'];
 
 interface MeasureAttributeAssignerSetProps {
-	liftExecuter?: ExecuteAssignerDelegate;
+	liftExecuter?: AssignerLifter;
 }
 
 const MeasureAttributeAssignerSet: FunctionComponent<
 	MeasureAttributeAssignerSetProps
 > = ({ liftExecuter }) => {
-	const { invokeMeasureModifier } = useMusic();
-
 	const assigner: MeasureAttributeAssigner = (attribute, value) => {
 		console.log({ attribute, value });
 
 		if (!liftExecuter) return;
 
-		const executeThis = (placementData: PlacementData) => {
-			const { measureIndex, x } = placementData;
-
-			invokeMeasureModifier(
-				modifyMeasureAttributesAdapter(attribute, value, measureIndex, x)
-			);
-			return true;
-		};
-		liftExecuter(executeThis);
+		liftExecuter(curriedModifyMeasureAttribute(attribute, value));
 	};
 
 	return (

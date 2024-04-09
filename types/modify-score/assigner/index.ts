@@ -1,6 +1,6 @@
 import { NoteAnnotations } from '@/types/music/note-annotations';
 import { NoteAnnotationAssigner, MeasureAttributeAssigner } from '..';
-import { Note, NoteType } from '@/components/providers/music/types';
+import { Measure, Note, NoteType } from '@/components/providers/music/types';
 import { ReactNode } from 'react';
 
 export interface IMusicAssignerButton {
@@ -23,13 +23,19 @@ export interface INotePlacementAssignerButton {
 	children: ReactNode;
 }
 
-export type PlacementData = {
+export type SelectionData = {
 	measureIndex: number;
-	x: number;
+	xStart: number;
+	xEnd: number;
 	y: number;
 	noteIndex?: number;
 };
 
-export type ExecuteAssignerDelegate = (
-	assigner: (placementData: PlacementData) => boolean
-) => void;
+export type CurriedAssigner = (
+	measures: Measure[],
+	selectionData: SelectionData[]
+) => boolean;
+
+export type AssignerLifter = (assigner: CurriedAssigner) => void;
+
+export type AssignerExecuter = (assigner: CurriedAssigner) => void;
