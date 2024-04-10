@@ -3,6 +3,7 @@
 import { BeatCanvas } from "..";
 import { ReactDrawingCanvas } from "../../drawing-canvas/react-drawing-canvas";
 import {
+  BeatCanvasDrawOptions,
   MeasureLineIteratorDel,
   MeasureLinesOptions,
   MeasureOptions,
@@ -15,6 +16,7 @@ import {
   NotePropDel,
 } from "@/types/music-rendering/canvas/clickable-beat-canvas";
 import { ClickableOverlay } from "./clickable-overlay";
+import { DeepPartial } from "@/types";
 
 export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
   private overlay: ClickableOverlay;
@@ -23,9 +25,10 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
   private intermDrawMeasureLines!: BeatCanvas["drawMeasureLines"]; //This is a protected method, need to store it outside of the beat canvas property
   constructor(
     drawingCanvas: ReactDrawingCanvas,
-    delegates?: BeatCanvasPropDelegates
+    delegates?: BeatCanvasPropDelegates,
+    drawOptions?: DeepPartial<BeatCanvasDrawOptions>
   ) {
-    super(drawingCanvas);
+    super(drawingCanvas, drawOptions);
     this.overlay = new ClickableOverlay(
       drawingCanvas.drawRectangle.bind(drawingCanvas)
     );

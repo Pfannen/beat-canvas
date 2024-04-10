@@ -47,22 +47,32 @@ const createMockMeasures = () => {
   return measures;
 };
 
+type BeatCanvasDel = () => RelativeClickableBeatCanvas;
+
 export const getHTMLCanvas = (
   aspectRatio: number,
   measures: Measure[],
   musicDimensions: MusicDimensionData,
   delegates?: Partial<PropDelegates>,
-  lineToSpaceRatio = 3
+  lineToSpaceRatio = 3,
+  getBeatCanvas?: BeatCanvasDel
 ) => {
   const music = new Music();
   music.setMeasures(measures);
   const drawingCanvas = new ReactDrawingCanvas("%");
   const converter = (xValue: number) => xValue / aspectRatio;
-  const beatCanvas = new RelativeClickableBeatCanvas(
-    converter,
-    drawingCanvas,
-    delegates
-  );
+  let beatCanvas;
+  if (getBeatCanvas) {
+    beatCanvas = getBeatCanvas();
+  } else {
+    beatCanvas = new RelativeClickableBeatCanvas(
+      converter,
+      drawingCanvas,
+      delegates,
+      { note: { noteBodyAspectRatio: 1.5 / aspectRatio } }
+    );
+  }
+
   const renderer = new MeasureRenderer(
     music,
     6,

@@ -1,4 +1,5 @@
 import { Coordinate } from "@/objects/measurement/types";
+import { DeepPartial } from "@/types";
 import { IDrawingCanvas } from "@/types/music-rendering/canvas";
 import {
   BeatCanvasNoteDrawOptions,
@@ -33,13 +34,26 @@ const tempDrawOptions = {
   measure: tempMeasureDrawOptions,
 };
 
+const getDrawOptions = () => {
+  return tempDrawOptions;
+};
+
 export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
   implements IBeatCanvas
 {
   protected canvas: T;
-  protected drawOptions: BeatCanvasDrawOptions = tempDrawOptions;
-  constructor(canvas: T) {
+  protected drawOptions: BeatCanvasDrawOptions;
+  constructor(canvas: T, drawOptions?: DeepPartial<BeatCanvasDrawOptions>) {
     this.canvas = canvas;
+    this.drawOptions = getDrawOptions();
+    this.combineDrawOptions(drawOptions);
+  }
+
+  private combineDrawOptions(drawOptions?: DeepPartial<BeatCanvasDrawOptions>) {
+    if (drawOptions?.note?.noteBodyAspectRatio) {
+      this.drawOptions.note.noteBodyAspectRatio =
+        drawOptions.note.noteBodyAspectRatio;
+    }
   }
 
   protected static iterateMeasureLines(
@@ -98,8 +112,6 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
       options.lineCount * options.lineHeight
     );
   }
-
-  protected static getNoteDimensions(options: NoteAreaOptions) {}
 
   private drawStem(options: StemOptions) {
     const widthRadius = options.bodyWidth / 2;
@@ -164,8 +176,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     const stemHeight =
       options.bodyHeight * this.drawOptions.note.stemHeightBodyFraction +
       Math.abs(options.stemOffset || 0);
-    const stemWidth =
-      options.bodyHeight * this.drawOptions.note.stemWidthBodyFraction;
+    const stemWidth = width * this.drawOptions.note.stemWidthBodyFraction;
     return this.drawStem({
       bodyCenter: options.bodyCenter,
       stemHeight,
