@@ -5,7 +5,7 @@ import { MeasureWidthCalculator } from "../measure-manager/measure-width-calcula
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
 import { BODY_CT } from "@/objects/measurement/constants";
-import { BeatCanvasDel, MusicUnitConverter } from "@/types/music-rendering";
+import { BeatCanvasDel } from "@/types/music-rendering";
 
 export class MeasureRenderer {
   private bodyCt = BODY_CT;
@@ -20,7 +20,8 @@ export class MeasureRenderer {
     music: Music,
     aboveBelowCount: number,
     musicDimensions: MusicDimensionData,
-    getBeatCanvasForPage: BeatCanvasDel
+    getBeatCanvasForPage: BeatCanvasDel,
+    lineToSpaceRatio = 3
   ) {
     this.music = music;
     this.musicDimensions = {
@@ -30,7 +31,11 @@ export class MeasureRenderer {
     this.getBeatCanvasForPage = getBeatCanvasForPage;
     this.transformer = new MeasureTransformer(music);
     this.aboveBelowCount = aboveBelowCount;
-    this.measurements = new Measurements(aboveBelowCount, this.bodyCt, 3);
+    this.measurements = new Measurements(
+      aboveBelowCount,
+      this.bodyCt,
+      lineToSpaceRatio
+    );
   }
 
   private getMeasureDimensions(measureIndex: number) {

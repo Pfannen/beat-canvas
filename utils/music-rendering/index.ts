@@ -8,6 +8,8 @@ import { MusicLayout } from "@/objects/music-rendering/music-layout";
 import { PageDimensionParams } from "@/objects/music-rendering/music-layout/page-dimension-params";
 import { Music } from "@/objects/music/readonly-music";
 import { IBeatCanvas } from "@/types/music-rendering/canvas/beat-canvas";
+import { PropDelegates } from "@/types/music-rendering/canvas/clickable-beat-canvas";
+import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 
 export const renderMeasures = (
   measures: Measure[],
@@ -24,38 +26,6 @@ export const renderMeasures = (
     getBeatCanvasForPage
   );
   renderer.render();
-};
-
-export const drawMockMeasures = (
-  getBeatCanvasForPage: (pageNum: number) => IBeatCanvas
-) => {
-  renderMeasures(createMockMeasures(), getBeatCanvasForPage);
-};
-
-export const getHTMLCanvas = (aspectRatio: number) => {
-  const drawingCanvas = new ReactDrawingCanvas("%");
-  const converter = (xValue: number) => xValue / aspectRatio;
-  const beatCanvas = new RelativeClickableBeatCanvas(
-    converter,
-    drawingCanvas,
-    undefined,
-    undefined,
-    (identifiers) => {
-      return {
-        onClick: () => {
-          console.log(identifiers);
-        },
-      };
-    }
-  );
-  const music = new Music();
-  const dimensions = MusicLayout.getHomePageDimensions(aspectRatio);
-  music.setMeasures(createMockMeasures());
-  const renderer = new MeasureRenderer(music, 6, dimensions, () => beatCanvas);
-  renderer.render();
-  return beatCanvas.createCanvas({
-    style: { position: "relative", width: "100%", height: "100%" },
-  });
 };
 
 const createMockMeasures = () => {
@@ -75,4 +45,33 @@ const createMockMeasures = () => {
     });
   }
   return measures;
+};
+
+export const getHTMLCanvas = (
+  aspectRatio: number,
+  measures: Measure[],
+  musicDimensions: MusicDimensionData,
+  delegates?: Partial<PropDelegates>,
+  lineToSpaceRatio = 3
+) => {
+  const music = new Music();
+  music.setMeasures(measures);
+  const drawingCanvas = new ReactDrawingCanvas("%");
+  const converter = (xValue: number) => xValue / aspectRatio;
+  const beatCanvas = new RelativeClickableBeatCanvas(
+    converter,
+    drawingCanvas,
+    delegates
+  );
+  const renderer = new MeasureRenderer(
+    music,
+    6,
+    musicDimensions,
+    () => beatCanvas,
+    lineToSpaceRatio
+  );
+  renderer.render();
+  return beatCanvas.createCanvas({
+    style: { position: "relative", width: "100%", height: "100%" },
+  });
 };

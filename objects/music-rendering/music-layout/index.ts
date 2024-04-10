@@ -66,7 +66,17 @@ export class MusicLayout {
     return this.getDimensions(PageDimensionParams.genericSheetMusic());
   }
 
-  static getHomePageDimensions(aspectRatio: number) {
-    return this.getDimensions(PageDimensionParams.homePageMusic(aspectRatio));
+  static getMarginlessSheetMusic(
+    aspectRatio: number,
+    linesPerPage = 7,
+    measuresPerLine = 3
+  ) {
+    return this.getDimensions(
+      PageDimensionParams.marginlessSheetMusic(
+        aspectRatio,
+        linesPerPage,
+        measuresPerLine
+      )
+    );
   }
 }

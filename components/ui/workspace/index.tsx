@@ -9,6 +9,7 @@ import { clickBehavior } from "../measure/utils";
 import useWorkSpace from "./hooks/useWorkspace";
 import ControlButtons, { ControlButton } from "./control-buttons";
 import WorkspaceMusicCanvas from "./workspace-music-canvas";
+import EditMeasureModal from "./edit-measure-modal";
 
 type WorkspaceProps = {};
 
@@ -55,7 +56,7 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
         isMeasureSelected={ws.isMeasureSelected}
         areMeasuresSelected={ws.isSelectedMeasures()}
       />
-      <ReactModal
+      {/* <ReactModal
         isOpen={modalShouldOpen}
         onRequestClose={ws.mode.clear}
         shouldCloseOnOverlayClick={true}
@@ -69,7 +70,12 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
             />
           </div>
         )}
-      </ReactModal>
+      </ReactModal> */}
+      <EditMeasureModal
+        showModal={modalShouldOpen}
+        onClose={ws.mode.clear}
+        selectedMeasures={ws.getSelectedMeasures()!}
+      />
     </>
   );
 };

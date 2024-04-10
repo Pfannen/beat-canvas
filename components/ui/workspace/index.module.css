@@ -5,10 +5,6 @@
   margin-block: 1rem;
 }
 
-.modifiable_measure {
-  height: 30%;
-}
-
 .measure {
   cursor: pointer;
 }
