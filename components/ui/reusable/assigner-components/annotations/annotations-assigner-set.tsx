@@ -10,19 +10,20 @@ import {
 } from '@/utils/music/modify-score/music-hook-helpers';
 import DottedAssigner from './buttons/dotted';
 import { AssignerLifter, SelectionData } from '@/types/modify-score/assigner';
+import { Note } from '@/components/providers/music/types';
 
 interface AnnotationsAssignerSetProps {
 	liftExecuter?: AssignerLifter;
-	selectedNote?: { measureIndex: number; noteIndex: number };
+	selections?: { note?: Note }[];
 }
 
 const AnnotationsAssignerSet: FunctionComponent<
 	AnnotationsAssignerSetProps
-> = ({ liftExecuter, selectedNote }) => {
+> = ({ liftExecuter, selections }) => {
 	const annotationAssigner: NoteAnnotationAssigner = (key, value?) => {
 		console.log({ key, value });
 
-		if (!selectedNote) return;
+		if (!selections) return;
 		if (liftExecuter) {
 			liftExecuter(curriedModifyNoteAnnotation(key, value));
 		} else {

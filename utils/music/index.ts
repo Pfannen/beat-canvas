@@ -1,5 +1,6 @@
 import { Measure, NoteType } from '@/components/providers/music/types';
 import { Clef, PitchOctave } from '@/types/music';
+import { NoteAnnotations } from '@/types/music/note-annotations';
 
 export const getSecondsPerBeat = (bpm: number) => 1 / (bpm / 60);
 
@@ -195,3 +196,15 @@ export const getQuarterNoteDurationFromNoteType = (noteType: NoteType) => {
 
 export const noteTypeIsDotted = (noteType: NoteType) =>
 	noteType.startsWith('dotted-');
+
+export const getNoteAnnotationKeys = () => {
+	return [
+		'accent',
+		'accidental',
+		'chord',
+		'dotted',
+		'dynamic',
+		'slur',
+		'staccato',
+	] as (keyof Required<NoteAnnotations>)[];
+};

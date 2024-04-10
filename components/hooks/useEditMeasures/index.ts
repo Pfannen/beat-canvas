@@ -30,18 +30,6 @@ export const useEditMeasures = (startIndex: number, endIndex: number) => {
 		}
 	};
 
-	const getAttributes = (offset: number, x = 0) => {
-		if (offset > endIndex - startIndex || offset < 0) return null;
-		recache();
-
-		const attributes = getMeasureAttributes(
-			editMeasures,
-			attributeCache.current,
-			x
-		);
-		return { ...attributes };
-	};
-
 	function* iterateEditMeasures() {
 		recache();
 
@@ -58,6 +46,60 @@ export const useEditMeasures = (startIndex: number, endIndex: number) => {
 		if (assigner(copy, selections)) setEditMeasures(copy);
 	};
 
+	const filterSelections = (measureIndex: number, xStart: number) => {
+		return selections.filter(
+			({ measureIndex: curMI, xStart: curXStart }) =>
+				curMI !== measureIndex && curXStart !== xStart
+		);
+	};
+
+	const getAttributes = (offset: number, x = 0): MeasureAttributes | null => {
+		if (offset > endIndex - startIndex || offset < 0) return null;
+		recache();
+
+		const attributes = getMeasureAttributes(
+			editMeasures,
+			attributeCache.current,
+			x
+		);
+		return { ...attributes };
+	};
+
+	const addSelection = (
+		measureIndex: number,
+		xStart: number,
+		xEnd: number,
+		y: number,
+		noteIndex?: number
+	) => {
+		const newSelections = filterSelections(measureIndex, xStart);
+
+		// Can be null if bad measure index is given
+		const attributes = getAttributes(measureIndex, xStart);
+		if (attributes === null) return;
+
+		const newSelection: SelectionData = {
+			measureIndex,
+			xStart,
+			xEnd,
+			y,
+			attributes,
+			noteIndex,
+		};
+
+		const { notes } = editMeasures[measureIndex];
+		if (noteIndex !== undefined && notes.length < noteIndex) {
+			newSelection.note = notes[noteIndex];
+		}
+
+		newSelections.push(newSelection);
+		setSelections(newSelections);
+	};
+
+	const removeSelection = (measureIndex: number, xStart: number) => {
+		setSelections(filterSelections(measureIndex, xStart));
+	};
+
 	const commitMeasures = () => {
 		invokeMeasureModifier((getMeasures) => {
 			const measures = getMeasures(startIndex, endIndex - startIndex + 1);
@@ -68,9 +110,11 @@ export const useEditMeasures = (startIndex: number, endIndex: number) => {
 
 	return {
 		editMeasures,
-		getAttributes,
+		selections,
 		iterateEditMeasures,
 		executeAssigner,
+		addSelection,
+		removeSelection,
 		commitMeasures,
 	};
 };

@@ -18,6 +18,7 @@ const ModifyMusicAssigner: FunctionComponent<ModifyMusicAssignerProps> = ({
 		<AssignerButton
 			className={concatClassNames(classes.btn, !active && classes.inactive)}
 			onClick={onClick}
+			disabled={!active}
 		>
 			{children}
 		</AssignerButton>
