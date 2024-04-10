@@ -3,8 +3,9 @@ import classes from "./index.module.css";
 import { FunctionComponent } from "react";
 import ModalMeasureDispay from "./modal-measure-display";
 import { Measure } from "@/components/providers/music/types";
-import { Selection } from "@/components/hooks/useSelection";
+import useSelection, { Selection } from "@/components/hooks/useSelection";
 import { useMusic } from "@/components/providers/music";
+import { ABOVE_BELOW_CT, BODY_CT } from "@/objects/measurement/constants";
 
 type EditMeasureModalProps = {
   showModal: boolean;
@@ -17,6 +18,7 @@ const EditMeasureModal: FunctionComponent<EditMeasureModalProps> = ({
   onClose,
   selectedMeasures,
 }) => {
+  const s = useSelection();
   const { measures } = useMusic();
   return (
     <ReactModal
@@ -26,7 +28,23 @@ const EditMeasureModal: FunctionComponent<EditMeasureModalProps> = ({
     >
       {showModal && (
         <div className={classes.measures}>
-          <ModalMeasureDispay measures={[measures[selectedMeasures.start]]} />
+          <ModalMeasureDispay
+            measures={[measures[selectedMeasures.start]]}
+            onNoteClick={(identifier) => {
+              console.log("Note click", identifier);
+              s.updateSelection(identifier.noteIndex);
+            }}
+            getNoteOverlayClassName={(identifier) =>
+              s.isValueSelected(identifier.noteIndex)
+                ? classes.note_selected
+                : ""
+            }
+            onComponentClick={(identifier) =>
+              console.log("Component click", identifier)
+            }
+            bodyCt={BODY_CT}
+            aboveBelowCt={ABOVE_BELOW_CT}
+          />
         </div>
       )}
     </ReactModal>

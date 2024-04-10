@@ -2,3 +2,10 @@
   width: 100%;
   aspect-ratio: 4;
 }
+
+.note_selected {
+  opacity: 0.5;
+  background-color: limegreen;
+  border-radius: 6px;
+  transition: all 1s linear;
+}

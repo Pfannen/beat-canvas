@@ -46,7 +46,7 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     const className = concatClassNames(...classNames, props?.className);
     this.drawElement({
       ...props,
-      style,
+      style: { ...style, ...props?.style },
       className,
     });
   }
