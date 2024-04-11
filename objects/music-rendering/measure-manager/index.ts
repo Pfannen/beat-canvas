@@ -127,7 +127,7 @@ export class MeasureManager {
 
   public compute() {
     const { pageDimensions } = this.dimensionData;
-    let currentCoordinate = pageDimensions.firstMeasureStart;
+    let currentCoordinate = { ...pageDimensions.firstMeasureStart };
     let pageNumber = 1;
     let lineNumber = 1;
     let remainingWidth = this.getLineWidth(pageNumber, lineNumber);

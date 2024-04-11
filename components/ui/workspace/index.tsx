@@ -1,11 +1,6 @@
 "use client";
 
-import ReactModal from "react-modal";
-import DisplayMeasures from "../measure/display-measures";
-import classes from "./index.module.css";
 import { FunctionComponent } from "react";
-import ModifiableMeasures from "../measure/segmented-measure/modifiable-measures";
-import { clickBehavior } from "../measure/utils";
 import useWorkSpace from "./hooks/useWorkspace";
 import ControlButtons, { ControlButton } from "./control-buttons";
 import WorkspaceMusicCanvas from "./workspace-music-canvas";
@@ -52,25 +47,11 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
     <>
       <ControlButtons buttons={buttons} />
       <WorkspaceMusicCanvas
+        aspectRatio={0.75}
         onMeasureClick={ws.onMeasureClick}
         isMeasureSelected={ws.isMeasureSelected}
         areMeasuresSelected={ws.isSelectedMeasures()}
       />
-      {/* <ReactModal
-        isOpen={modalShouldOpen}
-        onRequestClose={ws.mode.clear}
-        shouldCloseOnOverlayClick={true}
-      >
-        {modalShouldOpen && (
-          <div className={classes.modifiable_measure}>
-            <ModifiableMeasures
-              measureIndex={ws.getSelectedMeasures()!.start} //ws.isSelectedMeasures is true
-              count={ws.getSelectedCount()}
-              modificationBehavior={clickBehavior}
-            />
-          </div>
-        )}
-      </ReactModal> */}
       <EditMeasureModal
         showModal={modalShouldOpen}
         onClose={ws.mode.clear}

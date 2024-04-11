@@ -2,10 +2,9 @@ import ReactModal from "react-modal";
 import classes from "./index.module.css";
 import { FunctionComponent } from "react";
 import ModalMeasureDispay from "./modal-measure-display";
-import { Measure } from "@/components/providers/music/types";
 import useSelection, { Selection } from "@/components/hooks/useSelection";
 import { useMusic } from "@/components/providers/music";
-import { ABOVE_BELOW_CT, BODY_CT } from "@/objects/measurement/constants";
+import { ABOVE_BELOW_CT } from "@/objects/measurement/constants";
 
 type EditMeasureModalProps = {
   showModal: boolean;
@@ -42,7 +41,6 @@ const EditMeasureModal: FunctionComponent<EditMeasureModalProps> = ({
             onComponentClick={(identifier) =>
               console.log("Component click", identifier)
             }
-            bodyCt={BODY_CT}
             aboveBelowCt={ABOVE_BELOW_CT}
           />
         </div>

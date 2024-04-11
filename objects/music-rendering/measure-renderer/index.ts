@@ -24,10 +24,7 @@ export class MeasureRenderer {
     lineToSpaceRatio = 3
   ) {
     this.music = music;
-    this.musicDimensions = {
-      pageDimensions: { ...musicDimensions.pageDimensions },
-      measureDimensions: { ...musicDimensions.measureDimensions },
-    };
+    this.musicDimensions = musicDimensions;
     this.getBeatCanvasForPage = getBeatCanvasForPage;
     this.transformer = new MeasureTransformer(music);
     this.aboveBelowCount = aboveBelowCount;

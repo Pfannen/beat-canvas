@@ -2,38 +2,43 @@
 
 import { useMusic } from "@/components/providers/music";
 import classes from "./index.module.css";
-import { FunctionComponent } from "react";
-import MusicCanvas from "../../home/music-canvas";
+import { CSSProperties, FunctionComponent } from "react";
+import MeasureSelectCanvas from "../../reusable/music-canvas/measure-select-canvas";
 
 type WorkspaceMusicCanvasProps = {
+  aspectRatio: number;
   onMeasureClick: (index: number) => void;
   isMeasureSelected: (index: number) => boolean;
   areMeasuresSelected: boolean;
 };
 
 const WorkspaceMusicCanvas: FunctionComponent<WorkspaceMusicCanvasProps> = ({
+  aspectRatio,
   onMeasureClick,
   isMeasureSelected,
   areMeasuresSelected,
 }) => {
   const { measures } = useMusic();
   return (
-    <MusicCanvas
-      measures={measures}
-      aspectRatio={0.75}
-      propDelegates={{
-        getMeasureProps: ({ measureIndex }) => {
-          return {
-            onClick: onMeasureClick.bind(null, measureIndex),
-            className: areMeasuresSelected
-              ? isMeasureSelected(measureIndex)
-                ? classes.selected
-                : classes.not_selected
-              : "",
-          };
-        },
-      }}
-    />
+    <div
+      className={classes.canvas}
+      style={{ "--aspect-ratio": aspectRatio } as CSSProperties}
+    >
+      <MeasureSelectCanvas
+        measures={measures}
+        aspectRatio={aspectRatio}
+        onMeasureClick={({ measureIndex }) => {
+          onMeasureClick(measureIndex);
+        }}
+        getMeasureClassName={({ measureIndex }) => {
+          return areMeasuresSelected
+            ? isMeasureSelected(measureIndex)
+              ? classes.selected
+              : classes.not_selected
+            : "";
+        }}
+      />
+    </div>
   );
 };
 

@@ -12,12 +12,17 @@ export type MeasureIdentifier = { measureIndex: number };
 
 export type MeasurePropDel = PropDelegate<MeasureIdentifier>;
 
+export type MeasureComponentContext = { isLine: boolean; isBody: boolean };
+
 export type MeasureComponentIdentifier = {
   measureIndex: number;
   absoluteYPos: number;
-  isLine: boolean;
-  isBody: boolean;
-};
+} & MeasureComponentContext;
+
+export type RelativeMeasureComponentIdentifier = {
+  measureIndex: number;
+  yPos: number;
+} & MeasureComponentContext;
 
 export type MeasureCompPropDel = PropDelegate<MeasureComponentIdentifier>;
 
