@@ -1,26 +1,25 @@
 "use client";
+
 import classes from "./index.module.css";
 import { FunctionComponent } from "react";
-import { SegmentGenerator, SegmentRenderer } from "../types";
-import { TimeSignature, Note } from "@/components/providers/music/types";
+import { SegmentGenerator, SegmentRenderer } from "../../measure/types";
+import { TimeSignature, Measure } from "@/components/providers/music/types";
 import { measuresToSegmentArray } from "@/utils/segments/measuresToSegments";
 
-export type SegmentedMeasureProps = {
+export type SegmentedContainerProps = {
   segmentGenerator: SegmentGenerator;
   renderSegment: SegmentRenderer;
-  notes: Note[];
-  // addNote: (note: Note) => void;
-  // removeNote: (xPos: number, yPos: number) => void;
+  measure: Measure;
   timeSignature: TimeSignature;
 };
 
-const SegmentedMeasure: FunctionComponent<SegmentedMeasureProps> = ({
+const SegmentedContainer: FunctionComponent<SegmentedContainerProps> = ({
   segmentGenerator,
   renderSegment,
-  notes,
+  measure,
   timeSignature,
 }) => {
-  const segments = measuresToSegmentArray(segmentGenerator, [{ notes }], 0);
+  const segments = measuresToSegmentArray(segmentGenerator, [measure], 0);
   return (
     <div className={classes.measure}>
       {segments.map((segment) => {
@@ -36,4 +35,4 @@ const SegmentedMeasure: FunctionComponent<SegmentedMeasureProps> = ({
   );
 };
 
-export default SegmentedMeasure;
+export default SegmentedContainer;

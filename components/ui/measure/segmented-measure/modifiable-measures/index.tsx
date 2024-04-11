@@ -1,7 +1,7 @@
 import { minimalSegmentGenerator } from "@/components/ui/reusable/segment-split/utils";
 import classes from "./index.module.css";
 import { FunctionComponent, useState } from "react";
-import SegmentedMeasure from "..";
+import SegmentedMeasure from "../../../reusable/segmented-container";
 import SplitSegment from "../../segment/split-segment";
 import { useMusic } from "@/components/providers/music";
 import NoteSelection from "@/components/ui/reusable/note-selection";

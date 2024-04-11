@@ -1,0 +1,6 @@
+.pane {
+  width: var(--width);
+  color: var(--color);
+  height: 100%;
+  border-radius: 12px;
+}
