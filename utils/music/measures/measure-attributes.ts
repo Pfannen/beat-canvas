@@ -67,6 +67,7 @@ const getTemporalAttributesAtX = (measure: Measure, x: number) => {
 	let i = 0;
 	while (i < tA.length && tA[i].x < x) i++;
 	if (i < tA.length && tA[i].x === x) return tA[i].attributes;
+	else return null;
 };
 
 export const getMeasureAttributes = (
@@ -85,4 +86,14 @@ export const getMeasureAttributes = (
 	}
 
 	return measureAttributes;
+};
+
+export const getPartialMeasureAttributes = (measure: Measure, x = 0) => {
+	const partialMA: Partial<MeasureAttributes> = {};
+	if (measure.staticAttributes)
+		Object.assign(partialMA, measure.staticAttributes);
+	const tA = getTemporalAttributesAtX(measure, x);
+	if (tA) Object.assign(partialMA, tA);
+
+	return partialMA;
 };

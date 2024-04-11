@@ -48,9 +48,11 @@ export interface INotePlacementAssignerButton {
 	children: ReactNode;
 }
 
+// NOTE: Work-in-progress
 export type SelectionData = {
 	measureIndex: number;
-	attributes: MeasureAttributes;
+	rollingAttributes: MeasureAttributes;
+	nonRollingAttributes: Partial<MeasureAttributes>;
 	xStart: number;
 	xEnd: number;
 	y: number;

@@ -2,17 +2,7 @@ import { modifyNoteAnnotation } from '../../../utils/music/modify-score/note';
 import { Note } from '../../../components/providers/music/types';
 import { NoteAnnotations } from '../../../types/music/note-annotations';
 import assert, { equal } from 'assert';
-
-const createNote = (annotations?: NoteAnnotations) => {
-	const note: Note = {
-		x: 0,
-		y: 0,
-		type: 'quarter',
-		annotations,
-	};
-
-	return note;
-};
+import { createNote } from '../helpers';
 
 // #region Add
 

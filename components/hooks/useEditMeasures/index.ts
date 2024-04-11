@@ -2,7 +2,10 @@ import { useMusic } from '@/components/providers/music';
 import { Measure } from '@/components/providers/music/types';
 import { AssignerExecuter, SelectionData } from '@/types/modify-score/assigner';
 import { MeasureAttributes } from '@/types/music';
-import { getMeasureAttributes } from '@/utils/music/measures/measure-attributes';
+import {
+	getMeasureAttributes,
+	getPartialMeasureAttributes,
+} from '@/utils/music/measures/measure-attributes';
 import { noteAttributeGenerator } from '@/utils/music/measures/measure-generator';
 import { useEffect, useRef, useState } from 'react';
 
@@ -77,17 +80,19 @@ export const useEditMeasures = (startIndex: number, endIndex: number) => {
 		// Can be null if bad measure index is given
 		const attributes = getAttributes(measureIndex, xStart);
 		if (attributes === null) return;
+		const measure = editMeasures[measureIndex];
 
 		const newSelection: SelectionData = {
 			measureIndex,
 			xStart,
 			xEnd,
 			y,
-			attributes,
+			rollingAttributes: attributes,
+			nonRollingAttributes: getPartialMeasureAttributes(measure, xStart),
 			noteIndex,
 		};
 
-		const { notes } = editMeasures[measureIndex];
+		const { notes } = measure;
 		if (noteIndex !== undefined && notes.length < noteIndex) {
 			newSelection.note = notes[noteIndex];
 		}

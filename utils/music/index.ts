@@ -1,5 +1,11 @@
 import { Measure, NoteType } from '@/components/providers/music/types';
-import { Clef, PitchOctave } from '@/types/music';
+import {
+	Clef,
+	MeasureAttributes,
+	PitchOctave,
+	dynamicMeasureAttributesKeys,
+	staticMeasureAttributesKeys,
+} from '../../types/music'; // NOTE: Jest doesn't like when there's an '@' to locate the folder
 import { NoteAnnotations } from '@/types/music/note-annotations';
 
 export const getSecondsPerBeat = (bpm: number) => 1 / (bpm / 60);
@@ -207,4 +213,11 @@ export const getNoteAnnotationKeys = () => {
 		'slur',
 		'staccato',
 	] as (keyof Required<NoteAnnotations>)[];
+};
+
+export const getMeasureAttributeKeys = () => {
+	return [
+		...staticMeasureAttributesKeys,
+		...dynamicMeasureAttributesKeys,
+	] as (keyof MeasureAttributes)[];
 };
