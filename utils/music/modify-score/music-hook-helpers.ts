@@ -6,6 +6,7 @@ import { modifyMeasureAttribute } from './measures';
 import { CurriedAssigner, SelectionData } from '@/types/modify-score/assigner';
 import { Note, NoteType } from '@/components/providers/music/types';
 import { NotePlacementValidator } from '@/types/modify-score';
+import { placeNote, removeNote } from '../note-placement';
 
 export const modifyNoteAnnotationAdapter =
 	<K extends keyof NoteAnnotations>(
@@ -97,33 +98,36 @@ export const curriedModifyMeasureAttribute =
 		return true;
 	};
 
-// TODO: Make these actual methods
-const placeNote = (notes: Note[], note: Note) => {};
-const destroyNote = (notes: Note[], x: number) => {};
-
 export const curriedPlaceNote =
 	(
 		noteType: NoteType,
 		notePlacementValidator?: NotePlacementValidator
 	): CurriedAssigner =>
 	(measures, selectionData) => {
+		let measuresModified = false;
+
 		if (notePlacementValidator) {
 			// place notes
-			selectionData.forEach(({ measureIndex, xStart, y }) => {
-				const { notes } = measures[measureIndex];
-				if (notePlacementValidator(notes, xStart)) {
+			selectionData.forEach(
+				({ measureIndex, xStart, y, rollingAttributes: { timeSignature } }) => {
+					const { notes } = measures[measureIndex];
 					const note: Note = {
 						x: xStart,
 						y,
 						type: noteType,
 					};
-					placeNote(notes, note);
+
+					if (placeNote(note, notes, notePlacementValidator, timeSignature))
+						measuresModified = true;
 				}
-			});
+			);
 		} else {
-			selectionData.forEach(({ measureIndex, xStart }) => {
-				destroyNote(measures[measureIndex].notes, xStart);
+			selectionData.forEach(({ measureIndex, note }) => {
+				if (!note) return;
+				if (removeNote(measures[measureIndex].notes, note.x))
+					measuresModified = true;
 			});
 		}
-		return true;
+
+		return measuresModified;
 	};

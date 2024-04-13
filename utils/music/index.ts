@@ -1,4 +1,4 @@
-import { Measure, NoteType } from '@/components/providers/music/types';
+import { NoteType, SegmentBeat } from '@/components/providers/music/types';
 import {
 	Clef,
 	MeasureAttributes,
@@ -200,6 +200,16 @@ export const getQuarterNoteDurationFromNoteType = (noteType: NoteType) => {
 	}
 };
 
+export const rightHandSplits: { [key: number]: SegmentBeat } = {
+	0.5: 0.5,
+	0.25: 0.25,
+	0.75: 0.25,
+	0.125: 0.125,
+	0.375: 0.125,
+	0.625: 0.125,
+	0.875: 0.125,
+};
+
 export const noteTypeIsDotted = (noteType: NoteType) =>
 	noteType.startsWith('dotted-');
 
@@ -220,4 +230,15 @@ export const getMeasureAttributeKeys = () => {
 		...staticMeasureAttributesKeys,
 		...dynamicMeasureAttributesKeys,
 	] as (keyof MeasureAttributes)[];
+};
+
+export const getNoteTypes = () => {
+	return [
+		'whole',
+		'half',
+		'quarter',
+		'eighth',
+		'sixteenth',
+		'thirtysecond',
+	] as NoteType[];
 };

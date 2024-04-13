@@ -4,7 +4,6 @@ import AssignerInputLayout from '../style/assigner-input-layout';
 import AssignerInputField from '../style/assigner-input-field';
 import ModifyMusicAssigner from '../style/modify-music-assigner-button';
 import AssignerDropdownField from '../style/assigner-dropdown-field';
-import { nameNoteTypes } from '@/types/music';
 import { DropdownItemDisplay } from '../assigner-dropdown';
 import WholeNoteSVG from '@/components/ui/svg/notes/whole-note';
 import HalfNoteSVG from '@/components/ui/svg/notes/half-note';

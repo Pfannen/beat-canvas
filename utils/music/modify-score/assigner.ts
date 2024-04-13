@@ -5,8 +5,16 @@ import {
 	SelectionMetadata,
 } from '@/types/modify-score/assigner';
 import { NoteAnnotations } from '@/types/music/note-annotations';
-import { getMeasureAttributeKeys, getNoteAnnotationKeys } from '..';
+import {
+	getMeasureAttributeKeys,
+	getNoteAnnotationKeys,
+	getNoteTypes,
+	rightHandSplits,
+} from '..';
 import { MeasureAttributes } from '@/types/music';
+import { NoteType, TimeSignature } from '@/components/providers/music/types';
+import { getNoteDuration } from '../../../components/providers/music/utils';
+import { isValidXOffsetForNoteType } from '../note-placement';
 
 // T: The type the selection metadata originates from
 // K: A key in T
@@ -30,7 +38,7 @@ type CountMap<T> = {
 	[key in keyof T]?: number;
 };
 
-const updateStructures = <T extends {}>(
+const updateMetadataStructures = <T extends {}>(
 	metadata: SelectionMetadata<T>,
 	countMap: CountMap<T>,
 	instance: T
@@ -88,7 +96,7 @@ export const getAnnotationSelectionMetadata = (selections: SelectionData[]) => {
 		const { annotations } = note;
 		if (!annotations) return;
 
-		updateStructures(metadata, countMap, annotations);
+		updateMetadataStructures(metadata, countMap, annotations);
 	});
 
 	if (notesSelected === 0) return null;
@@ -109,7 +117,7 @@ export const getAttributeSelectionMetadata = (selections: SelectionData[]) => {
 	const countMap: CountMap<MeasureAttributes> = {};
 
 	selections.forEach(({ nonRollingAttributes }) => {
-		updateStructures(metadata, countMap, nonRollingAttributes);
+		updateMetadataStructures(metadata, countMap, nonRollingAttributes);
 	});
 
 	updateAllSelectionsHave(
@@ -120,4 +128,43 @@ export const getAttributeSelectionMetadata = (selections: SelectionData[]) => {
 	);
 
 	return metadata as SelectionMetadata<MeasureAttributes>;
+};
+
+// NOTE: Can update this method to use binary search, but number of note types are
+// small enough where it doesn't matter
+export const getValidNotePlacementTypes = (selections: SelectionData[]) => {
+	// Get an array of all note types
+	// NOTE: These are sorted in decreasing order of duration
+	const noteTypes = getNoteTypes();
+	// Store the index of the largest note type we can fit
+	let largestValidIdx = 0;
+
+	// Iterate through each selection
+	for (let i = 0; i < selections.length; i++) {
+		// Extract the variables needed
+		const {
+			rollingAttributes: { timeSignature },
+			xStart,
+		} = selections[i];
+
+		// Loop while there are still note types left and we can't place the current largest
+		// note type at our current x position
+		while (
+			largestValidIdx < noteTypes.length &&
+			!isValidXOffsetForNoteType(
+				xStart,
+				noteTypes[largestValidIdx],
+				timeSignature
+			)
+		) {
+			// If we can't place the note at the current x, increment the largest valid index
+			largestValidIdx++;
+		}
+	}
+
+	// If no note type can fit, return null
+	if (largestValidIdx >= noteTypes.length) return null;
+	// Else there exists some note types that can fit all selections, and a set
+	// of them is returned for easy lookup
+	else return new Set<NoteType>(noteTypes.slice(largestValidIdx));
 };
