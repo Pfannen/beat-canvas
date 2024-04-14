@@ -6,11 +6,13 @@ const widthMap: { [key: string]: string } = { "1": "orange" };
 
 type SegmentPaneProps = {
   onClick: () => void;
+  onAuxClick: () => void;
   width: number;
 };
 
 const SegmentPane: FunctionComponent<SegmentPaneProps> = ({
   onClick,
+  onAuxClick,
   width,
 }) => {
   return (
@@ -23,6 +25,7 @@ const SegmentPane: FunctionComponent<SegmentPaneProps> = ({
         } as CSSProperties
       }
       onClick={onClick}
+      onAuxClick={onAuxClick}
     />
   );
 };

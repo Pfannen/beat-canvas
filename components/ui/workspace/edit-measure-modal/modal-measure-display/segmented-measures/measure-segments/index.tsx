@@ -10,18 +10,23 @@ import SegmentPane from "./segment-pane";
 type MeasureSegmentsProps = {
   measure: Measure;
   onSegmentClick: (xPos: number) => void;
+  onSegmentAuxClick: (xPos: number) => void;
   splitSegementRegistry: RegistryDelegates;
 };
 
 const MeasureSegments: FunctionComponent<MeasureSegmentsProps> = ({
   measure,
   onSegmentClick,
+  onSegmentAuxClick,
   splitSegementRegistry,
 }) => {
   const getComponentProps = (xPos: number) => {
     return {
       onClick: () => {
         onSegmentClick(xPos);
+      },
+      onAuxClick: () => {
+        onSegmentAuxClick(xPos);
       },
       width: 1,
     };
@@ -40,7 +45,7 @@ const MeasureSegments: FunctionComponent<MeasureSegmentsProps> = ({
             registryDelegates={splitSegementRegistry}
             identifier={props.xPos}
             width={props.width}
-            canSplit={true}
+            canSplit={!props.notes}
             minWidth={0}
             getChildrenKeys={keyFn}
           />

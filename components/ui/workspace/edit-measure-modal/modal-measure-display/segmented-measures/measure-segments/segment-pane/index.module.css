@@ -1,5 +1,5 @@
 .pane {
-  width: calc(var(--width) / 1.2);
+  width: calc(var(--width) / 1.05);
   background-color: var(--color);
   height: 100%;
   outline: 1px solid var(--color);

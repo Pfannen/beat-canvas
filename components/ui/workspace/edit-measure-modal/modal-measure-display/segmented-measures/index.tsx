@@ -19,6 +19,7 @@ const SegmentedMeasures: FunctionComponent<SegmentedMeasuresProps> = ({
           <MeasureSegments
             splitSegementRegistry={registry}
             onSegmentClick={registry.splitSegment}
+            onSegmentAuxClick={registry.joinSegment}
             measure={measure}
           />
         </div>
