@@ -1,6 +1,5 @@
 import {
 	AnnotationSelectionMetadata,
-	AttributeSelectionMetadata,
 	SelectionData,
 	SelectionMetadata,
 } from '@/types/modify-score/assigner';
@@ -9,27 +8,29 @@ import {
 	getMeasureAttributeKeys,
 	getNoteAnnotationKeys,
 	getNoteTypes,
-	rightHandSplits,
 } from '..';
 import { MeasureAttributes } from '@/types/music';
-import { NoteType, TimeSignature } from '@/components/providers/music/types';
-import { getNoteDuration } from '../../../components/providers/music/utils';
-import { isValidXOffsetForNoteType } from '../note-placement';
+import { NoteType } from '@/components/providers/music/types';
 import { NotePlacementValidator } from '@/types/modify-score';
 
 // T: The type the selection metadata originates from
 // K: A key in T
 // selectionMetadataEntry: The metadata for the K
 export const getAssignValue = <T, K extends keyof T>(
-	selectionMetadataEntry?: SelectionMetadata<T>[K]
+	selectionMetadataEntry?: SelectionMetadata<T>[K],
+	defaultValue?: T[K]
 ) => {
 	let assignValue: T[K] | undefined;
 	if (selectionMetadataEntry) {
 		const { value, allSelectionsHave } = selectionMetadataEntry;
-		// If all selections don't have the value, assign them strong
-		// OR if all selections do have the value, which is undefined, assign them strong
-		if (!allSelectionsHave || !value) assignValue = value;
-		// Else assignValue remains undefined
+		// If all selections don't have the value, selections should be assigned a value
+		if (!allSelectionsHave) assignValue = value || defaultValue;
+		// Else if all selections do have the value, selections should be assigned a value
+		// if 'value' is undefined, or should delete the value if 'value' is not undefined
+		else {
+			if (!value) assignValue = defaultValue;
+			else assignValue = undefined;
+		}
 	}
 
 	return assignValue;

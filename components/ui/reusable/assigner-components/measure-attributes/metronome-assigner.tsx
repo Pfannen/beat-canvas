@@ -39,7 +39,8 @@ const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
 	);
 
 	const assignValue = getAssignValue<MeasureAttributes, 'metronome'>(
-		attributeMetadata
+		attributeMetadata,
+		{ beatsPerMinute: defaultBPM, beatNote: 4 }
 	);
 
 	return (

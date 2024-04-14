@@ -15,7 +15,8 @@ const DynamicAssignerDropdown: FunctionComponent<
 	DynamicAssignerDropdownProps
 > = ({ assigner, attributeMetadata }) => {
 	const assignValue = getAssignValue<MeasureAttributes, 'dynamic'>(
-		attributeMetadata
+		attributeMetadata,
+		'pp'
 	);
 
 	return (

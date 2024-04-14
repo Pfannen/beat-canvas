@@ -15,6 +15,7 @@ const NotePlacementAssigner: FunctionComponent<NotePlacementAssignerProps> = ({
 		<ModifyMusicAssigner
 			onClick={!disabled ? assigner.bind(null, noteType) : undefined}
 			disabled={disabled}
+			add
 		>
 			{children}
 		</ModifyMusicAssigner>

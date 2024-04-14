@@ -7,6 +7,8 @@ import VolumeManager from '@/components/ui/volume-manager';
 import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
 import AssignerButtonRepo from '@/components/ui/reusable/assigner-components/assigner-button-repo';
 import { stacklessNotePlacementValidator } from '@/utils/music/note-placement';
+import { SelectionData } from '@/types/modify-score/assigner';
+import { initializeMeasureAttributes } from '@/utils/music/measures/measure-generator';
 
 type ImportExportTestPageProps = {};
 
@@ -16,6 +18,27 @@ const ImportExportTestPage: FunctionComponent<
 	const { setScore, setImportedAudio, playMusic, volumeModifier, volumePairs } =
 		usePlayback();
 	const { musicScore, setNewMusicScore, replaceMeasures } = useMusic();
+
+	const testSelection: SelectionData[] = [
+		{
+			measureIndex: 0,
+			measureNotes: [],
+			xStart: 0,
+			xEnd: 0.75,
+			y: 0,
+			rollingAttributes: initializeMeasureAttributes({ notes: [] }),
+			nonRollingAttributes: {},
+		},
+		{
+			measureIndex: 0,
+			measureNotes: [],
+			xStart: 0.5,
+			xEnd: 0.75,
+			y: 0,
+			rollingAttributes: initializeMeasureAttributes({ notes: [] }),
+			nonRollingAttributes: {},
+		},
+	];
 
 	return (
 		<>
@@ -32,7 +55,7 @@ const ImportExportTestPage: FunctionComponent<
 				modifyVolume={volumeModifier.modifyVolume}
 			/>
 			<AssignerButtonRepo
-				selections={[]}
+				selections={testSelection}
 				notePlacementValidator={stacklessNotePlacementValidator}
 			/>
 		</>

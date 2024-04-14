@@ -15,7 +15,8 @@ const KeySignatureAssigner: FunctionComponent<KeySignatureAssignerProps> = ({
 	attributeMetadata,
 }) => {
 	const assignValue = getAssignValue<MeasureAttributes, 'keySignature'>(
-		attributeMetadata
+		attributeMetadata,
+		0
 	);
 
 	return (
@@ -23,6 +24,7 @@ const KeySignatureAssigner: FunctionComponent<KeySignatureAssignerProps> = ({
 			onClick={(ksValue) => assigner('keySignature', parseInt(ksValue))}
 			label="Key Signature"
 			disabled={!attributeMetadata}
+			add={assignValue !== undefined}
 		>
 			{keySignatures.map((sig, i) => {
 				return { displayValue: sig, value: i.toString(), el: <p>{sig}</p> };

@@ -16,7 +16,8 @@ const AccentAssigner: FunctionComponent<AccentAssignerProps> = ({
 	annotationMetadata,
 }) => {
 	const assignValue = getAssignValue<NoteAnnotations, 'accent'>(
-		annotationMetadata
+		annotationMetadata,
+		'strong'
 	);
 
 	return (

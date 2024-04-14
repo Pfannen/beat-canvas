@@ -20,7 +20,8 @@ const TimeSignatureAssigner: FunctionComponent<TimeSignatureAssignerProps> = ({
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const assignValue = getAssignValue<MeasureAttributes, 'timeSignature'>(
-		attributeMetadata
+		attributeMetadata,
+		{ beatNote: 4, beatsPerMeasure: 4 }
 	);
 
 	return (

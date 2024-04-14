@@ -13,7 +13,8 @@ const DottedAssigner: FunctionComponent<DottedAssignerProps> = ({
 	annotationMetadata,
 }) => {
 	const assignValue = getAssignValue<NoteAnnotations, 'dotted'>(
-		annotationMetadata
+		annotationMetadata,
+		true
 	);
 
 	return (

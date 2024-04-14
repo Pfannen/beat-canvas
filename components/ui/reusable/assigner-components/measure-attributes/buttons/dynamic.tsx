@@ -16,13 +16,15 @@ const DynamicAssigner: FunctionComponent<DynamicAssignerProps> = ({
 	attributeMetadata,
 }) => {
 	const assignValue = getAssignValue<MeasureAttributes, 'dynamic'>(
-		attributeMetadata
+		attributeMetadata,
+		'pp'
 	);
 
 	return (
 		<ModifyMusicAssigner
 			onClick={() => assigner('dynamic', assignValue && dynamic)}
 			disabled={!attributeMetadata}
+			add={!!assignValue}
 		>
 			{dynamic}
 		</ModifyMusicAssigner>
