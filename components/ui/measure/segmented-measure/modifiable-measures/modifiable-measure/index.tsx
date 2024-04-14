@@ -1,5 +1,5 @@
 // import { minimalSegmentGenerator } from "@/components/ui/reusable/segment-split/utils";
-import SegmentedMeasure from "../../../../reusable/segmented-container";
+import SegmentedMeasure from "../../../../reusable/segments";
 import classes from "./index.module.css";
 import { FunctionComponent } from "react";
 import { Note, NoteType } from "@/components/providers/music/types";

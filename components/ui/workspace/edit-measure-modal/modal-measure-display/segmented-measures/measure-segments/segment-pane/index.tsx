@@ -1,11 +1,12 @@
+import { fractionToPercent } from "@/utils";
 import classes from "./index.module.css";
 import { CSSProperties, FunctionComponent } from "react";
 
-const widthMap: { [key: string]: string } = { "1": "black" };
+const widthMap: { [key: string]: string } = { "1": "orange" };
 
 type SegmentPaneProps = {
   onClick: () => void;
-  width: string;
+  width: number;
 };
 
 const SegmentPane: FunctionComponent<SegmentPaneProps> = ({
@@ -17,8 +18,8 @@ const SegmentPane: FunctionComponent<SegmentPaneProps> = ({
       className={classes.pane}
       style={
         {
-          "--width": width,
-          "--color": widthMap[width] || "white",
+          "--width": fractionToPercent(width),
+          "--color": widthMap[width] || "orange",
         } as CSSProperties
       }
       onClick={onClick}

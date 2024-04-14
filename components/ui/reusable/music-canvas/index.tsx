@@ -1,5 +1,5 @@
 import { BeatCanvasPropDelegates } from "@/types/music-rendering/canvas/clickable-beat-canvas";
-import { FunctionComponent } from "react";
+import { FunctionComponent, ReactNode } from "react";
 import { Measure } from "@/components/providers/music/types";
 import {
   drawMeasures,
@@ -14,6 +14,7 @@ type MusicCanvasProps = {
   propDelegates?: BeatCanvasPropDelegates;
   dimensions: MusicDimensionData;
   lineToSpaceRatio: number;
+  children?: ReactNode;
 };
 
 const MusicCanvas: FunctionComponent<MusicCanvasProps> = ({
@@ -23,6 +24,7 @@ const MusicCanvas: FunctionComponent<MusicCanvasProps> = ({
   propDelegates,
   dimensions,
   lineToSpaceRatio,
+  children,
 }) => {
   const beatCanvas = getRelativeBeatCanvas(aspectRatio, propDelegates);
   drawMeasures(
@@ -32,8 +34,10 @@ const MusicCanvas: FunctionComponent<MusicCanvasProps> = ({
     () => beatCanvas,
     lineToSpaceRatio
   );
+
   return beatCanvas.createCanvas({
     style: { position: "relative", width: "100%", height: "100%" },
+    children,
   });
 };
 

@@ -117,6 +117,7 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     return (
       <C {...restProps}>
         <MeasureComponents />
+        {restProps.children}
       </C>
     );
   }

@@ -3,10 +3,9 @@ import {
   NoteIdentifier,
   RelativeMeasureComponentIdentifier,
 } from "@/types/music-rendering/canvas/clickable-beat-canvas";
-import { FunctionComponent } from "react";
+import { FunctionComponent, ReactNode } from "react";
 import MusicCanvas from "..";
 import { Measure } from "@/components/providers/music/types";
-import { MusicLayout } from "@/objects/music-rendering/music-layout";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 
 type ComponentNoteSelectCanvasProps = {
@@ -19,6 +18,7 @@ type ComponentNoteSelectCanvasProps = {
   onMeasureComponentClick: (
     identifier: RelativeMeasureComponentIdentifier
   ) => void;
+  children?: ReactNode;
 };
 
 const ComponentNoteSelectCanvas: FunctionComponent<
@@ -31,6 +31,7 @@ const ComponentNoteSelectCanvas: FunctionComponent<
   onNoteClick,
   getNoteClassName,
   onMeasureComponentClick,
+  children,
 }) => {
   const getNoteProps = (identifiers: NoteIdentifier) => {
     return {
@@ -55,7 +56,9 @@ const ComponentNoteSelectCanvas: FunctionComponent<
       dimensions={dimensions}
       lineToSpaceRatio={1.5}
       propDelegates={{ getNoteProps, getMeasureComponentProps }}
-    />
+    >
+      {children}
+    </MusicCanvas>
   );
 };
 

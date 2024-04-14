@@ -1,8 +1,11 @@
+import classes from "./index.module.css";
+
 import { Measure } from "@/components/providers/music/types";
 import { FunctionComponent, useMemo } from "react";
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
 import { NoteIdentifier } from "@/types/music-rendering/canvas/clickable-beat-canvas";
 import ComponentNoteSelectCanvas from "@/components/ui/reusable/music-canvas/component-note-select-canvas";
+import SegmentedMeasures from "./segmented-measures";
 
 const aspectRatio = 4;
 
@@ -37,7 +40,9 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
       onNoteClick={onNoteClick}
       getNoteClassName={getNoteOverlayClassName}
       onMeasureComponentClick={onComponentClick}
-    />
+    >
+      <SegmentedMeasures measures={measures} />
+    </ComponentNoteSelectCanvas>
   );
 };
 
