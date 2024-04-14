@@ -19,6 +19,8 @@ import {
 import { concatClassNames } from "@/utils/css";
 import { StyleCreator } from "./style-creator";
 
+const svgViewBox = "0 0 1 1";
+
 export class ReactDrawingCanvas implements IDrawingCanvas {
   private unit: UnitMeasurement;
   private components: ReactElement[] = [];
@@ -28,22 +30,31 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
 
   private static attachDrawOptions(
     options: Partial<HTMLDrawOptions> | undefined,
-    style: StyleCreator
+    style: StyleCreator,
+    defaultColor = "black"
   ) {
     if (options) {
       style.addOpacity(options.opacity === undefined ? 1 : 0);
       if (options.degreeRotation) style.addRotation(options.degreeRotation);
       if (options.cursor) style.addCursor(options.cursor);
     }
-    style.addBackgroundColor(options?.color || "black");
+    style.addBackgroundColor(options?.color || defaultColor);
+  }
+
+  private static extractStyleData(styles: StyleCreator, className?: string) {
+    const { style, classNames } = styles.getStyle();
+    const classN = concatClassNames(...classNames, className);
+    return { style, className: classN };
   }
 
   private createStyledElement(
     styles: StyleCreator,
     props: ComponentProps<"div">
   ) {
-    const { style, classNames } = styles.getStyle();
-    const className = concatClassNames(...classNames, props?.className);
+    const { style, className } = ReactDrawingCanvas.extractStyleData(
+      styles,
+      props?.className
+    );
     this.drawElement({
       ...props,
       style,
@@ -101,7 +112,33 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
   }
 
   drawSVG(options: HTMLSVGOptions): void {
-    throw new Error("Method not implemented.");
+    const scale = options.scale || 1;
+    const styleCreator = new CoordinateStyleCreator(
+      options.center,
+      scale / 5,
+      scale / 5,
+      this.unit
+    );
+    styleCreator.styles.center();
+    ReactDrawingCanvas.attachDrawOptions(
+      options.drawOptions,
+      styleCreator.styles,
+      "transparent"
+    );
+    const { style, className } = ReactDrawingCanvas.extractStyleData(
+      styleCreator.styles
+    );
+    const component = (
+      <svg
+        viewBox={svgViewBox}
+        scale={options.scale}
+        style={style}
+        className={className}
+      >
+        <path d={options.path} />
+      </svg>
+    );
+    this.components.push(component);
   }
 
   getComponents(): FunctionComponent {

@@ -48,12 +48,14 @@ export type EllipseDrawOptions<T = {}> = OptionsWithDrawOptions<
   T
 >;
 
-export type SVGOptions = {};
+export type SVGOptions = { center: Coordinate; path: string; scale?: number };
+
+export type SVGDrawOptions<T = {}> = OptionsWithDrawOptions<SVGOptions, T>;
 
 export interface IDrawingCanvas {
   drawLine(options: LineDrawOptions): void;
   drawCircle(options: CircleDrawOptions): void;
   drawRectangle(options: RectangleDrawOptions): void;
   drawEllipse(options: EllipseDrawOptions): void;
-  drawSVG(options: SVGOptions): void;
+  drawSVG(options: SVGDrawOptions): void;
 }

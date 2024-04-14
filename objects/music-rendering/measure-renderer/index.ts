@@ -132,8 +132,19 @@ export class MeasureRenderer {
           });
           noteIndex++;
         } else {
-          // const {rest} = component;
-          // this.beatCanvas.drawRest({type: rest.type, })
+          const { rest } = component;
+          const duration = this.music.getRestDuration(measureIndex, rest.type);
+          const x =
+            measureData.width *
+              Measurements.getXFractionOffset(
+                rest.x,
+                duration,
+                timeSig.beatsPerMeasure
+              ) +
+            measureBottom.x;
+          const yOffset = this.measurements.getYFractionOffset(4);
+          const y = noteContainerHeight * yOffset + measureBottom.y;
+          beatCanvas.drawRest({ center: { x, y }, type: rest.type });
         }
       });
     });
