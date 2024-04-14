@@ -10,6 +10,9 @@ import HalfNoteSVG from '@/components/ui/svg/notes/half-note';
 import QuarterNoteSVG from '@/components/ui/svg/notes/quarter-note';
 import EighthNoteSVG from '@/components/ui/svg/notes/eigth-note';
 import SixteenthNoteSVG from '@/components/ui/svg/notes/sixteenth-note';
+import { IAttributeAssignerComponent } from '@/types/modify-score/assigner';
+import { getAssignValue } from '@/utils/music/modify-score/assigner';
+import { MeasureAttributes } from '@/types/music';
 
 const nameNoteTypesWithElement: DropdownItemDisplay[] = [
 	{ value: '1', displayValue: 'whole', el: <WholeNoteSVG /> },
@@ -22,17 +25,21 @@ const minBPM = 1;
 const maxBPM = 360;
 const defaultBPM = 60;
 
-interface MetronomeAssignerProps {
-	onClick: (bpm: number, beatNote: number) => void;
-}
+interface MetronomeAssignerProps
+	extends IAttributeAssignerComponent<'metronome'> {}
 
 const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
-	onClick,
+	assigner,
+	attributeMetadata,
 }) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [bpm, setBPM] = useState(defaultBPM);
 	const [beatNote, setBeatNote] = useState<DropdownItemDisplay>(
 		nameNoteTypesWithElement[2]
+	);
+
+	const assignValue = getAssignValue<MeasureAttributes, 'metronome'>(
+		attributeMetadata
 	);
 
 	return (
@@ -61,18 +68,27 @@ const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
 					ref1={inputRef}
 					min={minBPM}
 					max={maxBPM}
+					disabled={!attributeMetadata}
 				/>{' '}
 				<AssignerDropdownField
 					onChange={(e) =>
 						setBeatNote(nameNoteTypesWithElement[e.target.selectedIndex])
 					}
 					defaultValue={4}
+					disabled={!attributeMetadata}
 				>
 					{nameNoteTypesWithElement}
 				</AssignerDropdownField>
 			</div>
 			<ModifyMusicAssigner
-				onClick={onClick.bind(null, bpm, +beatNote.value!)}
+				onClick={() =>
+					assigner('metronome', {
+						beatNote: +beatNote.value!,
+						beatsPerMinute: bpm,
+					})
+				}
+				add={!!assignValue}
+				disabled={!attributeMetadata}
 			>
 				<div
 					style={{

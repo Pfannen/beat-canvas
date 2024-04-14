@@ -1,8 +1,8 @@
-import { SelectionData } from '../../../types/modify-score/assigner';
-import { checkMetadata, createSelection } from '../helpers';
-import { getAttributeSelectionMetadata } from '../../../utils/music/modify-score/assigner';
+import { SelectionData } from '../../../../types/modify-score/assigner';
+import { checkMetadata, createSelection } from '../../helpers';
+import { getAttributeSelectionMetadata } from '../../../../utils/music/modify-score/assigner';
 import assert, { equal } from 'assert';
-import { getMeasureAttributeKeys } from '../../../utils/music';
+import { getMeasureAttributeKeys } from '../../../../utils/music';
 import { MeasureAttributes } from '@/types/music';
 
 test('Metadata is returned with every attribute mapping to a value', () => {

@@ -26,6 +26,7 @@ export const createSelection = (params: Partial<CreateParams> = {}) => {
 	const { annotations, rollingAttributes, nonRollingAttributes } = params;
 	const selection: SelectionData = {
 		measureIndex: params.measureIndex || 0,
+		measureNotes: params.measureNotes || [],
 		xStart: params.xStart || 0,
 		xEnd: params.xEnd || params.xStart || 1,
 		y: params.y || 0,

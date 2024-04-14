@@ -2,20 +2,26 @@ import { FunctionComponent, useRef, useState } from 'react';
 import classes from './TimeSignatureAssigner.module.css';
 import AssignerInputLayout from '../style/assigner-input-layout';
 import AssignerInputField from '../style/assigner-input-field';
-import { numberNoteTypes } from '@/types/music';
+import { MeasureAttributes, numberNoteTypes } from '@/types/music';
 import ModifyMusicAssigner from '../style/modify-music-assigner-button';
 import AssignerDropdownField from '../style/assigner-dropdown-field';
+import { IAttributeAssignerComponent } from '@/types/modify-score/assigner';
+import { getAssignValue } from '@/utils/music/modify-score/assigner';
 
-interface TimeSignatureAssignerProps {
-	onClick: (beatsPerMeasure: number, beatNote: number) => void;
-}
+interface TimeSignatureAssignerProps
+	extends IAttributeAssignerComponent<'timeSignature'> {}
 
 const TimeSignatureAssigner: FunctionComponent<TimeSignatureAssignerProps> = ({
-	onClick,
+	assigner,
+	attributeMetadata,
 }) => {
 	const [beatsPerMeasure, setBeatsPerMeasure] = useState(4);
 	const [beatNote, setBeatNote] = useState(4);
 	const inputRef = useRef<HTMLInputElement>(null);
+
+	const assignValue = getAssignValue<MeasureAttributes, 'timeSignature'>(
+		attributeMetadata
+	);
 
 	return (
 		<AssignerInputLayout>
@@ -43,11 +49,13 @@ const TimeSignatureAssigner: FunctionComponent<TimeSignatureAssignerProps> = ({
 					min="1"
 					max="99"
 					ref1={inputRef}
+					disabled={!attributeMetadata}
 				/>{' '}
 				/{' '}
 				<AssignerDropdownField
 					onChange={(e) => setBeatNote(parseInt(e.target.value))}
 					defaultValue={4}
+					disabled={!attributeMetadata}
 				>
 					{
 						numberNoteTypes.map((num) => ({
@@ -58,7 +66,14 @@ const TimeSignatureAssigner: FunctionComponent<TimeSignatureAssignerProps> = ({
 				</AssignerDropdownField>
 			</div>
 			<ModifyMusicAssigner
-				onClick={onClick.bind(null, beatsPerMeasure, beatNote)}
+				onClick={() =>
+					assigner('timeSignature', {
+						beatNote: beatNote,
+						beatsPerMeasure: beatsPerMeasure,
+					})
+				}
+				disabled={!attributeMetadata}
+				add={!!assignValue}
 			>
 				<p style={{ display: 'inline' }}>{beatsPerMeasure}</p>/
 				<p style={{ display: 'inline' }}>{beatNote}</p>

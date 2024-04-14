@@ -1,25 +1,26 @@
 import { FunctionComponent } from 'react';
 import classes from './DottedAssigner.module.css';
-import { INoteAnnotationAssignerButton } from '@/types/modify-score/assigner';
+import { IAnnotationAssignerComponent } from '@/types/modify-score/assigner';
 import ModifyMusicAssigner from '../../style/modify-music-assigner-button';
 import DottedSVG from '@/components/ui/svg/annotations/dotted-svg';
 import { getAssignValue } from '@/utils/music/modify-score/assigner';
 import { NoteAnnotations } from '@/types/music/note-annotations';
 
-interface DottedAssignerProps extends INoteAnnotationAssignerButton<'dotted'> {}
+interface DottedAssignerProps extends IAnnotationAssignerComponent<'dotted'> {}
 
 const DottedAssigner: FunctionComponent<DottedAssignerProps> = ({
 	assigner,
-	selectionMetadata,
+	annotationMetadata,
 }) => {
 	const assignValue = getAssignValue<NoteAnnotations, 'dotted'>(
-		selectionMetadata
+		annotationMetadata
 	);
 
 	return (
 		<ModifyMusicAssigner
 			onClick={() => assigner('dotted', assignValue)}
-			active={!!selectionMetadata}
+			disabled={!annotationMetadata}
+			add={!!assignValue}
 		>
 			<DottedSVG />
 		</ModifyMusicAssigner>

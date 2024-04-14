@@ -25,24 +25,27 @@ export type AnnotationSelectionMetadata = SelectionMetadata<NoteAnnotations>;
 
 export type AttributeSelectionMetadata = SelectionMetadata<MeasureAttributes>;
 
-export interface IMusicAssignerButton {
-	active?: boolean;
-	assigner: NoteAnnotationAssigner | MeasureAttributeAssigner;
+export interface IMusicAssignerComponent {
+	disabled?: boolean;
+	add?: boolean;
 }
 
-export interface INoteAnnotationAssignerButton<K extends keyof NoteAnnotations>
-	extends IMusicAssignerButton {
+export interface IAnnotationAssignerComponent<K extends keyof NoteAnnotations> {
 	assigner: NoteAnnotationAssigner;
-	// If selectionMetadata is not present, that means every selection doesn't have the ability to
+	// If annotationMetadata is not present, that means every selection doesn't have the ability to
 	// have the note annotation assigned to it
-	selectionMetadata?: AnnotationSelectionMetadata[K];
+	annotationMetadata?: AnnotationSelectionMetadata[K];
 }
 
-export interface IMeasureAssignerButton extends IMusicAssignerButton {
+export interface IAttributeAssignerComponent<
+	K extends keyof MeasureAttributes
+> {
 	assigner: MeasureAttributeAssigner;
+	attributeMetadata?: AttributeSelectionMetadata[K];
 }
 
-export interface INotePlacementAssignerButton {
+export interface INotePlacementAssignerComponent
+	extends IMusicAssignerComponent {
 	assigner: (noteType: NoteType) => void;
 	noteType: NoteType;
 	children: ReactNode;
@@ -51,6 +54,7 @@ export interface INotePlacementAssignerButton {
 // NOTE: Work-in-progress
 export type SelectionData = {
 	measureIndex: number;
+	measureNotes: Note[];
 	rollingAttributes: MeasureAttributes;
 	nonRollingAttributes: Partial<MeasureAttributes>;
 	xStart: number;

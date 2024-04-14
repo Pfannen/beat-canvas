@@ -1,29 +1,26 @@
 import { FunctionComponent } from 'react';
-import classes from './AnnotationsAssignerSet.module.css';
 import AssignerButtonSet from '../style/assigner-button-set';
 import AccentAssigner from './buttons/accent';
 import { NoteAnnotationAssigner } from '@/types/modify-score';
-import { useMusic } from '@/components/providers/music';
-import {
-	curriedModifyNoteAnnotation,
-	modifyNoteAnnotationAdapter,
-} from '@/utils/music/modify-score/music-hook-helpers';
+import { curriedModifyNoteAnnotation } from '@/utils/music/modify-score/music-hook-helpers';
 import DottedAssigner from './buttons/dotted';
-import { AssignerLifter, SelectionData } from '@/types/modify-score/assigner';
-import { Note } from '@/components/providers/music/types';
+import {
+	AssignerLifter,
+	SelectionMetadata,
+} from '@/types/modify-score/assigner';
+import { NoteAnnotations } from '@/types/music/note-annotations';
 
 interface AnnotationsAssignerSetProps {
 	liftExecuter?: AssignerLifter;
-	selections?: { note?: Note }[];
+	annotationMetadata?: SelectionMetadata<NoteAnnotations>;
 }
 
 const AnnotationsAssignerSet: FunctionComponent<
 	AnnotationsAssignerSetProps
-> = ({ liftExecuter, selections }) => {
+> = ({ liftExecuter, annotationMetadata }) => {
 	const annotationAssigner: NoteAnnotationAssigner = (key, value?) => {
 		console.log({ key, value });
 
-		if (!selections) return;
 		if (liftExecuter) {
 			liftExecuter(curriedModifyNoteAnnotation(key, value));
 		} else {
@@ -33,8 +30,14 @@ const AnnotationsAssignerSet: FunctionComponent<
 
 	return (
 		<AssignerButtonSet title={'Note Annotations'}>
-			<AccentAssigner assigner={annotationAssigner} />
-			<DottedAssigner assigner={annotationAssigner} />
+			<AccentAssigner
+				assigner={annotationAssigner}
+				annotationMetadata={annotationMetadata?.accent}
+			/>
+			<DottedAssigner
+				assigner={annotationAssigner}
+				annotationMetadata={annotationMetadata?.dotted}
+			/>
 		</AssignerButtonSet>
 	);
 };

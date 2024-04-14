@@ -1,14 +1,14 @@
 import {
 	SelectionData,
 	SelectionMetadata,
-} from '../../../types/modify-score/assigner';
-import { Note } from '../../../components/providers/music/types';
-import { NoteAnnotations } from '../../../types/music/note-annotations';
-import { MeasureAttributes } from '../../../types/music';
+} from '../../../../types/modify-score/assigner';
+import { Note } from '../../../../components/providers/music/types';
+import { NoteAnnotations } from '../../../../types/music/note-annotations';
+import { MeasureAttributes } from '../../../../types/music';
 import assert, { equal } from 'assert';
-import { getAnnotationSelectionMetadata } from '../../../utils/music/modify-score/assigner';
-import { getNoteAnnotationKeys } from '../../../utils/music';
-import { checkMetadata, createSelection } from '../helpers';
+import { getAnnotationSelectionMetadata } from '../../../../utils/music/modify-score/assigner';
+import { getNoteAnnotationKeys } from '../../../../utils/music';
+import { checkMetadata, createSelection } from '../../helpers';
 
 test('Metadata is returned with every annotation mapping to a value', () => {
 	const a: NoteAnnotations = {

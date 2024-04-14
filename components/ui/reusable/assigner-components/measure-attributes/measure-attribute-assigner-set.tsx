@@ -1,32 +1,32 @@
 import { FunctionComponent } from 'react';
 import classes from './measure-attribute-assigner-set.module.css';
 import AssignerButtonSet from '../style/assigner-button-set';
-import ModifyMusicAssigner from '../style/modify-music-assigner-button';
 import DynamicAssigner from './buttons/dynamic';
 import { MeasureAttributeAssigner } from '@/types/modify-score';
 import { Dynamic } from '@/types/music/note-annotations';
-import { AssignerLifter, SelectionData } from '@/types/modify-score/assigner';
-import { useMusic } from '@/components/providers/music';
-import { addNote } from '@/components/providers/music/hooks/useMeasures/utils';
 import {
-	curriedModifyMeasureAttribute,
-	modifyMeasureAttributesAdapter,
-} from '@/utils/music/modify-score/music-hook-helpers';
+	AssignerLifter,
+	SelectionMetadata,
+} from '@/types/modify-score/assigner';
+import { curriedModifyMeasureAttribute } from '@/utils/music/modify-score/music-hook-helpers';
 import AssignerDropdown from '../assigner-dropdown';
 import TimeSignatureAssigner from './time-signature-assigner';
 import MetronomeAssigner from './metronome-assigner';
+import { MeasureAttributes } from '@/types/music';
+import DynamicAssignerDropdown from './dynamic-assigner';
+import KeySignatureAssigner from './key-signature-assigner';
 
 // Purely for testing purposes
 const dynamics: Dynamic[] = ['p', 'pp', 'mp', 'mf', 'fp', 'f', 'ff'];
-const keySignatures: string[] = ['C', 'F', 'Bb', 'Eb', 'Ab', 'Db'];
 
 interface MeasureAttributeAssignerSetProps {
 	liftExecuter?: AssignerLifter;
+	attributeMetadata?: SelectionMetadata<MeasureAttributes>;
 }
 
 const MeasureAttributeAssignerSet: FunctionComponent<
 	MeasureAttributeAssignerSetProps
-> = ({ liftExecuter }) => {
+> = ({ liftExecuter, attributeMetadata }) => {
 	const assigner: MeasureAttributeAssigner = (attribute, value) => {
 		console.log({ attribute, value });
 
@@ -43,41 +43,26 @@ const MeasureAttributeAssignerSet: FunctionComponent<
 						key={dynamic}
 						dynamic={dynamic}
 						assigner={assigner}
+						attributeMetadata={attributeMetadata?.dynamic}
 					/>
 				))}
 			</AssignerButtonSet>
 			<div className={classes.dropdowns}>
-				<AssignerDropdown
-					onClick={(dynamicValue) =>
-						assigner('dynamic', dynamicValue as Dynamic)
-					}
-					label="Dynamic"
-				>
-					{dynamics.map((dynamic) => {
-						return {
-							displayValue: dynamic,
-							value: dynamic,
-							el: <p>{dynamic}</p>,
-						};
-					})}
-				</AssignerDropdown>
-				<AssignerDropdown
-					onClick={(ksValue) => assigner('keySignature', parseInt(ksValue))}
-					label="Key Signature"
-				>
-					{keySignatures.map((sig, i) => {
-						return { displayValue: sig, value: i.toString(), el: <p>{sig}</p> };
-					})}
-				</AssignerDropdown>
+				<DynamicAssignerDropdown
+					attributeMetadata={attributeMetadata?.dynamic}
+					assigner={assigner}
+				/>
+				<KeySignatureAssigner
+					assigner={assigner}
+					attributeMetadata={attributeMetadata?.keySignature}
+				/>
 				<TimeSignatureAssigner
-					onClick={(bpm, bn) => {
-						assigner('timeSignature', { beatsPerMeasure: bpm, beatNote: bn });
-					}}
+					assigner={assigner}
+					attributeMetadata={attributeMetadata?.timeSignature}
 				/>
 				<MetronomeAssigner
-					onClick={(bpm, bn) =>
-						assigner('metronome', { beatsPerMinute: bpm, beatNote: bn })
-					}
+					assigner={assigner}
+					attributeMetadata={attributeMetadata?.metronome}
 				/>
 			</div>
 		</div>

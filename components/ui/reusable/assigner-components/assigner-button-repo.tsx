@@ -9,10 +9,22 @@ import {
 	CurriedAssigner,
 	SelectionData,
 } from '@/types/modify-score/assigner';
+import {
+	getAnnotationSelectionMetadata,
+	getAttributeSelectionMetadata,
+	getValidNotePlacementTypes,
+} from '@/utils/music/modify-score/assigner';
+import { NotePlacementValidator } from '@/types/modify-score';
 
-interface AssignerButtonRepoProps {}
+interface AssignerButtonRepoProps {
+	selections: SelectionData[];
+	notePlacementValidator: NotePlacementValidator;
+}
 
-const AssignerButtonRepo: FunctionComponent<AssignerButtonRepoProps> = () => {
+const AssignerButtonRepo: FunctionComponent<AssignerButtonRepoProps> = ({
+	selections,
+	notePlacementValidator,
+}) => {
 	const delegateRef = useRef<CurriedAssigner>();
 
 	const liftExecuter: AssignerLifter = (assigner) => {
@@ -20,15 +32,33 @@ const AssignerButtonRepo: FunctionComponent<AssignerButtonRepoProps> = () => {
 		delegateRef.current = assigner;
 	};
 
+	// NOTE: Could make a single function to retrieve both - would be faster too
+	const annotationMetadata = getAnnotationSelectionMetadata(selections);
+	const attributeMetadata = getAttributeSelectionMetadata(selections);
+	const validPlacementTypes = getValidNotePlacementTypes(
+		selections,
+		notePlacementValidator
+	);
+
 	return (
 		<LayoutList
 			layoutProps={{
 				'--list-item-width': 'minmax(200px, 1fr)',
 			}}
 		>
-			<NotePlacementAssignerSet liftExecuter={liftExecuter} />
-			<AnnotationsAssignerSet liftExecuter={liftExecuter} />
-			<MeasureAttributeAssignerSet liftExecuter={liftExecuter} />
+			<NotePlacementAssignerSet
+				liftExecuter={liftExecuter}
+				validPlacementTypes={validPlacementTypes}
+				notePlacementValidator={notePlacementValidator}
+			/>
+			<AnnotationsAssignerSet
+				liftExecuter={liftExecuter}
+				annotationMetadata={annotationMetadata || undefined}
+			/>
+			<MeasureAttributeAssignerSet
+				liftExecuter={liftExecuter}
+				attributeMetadata={attributeMetadata || undefined}
+			/>
 		</LayoutList>
 	);
 };

@@ -6,6 +6,7 @@ import { useMusic } from '@/components/providers/music';
 import VolumeManager from '@/components/ui/volume-manager';
 import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
 import AssignerButtonRepo from '@/components/ui/reusable/assigner-components/assigner-button-repo';
+import { stacklessNotePlacementValidator } from '@/utils/music/note-placement';
 
 type ImportExportTestPageProps = {};
 
@@ -30,7 +31,10 @@ const ImportExportTestPage: FunctionComponent<
 				volumePairs={volumePairs}
 				modifyVolume={volumeModifier.modifyVolume}
 			/>
-			<AssignerButtonRepo />
+			<AssignerButtonRepo
+				selections={[]}
+				notePlacementValidator={stacklessNotePlacementValidator}
+			/>
 		</>
 	);
 };

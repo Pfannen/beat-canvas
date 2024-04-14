@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 import classes from './AccentAssigner.module.css';
-import { INoteAnnotationAssignerButton } from '@/types/modify-score/assigner';
+import { IAnnotationAssignerComponent } from '@/types/modify-score/assigner';
 import ModifyMusicAssigner from '../../style/modify-music-assigner-button';
 import AccentSVG from '@/components/ui/svg/annotations/accent-svg';
 import { getAssignValue } from '@/utils/music/modify-score/assigner';
@@ -9,20 +9,21 @@ import {
 	NoteAnnotations,
 } from '@/types/music/note-annotations';
 
-interface AccentAssignerProps extends INoteAnnotationAssignerButton<'accent'> {}
+interface AccentAssignerProps extends IAnnotationAssignerComponent<'accent'> {}
 
 const AccentAssigner: FunctionComponent<AccentAssignerProps> = ({
 	assigner,
-	selectionMetadata,
+	annotationMetadata,
 }) => {
 	const assignValue = getAssignValue<NoteAnnotations, 'accent'>(
-		selectionMetadata
+		annotationMetadata
 	);
 
 	return (
 		<ModifyMusicAssigner
 			onClick={() => assigner('accent', assignValue)}
-			active={!!selectionMetadata}
+			disabled={!annotationMetadata}
+			add={!!assignValue}
 		>
 			<AccentSVG />
 		</ModifyMusicAssigner>

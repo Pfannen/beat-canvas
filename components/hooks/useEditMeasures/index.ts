@@ -84,6 +84,8 @@ export const useEditMeasures = (startIndex: number, endIndex: number) => {
 
 		const newSelection: SelectionData = {
 			measureIndex,
+			// Deep copy measure notes
+			measureNotes: JSON.parse(JSON.stringify(measure.notes)),
 			xStart,
 			xEnd,
 			y,

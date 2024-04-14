@@ -4,16 +4,23 @@ import { concatClassNames } from '@/utils/css';
 
 interface AssignerInputLayoutProps extends HTMLAttributes<HTMLDivElement> {
 	children: ReactNode;
+	disabled?: boolean;
+	add?: boolean;
 }
 
 const AssignerInputLayout: FunctionComponent<AssignerInputLayoutProps> = ({
 	children,
 	className,
+	disabled,
 	...props
 }) => {
 	return (
 		<div
-			className={concatClassNames(className, classes.assigner_container)}
+			className={concatClassNames(
+				className,
+				classes.assigner_container,
+				disabled ? classes.disabled : ''
+			)}
 			{...props}
 		>
 			{children}

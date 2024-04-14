@@ -15,6 +15,7 @@ import { MeasureAttributes } from '@/types/music';
 import { NoteType, TimeSignature } from '@/components/providers/music/types';
 import { getNoteDuration } from '../../../components/providers/music/utils';
 import { isValidXOffsetForNoteType } from '../note-placement';
+import { NotePlacementValidator } from '@/types/modify-score';
 
 // T: The type the selection metadata originates from
 // K: A key in T
@@ -82,6 +83,8 @@ const updateAllSelectionsHave = <T extends {}>(
 };
 
 export const getAnnotationSelectionMetadata = (selections: SelectionData[]) => {
+	if (selections.length === 0) return null;
+
 	// Store selection metadata
 	const metadata: AnnotationSelectionMetadata = {};
 	// Store a mapping of annotation -> count ; used to determine if all selections have an annotation
@@ -113,6 +116,8 @@ export const getAnnotationSelectionMetadata = (selections: SelectionData[]) => {
 };
 
 export const getAttributeSelectionMetadata = (selections: SelectionData[]) => {
+	if (selections.length === 0) return null;
+
 	const metadata: SelectionMetadata<Partial<MeasureAttributes>> = {};
 	const countMap: CountMap<MeasureAttributes> = {};
 
@@ -132,7 +137,12 @@ export const getAttributeSelectionMetadata = (selections: SelectionData[]) => {
 
 // NOTE: Can update this method to use binary search, but number of note types are
 // small enough where it doesn't matter
-export const getValidNotePlacementTypes = (selections: SelectionData[]) => {
+export const getValidNotePlacementTypes = (
+	selections: SelectionData[],
+	placementValidator: NotePlacementValidator
+) => {
+	if (selections.length === 0) return new Set<NoteType>();
+
 	// Get an array of all note types
 	// NOTE: These are sorted in decreasing order of duration
 	const noteTypes = getNoteTypes();
@@ -145,17 +155,19 @@ export const getValidNotePlacementTypes = (selections: SelectionData[]) => {
 		const {
 			rollingAttributes: { timeSignature },
 			xStart,
+			measureNotes,
 		} = selections[i];
 
 		// Loop while there are still note types left and we can't place the current largest
 		// note type at our current x position
 		while (
 			largestValidIdx < noteTypes.length &&
-			!isValidXOffsetForNoteType(
+			placementValidator(
+				measureNotes,
 				xStart,
 				noteTypes[largestValidIdx],
 				timeSignature
-			)
+			) === -1
 		) {
 			// If we can't place the note at the current x, increment the largest valid index
 			largestValidIdx++;
@@ -163,7 +175,7 @@ export const getValidNotePlacementTypes = (selections: SelectionData[]) => {
 	}
 
 	// If no note type can fit, return null
-	if (largestValidIdx >= noteTypes.length) return null;
+	if (largestValidIdx >= noteTypes.length) return new Set<NoteType>();
 	// Else there exists some note types that can fit all selections, and a set
 	// of them is returned for easy lookup
 	else return new Set<NoteType>(noteTypes.slice(largestValidIdx));
