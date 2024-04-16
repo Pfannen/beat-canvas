@@ -1,6 +1,6 @@
 .measures {
   width: 100%;
-  aspect-ratio: 4;
+  aspect-ratio: var(--aspect-ratio);
 }
 
 .note_selected {

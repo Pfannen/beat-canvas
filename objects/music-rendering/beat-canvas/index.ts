@@ -70,34 +70,6 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
       del({ width: options.width, height, corner, ...component });
       currY -= height;
     });
-    // const componentCount = options.lineCount + options.spaceCount;
-    // let isLine = options.topComponentIsLine;
-
-    // let bodyEndY = 0;
-    // let bodyStartY = 0;
-    // for (let yPos = componentCount; yPos > 0; yPos--) {
-    //   const corner = { x, y: currY };
-    //   const isBody = yPos >= options.bodyStartPos && yPos <= options.bodyEndPos;
-    //   let height = options.spaceHeight;
-    //   if (isLine) {
-    //     height = options.lineHeight;
-    //   }
-    //   del({
-    //     width: options.width,
-    //     height,
-    //     isBody,
-    //     corner,
-    //     isLine,
-    //     absoluteYPos: yPos,
-    //   });
-    //   if (yPos === options.bodyStartPos) {
-    //     bodyStartY = currY;
-    //   } else if (yPos === options.bodyEndPos) {
-    //     bodyEndY = currY;
-    //   }
-    //   isLine = !isLine;
-    //   currY -= height;
-    // }
   }
 
   private drawStem(options: StemOptions) {
@@ -121,11 +93,16 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
 
   protected drawMeasureLines(options: MeasureLinesOptions) {
     const iteratorDel: MeasureComponentContextIterator = (context) => {
+      let color = "black";
+      if (!context.isBody) {
+        color = "lightgray";
+      }
       if (context.isLine) {
         this.canvas.drawRectangle({
           corner: context.corner,
           width: context.width,
           height: -context.height,
+          drawOptions: { color },
         });
       }
     };

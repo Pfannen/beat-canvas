@@ -8,28 +8,25 @@ import ComponentNoteSelectCanvas from "@/components/ui/reusable/music-canvas/com
 import SegmentedMeasures from "./segmented-measures";
 import { Measurements } from "@/objects/measurement/measurements";
 import { BODY_CT } from "@/objects/measurement/constants";
+import MusicCanvas from "@/components/ui/reusable/music-canvas";
+import { MusicPosition } from "@/types/ui/music-modal";
 
-const aspectRatio = 4;
 const lineToSpaceRatio = 1.5;
 
 type ModalMeasureDisplayProps = {
   measures: Measure[];
   aboveBelowCt: number;
-  onNoteClick: (identifier: NoteIdentifier) => void;
-  getNoteOverlayClassName: (identifier: NoteIdentifier) => string;
-  onComponentClick: (identifier: {
-    measureIndex: number;
-    yPos: number;
-  }) => void;
-  // onSegmentClick: (measureIndex: number, xPos: number, yPos: number) => void;
+  startMeasureGlobalIndex: number;
+  aspectRatio: number;
+  onPositionClick: (position: MusicPosition) => void;
 };
 
 const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
   measures,
   aboveBelowCt,
-  onNoteClick,
-  getNoteOverlayClassName,
-  onComponentClick,
+  startMeasureGlobalIndex,
+  aspectRatio,
+  onPositionClick,
 }) => {
   const dimensions = useMemo(
     () => MusicLayout.getMarginlessSheetMusic(aspectRatio, 1, measures.length),
@@ -41,27 +38,25 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
   );
   const measureComponents = measurements.getMeasureComponents();
   return (
-    <ComponentNoteSelectCanvas
+    <MusicCanvas
       measures={measures}
       aspectRatio={aspectRatio}
       dimensions={dimensions}
       measurements={measurements}
-      aboveBelowCount={aboveBelowCt}
-      onNoteClick={onNoteClick}
-      getNoteClassName={getNoteOverlayClassName}
-      onMeasureComponentClick={onComponentClick}
+      drawAboveBelow
     >
       <SegmentedMeasures
         measures={measures}
         componentFractions={measurements.getComponentFractions()}
-        onSegmentClick={(location) => console.log(location)}
+        onPositionClick={onPositionClick}
         componentIterator={measureComponents.iterateMeasureComponents.bind(
           measureComponents
         )}
+        startMeasureGlobalIndex={startMeasureGlobalIndex}
         noteOffset={dimensions.measureDimensions.noteYOffset}
         noteHeight={dimensions.measureDimensions.noteSpaceHeight}
       />
-    </ComponentNoteSelectCanvas>
+    </MusicCanvas>
   );
 };
 

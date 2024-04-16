@@ -8,10 +8,12 @@ import {
   MeasureComponentValues,
 } from "@/types/music-rendering";
 import { Coordinate } from "@/objects/measurement/types";
+import { MusicPosition } from "@/types/ui/music-modal";
 
 type SegmentedMeasuresProps = {
   measures: Measure[];
-  onSegmentClick: (location: Coordinate) => void;
+  startMeasureGlobalIndex: number;
+  onPositionClick: (position: MusicPosition) => void;
   componentIterator: MeasureComponentIterator;
   componentFractions: MeasureComponentValues;
   noteHeight: number;
@@ -20,23 +22,30 @@ type SegmentedMeasuresProps = {
 
 const SegmentedMeasures: FunctionComponent<SegmentedMeasuresProps> = ({
   measures,
-  onSegmentClick,
+  startMeasureGlobalIndex,
+  onPositionClick,
   componentIterator,
   componentFractions,
   noteHeight,
   noteOffset,
 }) => {
   const registry = useSplitSegmentRegistry();
+  const getSegmentClickDel =
+    (measureIndex: number) =>
+    ({ x, y }: Coordinate) => {
+      measureIndex += startMeasureGlobalIndex;
+      onPositionClick({ measureIndex, x, y });
+    };
   return (
     <div className={classes.measures}>
-      {measures.map((measure) => (
+      {measures.map((measure, i) => (
         <div
           className={classes.measure}
           style={{ "--offset": noteOffset + "%" } as CSSProperties}
         >
           <MeasureSegments
             splitSegementRegistry={registry}
-            onSegmentClick={onSegmentClick}
+            onSegmentClick={getSegmentClickDel(i)}
             componentFractions={componentFractions}
             onJoin={registry.joinSegment}
             onSplit={registry.splitSegment}

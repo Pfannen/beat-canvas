@@ -1,8 +1,9 @@
+import { NoteDirection } from "@/lib/notes/types";
 import {
-	StaticMeasureAttributes,
-	TemporalMeasureAttributes,
-} from '@/types/music';
-import { NoteAnnotations } from '@/types/music/note-annotations';
+  StaticMeasureAttributes,
+  TemporalMeasureAttributes,
+} from "@/types/music";
+import { NoteAnnotations } from "@/types/music/note-annotations";
 
 export type NoteType =
   | "whole"
@@ -43,7 +44,7 @@ export type TimeSignature = {
 };
 
 export type Measure = {
-	notes: Note[];
-	temporalAttributes?: TemporalMeasureAttributes[];
-	staticAttributes?: Partial<StaticMeasureAttributes>;
+  notes: Note[];
+  temporalAttributes?: TemporalMeasureAttributes[];
+  staticAttributes?: Partial<StaticMeasureAttributes>;
 };
