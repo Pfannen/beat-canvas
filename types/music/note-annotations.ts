@@ -1,4 +1,3 @@
-import Tone from 'tone';
 import { PitchOctave } from '.';
 
 export type NoteAnnotation =
@@ -7,9 +6,12 @@ export type NoteAnnotation =
 	| 'slur'
 	| 'dynamic'
 	| 'accidental'
+	| 'dotted'
 	| 'chord';
 
-export type Slur = 'start' | 'stop';
+export type Slur = { start?: number; stop?: number[] };
+
+export type SlurMXMLImport = 'start' | 'stop';
 
 export type Accent = 'strong' | 'weak';
 
@@ -61,5 +63,5 @@ export type NoteAnnotationApplier = (
 ) => void;
 
 export type NoteAnnotationApplierMap = {
-	[key in NoteAnnotation]: NoteAnnotationApplier;
+	[key in keyof Required<NoteAnnotations>]: NoteAnnotationApplier;
 };

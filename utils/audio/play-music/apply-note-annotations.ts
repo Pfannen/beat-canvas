@@ -21,8 +21,8 @@ const slurApplier: NoteAnnotationApplier = (attr, annotations) => {
 	if (!slur) return;
 
 	const { applyToNote, persist } = attr.persistentAttributes;
-	if (slur === 'start') {
-		persist.instrumentProps.decay = 0.00001;
+	if (slur.start !== undefined) {
+		persist.instrumentProps.decay = 0.0000001;
 		persist.instrumentProps.attack = 0;
 	} else {
 		persist.instrumentProps.decay = 0.1;
@@ -65,6 +65,16 @@ const dynamicApplier: NoteAnnotationApplier = (attr, annotations) => {
 	persist.velocity = newVelocity;
 };
 
+// Right now, we specify dotted in the type, which is used to already compute duration
+// This should change
+const dottedApplier: NoteAnnotationApplier = (attr, annotations) => {
+	return;
+	const { dotted } = annotations;
+	if (!dotted) return;
+
+	attr.duration += attr.duration / 2;
+};
+
 export const applyNoteAnnotations = (
 	noteEnqueueData: NoteEnqueueData,
 	annotations?: NoteAnnotations
@@ -83,6 +93,7 @@ export const applierMap: NoteAnnotationApplierMap = {
 	accidental: accidentalApplier,
 	accent: accentApplier,
 	dynamic: dynamicApplier,
+	dotted: dottedApplier,
 	chord: () => {},
 };
 

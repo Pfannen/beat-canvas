@@ -25,6 +25,11 @@ export type NoteImportDetails = {
 	duration?: number;
 	// The note's annotations, if any
 	annotations: NoteAnnotations;
+	tbcAnnotations: ToBeCompletedAnnotations;
+};
+
+export type ToBeCompletedAnnotations = {
+	slurIds?: number[];
 };
 
 // Takes in the current note's details and an element that's a child of the current note element
@@ -39,7 +44,7 @@ export type NoteImportHelperMap = {
 };
 
 export type NoteImportAnnotationsHelper = (
-	a: NoteAnnotations,
+	details: { a: NoteAnnotations; tbc: ToBeCompletedAnnotations },
 	el: Element
 ) => void;
 
@@ -54,8 +59,8 @@ export type NoteImportAnnotationsHelperMap = {
 export type MeasureImportDetails = {
 	// The current measure's attributes
 	currentAttributes: MeasureAttributesMXML;
-	// Attributes that are yet to be completed because they require another attribute existing that completes them
-	tbcAttributes: ToBeCompletedMeasureAttributes;
+	// Attributes and annotations that are yet to be completed because they require another value existing that completes them
+	tbcValues: ToBeCompletedValues;
 	// The attributes that are new to the measure - should also update currentAttributes if this is set
 	// Will be placed on the measure created from combining these properties
 	//newTemporalAttributes: TemporalMeasureAttributes[];
@@ -73,7 +78,7 @@ export type MeasureImportDetails = {
 	prevNoteDur: number;
 };
 
-export type ToBeCompletedMeasureAttributes = {
+export type ToBeCompletedAttributes = {
 	wedge?: Wedge;
 	repeatMeasureNumber?: number;
 	// Maps an ending to object initially created for it
@@ -81,6 +86,12 @@ export type ToBeCompletedMeasureAttributes = {
 	// and changing the end measure value of the correct ending to the current measure's number
 	// and deleting the entry in the tbcAttributes
 	repeatEndings?: { [ending in number]: RepeatEndings };
+	slurIds?: number[];
+};
+
+export type ToBeCompletedValues = {
+	measures: ToBeCompletedAttributes;
+	notes: ToBeCompletedAnnotations;
 };
 
 export type MeasureImportHelper = (

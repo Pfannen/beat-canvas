@@ -13,6 +13,7 @@ import { durationToNoteType, getYPosFromNote } from '../music';
 import Helper from './helpers/ImportMusicXMLHelper';
 import { convertImportedDuration } from '../musicXML';
 
+// Out of commission
 const getMeasureNotesJS = (
 	measureXML: Element,
 	quarterNoteDivisions: number,
@@ -28,7 +29,7 @@ const getMeasureNotesJS = (
 	const { beatNote, beatsPerMeasure } = timeSignature;
 	for (let i = 0; i < noteXMLArr.length; i++) {
 		const noteXML = noteXMLArr[i];
-		const noteDetails = Helper.getNoteDetails(noteXML);
+		const noteDetails = Helper.getNoteDetails(noteXML, {});
 
 		const { pitch, octave, duration, annotations } = noteDetails;
 		if (!duration) continue;
@@ -65,12 +66,12 @@ const getMeasuresJS = (part: Element) => {
 	const measures: Measure[] = [];
 	const curAttr = Helper.getDefaultMeasureAttributes();
 	// to be completed attributes (wedge & repeats)
-	const tbcAttr = {};
+	const tbcValues = { measures: {}, notes: {} };
 
 	for (let i = 0; i < measuresXML.length; i++) {
 		const measureXML = measuresXML[i];
 		const { temporalAttributes, notes, staticAttributes } =
-			Helper.getMeasureDetails(measureXML, i, curAttr, tbcAttr);
+			Helper.getMeasureDetails(measureXML, i, curAttr, tbcValues);
 
 		const measure: Measure = {
 			notes,
