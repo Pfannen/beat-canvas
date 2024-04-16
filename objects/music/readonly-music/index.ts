@@ -1,6 +1,7 @@
 import {
   Measure,
   Note,
+  NoteType,
   TimeSignature,
 } from "@/components/providers/music/types";
 import { getNoteDuration } from "@/components/providers/music/utils";
@@ -12,7 +13,8 @@ export interface ReadonlyMusic {
   getMeasureCount(): number;
   getMeasureNoteCount(measureIndex: number): number;
   getMeasureTimeSignature(measureIndex: number): TimeSignature;
-  getMeasureAnnotations(measureIndex: number): Measure["attributes"];
+  getMeasureAnnotations(measureIndex: number): Measure["staticAttributes"];
+  getRestDuration(measureIndex: number, type: NoteType): number;
   // getMeasures(): Measure[];
   getMeasureNotes(measureIndex: number): Note[];
   getNoteData(
@@ -74,9 +76,9 @@ export class Music implements ReadonlyMusic {
     return this.measures[measureIndex].notes.length;
   }
 
-  getMeasureAnnotations(measureIndex: number): Measure["attributes"] {
+  getMeasureAnnotations(measureIndex: number): Measure["staticAttributes"] {
     if (this.measures) {
-      return this.measures[measureIndex].attributes;
+      return this.measures[measureIndex].staticAttributes;
     }
     return undefined;
   }
@@ -131,6 +133,13 @@ export class Music implements ReadonlyMusic {
     const note = measure.notes[noteIndex];
     return getNoteDuration(
       note.type,
+      this.getMeasureTimeSignature(measureIndex).beatNote
+    );
+  }
+
+  getRestDuration(measureIndex: number, type: NoteType): number {
+    return getNoteDuration(
+      type,
       this.getMeasureTimeSignature(measureIndex).beatNote
     );
   }

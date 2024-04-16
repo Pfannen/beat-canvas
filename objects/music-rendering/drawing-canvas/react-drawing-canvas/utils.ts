@@ -3,32 +3,24 @@ import { UnitMeasurement } from "@/types";
 import { StyleCreator } from "./style-creator";
 import { DimensionDirections } from "@/types/music-rendering/canvas/html";
 
-export class CoordinateStyleCreator {
-  private coordinate: Coordinate;
-  private xAxisValue: number;
-  private yAxisValue: number;
-  public styles: StyleCreator;
-
-  private adjustedCoordinate!: Coordinate;
-  private adjustedXValue!: number;
-  private adjustedYValue!: number;
+export class CoordinateStyleCreator extends StyleCreator {
   constructor(
     coordinate: Coordinate,
     xAxisValue: number,
     yAxisValue: number,
     unit: UnitMeasurement
   ) {
-    this.coordinate = coordinate;
-    this.xAxisValue = xAxisValue;
-    this.yAxisValue = yAxisValue;
-    this.styles = new StyleCreator(unit);
-    this.adjustPosition();
-    this.styles.addCoordinate(this.adjustedCoordinate);
-    this.styles.addDimensions(this.adjustedXValue, this.adjustedYValue);
-    this.styles.modifyTransformOrigin(
-      this.getDirectionData(xAxisValue, yAxisValue)
+    super(unit);
+    const values = CoordinateStyleCreator.adjustPosition(
+      coordinate,
+      xAxisValue,
+      yAxisValue
     );
-    this.styles.addPosition("absolute");
+    this.addCoordinate(values.adjustedCoordinate);
+    this.addDimensions(values.adjustedXValue, values.adjustedYValue);
+    this.modifyTransformOrigin(this.getDirectionData(xAxisValue, yAxisValue));
+    this.addPosition("absolute");
+    console.log(coordinate);
   }
 
   private getDirectionData(
@@ -40,21 +32,22 @@ export class CoordinateStyleCreator {
     return { x, y };
   }
 
-  private adjustPosition() {
-    this.adjustedCoordinate = { ...this.coordinate };
-    this.adjustedXValue = this.xAxisValue;
-    this.adjustedYValue = this.yAxisValue;
-    if (this.xAxisValue < 0) {
-      this.adjustedCoordinate.x += this.xAxisValue;
-      this.adjustedXValue *= -1;
+  private static adjustPosition(
+    coordinate: Coordinate,
+    xAxisValue: number,
+    yAxisValue: number
+  ) {
+    const adjustedCoordinate = { ...coordinate };
+    let adjustedXValue = xAxisValue;
+    let adjustedYValue = yAxisValue;
+    if (xAxisValue < 0) {
+      adjustedCoordinate.x += xAxisValue;
+      adjustedXValue *= -1;
     }
-    if (this.yAxisValue < 0) {
-      this.adjustedCoordinate.y += this.yAxisValue;
-      this.adjustedYValue *= -1;
+    if (yAxisValue < 0) {
+      adjustedCoordinate.y += yAxisValue;
+      adjustedYValue *= -1;
     }
-  }
-
-  public getStyle() {
-    return this.styles.getStyle();
+    return { adjustedCoordinate, adjustedXValue, adjustedYValue };
   }
 }

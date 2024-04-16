@@ -5,7 +5,7 @@ import {
   EllipseDrawOptions,
   LineDrawOptions,
   RectangleDrawOptions,
-  SVGOptions,
+  SVGDrawOptions,
 } from ".";
 import { OmittedComponentProps } from "@/types/polymorphic";
 
@@ -37,7 +37,7 @@ export type HTMLEllipseOptions = HTMLOptions<
   "div"
 >;
 
-export type HTMLSVGOptions = SVGOptions;
+export type HTMLSVGOptions = SVGDrawOptions;
 
 export type DimensionDirection = "positive" | "negative";
 

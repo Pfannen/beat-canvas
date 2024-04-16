@@ -19,10 +19,10 @@ export const drawPDF = async () => {
       notes: [
         { x: 0, y: -1, type: "eighth" },
         { x: 0.5, y: 1, type: "eighth" },
-        { x: 1, y: 10, type: "quarter" },
-        { x: 2, y: -1, type: "eighth" },
-        { x: 2.5, y: -1, type: "eighth" },
-        { x: 3, y: -1, type: "eighth" },
+        // { x: 1, y: 10, type: "quarter" },
+        // { x: 2, y: -1, type: "eighth" },
+        // { x: 2.5, y: -1, type: "eighth" },
+        // { x: 3, y: -1, type: "eighth" },
         { x: 3.5, y: -1, type: "eighth" },
       ],
     });
