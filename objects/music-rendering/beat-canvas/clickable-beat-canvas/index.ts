@@ -42,7 +42,7 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
       this.intermDrawMeasures = (options) => {
         const props = measureHandler({ measureIndex: options.measureIndex });
         super.drawMeasure(options);
-        const height = options.bodyHeight;
+        const height = -options.height;
         const width = options.width;
         this.overlay.createOverlay(
           {

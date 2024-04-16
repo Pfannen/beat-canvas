@@ -1,16 +1,23 @@
-import { Measure } from "@/components/providers/music/types";
 import classes from "./index.module.css";
+import { Measure } from "@/components/providers/music/types";
 import { FunctionComponent } from "react";
 import Segments from "@/components/ui/reusable/segments";
 import { minimalSegmentGenerator } from "@/utils/segments/segment-gen-1";
 import SplitSegment from "@/components/ui/reusable/split-segment";
 import { RegistryDelegates } from "@/components/hooks/useSplitSegement/useSplitSegmentRegistry";
-import SegmentPane from "./segment-pane";
+import {
+  MeasureComponentIterator,
+  MeasureComponentValues,
+} from "@/types/music-rendering";
+import SegmentPane from "../../segment-pane";
+import { Coordinate } from "@/objects/measurement/types";
 
 type MeasureSegmentsProps = {
   measure: Measure;
-  onSegmentClick: (xPos: number) => void;
+  onSegmentClick: (location: Coordinate) => void;
   onSegmentAuxClick: (xPos: number) => void;
+  componentIterator: MeasureComponentIterator;
+  componentFractions: MeasureComponentValues;
   splitSegementRegistry: RegistryDelegates;
 };
 
@@ -18,16 +25,20 @@ const MeasureSegments: FunctionComponent<MeasureSegmentsProps> = ({
   measure,
   onSegmentClick,
   onSegmentAuxClick,
+  componentIterator,
+  componentFractions,
   splitSegementRegistry,
 }) => {
   const getComponentProps = (xPos: number) => {
     return {
-      onClick: () => {
-        onSegmentClick(xPos);
+      onComponentClick: (yPos: number) => {
+        onSegmentClick({ x: xPos, y: yPos });
       },
       onAuxClick: () => {
         onSegmentAuxClick(xPos);
       },
+      componentIterator: componentIterator,
+      componentFractions: componentFractions,
       width: 1,
     };
   };

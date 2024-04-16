@@ -11,8 +11,7 @@ import {
 } from "@/types/music-rendering";
 
 export class MeasureRenderer {
-  private bodyCt = BODY_CT;
-  private aboveBelowCount: number;
+  private bodyCt: number;
   private music: Music;
   private getBeatCanvasForPage: BeatCanvasDel;
   private transformer: MeasureTransformer;
@@ -26,22 +25,19 @@ export class MeasureRenderer {
   private bodyOffset: number;
   constructor(
     music: Music,
-    aboveBelowCount: number,
     musicDimensions: MusicDimensionData,
     getBeatCanvasForPage: BeatCanvasDel,
-    lineToSpaceRatio = 3,
+    measurements: Measurements,
+    bodyCount: number,
     drawNonBodyComponents = false
   ) {
     this.music = music;
     this.musicDimensions = musicDimensions;
     this.getBeatCanvasForPage = getBeatCanvasForPage;
     this.transformer = new MeasureTransformer(music);
-    this.aboveBelowCount = aboveBelowCount;
-    this.measurements = new Measurements(
-      aboveBelowCount,
-      this.bodyCt,
-      lineToSpaceRatio
-    );
+    this.bodyCt = bodyCount;
+    this.measurements = measurements;
+
     const measureComponents = this.measurements.getMeasureComponents();
     if (drawNonBodyComponents) {
       this.measureComponentIterator =

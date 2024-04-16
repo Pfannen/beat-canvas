@@ -4,6 +4,7 @@
   height: 100%;
   outline: 1px solid var(--color);
   border-radius: 12px;
+  background-color: orange;
   opacity: 0.175;
   cursor: pointer;
 }

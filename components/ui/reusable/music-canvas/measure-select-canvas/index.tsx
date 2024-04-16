@@ -1,10 +1,12 @@
 "use client";
 
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo } from "react";
 import { MeasureIdentifier } from "@/types/music-rendering/canvas/clickable-beat-canvas";
 import { Measure } from "@/components/providers/music/types";
 import MusicCanvas from "..";
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
+import { Measurements } from "@/objects/measurement/measurements";
+import { ABOVE_BELOW_CT, BODY_CT } from "@/objects/measurement/constants";
 
 type MeasureSelectCanvasProps = {
   aspectRatio: number;
@@ -19,6 +21,10 @@ const MeasureSelectCanvas: FunctionComponent<MeasureSelectCanvasProps> = ({
   onMeasureClick,
   getMeasureClassName,
 }) => {
+  const measurements = useMemo(
+    () => new Measurements(ABOVE_BELOW_CT, BODY_CT, 3),
+    []
+  );
   const getMeasureProps = (identifier: MeasureIdentifier) => {
     return {
       onClick: onMeasureClick.bind(null, identifier),
@@ -28,10 +34,9 @@ const MeasureSelectCanvas: FunctionComponent<MeasureSelectCanvasProps> = ({
   return (
     <MusicCanvas
       measures={measures}
-      aboveBelowCount={6}
+      measurements={measurements}
       aspectRatio={aspectRatio}
       dimensions={MusicLayout.getMarginlessSheetMusic(aspectRatio)}
-      lineToSpaceRatio={3}
       propDelegates={{ getMeasureProps }}
     />
   );

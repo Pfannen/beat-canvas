@@ -1,4 +1,6 @@
 import { Measure } from "@/components/providers/music/types";
+import { BODY_CT } from "@/objects/measurement/constants";
+import { Measurements } from "@/objects/measurement/measurements";
 import { RelativeClickableBeatCanvas } from "@/objects/music-rendering/beat-canvas/relative-clickable-beat-canvas";
 import { ReactDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
@@ -23,19 +25,20 @@ export const getRelativeBeatCanvas = (
 
 export const drawMeasures = (
   measures: Measure[],
-  aboveBelowCount: number,
   dimensions: MusicDimensionData,
+  measurements: Measurements,
   getCanvasForPage: BeatCanvasDel,
-  lineToSpaceRatio: number
+  drawAboveBelow: boolean
 ) => {
   const music = new Music();
   music.setMeasures(measures);
   const renderer = new MeasureRenderer(
     music,
-    aboveBelowCount,
     dimensions,
     getCanvasForPage,
-    lineToSpaceRatio
+    measurements,
+    BODY_CT,
+    drawAboveBelow
   );
   renderer.render();
   //   return beatCanvas.createCanvas({

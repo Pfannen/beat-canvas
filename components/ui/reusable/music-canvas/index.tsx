@@ -6,33 +6,34 @@ import {
   getRelativeBeatCanvas,
 } from "@/utils/music-rendering/react";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
+import { Measurements } from "@/objects/measurement/measurements";
 
 type MusicCanvasProps = {
   measures: Measure[];
-  aboveBelowCount: number;
   aspectRatio: number;
   propDelegates?: BeatCanvasPropDelegates;
   dimensions: MusicDimensionData;
-  lineToSpaceRatio: number;
+  measurements: Measurements;
+  drawAboveBelow?: boolean;
   children?: ReactNode;
 };
 
 const MusicCanvas: FunctionComponent<MusicCanvasProps> = ({
   measures,
-  aboveBelowCount,
   aspectRatio,
   propDelegates,
   dimensions,
-  lineToSpaceRatio,
+  measurements,
+  drawAboveBelow = false,
   children,
 }) => {
   const beatCanvas = getRelativeBeatCanvas(aspectRatio, propDelegates);
   drawMeasures(
     measures,
-    aboveBelowCount,
     dimensions,
+    measurements,
     () => beatCanvas,
-    lineToSpaceRatio
+    drawAboveBelow
   );
 
   return beatCanvas.createCanvas({

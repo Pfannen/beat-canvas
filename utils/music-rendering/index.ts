@@ -1,6 +1,8 @@
 "use client";
 
 import { Measure } from "@/components/providers/music/types";
+import { ABOVE_BELOW_CT, BODY_CT } from "@/objects/measurement/constants";
+import { Measurements } from "@/objects/measurement/measurements";
 import { RelativeClickableBeatCanvas } from "@/objects/music-rendering/beat-canvas/relative-clickable-beat-canvas";
 import { ReactDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
@@ -17,13 +19,15 @@ export const renderMeasures = (
 ) => {
   const pageParams = PageDimensionParams.genericSheetMusic();
   const dimensions = MusicLayout.getDimensions(pageParams);
+  const measurements = new Measurements(ABOVE_BELOW_CT, BODY_CT, 3);
   const music = new Music();
   music.setMeasures(measures);
   const renderer = new MeasureRenderer(
     music,
-    6,
     dimensions,
-    getBeatCanvasForPage
+    getBeatCanvasForPage,
+    measurements,
+    BODY_CT
   );
   renderer.render();
 };
@@ -72,13 +76,17 @@ export const getHTMLCanvas = (
       { note: { noteBodyAspectRatio: 1.5 / aspectRatio } }
     );
   }
-
+  const measurements = new Measurements(
+    ABOVE_BELOW_CT,
+    BODY_CT,
+    lineToSpaceRatio
+  );
   const renderer = new MeasureRenderer(
     music,
-    6,
     musicDimensions,
     () => beatCanvas,
-    lineToSpaceRatio
+    measurements,
+    BODY_CT
   );
   renderer.render();
   return beatCanvas.createCanvas({

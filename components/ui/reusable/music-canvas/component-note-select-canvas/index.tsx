@@ -6,12 +6,14 @@ import { FunctionComponent, ReactNode } from "react";
 import MusicCanvas from "..";
 import { Measure } from "@/components/providers/music/types";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
+import { Measurements } from "@/objects/measurement/measurements";
 
 type ComponentNoteSelectCanvasProps = {
   measures: Measure[];
   aspectRatio: number;
   aboveBelowCount: number;
   dimensions: MusicDimensionData;
+  measurements: Measurements;
   onNoteClick: (identifier: NoteIdentifier) => void;
   getNoteClassName: (identifier: NoteIdentifier) => string;
   onMeasureComponentClick: (identifier: MeasureComponentIdentifier) => void;
@@ -23,8 +25,8 @@ const ComponentNoteSelectCanvas: FunctionComponent<
 > = ({
   measures,
   aspectRatio,
-  aboveBelowCount,
   dimensions,
+  measurements,
   onNoteClick,
   getNoteClassName,
   onMeasureComponentClick,
@@ -47,11 +49,11 @@ const ComponentNoteSelectCanvas: FunctionComponent<
   return (
     <MusicCanvas
       measures={measures}
-      aboveBelowCount={aboveBelowCount}
       aspectRatio={aspectRatio}
       dimensions={dimensions}
-      lineToSpaceRatio={1.5}
+      measurements={measurements}
       propDelegates={{ getNoteProps, getMeasureComponentProps }}
+      drawAboveBelow
     >
       {children}
     </MusicCanvas>

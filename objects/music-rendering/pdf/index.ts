@@ -5,6 +5,8 @@ import { Measure } from "@/components/providers/music/types";
 import { PDFLibDrawingCanvasManager } from "../drawing-canvas/pdf-lib-drawing-canvas/manager";
 import { PageDimensionParams } from "../music-layout/page-dimension-params";
 import { MusicLayout } from "../music-layout";
+import { Measurements } from "@/objects/measurement/measurements";
+import { ABOVE_BELOW_CT, BODY_CT } from "@/objects/measurement/constants";
 
 export const drawPDF = async () => {
   const pdfLibManager = new PDFLibDrawingCanvasManager(PageSizes.A4);
@@ -27,12 +29,14 @@ export const drawPDF = async () => {
   }
   const pageParams = PageDimensionParams.genericSheetMusic();
   const dimensions = MusicLayout.getDimensions(pageParams);
+  const measurements = new Measurements(ABOVE_BELOW_CT, BODY_CT, 3);
   music.setMeasures(measures);
   const renderer = new MeasureRenderer(
     music,
-    6,
     dimensions,
-    pdfLibManager.getBeatCanvasForPage.bind(pdfLibManager)
+    pdfLibManager.getBeatCanvasForPage.bind(pdfLibManager),
+    measurements,
+    BODY_CT
   );
   renderer.render();
 
