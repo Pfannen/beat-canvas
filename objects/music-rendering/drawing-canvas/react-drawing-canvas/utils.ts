@@ -20,7 +20,6 @@ export class CoordinateStyleCreator extends StyleCreator {
     this.addDimensions(values.adjustedXValue, values.adjustedYValue);
     this.modifyTransformOrigin(this.getDirectionData(xAxisValue, yAxisValue));
     this.addPosition("absolute");
-    console.log(coordinate);
   }
 
   private getDirectionData(

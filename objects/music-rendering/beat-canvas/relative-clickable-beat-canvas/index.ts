@@ -38,8 +38,14 @@ export class RelativeClickableBeatCanvas extends ClickableBeatCanvas {
     super.drawMeasure(options);
   }
 
-  // drawRest(options: RestOptions): void {
-  //   const path = this.getRestSVGPath(options.type);
-  //   this.canvas.drawSVG({ path, center: options.center, scale: 17 });
-  // }
+  drawRest(options: RestOptions): void {
+    const { path, noteBodyFraction } = this.getRestData(options.type);
+    options.center.x = this.xValueConverter(options.center.x);
+    this.canvas.drawSVG({
+      path,
+      center: options.center,
+      height: options.noteBodyHeight * noteBodyFraction,
+      width: this.xValueConverter(options.noteBodyHeight * noteBodyFraction),
+    });
+  }
 }

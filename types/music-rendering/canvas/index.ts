@@ -48,7 +48,7 @@ export type EllipseDrawOptions<T = {}> = OptionsWithDrawOptions<
   T
 >;
 
-export type SVGOptions = { center: Coordinate; path: string; scale?: number };
+export type SVGOptions = { center: Coordinate; path: string; height?: number };
 
 export type SVGDrawOptions<T = {}> = OptionsWithDrawOptions<SVGOptions, T>;
 

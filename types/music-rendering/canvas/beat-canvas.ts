@@ -97,6 +97,7 @@ export type MeasureOptions = {
 export type RestOptions = {
   type: NoteType;
   center: Coordinate;
+  noteBodyHeight: number;
 };
 
 export interface IBeatCanvas {

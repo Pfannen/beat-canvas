@@ -62,7 +62,7 @@ export class PDFLibDrawingCanvas {
 
   private static drawSVGOnPage: PDFLibGenerator<"drawSVG"> = (page) => {
     return (options) => {
-      const scale = options.scale || 1;
+      const scale = options.height || 1;
       const { x, y } = centerToTopLeft(
         options.center.x,
         options.center.y,

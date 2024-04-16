@@ -170,8 +170,12 @@ export class MeasureRenderer {
               ) +
             measureBottom.x;
           const yOffset = this.measurements.getYFractionOffset(4);
-          const y = noteContainerHeight * yOffset + measureBottom.y;
-          beatCanvas.drawRest({ center: { x, y }, type: rest.type });
+          const y = noteSpaceHeight * yOffset + measureBottom.y;
+          beatCanvas.drawRest({
+            center: { x, y },
+            type: rest.type,
+            noteBodyHeight: spaceHeight,
+          });
         }
       });
     });

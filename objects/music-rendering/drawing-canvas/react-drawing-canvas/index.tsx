@@ -112,17 +112,13 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
   }
 
   drawSVG(options: HTMLSVGOptions): void {
-    const scale = options.scale || 1;
     const styleCreator = new CoordinateStyleCreator(
       options.center,
-      scale / 5,
-      scale / 5,
+      options.width,
+      options.height,
       this.unit
     );
-    // const styleCreator = new StyleCreator(this.unit);
-    // styleCreator.addCoordinate(options.center);
-    // styleCreator.addPosition("absolute");
-    // styleCreator.center();
+    styleCreator.center();
     ReactDrawingCanvas.attachDrawOptions(
       options.drawOptions,
       styleCreator,
@@ -131,12 +127,7 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     const { style, className } =
       ReactDrawingCanvas.extractStyleData(styleCreator);
     const component = (
-      <svg
-        viewBox={svgViewBox}
-        scale={scale}
-        style={style}
-        className={className}
-      >
+      <svg viewBox={svgViewBox} style={style} className={className}>
         <path d={options.path} />
       </svg>
     );
