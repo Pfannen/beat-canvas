@@ -1,4 +1,8 @@
-import { MeasureComponentValues } from "@/types/music-rendering";
+import {
+  MeasureComponent,
+  MeasureComponentIterator,
+  MeasureComponentValues,
+} from "@/types/music-rendering";
 
 export class MeasureComponents {
   private aboveBelowCount: number;
@@ -53,6 +57,10 @@ export class MeasureComponents {
     return { ...componentCounts, isOnLine };
   }
 
+  public isBodyComponent(yPos: number) {
+    return -1 < yPos && yPos < this.bodyCt;
+  }
+
   public getMeasureComponentCounts(): MeasureComponentValues {
     return this.measureComponentCounts;
   }
@@ -69,4 +77,36 @@ export class MeasureComponents {
   public isBottomComponentLine() {
     return this.bottomComponentIsLine;
   }
+
+  public iterateYPos(
+    startYPos: number,
+    endYPos: number,
+    cb: (c: MeasureComponent) => void
+  ) {
+    let isLine = this.yPosIsOnLine(startYPos);
+    for (let yPos = startYPos; yPos > endYPos - 1; yPos--) {
+      cb({ isLine, isBody: this.isBodyComponent(yPos), yPos });
+      isLine = !isLine;
+    }
+  }
+
+  public iterateBodyComponents: MeasureComponentIterator = (cb) => {
+    this.iterateYPos(this.bodyCt - 1, 0, cb);
+  };
+
+  public iterateMeasureComponents: MeasureComponentIterator = (cb) => {
+    this.iterateYPos(
+      this.bodyCt + this.aboveBelowCount - 1,
+      -this.aboveBelowCount,
+      cb
+    );
+  };
+
+  // *[Symbol.iterator]():IterableIterator<MeasureComponent> {
+  //   let isLine = this.bottomComponentIsLine;
+  //   for(let yPos = 21; yPos > 0 - 1; yPos--){
+  //     yield ({isLine, isBody: true, yPos})
+  //     isLine = !isLine;
+  //   }
+  // }
 }

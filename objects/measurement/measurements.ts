@@ -63,4 +63,8 @@ export class Measurements {
   public getMeasureComponentCounts() {
     return this.measureComponents.getMeasureComponentCounts();
   }
+
+  public getMeasureComponents() {
+    return this.measureComponents;
+  }
 }

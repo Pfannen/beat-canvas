@@ -11,7 +11,7 @@ export const drawPDF = async () => {
   await pdfLibManager.initializeCanvas();
   const music = new Music();
   const measures: Measure[] = [];
-  const measureCount = 20;
+  const measureCount = 1;
   for (let i = 0; i < measureCount; i++) {
     measures.push({
       notes: [

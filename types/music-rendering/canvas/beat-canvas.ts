@@ -8,6 +8,7 @@ import { Coordinate } from "@/objects/measurement/types";
 import { MeasureAttributes } from "@/types/music";
 import { BlockDirection } from "../pdf";
 import { NoteDirection } from "@/lib/notes/types";
+import { MeasureComponent, MeasureComponentIterator } from "..";
 
 export type StemOptions = {
   bodyWidth: number;
@@ -35,18 +36,13 @@ export type MeasureLinesOptions = Pick<
   | "lineHeight"
   | "spaceHeight"
   | "width"
-  | "spaceCount"
-  | "lineCount"
-  | "topComponentIsLine"
-  | "bodyEndPos"
-  | "bodyStartPos"
+  // | "spaceCount"
+  // | "lineCount"
+  // | "topComponentIsLine"
+  // | "bodyEndPos"
+  // | "bodyStartPos"
   | "measureIndex"
->;
-
-export type MeasureAreaData = Pick<
-  MeasureOptions,
-  "containerPadding" | "spaceCount" | "lineCount" | "spaceHeight" | "lineHeight"
->;
+> & { componentIterator: MeasureComponentIterator };
 
 export type BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: number;
@@ -81,14 +77,18 @@ export type MeasureOptions = {
   width: number;
   height: number;
   containerPadding: BlockDirection<number>;
+  componentStartY: number;
+  bodyStartY: number;
+  bodyHeight: number;
   lineHeight: number;
   spaceHeight: number;
-  lineCount: number;
-  spaceCount: number;
-  bodyStartPos: number;
-  bodyEndPos: number;
+  // lineCount: number;
+  // spaceCount: number;
+  // bodyStartPos: number;
+  // bodyEndPos: number;
   topComponentIsLine: boolean;
   measureIndex: number;
+  componentIterator: MeasureComponentIterator;
   timeSignature?: TimeSignature;
   //keySignature?: KeySignature,
   attributes?: Partial<MeasureAttributes>;
@@ -106,13 +106,14 @@ export interface IBeatCanvas {
 }
 
 /* **** */
-export type MeasureLineContext = {
+export type MeasureComponentContext = {
   width: number;
   height: number;
-  isLine: boolean;
+  // isLine: boolean;
   corner: Coordinate;
-  isBody: boolean;
-  absoluteYPos: number;
+  // isBody: boolean;
 };
 
-export type MeasureLineIteratorDel = (context: MeasureLineContext) => void;
+export type MeasureComponentContextIterator = (
+  measureComponent: MeasureComponent & MeasureComponentContext
+) => void;

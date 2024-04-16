@@ -4,7 +4,7 @@ import { BeatCanvas } from "..";
 import { ReactDrawingCanvas } from "../../drawing-canvas/react-drawing-canvas";
 import {
   BeatCanvasDrawOptions,
-  MeasureLineIteratorDel,
+  MeasureComponentContextIterator,
   MeasureLinesOptions,
   MeasureOptions,
   NoteOptions,
@@ -42,7 +42,7 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
       this.intermDrawMeasures = (options) => {
         const props = measureHandler({ measureIndex: options.measureIndex });
         super.drawMeasure(options);
-        const height = -BeatCanvas.getMeasureContainerHeight(options);
+        const height = options.bodyHeight;
         const width = options.width;
         this.overlay.createOverlay(
           {
@@ -61,10 +61,10 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
   private setDrawMeasureLines(mComponentHandler?: MeasureCompPropDel) {
     if (mComponentHandler) {
       this.intermDrawMeasureLines = (options) => {
-        const iteratorDel: MeasureLineIteratorDel = (context) => {
+        const iteratorDel: MeasureComponentContextIterator = (context) => {
           const props = mComponentHandler({
             measureIndex: options.measureIndex,
-            absoluteYPos: context.absoluteYPos,
+            yPos: context.yPos,
             isBody: context.isBody,
             isLine: context.isLine,
           });
@@ -124,11 +124,8 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
     }
   }
 
-  protected drawMeasureLines(options: MeasureLinesOptions): {
-    bodyStartYPos: number;
-    bodyHeight: number;
-  } {
-    return this.intermDrawMeasureLines(options);
+  protected drawMeasureLines(options: MeasureLinesOptions) {
+    this.intermDrawMeasureLines(options);
   }
 
   drawMeasure(options: MeasureOptions): void {

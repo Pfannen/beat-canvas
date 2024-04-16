@@ -1,7 +1,6 @@
 import {
   MeasureComponentIdentifier,
   NoteIdentifier,
-  RelativeMeasureComponentIdentifier,
 } from "@/types/music-rendering/canvas/clickable-beat-canvas";
 import { FunctionComponent, ReactNode } from "react";
 import MusicCanvas from "..";
@@ -15,9 +14,7 @@ type ComponentNoteSelectCanvasProps = {
   dimensions: MusicDimensionData;
   onNoteClick: (identifier: NoteIdentifier) => void;
   getNoteClassName: (identifier: NoteIdentifier) => string;
-  onMeasureComponentClick: (
-    identifier: RelativeMeasureComponentIdentifier
-  ) => void;
+  onMeasureComponentClick: (identifier: MeasureComponentIdentifier) => void;
   children?: ReactNode;
 };
 
@@ -41,9 +38,8 @@ const ComponentNoteSelectCanvas: FunctionComponent<
   };
 
   const getMeasureComponentProps = (identifier: MeasureComponentIdentifier) => {
-    const yPos = absoluteToYPos(identifier.absoluteYPos, aboveBelowCount);
     return {
-      onClick: onMeasureComponentClick.bind(null, { ...identifier, yPos }),
+      onClick: onMeasureComponentClick.bind(null, { ...identifier }),
       style: { cursor: "pointer" },
     };
   };
@@ -63,7 +59,3 @@ const ComponentNoteSelectCanvas: FunctionComponent<
 };
 
 export default ComponentNoteSelectCanvas;
-
-const absoluteToYPos = (absolutePos: number, aboveBelowCt: number) => {
-  return absolutePos - aboveBelowCt - 1;
-};

@@ -16,11 +16,6 @@ export type MeasureComponentContext = { isLine: boolean; isBody: boolean };
 
 export type MeasureComponentIdentifier = {
   measureIndex: number;
-  absoluteYPos: number;
-} & MeasureComponentContext;
-
-export type RelativeMeasureComponentIdentifier = {
-  measureIndex: number;
   yPos: number;
 } & MeasureComponentContext;
 

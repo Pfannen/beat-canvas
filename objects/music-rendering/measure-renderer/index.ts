@@ -5,7 +5,10 @@ import { MeasureWidthCalculator } from "../measure-manager/measure-width-calcula
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
 import { BODY_CT } from "@/objects/measurement/constants";
-import { BeatCanvasDel } from "@/types/music-rendering";
+import {
+  BeatCanvasDel,
+  MeasureComponentIterator,
+} from "@/types/music-rendering";
 
 export class MeasureRenderer {
   private bodyCt = BODY_CT;
@@ -16,12 +19,18 @@ export class MeasureRenderer {
   private measureManager!: MeasureManager;
   private musicDimensions: MusicDimensionData;
   private measurements: Measurements;
+  private measureComponentIterator: MeasureComponentIterator;
+  private measureNoteContainerHeight: number;
+  private measureBodyHeight: number;
+  private componentStartOffset: number;
+  private bodyOffset: number;
   constructor(
     music: Music,
     aboveBelowCount: number,
     musicDimensions: MusicDimensionData,
     getBeatCanvasForPage: BeatCanvasDel,
-    lineToSpaceRatio = 3
+    lineToSpaceRatio = 3,
+    drawNonBodyComponents = false
   ) {
     this.music = music;
     this.musicDimensions = musicDimensions;
@@ -33,6 +42,60 @@ export class MeasureRenderer {
       this.bodyCt,
       lineToSpaceRatio
     );
+    const measureComponents = this.measurements.getMeasureComponents();
+    if (drawNonBodyComponents) {
+      this.measureComponentIterator =
+        measureComponents.iterateMeasureComponents.bind(measureComponents);
+    } else {
+      this.measureComponentIterator =
+        measureComponents.iterateBodyComponents.bind(measureComponents);
+    }
+    const { noteHeight, bodyHeight, bodyOffset } =
+      this.getMeasureDimensionData();
+    this.bodyOffset = bodyOffset;
+    this.measureBodyHeight = bodyHeight;
+    this.measureNoteContainerHeight = noteHeight;
+    this.componentStartOffset = this.getComponentStartOffset(
+      drawNonBodyComponents
+    );
+  }
+
+  private getMeasureDimensionData() {
+    const { measureDimensions } = this.musicDimensions;
+    const noteHeight =
+      measureDimensions.height -
+      measureDimensions.padding.top -
+      measureDimensions.padding.bottom;
+    const bodyFraction = this.getBodyFraction();
+    const bodyHeight = noteHeight * bodyFraction;
+    const bodyOffset =
+      (noteHeight - bodyHeight) / 2 + measureDimensions.padding.top;
+
+    return {
+      noteHeight,
+      bodyHeight,
+      bodyOffset,
+    };
+  }
+
+  private getBodyFraction() {
+    const measureComponents = this.measurements.getMeasureComponents();
+    const end = measureComponents.getYPosInfo(0);
+    const start = measureComponents.getYPosInfo(this.bodyCt);
+    const bodyLineCount = start.line - end.line;
+    const bodySpaceCount = start.space - end.space;
+    const fractions = this.measurements.getComponentFractions();
+    const bodyFraction =
+      bodyLineCount * fractions.line + bodySpaceCount * fractions.space;
+    return bodyFraction;
+  }
+
+  private getComponentStartOffset(drawNonBodyComponents: boolean) {
+    const { measureDimensions } = this.musicDimensions;
+    if (!drawNonBodyComponents) {
+      return this.bodyOffset;
+    }
+    return measureDimensions.padding.top;
   }
 
   private getMeasureDimensions(measureIndex: number) {
@@ -79,32 +142,26 @@ export class MeasureRenderer {
 
       const { line: lineFraction, space: spaceFraction } =
         this.measurements.getComponentFractions();
-      const noteContainerHeight = height - padding.top - padding.bottom;
-      const lineHeight = lineFraction * noteContainerHeight;
-      const spaceHeight = spaceFraction * noteContainerHeight;
+      const lineHeight = lineFraction * this.measureNoteContainerHeight;
+      const spaceHeight = spaceFraction * this.measureNoteContainerHeight;
       const beatCanvas = this.getBeatCanvasForPage(measureData.pageNumber);
-      const { line, space } = this.measurements.getMeasureComponentCounts();
-      const componentCount = line + space;
-      const bodyEndPos = componentCount - this.aboveBelowCount;
-      const bodyStartPos = bodyEndPos - (this.bodyCt - 1);
-
       beatCanvas.drawMeasure({
         topLeft: { ...measureData.start },
         width: measureData.width,
         height,
+        componentStartY: measureData.start.y - this.componentStartOffset,
         containerPadding: padding,
         lineHeight,
         spaceHeight,
-        lineCount: line,
-        spaceCount: space,
-        bodyEndPos,
-        bodyStartPos,
+        bodyHeight: this.measureBodyHeight,
+        bodyStartY: measureData.start.y - this.bodyOffset,
         measureIndex,
         topComponentIsLine: this.measurements.topComponentIsLine(),
+        componentIterator: this.measureComponentIterator,
       });
       const measureBottom = {
         x: measureData.start.x,
-        y: measureData.start.y - padding.top - noteContainerHeight,
+        y: measureData.start.y - padding.top - this.measureNoteContainerHeight,
       };
       let noteIndex = 0;
       measure.components.forEach((component) => {
@@ -121,7 +178,8 @@ export class MeasureRenderer {
               ) +
             measureBottom.x;
           const offset = this.measurements.getYFractionOffset(note.y);
-          const centerY = noteContainerHeight * offset + measureBottom.y;
+          const centerY =
+            this.measureNoteContainerHeight * offset + measureBottom.y;
           const center = { x: centerX, y: centerY };
           beatCanvas.drawNote({
             ...renderData,

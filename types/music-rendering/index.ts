@@ -23,3 +23,13 @@ export type MeasureComponentValues<T = number> = { line: T; space: T };
 export type BeatCanvasDel = (pageNumber: number) => IBeatCanvas;
 
 export type MusicUnitConverter = (xValue: number) => number;
+
+export type MeasureComponent = {
+  isLine: boolean;
+  isBody: boolean;
+  yPos: number;
+};
+
+export type MeasureComponentIterator = (
+  cb: (c: MeasureComponent) => void
+) => void;
