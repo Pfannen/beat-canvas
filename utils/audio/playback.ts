@@ -8,7 +8,8 @@ import { isOnClient } from '..';
 export class PlaybackManager extends VolumeManager {
 	private players: { [id in string]: Player } = {};
 	private maxDurationPlayer?: Player;
-	playerNodeId = 'Imported Audio';
+
+	readonly playerNodeId = 'Imported Audio';
 	musicScore?: MusicScore;
 
 	constructor(musicScore?: MusicScore) {
@@ -20,6 +21,8 @@ export class PlaybackManager extends VolumeManager {
 	// to the duration of the overall playback manager
 	getMaxDuration = () =>
 		this.maxDurationPlayer ? this.maxDurationPlayer.buffer.duration : 0;
+
+	getPlaybackState = () => this.maxDurationPlayer?.state;
 
 	private updateAudioDuration = () => {
 		this.maxDurationPlayer = undefined;
@@ -107,19 +110,19 @@ export class PlaybackManager extends VolumeManager {
 
 	// NOTE: Currently, only use if you know the playback manager isn't stopped, else
 	// lastStartTime won't be correct
-	private getCurrentPlayTime = () => Date.now() - this.lastStartTime;
+	private getCurrentPlayTime = () => (Date.now() - this.lastStartTime) / 1000;
 
 	play = () => {
 		for (const player of Object.values(this.players)) {
 			if (player.state === 'started') return;
-			player.seek(this.secondsIntoPlayback);
 			player.start();
+			player.seek(this.secondsIntoPlayback);
 		}
 
 		this.lastStartTime = Date.now();
 	};
 
-	pause = () => {
+	stop = () => {
 		for (const player of Object.values(this.players)) {
 			if (player.state === 'stopped') return;
 			player.stop();

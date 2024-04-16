@@ -1,0 +1,14 @@
+/* Adjust styles at a later time */
+.playback_btn {
+	min-width: fit-content;
+	width: 100%;
+	height: 100%;
+}
+
+.playback_btn > * {
+	color: var(--text-primary);
+	fill: var(--text-primary);
+	margin-inline: auto;
+	width: 100%;
+	height: 100%;
+}

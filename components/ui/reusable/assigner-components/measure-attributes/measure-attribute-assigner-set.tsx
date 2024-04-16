@@ -37,7 +37,7 @@ const MeasureAttributeAssignerSet: FunctionComponent<
 
 	return (
 		<div className={classes.measure_container}>
-			<AssignerButtonSet title="Measure Attributes">
+			{/* <AssignerButtonSet title="Measure Attributes">
 				{dynamics.map((dynamic) => (
 					<DynamicAssigner
 						key={dynamic}
@@ -46,7 +46,7 @@ const MeasureAttributeAssignerSet: FunctionComponent<
 						attributeMetadata={attributeMetadata?.dynamic}
 					/>
 				))}
-			</AssignerButtonSet>
+			</AssignerButtonSet> */}
 			<div className={classes.dropdowns}>
 				<DynamicAssignerDropdown
 					attributeMetadata={attributeMetadata?.dynamic}

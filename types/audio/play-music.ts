@@ -11,3 +11,7 @@ export type EnqueuedBuffer = {
 	name: string;
 	buffer: ToneAudioBuffer;
 };
+
+export interface IPlaybackButtonProps {
+	onClick?: () => void;
+}
