@@ -1,10 +1,21 @@
 .pane {
   width: calc(var(--width) / 1.05);
   background-color: var(--color);
-  height: 100%;
+  height: var(--height);
   outline: 1px solid var(--color);
   border-radius: 12px;
   background-color: orange;
   opacity: 0.175;
   cursor: pointer;
+  position: relative;
+}
+
+.pane_button {
+  opacity: 1;
+  position: absolute;
+  cursor: pointer;
+}
+
+.split {
+  bottom: 100%;
 }

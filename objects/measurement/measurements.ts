@@ -67,4 +67,27 @@ export class Measurements {
   public getMeasureComponents() {
     return this.measureComponents;
   }
+
+  public getMeasureDimensionData(noteHeight: number, bodyCount: number) {
+    const bodyFraction = this.getBodyFraction(bodyCount);
+    const bodyHeight = noteHeight * bodyFraction;
+    const bodyOffset = (noteHeight - bodyHeight) / 2;
+
+    return {
+      bodyHeight,
+      bodyOffset,
+    };
+  }
+
+  private getBodyFraction(bodyCount: number) {
+    const measureComponents = this.getMeasureComponents();
+    const end = measureComponents.getYPosInfo(0);
+    const start = measureComponents.getYPosInfo(bodyCount);
+    const bodyLineCount = start.line - end.line;
+    const bodySpaceCount = start.space - end.space;
+    const fractions = this.getComponentFractions();
+    const bodyFraction =
+      bodyLineCount * fractions.line + bodySpaceCount * fractions.space;
+    return bodyFraction;
+  }
 }

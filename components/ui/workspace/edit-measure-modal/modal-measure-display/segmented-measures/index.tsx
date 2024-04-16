@@ -1,6 +1,6 @@
 import { Measure } from "@/components/providers/music/types";
 import classes from "./index.module.css";
-import { FunctionComponent } from "react";
+import { CSSProperties, FunctionComponent } from "react";
 import useSplitSegmentRegistry from "@/components/hooks/useSplitSegement/useSplitSegmentRegistry";
 import MeasureSegments from "./measure-segments";
 import {
@@ -14,6 +14,8 @@ type SegmentedMeasuresProps = {
   onSegmentClick: (location: Coordinate) => void;
   componentIterator: MeasureComponentIterator;
   componentFractions: MeasureComponentValues;
+  noteHeight: number;
+  noteOffset: number;
 };
 
 const SegmentedMeasures: FunctionComponent<SegmentedMeasuresProps> = ({
@@ -21,23 +23,26 @@ const SegmentedMeasures: FunctionComponent<SegmentedMeasuresProps> = ({
   onSegmentClick,
   componentIterator,
   componentFractions,
+  noteHeight,
+  noteOffset,
 }) => {
   const registry = useSplitSegmentRegistry();
-  const segmentClickHandler = (location: Coordinate) => {
-    registry.splitSegment(location.x);
-    onSegmentClick(location);
-  };
   return (
     <div className={classes.measures}>
       {measures.map((measure) => (
-        <div className={classes.measure}>
+        <div
+          className={classes.measure}
+          style={{ "--offset": noteOffset + "%" } as CSSProperties}
+        >
           <MeasureSegments
             splitSegementRegistry={registry}
-            onSegmentClick={segmentClickHandler}
+            onSegmentClick={onSegmentClick}
             componentFractions={componentFractions}
-            onSegmentAuxClick={registry.joinSegment}
+            onJoin={registry.joinSegment}
+            onSplit={registry.splitSegment}
             measure={measure}
             componentIterator={componentIterator}
+            noteContainerHeight={noteHeight}
           />
         </div>
       ))}

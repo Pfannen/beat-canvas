@@ -21,6 +21,7 @@ type ModalMeasureDisplayProps = {
     measureIndex: number;
     yPos: number;
   }) => void;
+  // onSegmentClick: (measureIndex: number, xPos: number, yPos: number) => void;
 };
 
 const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
@@ -57,6 +58,8 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
         componentIterator={measureComponents.iterateMeasureComponents.bind(
           measureComponents
         )}
+        noteOffset={dimensions.measureDimensions.noteYOffset}
+        noteHeight={dimensions.measureDimensions.noteSpaceHeight}
       />
     </ComponentNoteSelectCanvas>
   );

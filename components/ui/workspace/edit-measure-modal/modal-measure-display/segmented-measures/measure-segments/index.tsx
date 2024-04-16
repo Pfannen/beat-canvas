@@ -15,30 +15,34 @@ import { Coordinate } from "@/objects/measurement/types";
 type MeasureSegmentsProps = {
   measure: Measure;
   onSegmentClick: (location: Coordinate) => void;
-  onSegmentAuxClick: (xPos: number) => void;
+  onSplit: (xPos: number) => void;
+  onJoin: (xPos: number) => void;
   componentIterator: MeasureComponentIterator;
   componentFractions: MeasureComponentValues;
   splitSegementRegistry: RegistryDelegates;
+  noteContainerHeight: number;
 };
 
 const MeasureSegments: FunctionComponent<MeasureSegmentsProps> = ({
   measure,
   onSegmentClick,
-  onSegmentAuxClick,
   componentIterator,
+  onSplit,
+  onJoin,
   componentFractions,
   splitSegementRegistry,
+  noteContainerHeight,
 }) => {
   const getComponentProps = (xPos: number) => {
     return {
       onComponentClick: (yPos: number) => {
         onSegmentClick({ x: xPos, y: yPos });
       },
-      onAuxClick: () => {
-        onSegmentAuxClick(xPos);
-      },
+      onSplit: onSplit.bind(null, xPos),
+      onJoin: onJoin.bind(null, xPos),
       componentIterator: componentIterator,
       componentFractions: componentFractions,
+      noteContainerHeight,
       width: 1,
     };
   };
