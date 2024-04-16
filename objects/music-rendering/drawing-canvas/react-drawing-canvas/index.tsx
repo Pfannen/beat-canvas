@@ -87,8 +87,8 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
       height,
       this.unit
     );
-    ReactDrawingCanvas.attachDrawOptions(drawOptions, styleCreator.styles);
-    this.createStyledElement(styleCreator.styles, props);
+    ReactDrawingCanvas.attachDrawOptions(drawOptions, styleCreator);
+    this.createStyledElement(styleCreator, props);
   }
 
   drawEllipse({
@@ -105,10 +105,10 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
       diameter,
       this.unit
     );
-    styleCreator.styles.center();
-    ReactDrawingCanvas.attachDrawOptions(drawOptions, styleCreator.styles);
-    styleCreator.styles.addBorderRadius("50%");
-    this.createStyledElement(styleCreator.styles, props);
+    styleCreator.center();
+    ReactDrawingCanvas.attachDrawOptions(drawOptions, styleCreator);
+    styleCreator.addBorderRadius("50%");
+    this.createStyledElement(styleCreator, props);
   }
 
   drawSVG(options: HTMLSVGOptions): void {
@@ -119,19 +119,21 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
       scale / 5,
       this.unit
     );
-    styleCreator.styles.center();
+    // const styleCreator = new StyleCreator(this.unit);
+    // styleCreator.addCoordinate(options.center);
+    // styleCreator.addPosition("absolute");
+    // styleCreator.center();
     ReactDrawingCanvas.attachDrawOptions(
       options.drawOptions,
-      styleCreator.styles,
+      styleCreator,
       "transparent"
     );
-    const { style, className } = ReactDrawingCanvas.extractStyleData(
-      styleCreator.styles
-    );
+    const { style, className } =
+      ReactDrawingCanvas.extractStyleData(styleCreator);
     const component = (
       <svg
         viewBox={svgViewBox}
-        scale={options.scale}
+        scale={scale}
         style={style}
         className={className}
       >

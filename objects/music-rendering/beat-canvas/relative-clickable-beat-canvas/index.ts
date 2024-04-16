@@ -3,6 +3,7 @@ import { ClickableBeatCanvas } from "../clickable-beat-canvas";
 import {
   MeasureOptions,
   NoteOptions,
+  RestOptions,
 } from "@/types/music-rendering/canvas/beat-canvas";
 
 export class RelativeClickableBeatCanvas extends ClickableBeatCanvas {
@@ -36,4 +37,9 @@ export class RelativeClickableBeatCanvas extends ClickableBeatCanvas {
     options.width = this.xValueConverter(options.width);
     super.drawMeasure(options);
   }
+
+  // drawRest(options: RestOptions): void {
+  //   const path = this.getRestSVGPath(options.type);
+  //   this.canvas.drawSVG({ path, center: options.center, scale: 17 });
+  // }
 }
