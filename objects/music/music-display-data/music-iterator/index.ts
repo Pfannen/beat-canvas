@@ -60,7 +60,7 @@ export class MusicIterator {
         subdivisionLength,
         timeSignature
       );
-      cb({ attributes: measure.attributes, components }, i);
+      cb({ components }, i);
     }
   }
 }
