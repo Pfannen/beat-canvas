@@ -1,0 +1,25 @@
+.playback_manager {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	max-width: 40%;
+	margin-inline: auto;
+}
+
+.playback_manager > * {
+	margin-inline: auto;
+}
+
+.slider_container {
+	width: 75%;
+}
+
+.slider_container input {
+	width: 100%;
+}
+
+.playback_buttons {
+	display: grid;
+	grid-template-columns: 20px 30px 20px;
+	gap: 16px;
+}

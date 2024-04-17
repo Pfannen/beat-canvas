@@ -1,5 +1,11 @@
-import { Measure, TimeSignature } from "@/components/providers/music/types";
-import { Dynamic } from "./note-annotations";
+import {
+	Measure,
+	NoteType,
+	TimeSignature,
+} from '@/components/providers/music/types';
+import { Dynamic } from './note-annotations';
+
+export const numberNoteTypes = [1, 2, 4, 8, 16, 32, 64];
 
 export type Pitch = "A" | "B" | "C" | "D" | "E" | "F" | "G";
 
@@ -66,13 +72,19 @@ export type Metronome = {
   beatsPerMinute: number;
 };
 
-export const staticMeasureAttributesKeys = new Set<
-	keyof StaticMeasureAttributes
->(['timeSignature', 'keySignature', 'clef', 'repeat', 'repeatEndings']);
+export const staticMeasureAttributesKeys = new Set<keyof MeasureAttributes>([
+	'timeSignature',
+	'keySignature',
+	'clef',
+	'repeat',
+	'repeatEndings',
+]);
 
-export const dynamicMeasureAttributesKeys = new Set<
-	keyof DynamicMeasureAttributes
->(['metronome', 'dynamic', 'wedge']);
+export const dynamicMeasureAttributesKeys = new Set<keyof MeasureAttributes>([
+	'metronome',
+	'dynamic',
+	'wedge',
+]);
 
 export type StaticMeasureAttributes = {
 	timeSignature: TimeSignature;
@@ -90,17 +102,6 @@ export type DynamicMeasureAttributes = {
 
 export type MeasureAttributes = StaticMeasureAttributes &
 	DynamicMeasureAttributes;
-
-/* export type MeasureAttributes = {
-	metronome: Metronome;
-	timeSignature: TimeSignature;
-	keySignature: number;
-	clef: Clef;
-	dynamic: Dynamic;
-	repeat?: Repeat;
-	repeatEndings?: RepeatEndings;
-	wedge?: Wedge;
-}; */
 
 export type PartialMeasureAttributes = Partial<MeasureAttributes>;
 

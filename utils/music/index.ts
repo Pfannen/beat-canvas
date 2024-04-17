@@ -1,5 +1,12 @@
-import { NoteType, TimeSignature } from "@/components/providers/music/types";
-import { Clef, PitchOctave } from "@/types/music";
+import { NoteType, SegmentBeat } from '@/components/providers/music/types';
+import {
+	Clef,
+	MeasureAttributes,
+	PitchOctave,
+	dynamicMeasureAttributesKeys,
+	staticMeasureAttributesKeys,
+} from '../../types/music'; // NOTE: Jest doesn't like when there's an '@' to locate the folder
+import { NoteAnnotations } from '@/types/music/note-annotations';
 
 export const getSecondsPerBeat = (bpm: number) => 1 / (bpm / 60);
 
@@ -193,41 +200,45 @@ export const getQuarterNoteDurationFromNoteType = (noteType: NoteType) => {
   }
 };
 
+export const rightHandSplits: { [key: number]: SegmentBeat } = {
+	0.5: 0.5,
+	0.25: 0.25,
+	0.75: 0.25,
+	0.125: 0.125,
+	0.375: 0.125,
+	0.625: 0.125,
+	0.875: 0.125,
+};
+
 export const noteTypeIsDotted = (noteType: NoteType) =>
-  noteType.startsWith("dotted-");
+	noteType.startsWith('dotted-');
 
-export const isDownbeat = (currentPosition: number) => {
-  return Math.floor(currentPosition) === currentPosition; //Is down beat if there is no fractional part of current position
+export const getNoteAnnotationKeys = () => {
+	return [
+		'accent',
+		'accidental',
+		'chord',
+		'dotted',
+		'dynamic',
+		'slur',
+		'staccato',
+	] as (keyof Required<NoteAnnotations>)[];
 };
 
-//#region Note Grouping
-
-export const durationToRestType = (
-  duration: number,
-  timeSignature: TimeSignature
-): NoteType => {
-  if (duration === timeSignature.beatsPerMeasure) {
-    return "whole"; //If the whole measure contains no notes then a whole rest should be displayed, no matter the key signature (with the expcetion of 4/2 time)
-  }
-  return durationToNoteType(duration, timeSignature.beatNote);
+export const getMeasureAttributeKeys = () => {
+	return [
+		...staticMeasureAttributesKeys,
+		...dynamicMeasureAttributesKeys,
+	] as (keyof MeasureAttributes)[];
 };
 
-export const isBeamable = (type: NoteType) =>
-  noteTypeToQuarterNoteDuration[type] < 1; // Anything less than a quarter note is "beamable"
-
-export const beamableSubdivisionLength = (timeSignature: TimeSignature) => {
-  if (timeSignature.beatNote === 4) {
-    if (timeSignature.beatsPerMeasure % 4 === 0) {
-      // 4/4 time notes can be beamed from beats [1-3) (end of beat 2) and beats [3-4) (end of beat 4)
-      return 2;
-    }
-  } else if (timeSignature.beatNote === 8) {
-    if (timeSignature.beatsPerMeasure !== 3) {
-      return 3;
-    }
-  }
-  return 1;
+export const getNoteTypes = () => {
+	return [
+		'whole',
+		'half',
+		'quarter',
+		'eighth',
+		'sixteenth',
+		'thirtysecond',
+	] as NoteType[];
 };
-
-export const serializeTimeSignature = (timeSignature: TimeSignature) =>
-  `${timeSignature.beatsPerMeasure}/${timeSignature.beatNote}`;

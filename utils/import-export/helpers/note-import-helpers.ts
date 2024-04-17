@@ -4,7 +4,12 @@ import {
 	NoteImportHelper,
 	NoteImportHelperMap,
 } from '@/types/import-export/import';
-import { Accidental, Dynamic, Slur } from '@/types/music/note-annotations';
+import {
+	Accidental,
+	Dynamic,
+	Slur,
+	SlurMXMLImport,
+} from '@/types/music/note-annotations';
 import {
 	getSingleElement,
 	validateElements,
@@ -31,7 +36,11 @@ const durationImportHelper: NoteImportHelper = (nD, el) => {
 	nD.duration = +el.textContent;
 };
 
-const accidentalMarkImportHelper: NoteImportAnnotationsHelper = (a, el) => {
+const accidentalMarkImportHelper: NoteImportAnnotationsHelper = (
+	details,
+	el
+) => {
+	const { a } = details;
 	if (!verifyTagName(el, 'accidental-mark') || !el.textContent) return;
 	a.accidental = el.textContent as Accidental;
 };
@@ -46,55 +55,82 @@ const chordImportHelper: NoteImportHelper = (nD, el) => {
 	nD.annotations.chord = true;
 };
 
-const articulationsImportHelper: NoteImportAnnotationsHelper = (a, el) => {
+const articulationsImportHelper: NoteImportAnnotationsHelper = (
+	details,
+	el
+) => {
 	if (!verifyTagName(el, 'articulations')) return;
 
 	const { children } = el;
 	for (let i = 0; i < children.length; i++) {
 		const child = children[i];
 		if (child.tagName in notationsImportHelperMap) {
-			notationsImportHelperMap[child.tagName](a, child);
+			notationsImportHelperMap[child.tagName](details, child);
 		}
 	}
 };
 
-const accentImportHelper: NoteImportAnnotationsHelper = (a, el) => {
+const accentImportHelper: NoteImportAnnotationsHelper = (details, el) => {
 	if (!verifyTagName(el, 'accent') && !verifyTagName(el, 'strong-accent'))
 		return;
+	const { a } = details;
 	a.accent = 'strong';
 };
 
-const softAccentImportHelper: NoteImportAnnotationsHelper = (a, el) => {
+const softAccentImportHelper: NoteImportAnnotationsHelper = (details, el) => {
 	if (!verifyTagName(el, 'soft-accent')) return;
+	const { a } = details;
 	a.accent = 'weak';
 };
 
-const staccatoImportHelper: NoteImportAnnotationsHelper = (a, el) => {
+const staccatoImportHelper: NoteImportAnnotationsHelper = (details, el) => {
 	if (!verifyTagName(el, 'staccato')) return;
-
+	const { a } = details;
 	a.staccato = true;
 };
 
-const dynamicsImportHelper: NoteImportAnnotationsHelper = (a, el) => {
+const dynamicsImportHelper: NoteImportAnnotationsHelper = (details, el) => {
 	if (!verifyTagName(el, 'dynamics') || el.childElementCount === 0) return;
-
+	const { a } = details;
 	a.dynamic = el.children[0].tagName as Dynamic;
 };
 
-const slurImportHelper: NoteImportAnnotationsHelper = (a, el) => {
-	if (!verifyTagName(el, 'slur')) return;
+const slurImportHelper: NoteImportAnnotationsHelper = (details, el) => {
+	if (!verifyTagName(el, 'slur') && !verifyTagName(el, 'tied')) return;
 
-	const type = el.getAttribute('type');
+	const type = el.getAttribute('type') as SlurMXMLImport | undefined;
 	if (!type) return;
-	a.slur = type as Slur;
+
+	const { a, tbc } = details;
+	// If this is the start of the slur
+	if (type === 'start') {
+		// If the slur array doesn't exist, create it
+		if (!tbc.slurIds) tbc.slurIds = [];
+
+		// Generate the slur id w/ math random and add it to the stack
+		const slurId = Math.random();
+		tbc.slurIds.push(slurId);
+		// Set the current note to have a slur annotation
+		a.slur = {
+			start: slurId,
+		};
+	}
+	// Else if this is the end of the slur and there is a slur waiting to be completed
+	else if (tbc.slurIds) {
+		// Grab the slur id if there's one in the stack
+		const slurId = tbc.slurIds.pop();
+		if (slurId === undefined) return;
+
+		// Make the current note have a slur if it doesn't have one already
+		if (!a.slur) a.slur = { stop: [] };
+		if (!a.slur.stop) a.slur.stop = [];
+		// Push the slur id
+		a.slur.stop.push(slurId);
+	}
 };
 
-const tiedImportHelper: NoteImportAnnotationsHelper = (a, el) => {
-	if (!verifyTagName(el, 'tied')) return;
-
-	const type = el.getAttribute('type');
-	if (!type) return;
-	a.slur = type as Slur;
+const tiedImportHelper: NoteImportAnnotationsHelper = (details, el) => {
+	slurImportHelper(details, el);
 };
 
 const notationsImportHelper: NoteImportHelper = (nD, el) => {
@@ -104,10 +140,11 @@ const notationsImportHelper: NoteImportHelper = (nD, el) => {
 	}
 
 	const { children } = el;
+	const details = { a: nD.annotations, tbc: nD.tbcAnnotations };
 	for (let i = 0; i < children.length; i++) {
 		const child = children[i];
 		if (child.tagName in notationsImportHelperMap) {
-			notationsImportHelperMap[child.tagName](nD.annotations, child);
+			notationsImportHelperMap[child.tagName](details, child);
 		}
 	}
 };

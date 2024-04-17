@@ -20,7 +20,7 @@ export class VolumeManager implements IVolumeNodeModifier, IVolumeValueModifer {
 		this.maxDecibels
 	);
 
-	masterVolumeId = 'master';
+	masterVolumeId = 'Master';
 
 	private volumeMap: VolumeNodeMap = {};
 	private masterVolume?: Volume;

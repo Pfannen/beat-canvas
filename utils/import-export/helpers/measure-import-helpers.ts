@@ -37,7 +37,10 @@ const noteImportHelper: MeasureImportHelper = (mD, el) => {
 	if (mD.curX >= beatsPerMeasure) return;
 
 	// TODO: Make getNoteDetails a non-default export
-	const { pitch, octave, duration, annotations } = Helper.getNoteDetails(el);
+	const { pitch, octave, duration, annotations } = Helper.getNoteDetails(
+		el,
+		mD.tbcValues.notes
+	);
 	if (!duration) return;
 
 	const trueDuration = convertImportedDuration(
@@ -133,13 +136,14 @@ const soundImportHelper: MeasureImportHelper = (mD, el) => {
 const wedgeImportHelper: MeasureImportHelper = (mD, el) => {
 	if (!verifyTagName(el, 'wedge') || !el.hasAttribute('type')) return;
 
+	const { measures: tbc } = mD.tbcValues;
 	const wedgeType = el.getAttribute('type');
 	if (wedgeType === 'stop') {
-		if (!('wedge' in mD.tbcAttributes)) return;
+		if (!('wedge' in tbc)) return;
 
-		mD.tbcAttributes.wedge!.measureEnd = mD.curMeasureNumber;
-		mD.tbcAttributes.wedge!.xEnd = mD.curX;
-		delete mD.tbcAttributes.wedge;
+		tbc.wedge!.measureEnd = mD.curMeasureNumber;
+		tbc.wedge!.xEnd = mD.curX;
+		delete tbc.wedge;
 	} else {
 		const wedge: Wedge = {
 			crescendo: wedgeType === 'crescendo',
@@ -147,7 +151,7 @@ const wedgeImportHelper: MeasureImportHelper = (mD, el) => {
 			xEnd: mD.curX,
 		};
 
-		mD.tbcAttributes.wedge = wedge;
+		tbc.wedge = wedge;
 		mD.newDynamicAttributes.wedge = wedge;
 	}
 };
@@ -202,20 +206,21 @@ const repeatImportHelper: MeasureImportHelper = (mD, el) => {
 	if (!verifyTagName(el, 'repeat') || !el.hasAttribute('direction')) return;
 
 	const forward = el.getAttribute('direction') === 'forward';
+	const { measures: tbc } = mD.tbcValues;
 
 	let repeat: Repeat;
 	if (forward) {
 		repeat = { forward };
-		mD.tbcAttributes.repeatMeasureNumber = mD.curMeasureNumber;
+		tbc.repeatMeasureNumber = mD.curMeasureNumber;
 		// Found a forward repeat, measures up until a backward repeat can be an ending
-		mD.tbcAttributes.repeatEndings = {};
+		tbc.repeatEndings = {};
 	} else {
-		if (!('repeatMeasureNumber' in mD.tbcAttributes)) return;
+		if (!('repeatMeasureNumber' in tbc)) return;
 
 		let repeatCount = 1;
 		if (el.hasAttribute('times')) repeatCount = +el.getAttribute('times')!;
 
-		const jumpMeasure = mD.tbcAttributes.repeatMeasureNumber!;
+		const jumpMeasure = tbc.repeatMeasureNumber!;
 		repeat = {
 			forward: false,
 			jumpMeasure,
@@ -224,12 +229,12 @@ const repeatImportHelper: MeasureImportHelper = (mD, el) => {
 		};
 
 		// Found a backward repeat, measures up until the next forward repeat can't be an ending
-		if (mD.tbcAttributes.repeatEndings) {
-			if (Object.keys(mD.tbcAttributes.repeatEndings).length === 0) {
-				delete mD.tbcAttributes.repeatEndings;
+		if (tbc.repeatEndings) {
+			if (Object.keys(tbc.repeatEndings).length === 0) {
+				delete tbc.repeatEndings;
 			}
 		}
-		delete mD.tbcAttributes.repeatMeasureNumber;
+		delete tbc.repeatMeasureNumber;
 	}
 
 	mD.newStaticAttributes.repeat = repeat;
@@ -242,6 +247,7 @@ const repeatImportHelper: MeasureImportHelper = (mD, el) => {
 
 // TODO: Address multiple numbers being in the 'number' attribute
 const endingImportHelper: MeasureImportHelper = (mD, el) => {
+	const { measures: tbc } = mD.tbcValues;
 	// In the repeat import helper, we provide and remove a storage location for endings
 	// depending on the type of repeat found
 	// If tbcAttributes doesn't have the repeatEndings key, that means this ending element shouldn't be parsed
@@ -249,7 +255,7 @@ const endingImportHelper: MeasureImportHelper = (mD, el) => {
 		!verifyTagName(el, 'ending') ||
 		!el.hasAttribute('number') ||
 		!el.hasAttribute('type') ||
-		!mD.tbcAttributes.repeatEndings
+		!tbc.repeatEndings
 	)
 		return;
 
@@ -262,7 +268,7 @@ const endingImportHelper: MeasureImportHelper = (mD, el) => {
 		const repeatEndings: RepeatEndings = {
 			[endingNumber]: mD.curMeasureNumber,
 		};
-		mD.tbcAttributes.repeatEndings[endingNumber] = repeatEndings;
+		tbc.repeatEndings[endingNumber] = repeatEndings;
 
 		// (if we encounter an ending, we understand that as the whole measure being in that ending)
 		mD.newStaticAttributes.repeatEndings = repeatEndings;
@@ -276,14 +282,13 @@ const endingImportHelper: MeasureImportHelper = (mD, el) => {
 		// Then check if endingNumber is present in the repeatEndings that endingNumber was mapped to
 		// RepeatEndings are modeled with an object because a measure can be apart of multiple endings
 		if (
-			!(endingNumber in mD.tbcAttributes.repeatEndings) ||
-			!(endingNumber in mD.tbcAttributes.repeatEndings[endingNumber])
+			!(endingNumber in tbc.repeatEndings) ||
+			!(endingNumber in tbc.repeatEndings[endingNumber])
 		)
 			return;
 
-		mD.tbcAttributes.repeatEndings[endingNumber][endingNumber] =
-			mD.curMeasureNumber;
-		delete mD.tbcAttributes.repeatEndings[endingNumber];
+		tbc.repeatEndings[endingNumber][endingNumber] = mD.curMeasureNumber;
+		delete tbc.repeatEndings[endingNumber];
 	}
 };
 

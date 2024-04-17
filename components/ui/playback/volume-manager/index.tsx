@@ -2,6 +2,7 @@ import { FunctionComponent } from 'react';
 import classes from './VolumeManager.module.css';
 import { useMusic } from '@/components/providers/music';
 import { IVolumeValueModifer, VolumePair } from '@/types/audio/volume';
+import PlaybackSlider from '../styles/playback-slider';
 
 interface VolumeManagerProps {
 	modifyVolume: (audioId: string, volumePct: number) => void;
@@ -17,8 +18,7 @@ const VolumeManager: FunctionComponent<VolumeManagerProps> = ({
 			{volumePairs.map((attributes) => (
 				<div key={attributes.audioId}>
 					<p>{attributes.audioId}</p>
-					<input
-						type="range"
+					<PlaybackSlider
 						onChange={(event) => {
 							modifyVolume(attributes.audioId, +event.target.value / 100);
 						}}

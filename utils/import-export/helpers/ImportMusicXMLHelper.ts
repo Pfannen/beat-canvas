@@ -12,7 +12,8 @@ import { Measure, TimeSignature } from '@/components/providers/music/types';
 import {
 	MeasureImportDetails,
 	NoteImportDetails,
-	ToBeCompletedMeasureAttributes,
+	ToBeCompletedAnnotations,
+	ToBeCompletedValues,
 } from '@/types/import-export/import';
 import { noteImportHelperMap } from './note-import-helpers';
 import { measureImportHelperMap } from './measure-import-helpers';
@@ -203,8 +204,14 @@ class ImportMusicXMLHelper {
 		return attributes;
 	};
 
-	static getNoteDetails = (noteXML: Element) => {
-		const noteDetails: NoteImportDetails = { annotations: {} };
+	static getNoteDetails = (
+		noteXML: Element,
+		tbcAnnotations: ToBeCompletedAnnotations
+	) => {
+		const noteDetails: NoteImportDetails = {
+			annotations: {},
+			tbcAnnotations: tbcAnnotations,
+		};
 		const { children } = noteXML;
 
 		for (let i = 0; i < children.length; i++) {
@@ -221,11 +228,11 @@ class ImportMusicXMLHelper {
 		measureXML: Element,
 		curMeasureNumber: number,
 		measureAttributes: MeasureAttributesMXML,
-		tbcAttributes: ToBeCompletedMeasureAttributes
+		tbcValues: ToBeCompletedValues
 	) => {
 		const mDetails: MeasureImportDetails = {
 			currentAttributes: measureAttributes,
-			tbcAttributes,
+			tbcValues: tbcValues,
 			//newTemporalAttributes: [],
 			newStaticAttributes: {},
 			newDynamicAttributes: {},
@@ -264,7 +271,7 @@ class ImportMusicXMLHelper {
 			notes: mDetails.notes,
 			staticAttributes: mDetails.newStaticAttributes,
 			currentAttributes: mDetails.currentAttributes,
-			tbcAttributes,
+			tbcAttributes: tbcValues,
 		};
 	};
 }

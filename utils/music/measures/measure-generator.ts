@@ -95,10 +95,11 @@ export const measureGenerator = function* (
 	updateMeasureAttributes(currentAttributes, newAttributes);
 };
 
-type YieldObj = {
+export type YieldObj = {
 	currentAttributes: MeasureAttributes;
 	measureStartX: number;
 	curX: number;
+	measureIndex: number;
 	newAttributes?: Partial<MeasureAttributes>;
 	note?: Note;
 };
@@ -135,6 +136,7 @@ export const noteAttributeGenerator = function* (
 				currentAttributes: attr,
 				measureStartX,
 				curX: 0,
+				measureIndex: i,
 			};
 			updateAttributeYieldObj(yieldObj, attr, staticAttributes, 0);
 			yield yieldObj;
@@ -150,6 +152,7 @@ export const noteAttributeGenerator = function* (
 				currentAttributes: attr,
 				measureStartX,
 				curX: 0,
+				measureIndex: i,
 			};
 			const newAttr = tA![aIdx];
 			const note = notes[nIdx];
@@ -177,6 +180,7 @@ export const noteAttributeGenerator = function* (
 				currentAttributes: attr,
 				measureStartX,
 				curX: 0,
+				measureIndex: i,
 			};
 			const newAttr = tA![aIdx];
 			updateAttributeYieldObj(yieldObj, attr, newAttr.attributes, newAttr.x);
@@ -190,6 +194,7 @@ export const noteAttributeGenerator = function* (
 				currentAttributes: attr,
 				measureStartX,
 				curX: 0,
+				measureIndex: i,
 			};
 			const note = notes[nIdx];
 			updateNoteYieldObj(yieldObj, note);

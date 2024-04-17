@@ -1,4 +1,3 @@
-import Tone from 'tone';
 import { PitchOctave } from '.';
 
 export type NoteAnnotation =
@@ -7,9 +6,12 @@ export type NoteAnnotation =
 	| 'slur'
 	| 'dynamic'
 	| 'accidental'
+	| 'dotted'
 	| 'chord';
 
-export type Slur = 'start' | 'stop';
+export type Slur = { start?: number; stop?: number[] };
+
+export type SlurMXMLImport = 'start' | 'stop';
 
 export type Accent = 'strong' | 'weak';
 
@@ -32,6 +34,7 @@ export type NoteAnnotations = {
 	dynamic?: Dynamic;
 	accidental?: Accidental;
 	chord?: true;
+	dotted?: true;
 };
 
 export type PersistentInstrumentAttributes = {
@@ -44,7 +47,7 @@ export type PartialPIA = {
 	velocity?: number;
 };
 
-export type NoteAudioAttributes = {
+export type NoteEnqueueData = {
 	pitchOctave: PitchOctave;
 	duration: number;
 	persistentAttributes: {
@@ -54,73 +57,11 @@ export type NoteAudioAttributes = {
 	};
 };
 
-export type NoteAttributesModifier = (
-	noteAttributes: NoteAudioAttributes,
+export type NoteAnnotationApplier = (
+	noteEnqueueData: NoteEnqueueData,
 	annotations: NoteAnnotations
 ) => void;
 
-/* type AnnotationModifier<
-	T extends NoteAttributes,
-	K extends keyof NoteAnnotations
-> = (attributes: T, annotation: { [key in K]: NoteAnnotations[K] }) => T;
-
-// Example modifier functions
-const staccatoModifier: AnnotationModifier<NoteAttributes, 'staccato'> = (
-	attributes,
-	annotation
-) => {
-	// Your staccato logic here
-	return {
-		...attributes,
-		duration: annotation?.staccato?.duration || attributes.duration,
-	};
+export type NoteAnnotationApplierMap = {
+	[key in keyof Required<NoteAnnotations>]: NoteAnnotationApplier;
 };
-
-const slurModifier: AnnotationModifier<NoteAttributes, 'slur'> = (
-	attributes,
-	annotation
-) => {
-	// Your slur logic here
-	return attributes;
-};
-
-const accentModifier: AnnotationModifier<NoteAttributes, 'accent'> = (
-	attributes,
-	annotation
-) => {
-	// Your accent logic here
-	return {
-		...attributes,
-		volume: annotation?.accent?.strength === 'strong' ? 1.0 : 0.8,
-	};
-};
-
-const dynamicsModifier: AnnotationModifier<NoteAttributes, 'dynamics'> = (
-	attributes,
-	annotation
-) => {
-	// Your dynamics logic here
-	return attributes;
-};
-
-// Example usage
-const note: NoteAttributes = {
-	pitchOctave: 'C4',
-	volume: 0.8,
-	velocity: 0.5,
-	duration: 2,
-};
-
-const annotationMap: {
-	[key in NoteAnnotation]: AnnotationModifier<NoteAttributes, key>;
-} = {
-	accent: accentModifier,
-	slur: slurModifier,
-	dynamics: dynamicsModifier,
-	staccato: staccatoModifier,
-};
-
-const annotations: NoteAnnotations = {
-	staccato: { duration: 0.5 },
-	accent: { strength: 'strong' },
-}; */

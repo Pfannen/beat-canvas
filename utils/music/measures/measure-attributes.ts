@@ -1,3 +1,4 @@
+import { Measure } from '@/components/providers/music/types';
 import {
 	DynamicMeasureAttributes,
 	MeasureAttributes,
@@ -6,6 +7,10 @@ import {
 	TemporalMeasureAttributes,
 	staticMeasureAttributesKeys,
 } from '@/types/music';
+import {
+	initializeMeasureAttributes,
+	noteAttributeGenerator,
+} from './measure-generator';
 
 export class MeasureAttributesRetriever {
 	private index = 0;
@@ -54,18 +59,41 @@ export const assignTemporalMeasureAttributes = (
 	}
 };
 
-/* export const assignStaticMeasureAttributes = (
-	sourceSMA: Partial<StaticMeasureAttributes>,
-	targetSMA: StaticMeasureAttributes
-) => {
-	const sourceKeys = Object.keys(sourceSMA) as Array<
-		keyof StaticMeasureAttributes
-	>;
+// TODO: Use binary search
+const getTemporalAttributesAtX = (measure: Measure, x: number) => {
+	const { temporalAttributes: tA } = measure;
+	if (!tA) return null;
 
-	for (const key of sourceKeys) {
-		if (staticMeasureAttributesKeys.has(key)) {
-			// idk how to remove red
-			targetSMA[key] = sourceSMA[key];
-		}
+	let i = 0;
+	while (i < tA.length && tA[i].x < x) i++;
+	if (i < tA.length && tA[i].x === x) return tA[i].attributes;
+	else return null;
+};
+
+export const getMeasureAttributes = (
+	measures: Measure[],
+	curAttr?: MeasureAttributes,
+	xEnd?: number
+) => {
+	let measureAttributes = initializeMeasureAttributes(measures[0]);
+	for (const someObj of noteAttributeGenerator(measures, curAttr)) {
+		measureAttributes = someObj.currentAttributes;
 	}
-}; */
+
+	if (xEnd !== undefined) {
+		const tA = getTemporalAttributesAtX(measures[measures.length - 1], xEnd);
+		if (tA) Object.assign(measureAttributes, tA);
+	}
+
+	return measureAttributes;
+};
+
+export const getPartialMeasureAttributes = (measure: Measure, x = 0) => {
+	const partialMA: Partial<MeasureAttributes> = {};
+	if (measure.staticAttributes)
+		Object.assign(partialMA, measure.staticAttributes);
+	const tA = getTemporalAttributesAtX(measure, x);
+	if (tA) Object.assign(partialMA, tA);
+
+	return partialMA;
+};
