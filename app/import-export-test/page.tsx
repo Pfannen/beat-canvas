@@ -59,6 +59,7 @@ const ImportExportTestPage: FunctionComponent<
 				}}
 				setImportedAudio={setImportedAudio}
 				play={playMusic}
+				musicScore={musicScore}
 			/>
 			<VolumeManager
 				volumePairs={volumePairs}

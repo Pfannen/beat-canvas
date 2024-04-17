@@ -42,8 +42,9 @@ export const usePlayback = () => {
 	};
 
 	//TODO: have status for importing bad audio file
-	const setImportedAudio = (audioFile?: File) => {
-		playbackManager.current.setImportedAudio(audioFile, updateVolumePairs);
+	const setImportedAudio = async (audioFile?: File) => {
+		await playbackManager.current.setImportedAudio(audioFile);
+		updateVolumePairs();
 		updatePlaybackState();
 	};
 

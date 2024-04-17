@@ -12,17 +12,19 @@ interface ImportExportPageProps {
 	setScore: (score: MusicScore) => void;
 	setImportedAudio: (audio: File) => void;
 	play: () => void;
+	musicScore?: MusicScore;
 }
 
 const ImportExportPage: FunctionComponent<ImportExportPageProps> = ({
 	setScore,
 	setImportedAudio,
 	play,
+	musicScore,
 }) => {
 	return (
 		<div className={classes.container}>
 			<div className={classes.imports}>
-				<ExportScoreDropdown />
+				<ExportScoreDropdown musicScore={musicScore} />
 				<ImportScoreDropdown setScore={setScore} />
 				<ImportAudioDropdown setImportedAudio={setImportedAudio} />
 			</div>

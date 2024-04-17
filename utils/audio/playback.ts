@@ -2,7 +2,7 @@ import { VolumeManager } from './volume';
 import { MusicScore } from '@/types/music';
 import { Player, ToneAudioBuffer, context } from 'tone';
 import { enqueueMusicScore } from './play-music/play-music';
-import { isOnClient } from '..';
+import { isOnClient, loadFile } from '..';
 
 // TODO: Look into PlaybackManager following single responsibility principle
 export class PlaybackManager extends VolumeManager {
@@ -62,18 +62,14 @@ export class PlaybackManager extends VolumeManager {
 		this.updateAudioDuration();
 	};
 
-	setImportedAudio = (
-		audioFile?: File,
-		completed?: (success: boolean) => void
-	) => {
+	setImportedAudio = async (audioFile?: File) => {
 		if (!isOnClient()) return;
 
 		if (!audioFile) {
 			delete this.players[this.playerNodeId];
 			this.removeVolumeNode(this.playerNodeId);
 			this.updateAudioDuration();
-			if (completed) completed(true);
-			return;
+			return true;
 		}
 
 		let player = this.players[this.playerNodeId];
@@ -83,24 +79,15 @@ export class PlaybackManager extends VolumeManager {
 			this.players[this.playerNodeId] = player;
 		}
 
-		// TODO: Make file reading use the promise API
-		const reader = new FileReader();
-		reader.onload = async (e) => {
-			const audioData = e.target?.result;
-			// shouldn't ever be a string because of how we read it, but needed for TypeScript
-			if (!audioData || typeof audioData === 'string') {
-				if (completed) completed(false);
-				return;
-			}
+		const audioData = await loadFile(audioFile, 'array');
+		// shouldn't ever be a string because of how we read it, but needed for TypeScript
+		if (!audioData || typeof audioData === 'string') return false;
 
-			const buffer = await context.decodeAudioData(audioData);
-			const toneAudioBuffer = new ToneAudioBuffer().set(buffer);
-			player.buffer = toneAudioBuffer;
-			this.updateAudioDuration();
-			if (completed) completed(true);
-		};
-
-		reader.readAsArrayBuffer(audioFile);
+		const buffer = await context.decodeAudioData(audioData);
+		const toneAudioBuffer = new ToneAudioBuffer().set(buffer);
+		player.buffer = toneAudioBuffer;
+		this.updateAudioDuration();
+		return true;
 	};
 
 	// The time the play button was last clicked
