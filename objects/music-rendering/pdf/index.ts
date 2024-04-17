@@ -17,8 +17,8 @@ export const drawPDF = async () => {
   for (let i = 0; i < measureCount; i++) {
     measures.push({
       notes: [
-        { x: 0, y: -1, type: "eighth" },
-        { x: 0.5, y: 1, type: "eighth" },
+        { x: 0, y: -2, type: "eighth" },
+        { x: 0.5, y: 3, type: "eighth" },
         // { x: 1, y: 10, type: "quarter" },
         // { x: 2, y: -1, type: "eighth" },
         // { x: 2.5, y: -1, type: "eighth" },

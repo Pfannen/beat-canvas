@@ -135,12 +135,16 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     });
   }
 
+  protected getStemWidth(bodyWidth: number) {
+    return bodyWidth * this.drawOptions.note.stemWidthBodyFraction;
+  }
+
   protected drawNoteStem(options: NoteOptions) {
     const width = this.getNoteBodyWidth(options.bodyHeight);
     const stemHeight =
       options.bodyHeight * this.drawOptions.note.stemHeightBodyFraction +
       Math.abs(options.stemOffset || 0);
-    const stemWidth = width * this.drawOptions.note.stemWidthBodyFraction;
+    const stemWidth = this.getStemWidth(width);
     return this.drawStem({
       bodyCenter: options.bodyCenter,
       stemHeight,
@@ -152,15 +156,17 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
 
   protected drawBeamData(options: NoteOptions, endOfStem: Coordinate) {
     if (options.beamData) {
+      const bodyWidth = this.getNoteBodyWidth(options.bodyHeight);
+      const stemWidth = this.getStemWidth(bodyWidth);
       const { beamData } = options;
       const height =
         options.bodyHeight * this.drawOptions.note.flagHeightBodyFraction;
       const width = beamData.length;
-
+      const corner = { x: endOfStem.x - stemWidth / 2.1, y: endOfStem.y };
       this.drawBeamFlag({
         corner: endOfStem,
         width,
-        height,
+        height: height,
         angle: beamData.angle - 90,
       });
     }
