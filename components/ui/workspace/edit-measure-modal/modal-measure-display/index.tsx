@@ -9,7 +9,8 @@ import SegmentedMeasures from "./segmented-measures";
 import { Measurements } from "@/objects/measurement/measurements";
 import { BODY_CT } from "@/objects/measurement/constants";
 import MusicCanvas from "@/components/ui/reusable/music-canvas";
-import { MusicPosition } from "@/types/ui/music-modal";
+import { PositionData } from "@/types/ui/music-modal";
+import { Coordinate } from "@/objects/measurement/types";
 
 const lineToSpaceRatio = 1.5;
 
@@ -18,7 +19,7 @@ type ModalMeasureDisplayProps = {
   aboveBelowCt: number;
   startMeasureGlobalIndex: number;
   aspectRatio: number;
-  onPositionClick: (position: MusicPosition) => void;
+  onPositionClick: (position: Coordinate, positionData: PositionData) => void;
 };
 
 const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({

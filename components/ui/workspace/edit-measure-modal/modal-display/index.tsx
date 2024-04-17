@@ -4,7 +4,8 @@ import { CSSProperties, FunctionComponent } from "react";
 import { Selection } from "@/components/hooks/useSelection";
 import ModalMeasureDispay from "../modal-measure-display";
 import { ABOVE_BELOW_CT } from "@/objects/measurement/constants";
-import { MusicPosition } from "@/types/ui/music-modal";
+import { PositionData } from "@/types/ui/music-modal";
+import { Coordinate } from "@/objects/measurement/types";
 
 const aspectRatio = 4;
 
@@ -17,8 +18,11 @@ const ModalDisplay: FunctionComponent<ModalDisplayProps> = ({
   getMeasures,
   selectedMeasures,
 }) => {
-  const onPositionClick = (position: MusicPosition) => {
-    console.log(position);
+  const onPositionClick = (
+    position: Coordinate,
+    positionData: PositionData
+  ) => {
+    console.log(position, positionData);
   };
   return (
     <div

@@ -8,12 +8,12 @@ import {
   MeasureComponentValues,
 } from "@/types/music-rendering";
 import { Coordinate } from "@/objects/measurement/types";
-import { MusicPosition } from "@/types/ui/music-modal";
+import { PositionData } from "@/types/ui/music-modal";
 
 type SegmentedMeasuresProps = {
   measures: Measure[];
   startMeasureGlobalIndex: number;
-  onPositionClick: (position: MusicPosition) => void;
+  onPositionClick: (position: Coordinate, positionData: PositionData) => void;
   componentIterator: MeasureComponentIterator;
   componentFractions: MeasureComponentValues;
   noteHeight: number;
@@ -32,9 +32,9 @@ const SegmentedMeasures: FunctionComponent<SegmentedMeasuresProps> = ({
   const registry = useSplitSegmentRegistry();
   const getSegmentClickDel =
     (measureIndex: number) =>
-    ({ x, y }: Coordinate) => {
+    (position: Coordinate, noteIndices?: number[]) => {
       measureIndex += startMeasureGlobalIndex;
-      onPositionClick({ measureIndex, x, y });
+      onPositionClick(position, { measureIndex, noteIndices });
     };
   return (
     <div className={classes.measures}>

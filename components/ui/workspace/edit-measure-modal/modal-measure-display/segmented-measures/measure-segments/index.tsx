@@ -14,7 +14,7 @@ import { Coordinate } from "@/objects/measurement/types";
 
 type MeasureSegmentsProps = {
   measure: Measure;
-  onSegmentClick: (location: Coordinate) => void;
+  onSegmentClick: (location: Coordinate, noteIndices?: number[]) => void;
   onSplit: (xPos: number) => void;
   onJoin: (xPos: number) => void;
   componentIterator: MeasureComponentIterator;
@@ -33,10 +33,10 @@ const MeasureSegments: FunctionComponent<MeasureSegmentsProps> = ({
   splitSegementRegistry,
   noteContainerHeight,
 }) => {
-  const getComponentProps = (xPos: number) => {
+  const getComponentProps = (noteIndices?: number[]) => (xPos: number) => {
     return {
       onComponentClick: (yPos: number) => {
-        onSegmentClick({ x: xPos, y: yPos });
+        onSegmentClick({ x: xPos, y: yPos }, noteIndices);
       },
       onSplit: onSplit.bind(null, xPos),
       onJoin: onJoin.bind(null, xPos),
@@ -55,12 +55,12 @@ const MeasureSegments: FunctionComponent<MeasureSegmentsProps> = ({
         return (
           <SplitSegment
             as={SegmentPane}
-            getComponentProps={getComponentProps}
+            getComponentProps={getComponentProps(props.noteIndices)}
             rightSiblingIdentifier={props.xPos + props.beatPercentage}
             registryDelegates={splitSegementRegistry}
             identifier={props.xPos}
             width={props.width}
-            canSplit={!props.notes}
+            canSplit={!props.noteIndices}
             minWidth={0}
             getChildrenKeys={keyFn}
           />

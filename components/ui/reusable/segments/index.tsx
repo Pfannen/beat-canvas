@@ -22,10 +22,10 @@ const Segments: FunctionComponent<SegmentsProps> = ({
   return (
     <>
       {segments.map((segment) => {
-        const { beatPercentage, notes, xPos } = segment;
+        const { beatPercentage, noteIndices, xPos } = segment;
         return renderSegment({
           beatPercentage,
-          notes,
+          noteIndices,
           xPos,
           width: beatPercentage / timeSignature.beatsPerMeasure,
         });

@@ -10,7 +10,7 @@ import { ReactNode } from "react";
 export type SegmentData = {
   beatPercentage: SegmentBeat;
   xPos: number;
-  notes?: Note[];
+  noteIndices?: number[];
 };
 
 // export type SegmentDelegates = {
