@@ -163,7 +163,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
       this.drawBeamFlag({
         corner: endOfStem,
         width,
-        height: height,
+        height: -height,
         angle: -beamData.angle,
       });
     }

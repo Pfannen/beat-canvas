@@ -77,26 +77,25 @@ export class NoteBeamCalculator {
       const offset = calculateOffset(intersection, note.y);
       const absoluteOffset = Math.abs(offset);
       if (isConflict(offset)) {
-        console.log(maxConflictValue, absoluteOffset);
         maxConflictValue = Math.max(maxConflictValue, absoluteOffset);
       }
+      //Might have to denote the conflict values then update those differently
       noteOffsets[i] = absoluteOffset;
     }
-    console.log(noteOffsets);
+
     if (maxConflictValue) {
       noteOffsets[0] += maxConflictValue;
       noteOffsets[noteOffsets.length - 1] += maxConflictValue;
       for (let i = 1; i < noteOffsets.length - 1; i++) {
-        if (maxConflictValue !== noteOffsets[i]) {
-          console.log({ offset: maxConflictValue - noteOffsets[i] });
-          const difference = maxConflictValue - noteOffsets[i];
-          noteOffsets[i] = Math.abs(difference);
+        const difference = maxConflictValue - noteOffsets[i];
+        if (difference < 0) {
+          noteOffsets[i] += maxConflictValue;
         } else {
-          noteOffsets[i] = 0;
+          noteOffsets[i] = difference;
         }
       }
     }
-    console.log(noteOffsets);
+
     return {
       beamAngle,
       beamLength,
