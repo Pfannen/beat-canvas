@@ -1,7 +1,7 @@
 import { PageSizes } from "pdf-lib";
 import { MeasureRenderer } from "../measure-renderer";
 import { Music } from "@/objects/music/readonly-music";
-import { Measure } from "@/components/providers/music/types";
+import { Measure, Note } from "@/components/providers/music/types";
 import { PDFLibDrawingCanvasManager } from "../drawing-canvas/pdf-lib-drawing-canvas/manager";
 import { PageDimensionParams } from "../music-layout/page-dimension-params";
 import { MusicLayout } from "../music-layout";
@@ -13,29 +13,14 @@ export const drawPDF = async () => {
   await pdfLibManager.initializeCanvas();
   const music = new Music();
   const measures: Measure[] = [];
-  const measureCount = 1;
-  for (let i = 0; i < measureCount; i++) {
-    measures.push({
-      notes: [
-        { x: 0, y: -2, type: "sixteenth" },
-        { x: 0.25, y: -1, type: "sixteenth" },
-        { x: 0.5, y: 4, type: "sixteenth" },
-        { x: 0.75, y: 6, type: "sixteenth" },
-        // { x: 0, y: -3, type: "sixteenth" },
-        // { x: 0.25, y: 1, type: "sixteenth" },
-        // { x: 0.5, y: 2, type: "sixteenth" },
-        // { x: 0.75, y: 3, type: "sixteenth" },
-        // { x: 0, y: 5, type: "sixteenth" },
-        // { x: 0.25, y: 4, type: "sixteenth" },
-        // { x: 0.5, y: -3, type: "sixteenth" },
-        // { x: 0.75, y: -4, type: "sixteenth" },
-        // { x: 0, y: 3, type: "sixteenth" },
-        // { x: 0.25, y: 2, type: "sixteenth" },
-        // { x: 0.5, y: -1, type: "sixteenth" },
-        // { x: 0.75, y: -4, type: "sixteenth" },
-      ],
-    });
-  }
+  measures.push({ notes: increasingDown });
+  measures.push({ notes: increasingUp });
+  measures.push({ notes: decreasingDown });
+  measures.push({ notes: decreasingUp });
+  measures.push({ notes: constantUp });
+  measures.push({ notes: constantDown });
+  measures.push({ notes: nonOrderedUp });
+  measures.push({ notes: nonOrderedDown });
   const pageParams = PageDimensionParams.genericSheetMusic();
   const dimensions = MusicLayout.getDimensions(pageParams);
   const measurements = new Measurements(ABOVE_BELOW_CT, BODY_CT, 3);
@@ -74,3 +59,59 @@ export const pdfToUrl = (pdf: Uint8Array) => {
   const base64 = btoa(String.fromCharCode(...pdfArray));
   return `data:application/pdf;base64,${base64}`;
 };
+
+const increasingDown: Note[] = [
+  { x: 0, y: -2, type: "sixteenth" },
+  { x: 0.25, y: -1, type: "sixteenth" },
+  { x: 0.5, y: 4, type: "sixteenth" },
+  { x: 0.75, y: 6, type: "sixteenth" },
+];
+
+const increasingUp: Note[] = [
+  { x: 0, y: -3, type: "sixteenth" },
+  { x: 0.25, y: 1, type: "sixteenth" },
+  { x: 0.5, y: 2, type: "sixteenth" },
+  { x: 0.75, y: 3, type: "sixteenth" },
+];
+
+const decreasingDown: Note[] = [
+  { x: 0, y: 5, type: "sixteenth" },
+  { x: 0.25, y: 4, type: "sixteenth" },
+  { x: 0.5, y: -3, type: "sixteenth" },
+  { x: 0.75, y: -4, type: "sixteenth" },
+];
+
+const decreasingUp: Note[] = [
+  { x: 0, y: 3, type: "sixteenth" },
+  { x: 0.25, y: 2, type: "sixteenth" },
+  { x: 0.5, y: -1, type: "sixteenth" },
+  { x: 0.75, y: -4, type: "sixteenth" },
+];
+
+const constantUp: Note[] = [
+  { x: 0, y: 3, type: "sixteenth" },
+  { x: 0.25, y: 3, type: "sixteenth" },
+  { x: 0.5, y: 3, type: "sixteenth" },
+  { x: 0.75, y: 3, type: "sixteenth" },
+];
+
+const constantDown: Note[] = [
+  { x: 0, y: 4, type: "sixteenth" },
+  { x: 0.25, y: 4, type: "sixteenth" },
+  { x: 0.5, y: 4, type: "sixteenth" },
+  { x: 0.75, y: 4, type: "sixteenth" },
+];
+
+const nonOrderedUp: Note[] = [
+  { x: 0, y: 3, type: "sixteenth" },
+  { x: 0.25, y: -4, type: "sixteenth" },
+  { x: 0.5, y: -1, type: "sixteenth" },
+  { x: 0.75, y: 3, type: "sixteenth" },
+];
+
+const nonOrderedDown: Note[] = [
+  { x: 0, y: 6, type: "sixteenth" },
+  { x: 0.25, y: 9, type: "sixteenth" },
+  { x: 0.5, y: 7, type: "sixteenth" },
+  { x: 0.75, y: 6, type: "sixteenth" },
+];
