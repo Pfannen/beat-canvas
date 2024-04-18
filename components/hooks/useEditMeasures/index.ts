@@ -150,6 +150,10 @@ export const useEditMeasures = (startIndex: number, endIndex: number) => {
     });
   };
 
+  const isSegmentSelected = (measureIndex: number, x: number) => {
+    return hasSelection({ measureIndex, x });
+  };
+
   return {
     editMeasures,
     selections,
@@ -157,6 +161,6 @@ export const useEditMeasures = (startIndex: number, endIndex: number) => {
     executeAssigner,
     updateSelection,
     commitMeasures,
-    hasSelection,
+    isSegmentSelected,
   };
 };

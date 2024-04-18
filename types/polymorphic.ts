@@ -29,9 +29,9 @@ export type PolymorphicComponentPropsD<
 export type PolymorphicFunctionComponentProps<
   C extends FunctionComponent<any>,
   Props = {}
-> = OmmittedFunctionProps<C, AsProp<C> & Props>;
+> = OmmittedFunctionProps<C, AsProp<C> & Props> & (AsProp<C> & Props);
 
 export type OmmittedFunctionProps<
   C extends FunctionComponent<any>,
   Props = {}
-> = Omit<ComponentPropsWithoutRef<C>, keyof Props> & Props;
+> = Omit<ComponentPropsWithoutRef<C>, keyof Props>;

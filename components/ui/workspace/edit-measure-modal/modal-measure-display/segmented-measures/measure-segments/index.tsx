@@ -3,8 +3,9 @@ import { Measure } from "@/components/providers/music/types";
 import { FunctionComponent } from "react";
 import Segments from "@/components/ui/reusable/segments";
 import { minimalSegmentGenerator } from "@/utils/segments/segment-gen-1";
-import SplitSegment from "@/components/ui/reusable/split-segment";
-import { RegistryDelegates } from "@/components/hooks/useSplitSegement/useSplitSegmentRegistry";
+import SplitSegment, {
+  SplitSegmentComponentProps,
+} from "@/components/ui/reusable/split-segment-new";
 import {
   MeasureComponentIterator,
   MeasureComponentValues,
@@ -15,50 +16,48 @@ import { Coordinate } from "@/objects/measurement/types";
 type MeasureSegmentsProps = {
   measure: Measure;
   onSegmentClick: (location: Coordinate, noteIndices?: number[]) => void;
-  onSplit: (xPos: number) => void;
-  onJoin: (xPos: number) => void;
   componentIterator: MeasureComponentIterator;
   componentFractions: MeasureComponentValues;
-  splitSegementRegistry: RegistryDelegates;
   noteContainerHeight: number;
+  isSegmentSelected: (xPos: number) => boolean;
+  canSegmentSplit: (xPos: number) => boolean;
 };
 
 const MeasureSegments: FunctionComponent<MeasureSegmentsProps> = ({
   measure,
   onSegmentClick,
   componentIterator,
-  onSplit,
-  onJoin,
   componentFractions,
-  splitSegementRegistry,
   noteContainerHeight,
+  isSegmentSelected,
+  canSegmentSplit,
 }) => {
-  const getComponentProps = (noteIndices?: number[]) => (xPos: number) => {
-    return {
-      onComponentClick: (yPos: number) => {
-        onSegmentClick({ x: xPos, y: yPos }, noteIndices);
-      },
-      onSplit: onSplit.bind(null, xPos),
-      onJoin: onJoin.bind(null, xPos),
-      componentIterator: componentIterator,
-      componentFractions: componentFractions,
-      noteContainerHeight,
-      width: 1,
+  const getComponent =
+    (xPos: number, noteIndices?: number[]) =>
+    (props: SplitSegmentComponentProps) => {
+      return (
+        <SegmentPane
+          {...props}
+          componentIterator={componentIterator}
+          componentFractions={componentFractions}
+          onComponentClick={(yPos) => {
+            onSegmentClick({ x: xPos, y: yPos }, noteIndices);
+          }}
+          noteContainerHeight={noteContainerHeight}
+          isSelected={isSegmentSelected(xPos)}
+        />
+      );
     };
-  };
   return (
     <Segments
       segmentGenerator={minimalSegmentGenerator}
       measure={measure}
       timeSignature={{ beatNote: 4, beatsPerMeasure: 4 }}
       renderSegment={(props) => {
-        if (props.noteIndices) console.log(props.xPos);
         return (
           <SplitSegment
-            as={SegmentPane}
-            getComponentProps={getComponentProps(props.noteIndices)}
+            Component={getComponent(props.xPos, props.noteIndices)}
             rightSiblingIdentifier={props.xPos + props.beatPercentage}
-            registryDelegates={splitSegementRegistry}
             identifier={props.xPos}
             width={props.width}
             canSplit={!props.noteIndices}

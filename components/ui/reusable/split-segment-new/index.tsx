@@ -1,25 +1,16 @@
 import { FunctionComponent } from "react";
-import {
-  OmmittedFunctionProps,
-  PolymorphicFunctionComponentProps,
-} from "@/types/polymorphic";
 import { SegmentDelegates } from "@/types/measure-modification/segments";
 import useSplitState from "@/components/hooks/useSplitState-new";
 
-type InternalProps = {
+export type SplitSegmentComponentProps = {
   onSplit: () => void;
   onJoin: () => void;
   onCollapse: () => void;
   width: number;
 };
 
-type SplitSegmentComponent<P = {}> = FunctionComponent<InternalProps & P>;
-
-type SplitSegmentProps<C extends SplitSegmentComponent> = {
-  getComponentProps: (
-    identifier: number
-  ) => OmmittedFunctionProps<C, InternalProps>;
-  //   lhs?: number;
+type SplitSegmentProps = {
+  Component: FunctionComponent<SplitSegmentComponentProps>;
   identifier: number;
   rightSiblingIdentifier: number;
   width: number;
@@ -28,20 +19,15 @@ type SplitSegmentProps<C extends SplitSegmentComponent> = {
   minWidth: number;
 } & SegmentDelegates<number>;
 
-const SplitSegment = <C extends SplitSegmentComponent>(
-  props: PolymorphicFunctionComponentProps<C, SplitSegmentProps<C>>
-) => {
-  const Component = props.as as any;
+const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
   const [isSplit, split, join] = useSplitState(props.canSplit);
   if (!isSplit || props.width <= props.minWidth) {
-    const restProps = props.getComponentProps(props.identifier);
     return (
-      <Component
-        {...restProps}
-        width={props.width}
+      <props.Component
         onSplit={split}
-        onJoin={join}
+        onJoin={props.onCollapse || join}
         onCollapse={join}
+        width={props.width}
       />
     );
   } else {
@@ -58,14 +44,12 @@ const SplitSegment = <C extends SplitSegmentComponent>(
           width={splitWidth}
           identifier={left}
           rightSiblingIdentifier={right}
-          //   lhs={undefined}
           onCollapse={onCollapse}
         />
         <SplitSegment
           {...props}
           identifier={right}
           width={splitWidth}
-          //   lhs={left}
           onCollapse={onCollapse}
         />
       </>

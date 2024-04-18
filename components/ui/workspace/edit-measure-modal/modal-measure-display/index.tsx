@@ -17,6 +17,7 @@ type ModalMeasureDisplayProps = {
   aboveBelowCt: number;
   aspectRatio: number;
   onPositionClick: (position: Coordinate, positionData: PositionData) => void;
+  isSegmentSelected: (measureIndex: number, xPos: number) => boolean;
 };
 
 const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
@@ -24,6 +25,7 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
   aboveBelowCt,
   aspectRatio,
   onPositionClick,
+  isSegmentSelected,
 }) => {
   const dimensions = useMemo(
     () => MusicLayout.getMarginlessSheetMusic(aspectRatio, 1, measures.length),
@@ -51,6 +53,7 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
         )}
         noteOffset={dimensions.measureDimensions.noteYOffset}
         noteHeight={dimensions.measureDimensions.noteSpaceHeight}
+        isSegmentSelected={isSegmentSelected}
       />
     </MusicCanvas>
   );

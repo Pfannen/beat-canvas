@@ -9,24 +9,28 @@ import { fractionToPercent } from "@/utils";
 import SegmentButton from "./segment-button";
 import { concatClassNames } from "@/utils/css";
 
-type SegmentPaneProps = {
+export type SegmentPaneProps = {
   width: number;
+  isSelected: boolean;
   componentIterator: MeasureComponentIterator;
   componentFractions: MeasureComponentValues;
   onComponentClick: (yPos: number) => void;
   noteContainerHeight: number;
   onSplit: () => void;
   onJoin: () => void;
+  onCollapse: () => void;
 };
 
 const SegmentPane: FunctionComponent<SegmentPaneProps> = ({
   width,
+  isSelected,
   componentIterator,
   componentFractions,
   onComponentClick,
   noteContainerHeight,
   onSplit,
   onJoin,
+  onCollapse,
 }) => {
   const components: ReactNode[] = [];
   componentIterator((component) => {
@@ -37,12 +41,13 @@ const SegmentPane: FunctionComponent<SegmentPaneProps> = ({
       <MeasureComponent
         height={fractionToPercent(height)}
         onClick={onComponentClick.bind(null, component.yPos)}
+        isSelected={isSelected}
       />
     );
   });
   return (
     <div
-      className={classes.pane}
+      className={concatClassNames(classes.pane, isSelected && classes.selected)}
       style={
         {
           "--width": fractionToPercent(width),

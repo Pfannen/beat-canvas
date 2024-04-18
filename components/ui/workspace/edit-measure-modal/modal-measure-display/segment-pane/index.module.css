@@ -19,3 +19,8 @@
 .split {
   bottom: 100%;
 }
+
+.selected {
+  border: 1px solid goldenrod;
+  opacity: 0.25;
+}

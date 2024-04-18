@@ -24,7 +24,7 @@ const ModalDisplay: FunctionComponent<ModalDisplayProps> = ({
   const {
     editMeasures,
     selections,
-    iterateEditMeasures,
+    isSegmentSelected,
     executeAssigner,
     updateSelection,
     commitMeasures,
@@ -53,6 +53,7 @@ const ModalDisplay: FunctionComponent<ModalDisplayProps> = ({
           measures={editMeasures}
           aboveBelowCt={ABOVE_BELOW_CT}
           onPositionClick={onPositionClick}
+          isSegmentSelected={isSegmentSelected}
         />
       </div>
       <AssignerButtonRepo
