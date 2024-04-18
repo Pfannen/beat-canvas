@@ -67,7 +67,10 @@ export class MeasureRenderer {
 
   private getMeasureDimensions(measureIndex: number) {
     const { width } = this.measureManager.getMeasureData(measureIndex);
-    return { height: this.musicDimensions.measureDimensions.height, width };
+    return {
+      height: this.musicDimensions.measureDimensions.noteSpaceHeight,
+      width,
+    };
   }
 
   private initializeMeasureManager() {

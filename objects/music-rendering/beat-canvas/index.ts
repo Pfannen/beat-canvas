@@ -16,6 +16,7 @@ import {
 } from "@/types/music-rendering/canvas/beat-canvas";
 import { RestPaths } from "./svg-paths";
 import { NoteType } from "@/components/providers/music/types";
+import { NoteDirection } from "@/lib/notes/types";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
@@ -135,12 +136,16 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     });
   }
 
+  protected getStemWidth(bodyWidth: number) {
+    return bodyWidth * this.drawOptions.note.stemWidthBodyFraction;
+  }
+
   protected drawNoteStem(options: NoteOptions) {
     const width = this.getNoteBodyWidth(options.bodyHeight);
     const stemHeight =
       options.bodyHeight * this.drawOptions.note.stemHeightBodyFraction +
       Math.abs(options.stemOffset || 0);
-    const stemWidth = width * this.drawOptions.note.stemWidthBodyFraction;
+    const stemWidth = this.getStemWidth(width);
     return this.drawStem({
       bodyCenter: options.bodyCenter,
       stemHeight,
@@ -153,15 +158,15 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
   protected drawBeamData(options: NoteOptions, endOfStem: Coordinate) {
     if (options.beamData) {
       const { beamData } = options;
+
       const height =
         options.bodyHeight * this.drawOptions.note.flagHeightBodyFraction;
       const width = beamData.length;
-
       this.drawBeamFlag({
         corner: endOfStem,
         width,
-        height,
-        angle: beamData.angle - 90,
+        height: getAdjustedBeamHeight(height, options.noteDirection),
+        angle: -beamData.angle,
       });
     }
   }
@@ -215,3 +220,10 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     });
   }
 }
+
+const getAdjustedBeamHeight = (height: number, direction: NoteDirection) => {
+  if (direction === "up") {
+    return height;
+  }
+  return -height;
+};

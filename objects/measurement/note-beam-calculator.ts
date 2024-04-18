@@ -13,67 +13,76 @@ export class NoteBeamCalculator {
     }
     const startNote = noteCoordinates[0];
     const endNote = noteCoordinates[noteCoordinates.length - 1];
-    let { beamAngle, beamLength } = this.calculateEndpointData(
-      startNote,
-      endNote
-    );
     const ordered = this.notesAreOrdered(noteCoordinates);
+    let beamData;
     if (!ordered) {
-      return this.calculateNonOrderedData(noteCoordinates, direction);
+      beamData = this.calculateNonOrderedData(noteCoordinates);
+    } else {
+      beamData = this.calculateEndpointData(startNote, endNote);
     }
-    const lowerBound = 90 - angleTolerance;
-    const upperBound = 90 + angleTolerance;
-    let thresholdData;
+    let { beamAngle, beamLength } = beamData;
+    const lowerBound = -angleTolerance;
+    const upperBound = angleTolerance;
+
     if (beamAngle < lowerBound) {
       beamAngle = lowerBound;
-      thresholdData = this.calculateThresholdData(
-        startNote,
-        endNote,
-        lowerBound
-      );
+      beamLength = this.calculateThresholdData(startNote, endNote, lowerBound);
     } else if (beamAngle > upperBound) {
       beamAngle = upperBound;
-      thresholdData = this.calculateThresholdData(
-        startNote,
-        endNote,
-        upperBound
-      );
+      beamLength = this.calculateThresholdData(startNote, endNote, upperBound);
     }
-    let startNoteOffset = 0;
-    let endNoteOffset = 0;
-    if (thresholdData) {
-      beamLength = thresholdData.beamLength;
-      const { y1Offset, y2Offset } = thresholdData;
 
-      //Only one offset will be present
-      if (y1Offset) {
-        //If the note staffs are pointing up and an endpoint's offset is negative, we don't want the note staff to shrink so we grow the other endpoint's staff
-        if (y1Offset < 0 && direction === "up") {
-          endNoteOffset = -y1Offset;
+    const noteOffsets = new Array(noteCoordinates.length);
+    noteOffsets[0] = 0;
+    noteOffsets[noteOffsets.length - 1] = 0;
+    const isConflict = getOffsetConflictChecker(direction);
+    const intersect = getYIntersection(
+      { point: startNote, angle: beamAngle },
+      endNote
+    );
+    const offset = calculateOffset(intersect, endNote.y);
+    if (isConflict(offset)) {
+      noteOffsets[0] = Math.abs(offset);
+    } else {
+      noteOffsets[noteOffsets.length - 1] = Math.abs(offset);
+    }
+
+    const point = { ...startNote };
+    if (direction === "up") {
+      point.y += noteOffsets[0];
+    } else {
+      point.y -= noteOffsets[0];
+    }
+    let maxConflictValue = 0;
+    const intersectFn = getYIntersection.bind(null, {
+      point,
+      angle: beamAngle,
+    });
+
+    for (let i = 1; i < noteOffsets.length - 1; i++) {
+      const note = noteCoordinates[i];
+      const intersection = intersectFn(note);
+      const offset = calculateOffset(intersection, note.y);
+      const absoluteOffset = Math.abs(offset);
+      if (isConflict(offset)) {
+        maxConflictValue = Math.max(maxConflictValue, absoluteOffset);
+      }
+      noteOffsets[i] = absoluteOffset;
+    }
+
+    if (maxConflictValue) {
+      noteOffsets[0] += maxConflictValue;
+      noteOffsets[noteOffsets.length - 1] += maxConflictValue;
+      for (let i = 1; i < noteOffsets.length - 1; i++) {
+        const difference = maxConflictValue - noteOffsets[i];
+        if (difference < 0) {
+          noteOffsets[i] += maxConflictValue;
         } else {
-          startNoteOffset = y1Offset;
-        }
-      } else {
-        if (y2Offset < 0 && direction === "up") {
-          startNoteOffset = -y2Offset;
-        } else {
-          endNoteOffset = y2Offset;
+          noteOffsets[i] = difference;
         }
       }
     }
-    const intersectFn = getYIntersection.bind(null, {
-      point: startNote,
-      angle: beamAngle,
-    });
-    const noteOffsets = [startNoteOffset];
-    for (let i = 1; i < noteCoordinates.length - 1; i++) {
-      const note = noteCoordinates[i];
-      const intersection = intersectFn(note);
-      const offset = Math.abs(note.y - intersection);
-      console.log(intersection);
-      noteOffsets.push(offset);
-    }
-    noteOffsets.push(endNoteOffset);
+
     return {
       beamAngle,
       beamLength,
@@ -86,11 +95,11 @@ export class NoteBeamCalculator {
     const { xDistance, yDistance } = getSideLengths(pointOne, pointTwo);
     const beamLength = calculateHypotenuse(xDistance, yDistance);
     const xyRatio = xDistance / yDistance;
-    let beamAngle = 90;
+    let beamAngle = 0;
     if (y1 > y2) {
-      beamAngle = 180 - radiansToDegrees(Math.atan(xyRatio));
+      beamAngle = -radiansToDegrees(Math.atan(xyRatio));
     } else if (y1 < y2) {
-      beamAngle = 90 - radiansToDegrees(Math.atan(1 / xyRatio)); //yDistance / xDistance
+      beamAngle = radiansToDegrees(Math.atan(1 / xyRatio)); //yDistance / xDistance
     }
     return { beamLength, beamAngle };
   }
@@ -100,22 +109,10 @@ export class NoteBeamCalculator {
     pointTwo: Coordinate,
     angle: number
   ) {
-    const { xDistance, yDistance } = getSideLengths(pointOne, pointTwo);
-    let sideA;
-    let y1Offset = 0;
-    let y2Offset = 0;
-    if (pointOne.y > pointTwo.y) {
-      const betaAngle = 180 - angle;
-      const alphaAngle = 90 - betaAngle;
-      sideA = xDistance * Math.tan(degreesToRadians(alphaAngle));
-      y1Offset = sideA - yDistance;
-    } else {
-      const alphaAngle = 90 - angle;
-      sideA = xDistance * Math.tan(degreesToRadians(alphaAngle));
-      y2Offset = sideA - yDistance;
-    }
-    const beamLength = calculateHypotenuse(xDistance, sideA);
-    return { beamLength, y1Offset, y2Offset };
+    const { xDistance } = getSideLengths(pointOne, pointTwo);
+    const yDist = xDistance * Math.tan(degreesToRadians(angle));
+    const beamLength = calculateHypotenuse(xDistance, yDist);
+    return beamLength;
   }
 
   static notesAreOrdered(noteCoordinates: Coordinate[]) {
@@ -132,25 +129,11 @@ export class NoteBeamCalculator {
     return true;
   }
 
-  static calculateNonOrderedData(
-    notes: Coordinate[],
-    direction: NoteDirection
-  ): BeamData {
-    const reducer = direction === "up" ? greatestReducer : leastReducer;
-    const significantY = notes.reduce(reducer).y;
-    const noteOffsets = notes.map(({ y }) => Math.abs(y - significantY));
+  static calculateNonOrderedData(notes: Coordinate[]) {
     const beamLength = notes[notes.length - 1].x - notes[0].x;
-    return { beamAngle: 90, beamLength, noteOffsets };
+    return { beamAngle: 0, beamLength };
   }
 }
-
-const greatestReducer = (greatest: Coordinate, current: Coordinate) => {
-  return current.y > greatest.y ? current : greatest;
-};
-
-const leastReducer = (least: Coordinate, current: Coordinate) => {
-  return current.y < least.y ? current : least;
-};
 
 const calculateHypotenuse = (sideOne: number, sideTwo: number) => {
   return Math.sqrt(Math.pow(sideOne, 2) + Math.pow(sideTwo, 2));
@@ -181,3 +164,10 @@ const getYIntersection = (
   const yIntersect = pointSlopeFormula(pointOne.x);
   return yIntersect;
 };
+
+const getOffsetConflictChecker = (direction: NoteDirection) => {
+  if (direction === "up") return (offset: number) => offset < 0;
+  return (offset: number) => offset > 0;
+};
+
+const calculateOffset = (intersect: number, y: number) => intersect - y;
