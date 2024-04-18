@@ -1,7 +1,7 @@
+import classes from "./index.module.css";
 import ReactModal from "react-modal";
-import { FunctionComponent } from "react";
-import useSelection, { Selection } from "@/components/hooks/useSelection";
-import { useMusic } from "@/components/providers/music";
+import { FunctionComponent, useRef } from "react";
+import { Selection } from "@/components/hooks/useSelection";
 import ModalDisplay from "./modal-display";
 
 type EditMeasureModalProps = {
@@ -15,21 +15,25 @@ const EditMeasureModal: FunctionComponent<EditMeasureModalProps> = ({
   onClose,
   selectedMeasures,
 }) => {
-  const s = useSelection();
-  const { measures } = useMusic();
-  const getMeasures = (startIndex: number, count: number) => {
-    return [measures[startIndex]];
+  const commitModalChanges = useRef<Function>();
+  const onCloseModal = () => {
+    if (commitModalChanges.current) {
+      commitModalChanges.current();
+    }
+    onClose();
   };
   return (
     <ReactModal
       isOpen={showModal}
-      onRequestClose={onClose}
+      onRequestClose={onCloseModal}
       shouldCloseOnOverlayClick={true}
     >
       {showModal && (
         <ModalDisplay
-          getMeasures={getMeasures}
           selectedMeasures={selectedMeasures}
+          liftCommitMeasures={(fn) => {
+            commitModalChanges.current = fn;
+          }}
         />
       )}
     </ReactModal>

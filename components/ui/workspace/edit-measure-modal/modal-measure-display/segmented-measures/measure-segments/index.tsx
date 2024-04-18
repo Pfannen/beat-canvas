@@ -52,6 +52,7 @@ const MeasureSegments: FunctionComponent<MeasureSegmentsProps> = ({
       measure={measure}
       timeSignature={{ beatNote: 4, beatsPerMeasure: 4 }}
       renderSegment={(props) => {
+        if (props.noteIndices) console.log(props.xPos);
         return (
           <SplitSegment
             as={SegmentPane}

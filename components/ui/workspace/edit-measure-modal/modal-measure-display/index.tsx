@@ -3,8 +3,6 @@ import classes from "./index.module.css";
 import { Measure } from "@/components/providers/music/types";
 import { FunctionComponent, useMemo } from "react";
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
-import { NoteIdentifier } from "@/types/music-rendering/canvas/clickable-beat-canvas";
-import ComponentNoteSelectCanvas from "@/components/ui/reusable/music-canvas/component-note-select-canvas";
 import SegmentedMeasures from "./segmented-measures";
 import { Measurements } from "@/objects/measurement/measurements";
 import { BODY_CT } from "@/objects/measurement/constants";
@@ -17,7 +15,6 @@ const lineToSpaceRatio = 1.5;
 type ModalMeasureDisplayProps = {
   measures: Measure[];
   aboveBelowCt: number;
-  startMeasureGlobalIndex: number;
   aspectRatio: number;
   onPositionClick: (position: Coordinate, positionData: PositionData) => void;
 };
@@ -25,7 +22,6 @@ type ModalMeasureDisplayProps = {
 const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
   measures,
   aboveBelowCt,
-  startMeasureGlobalIndex,
   aspectRatio,
   onPositionClick,
 }) => {
@@ -53,7 +49,6 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
         componentIterator={measureComponents.iterateMeasureComponents.bind(
           measureComponents
         )}
-        startMeasureGlobalIndex={startMeasureGlobalIndex}
         noteOffset={dimensions.measureDimensions.noteYOffset}
         noteHeight={dimensions.measureDimensions.noteSpaceHeight}
       />

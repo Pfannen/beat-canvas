@@ -12,7 +12,6 @@ import { PositionData } from "@/types/ui/music-modal";
 
 type SegmentedMeasuresProps = {
   measures: Measure[];
-  startMeasureGlobalIndex: number;
   onPositionClick: (position: Coordinate, positionData: PositionData) => void;
   componentIterator: MeasureComponentIterator;
   componentFractions: MeasureComponentValues;
@@ -22,7 +21,6 @@ type SegmentedMeasuresProps = {
 
 const SegmentedMeasures: FunctionComponent<SegmentedMeasuresProps> = ({
   measures,
-  startMeasureGlobalIndex,
   onPositionClick,
   componentIterator,
   componentFractions,
@@ -33,7 +31,6 @@ const SegmentedMeasures: FunctionComponent<SegmentedMeasuresProps> = ({
   const getSegmentClickDel =
     (measureIndex: number) =>
     (position: Coordinate, noteIndices?: number[]) => {
-      measureIndex += startMeasureGlobalIndex;
       onPositionClick(position, { measureIndex, noteIndices });
     };
   return (
