@@ -120,6 +120,7 @@ const updateNoteYieldObj = (yieldObj: YieldObj, note: Note) => {
 	yieldObj.note = note;
 };
 
+// TODO: Make a measure attribute generator
 export const noteAttributeGenerator = function* (
 	measures: Measure[],
 	initialAttributes?: MeasureAttributes
@@ -131,16 +132,18 @@ export const noteAttributeGenerator = function* (
 		const measure = measures[i];
 		const { staticAttributes, temporalAttributes: tA, notes } = measure;
 
+		// NOTE: Currently need this so every measure has an object yielded
+		// Can change in the future if we construct a measure attribute generator
+		const measureStartObj: YieldObj = {
+			currentAttributes: attr,
+			measureStartX,
+			curX: 0,
+			measureIndex: i,
+		};
 		if (staticAttributes) {
-			const yieldObj: YieldObj = {
-				currentAttributes: attr,
-				measureStartX,
-				curX: 0,
-				measureIndex: i,
-			};
-			updateAttributeYieldObj(yieldObj, attr, staticAttributes, 0);
-			yield yieldObj;
+			updateAttributeYieldObj(measureStartObj, attr, staticAttributes, 0);
 		}
+		yield measureStartObj;
 
 		let aIdx = 0;
 		const aLen = tA?.length || 0;

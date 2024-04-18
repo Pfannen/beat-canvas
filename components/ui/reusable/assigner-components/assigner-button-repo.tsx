@@ -19,18 +19,20 @@ import { NotePlacementValidator } from '@/types/modify-score';
 interface AssignerButtonRepoProps {
 	selections: SelectionData[];
 	notePlacementValidator: NotePlacementValidator;
+	liftExecuter: AssignerLifter;
 }
 
 const AssignerButtonRepo: FunctionComponent<AssignerButtonRepoProps> = ({
 	selections,
 	notePlacementValidator,
+	liftExecuter,
 }) => {
-	const delegateRef = useRef<CurriedAssigner>();
+	/* const delegateRef = useRef<CurriedAssigner>();
 
 	const liftExecuter: AssignerLifter = (assigner) => {
 		console.log('Execute this method: ' + assigner);
 		delegateRef.current = assigner;
-	};
+	}; */
 
 	// NOTE: Could make a single function to retrieve both - would be faster too
 	const annotationMetadata = getAnnotationSelectionMetadata(selections);

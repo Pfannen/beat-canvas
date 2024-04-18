@@ -60,7 +60,7 @@ export const assignTemporalMeasureAttributes = (
 };
 
 // TODO: Use binary search
-const getTemporalAttributesAtX = (measure: Measure, x: number) => {
+export const getTemporalAttributesAtX = (measure: Measure, x: number) => {
 	const { temporalAttributes: tA } = measure;
 	if (!tA) return null;
 
@@ -70,18 +70,36 @@ const getTemporalAttributesAtX = (measure: Measure, x: number) => {
 	else return null;
 };
 
+// 'measures' should be all the measures prior to the target measure where you don't have
+// measure attributes for
+// 'curAttr' are the attributes of the first measure in the array
 export const getMeasureAttributes = (
 	measures: Measure[],
+	targetMeasureIndex: number,
 	curAttr?: MeasureAttributes,
 	xEnd?: number
 ) => {
-	let measureAttributes = initializeMeasureAttributes(measures[0]);
-	for (const someObj of noteAttributeGenerator(measures, curAttr)) {
-		measureAttributes = someObj.currentAttributes;
+	// Check if given target index is valid
+	if (targetMeasureIndex >= measures.length || targetMeasureIndex < 0)
+		return null;
+
+	// Create a variable to store measure attributes
+	let measureAttributes: MeasureAttributes | null = null;
+	// Iterate through the measures, initially using curAttr if present
+	for (const scoreLocDetails of noteAttributeGenerator(measures, curAttr)) {
+		// If we've reached the target index, assign the local attribute variable
+		// and break (don't need to iterate through the remaining measures)
+		if (scoreLocDetails.measureIndex === targetMeasureIndex) {
+			measureAttributes = scoreLocDetails.currentAttributes;
+			break;
+		}
 	}
 
+	// If for some reason we didn't reach the target measure, return null
+	if (!measureAttributes) return null;
+	// If we need the temporal attributes, get them and assign them to the current attributes
 	if (xEnd !== undefined) {
-		const tA = getTemporalAttributesAtX(measures[measures.length - 1], xEnd);
+		const tA = getTemporalAttributesAtX(measures[targetMeasureIndex], xEnd);
 		if (tA) Object.assign(measureAttributes, tA);
 	}
 
