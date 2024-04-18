@@ -16,7 +16,10 @@ type MusicProviderProps = {
 const mockMeasures: Measure[] = [
   {
     notes: [
-      { x: 0, y: 0, type: "quarter" },
+      { x: 0, y: -2, type: "sixteenth" },
+      { x: 0.25, y: -1, type: "sixteenth" },
+      { x: 0.5, y: 0, type: "sixteenth" },
+      { x: 0.75, y: 1, type: "sixteenth" },
       // { x: 1, y: 1, type: "quarter" },
       // { x: 2, y: 2, type: "quarter" },
       // { x: 3, y: 10, type: "eighth" },

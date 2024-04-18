@@ -21,8 +21,8 @@ export class NoteBeamCalculator {
     if (!ordered) {
       return this.calculateNonOrderedData(noteCoordinates, direction);
     }
-    const lowerBound = 90 - angleTolerance;
-    const upperBound = 90 + angleTolerance;
+    const lowerBound = -angleTolerance;
+    const upperBound = angleTolerance;
     let thresholdData;
     if (beamAngle < lowerBound) {
       beamAngle = lowerBound;
@@ -69,8 +69,8 @@ export class NoteBeamCalculator {
     for (let i = 1; i < noteCoordinates.length - 1; i++) {
       const note = noteCoordinates[i];
       const intersection = intersectFn(note);
+
       const offset = Math.abs(note.y - intersection);
-      console.log(intersection);
       noteOffsets.push(offset);
     }
     noteOffsets.push(endNoteOffset);
@@ -86,11 +86,11 @@ export class NoteBeamCalculator {
     const { xDistance, yDistance } = getSideLengths(pointOne, pointTwo);
     const beamLength = calculateHypotenuse(xDistance, yDistance);
     const xyRatio = xDistance / yDistance;
-    let beamAngle = 90;
+    let beamAngle = 0;
     if (y1 > y2) {
-      beamAngle = 180 - radiansToDegrees(Math.atan(xyRatio));
+      beamAngle = -radiansToDegrees(Math.atan(xyRatio));
     } else if (y1 < y2) {
-      beamAngle = 90 - radiansToDegrees(Math.atan(1 / xyRatio)); //yDistance / xDistance
+      beamAngle = radiansToDegrees(Math.atan(1 / xyRatio)); //yDistance / xDistance
     }
     return { beamLength, beamAngle };
   }

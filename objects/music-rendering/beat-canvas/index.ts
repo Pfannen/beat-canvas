@@ -156,18 +156,15 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
 
   protected drawBeamData(options: NoteOptions, endOfStem: Coordinate) {
     if (options.beamData) {
-      const bodyWidth = this.getNoteBodyWidth(options.bodyHeight);
-      const stemWidth = this.getStemWidth(bodyWidth);
       const { beamData } = options;
       const height =
         options.bodyHeight * this.drawOptions.note.flagHeightBodyFraction;
       const width = beamData.length;
-      const corner = { x: endOfStem.x - stemWidth / 2.1, y: endOfStem.y };
       this.drawBeamFlag({
         corner: endOfStem,
         width,
-        height: height,
-        angle: beamData.angle - 90,
+        height,
+        angle: -beamData.angle,
       });
     }
   }
