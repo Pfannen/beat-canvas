@@ -19,7 +19,7 @@ const AnnotationsAssignerSet: FunctionComponent<
 	AnnotationsAssignerSetProps
 > = ({ liftExecuter, annotationMetadata }) => {
 	const annotationAssigner: NoteAnnotationAssigner = (key, value?) => {
-		console.log({ key, value });
+		console.log({ apply: !!value, key, value });
 
 		if (liftExecuter) {
 			liftExecuter(curriedModifyNoteAnnotation(key, value));

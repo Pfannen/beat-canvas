@@ -19,21 +19,14 @@ import { NotePlacementValidator } from '@/types/modify-score';
 interface AssignerButtonRepoProps {
 	selections: SelectionData[];
 	notePlacementValidator: NotePlacementValidator;
-	liftExecuter: AssignerLifter;
+	liftExecutor: AssignerLifter;
 }
 
 const AssignerButtonRepo: FunctionComponent<AssignerButtonRepoProps> = ({
 	selections,
 	notePlacementValidator,
-	liftExecuter,
+	liftExecutor,
 }) => {
-	/* const delegateRef = useRef<CurriedAssigner>();
-
-	const liftExecuter: AssignerLifter = (assigner) => {
-		console.log('Execute this method: ' + assigner);
-		delegateRef.current = assigner;
-	}; */
-
 	// NOTE: Could make a single function to retrieve both - would be faster too
 	const annotationMetadata = getAnnotationSelectionMetadata(selections);
 	const attributeMetadata = getAttributeSelectionMetadata(selections);
@@ -49,16 +42,16 @@ const AssignerButtonRepo: FunctionComponent<AssignerButtonRepoProps> = ({
 			}}
 		>
 			<NotePlacementAssignerSet
-				liftExecuter={liftExecuter}
+				liftExecuter={liftExecutor}
 				validPlacementTypes={validPlacementTypes}
 				notePlacementValidator={notePlacementValidator}
 			/>
 			<AnnotationsAssignerSet
-				liftExecuter={liftExecuter}
+				liftExecuter={liftExecutor}
 				annotationMetadata={annotationMetadata || undefined}
 			/>
 			<MeasureAttributeAssignerSet
-				liftExecuter={liftExecuter}
+				liftExecuter={liftExecutor}
 				attributeMetadata={attributeMetadata || undefined}
 			/>
 		</LayoutList>

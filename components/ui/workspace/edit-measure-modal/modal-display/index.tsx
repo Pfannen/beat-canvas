@@ -62,7 +62,7 @@ const ModalDisplay: FunctionComponent<ModalDisplayProps> = ({
 			<AssignerButtonRepo
 				selections={selections}
 				notePlacementValidator={stacklessNotePlacementValidator}
-				liftExecuter={executeAssigner}
+				liftExecutor={executeAssigner}
 			/>
 		</>
 	);

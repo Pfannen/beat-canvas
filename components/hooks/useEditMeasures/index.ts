@@ -8,6 +8,8 @@ import {
 } from '@/utils/music/measures/measure-attributes';
 import { noteAttributeGenerator } from '@/utils/music/measures/measure-generator';
 import { useEffect, useRef, useState } from 'react';
+import { useSelections } from '../useMultipleSelections';
+import { ScorePositionID } from '@/types/modify-score';
 
 export const useEditMeasures = (startIndex: number, endIndex: number) => {
 	const { getMeasures, invokeMeasureModifier } = useMusic();
@@ -16,7 +18,12 @@ export const useEditMeasures = (startIndex: number, endIndex: number) => {
 	const [editMeasures, setEditMeasures] = useState<Measure[]>(
 		getMeasures.bind(null, startIndex, endIndex - startIndex + 1)
 	);
-	const [selections, setSelections] = useState<SelectionData[]>([]);
+
+	// Utilize the selections hook for efficient selection look up and modification
+	const { selections, update, clearSelections, hasSelection } = useSelections<
+		ScorePositionID,
+		SelectionData
+	>();
 
 	// On initial load and when the measures change, reset the attribute cache
 	useEffect(() => {
@@ -49,19 +56,15 @@ export const useEditMeasures = (startIndex: number, endIndex: number) => {
 	}
 
 	// Executes an assigner function with the measures being edited and the current selections
+	// NOTE: Once an assigner function is executed, we need to re update all selections if we don't
+	// want to clear them after we execute the assigner function
 	const executeAssigner: AssignerExecuter = (assigner) => {
 		const copy = editMeasures.slice();
-		if (assigner(copy, selections)) setEditMeasures(copy);
-	};
-
-	// Filters the current selections to remove any selections with the same
-	// measure index and x
-	// NOTE: Should be extended later to also take in a y-position if we want note stacking
-	const filterSelections = (measureIndex: number, xStart: number) => {
-		return selections.filter(
-			({ measureIndex: curMI, xStart: curXStart }) =>
-				curMI !== measureIndex || curXStart !== xStart
-		);
+		if (assigner(copy, selections)) {
+			setEditMeasures(copy);
+			// Should only clear selections when the assigner is successful?
+			clearSelections();
+		}
 	};
 
 	// Gets the attributes for the measure at the given index and x position
@@ -94,14 +97,15 @@ export const useEditMeasures = (startIndex: number, endIndex: number) => {
 		y: number,
 		noteIndex?: number
 	) => {
-		// Filter the current selections based on the new selection's measure index and x position
-		// NOTE: We need a new copy of the array for react anyways, so it's fine to iterate the selections even if nothing's removed
-		const newSelections = filterSelections(measureIndex, xStart);
+		// Generate the selection identifier from the parameters
+		const positionID: ScorePositionID = {
+			measureIndex,
+			x: xStart,
+		};
 
-		// If the new selections length is not the old selections length, then the given selection already
-		// existed and was removed
-		if (newSelections.length !== selections.length) {
-			setSelections(newSelections);
+		// If the selection already exists, don't bother creating the selection data just to not use it
+		if (hasSelection(positionID)) {
+			update(positionID);
 			return;
 		}
 
@@ -126,20 +130,14 @@ export const useEditMeasures = (startIndex: number, endIndex: number) => {
 
 		// If the selection had a note, include it in the selection details
 		const { notes } = measure;
-		if (noteIndex !== undefined && notes.length < noteIndex) {
+		if (noteIndex !== undefined && noteIndex < notes.length) {
 			newSelection.note = notes[noteIndex];
 		}
 
-		newSelections.push(newSelection);
-		setSelections(newSelections);
-	};
-
-	// NOTE: Terrible implementation, will refactor once selection hook is abstracted
-	const hasSelection = (measureIndex: number, x: number) => {
-		return !!selections.find(
-			({ measureIndex: curMI, xStart: curX }) =>
-				measureIndex === curMI && curX === x
-		);
+		// Insert the selection along with its key
+		// NOTE: This should always insert into the selection array because we already
+		// checked if positionID existed
+		update(positionID, newSelection);
 	};
 
 	const commitMeasures = () => {

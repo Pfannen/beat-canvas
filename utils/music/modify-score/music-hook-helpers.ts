@@ -63,7 +63,7 @@ export const curriedModifyNoteAnnotation =
 			if (noteIndex === undefined) return;
 
 			const measure = measures[measureIndex];
-			if (measure.notes.length < noteIndex) {
+			if (noteIndex < measure.notes.length) {
 				notes.push(measure.notes[noteIndex]);
 			}
 		});

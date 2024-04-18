@@ -21,7 +21,7 @@ const NotePlacementAssignerSet: FunctionComponent<
 	NotePlacementAssignerSetProps
 > = ({ liftExecuter, validPlacementTypes: vPT, notePlacementValidator }) => {
 	const assigner = (noteType: NoteType, placeNote?: boolean) => {
-		console.log({ noteType });
+		console.log({ placeNote, noteType });
 
 		if (!liftExecuter) return;
 

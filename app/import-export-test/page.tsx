@@ -68,7 +68,7 @@ const ImportExportTestPage: FunctionComponent<
 			<AssignerButtonRepo
 				selections={testSelection}
 				notePlacementValidator={stacklessNotePlacementValidator}
-				liftExecuter={() => {}}
+				liftExecutor={() => {}}
 			/>
 			<PlaybackManager
 				onPlay={playMusic}

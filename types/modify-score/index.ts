@@ -31,3 +31,9 @@ export type NotePlacer = (
 	placementValidator: NotePlacementValidator,
 	timeSignature: TimeSignature
 ) => boolean;
+
+export type ScorePositionID = {
+	measureIndex: number;
+	x: number;
+	y?: number;
+};
