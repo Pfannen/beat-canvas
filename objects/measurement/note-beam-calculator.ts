@@ -44,45 +44,20 @@ export class NoteBeamCalculator {
     const noteOffsets = new Array(noteCoordinates.length);
     noteOffsets[0] = 0;
     noteOffsets[noteOffsets.length - 1] = 0;
+    const isConflict = getOffsetConflictChecker(direction);
     if (updatedBeamLength) {
       beamLength = updatedBeamLength;
       const intersect = getYIntersection(
         { point: startNote, angle: beamAngle },
         endNote
       );
-      const offset = intersect - endNote.y;
-      console.log("off", offset);
-      if (offset < 0) {
-        if (direction === "down") {
-          noteOffsets[noteOffsets.length - 1] = -offset;
-        } else {
-          noteOffsets[0] = -offset;
-        }
+      const offset = calculateOffset(intersect, endNote.y);
+      if (isConflict(offset)) {
+        noteOffsets[0] = Math.abs(offset);
       } else {
-        if (direction === "down") {
-          noteOffsets[0] = offset;
-        } else {
-          noteOffsets[noteOffsets.length - 1] = offset;
-        }
+        noteOffsets[noteOffsets.length - 1] = Math.abs(offset);
       }
     }
-
-    //   //Only one offset will be present
-    //   if (y1Offset) {
-    //     //If the note staffs are pointing up and an endpoint's offset is negative, we don't want the note staff to shrink so we grow the other endpoint's staff
-    //     if (y1Offset < 0 && direction === "up") {
-    //       endNoteOffset = -y1Offset;
-    //     } else {
-    //       startNoteOffset = y1Offset;
-    //     }
-    //   } else {
-    //     if (y2Offset < 0 && direction === "up") {
-    //       startNoteOffset = -y2Offset;
-    //     } else {
-    //       endNoteOffset = y2Offset;
-    //     }
-    //   }
-    // }
 
     const point = { ...startNote };
     if (direction === "up") {
@@ -90,17 +65,38 @@ export class NoteBeamCalculator {
     } else {
       point.y -= noteOffsets[0];
     }
+    let maxConflictValue = 0;
     const intersectFn = getYIntersection.bind(null, {
       point,
       angle: beamAngle,
     });
+
     for (let i = 1; i < noteOffsets.length - 1; i++) {
       const note = noteCoordinates[i];
       const intersection = intersectFn(note);
-      console.log(intersection - note.y);
-      const offset = Math.abs(note.y - intersection);
-      noteOffsets[i] = offset;
+      const offset = calculateOffset(intersection, note.y);
+      const absoluteOffset = Math.abs(offset);
+      if (isConflict(offset)) {
+        console.log(maxConflictValue, absoluteOffset);
+        maxConflictValue = Math.max(maxConflictValue, absoluteOffset);
+      }
+      noteOffsets[i] = absoluteOffset;
     }
+    console.log(noteOffsets);
+    if (maxConflictValue) {
+      noteOffsets[0] += maxConflictValue;
+      noteOffsets[noteOffsets.length - 1] += maxConflictValue;
+      for (let i = 1; i < noteOffsets.length - 1; i++) {
+        if (maxConflictValue !== noteOffsets[i]) {
+          console.log({ offset: maxConflictValue - noteOffsets[i] });
+          const difference = maxConflictValue - noteOffsets[i];
+          noteOffsets[i] = Math.abs(difference);
+        } else {
+          noteOffsets[i] = 0;
+        }
+      }
+    }
+    console.log(noteOffsets);
     return {
       beamAngle,
       beamLength,
@@ -119,7 +115,6 @@ export class NoteBeamCalculator {
     } else if (y1 < y2) {
       beamAngle = radiansToDegrees(Math.atan(1 / xyRatio)); //yDistance / xDistance
     }
-    console.log("Before: ", beamAngle);
     return { beamLength, beamAngle };
   }
 
@@ -210,3 +205,10 @@ const getYIntersection = (
   const yIntersect = pointSlopeFormula(pointOne.x);
   return yIntersect;
 };
+
+const getOffsetConflictChecker = (direction: NoteDirection) => {
+  if (direction === "up") return (offset: number) => offset < 0;
+  return (offset: number) => offset > 0;
+};
+
+const calculateOffset = (intersect: number, y: number) => intersect - y;
