@@ -23,57 +23,84 @@ export class NoteBeamCalculator {
     }
     const lowerBound = -angleTolerance;
     const upperBound = angleTolerance;
-    let thresholdData;
+
+    let updatedBeamLength;
     if (beamAngle < lowerBound) {
       beamAngle = lowerBound;
-      thresholdData = this.calculateThresholdData(
+      updatedBeamLength = this.calculateThresholdData(
         startNote,
         endNote,
         lowerBound
       );
     } else if (beamAngle > upperBound) {
       beamAngle = upperBound;
-      thresholdData = this.calculateThresholdData(
+      updatedBeamLength = this.calculateThresholdData(
         startNote,
         endNote,
         upperBound
       );
     }
-    let startNoteOffset = 0;
-    let endNoteOffset = 0;
-    if (thresholdData) {
-      beamLength = thresholdData.beamLength;
-      const { y1Offset, y2Offset } = thresholdData;
 
-      //Only one offset will be present
-      if (y1Offset) {
-        //If the note staffs are pointing up and an endpoint's offset is negative, we don't want the note staff to shrink so we grow the other endpoint's staff
-        if (y1Offset < 0 && direction === "up") {
-          endNoteOffset = -y1Offset;
+    const noteOffsets = new Array(noteCoordinates.length);
+    noteOffsets[0] = 0;
+    noteOffsets[noteOffsets.length - 1] = 0;
+    if (updatedBeamLength) {
+      beamLength = updatedBeamLength;
+      const intersect = getYIntersection(
+        { point: startNote, angle: beamAngle },
+        endNote
+      );
+      const offset = intersect - endNote.y;
+      console.log("off", offset);
+      if (offset < 0) {
+        if (direction === "down") {
+          noteOffsets[noteOffsets.length - 1] = -offset;
         } else {
-          startNoteOffset = y1Offset;
+          noteOffsets[0] = -offset;
         }
       } else {
-        if (y2Offset < 0 && direction === "up") {
-          startNoteOffset = -y2Offset;
+        if (direction === "down") {
+          noteOffsets[0] = offset;
         } else {
-          endNoteOffset = y2Offset;
+          noteOffsets[noteOffsets.length - 1] = offset;
         }
       }
     }
+
+    //   //Only one offset will be present
+    //   if (y1Offset) {
+    //     //If the note staffs are pointing up and an endpoint's offset is negative, we don't want the note staff to shrink so we grow the other endpoint's staff
+    //     if (y1Offset < 0 && direction === "up") {
+    //       endNoteOffset = -y1Offset;
+    //     } else {
+    //       startNoteOffset = y1Offset;
+    //     }
+    //   } else {
+    //     if (y2Offset < 0 && direction === "up") {
+    //       startNoteOffset = -y2Offset;
+    //     } else {
+    //       endNoteOffset = y2Offset;
+    //     }
+    //   }
+    // }
+
+    const point = { ...startNote };
+    if (direction === "up") {
+      point.y += noteOffsets[0];
+    } else {
+      point.y -= noteOffsets[0];
+    }
     const intersectFn = getYIntersection.bind(null, {
-      point: startNote,
+      point,
       angle: beamAngle,
     });
-    const noteOffsets = [startNoteOffset];
-    for (let i = 1; i < noteCoordinates.length - 1; i++) {
+    for (let i = 1; i < noteOffsets.length - 1; i++) {
       const note = noteCoordinates[i];
       const intersection = intersectFn(note);
-
+      console.log(intersection - note.y);
       const offset = Math.abs(note.y - intersection);
-      noteOffsets.push(offset);
+      noteOffsets[i] = offset;
     }
-    noteOffsets.push(endNoteOffset);
     return {
       beamAngle,
       beamLength,
@@ -92,6 +119,7 @@ export class NoteBeamCalculator {
     } else if (y1 < y2) {
       beamAngle = radiansToDegrees(Math.atan(1 / xyRatio)); //yDistance / xDistance
     }
+    console.log("Before: ", beamAngle);
     return { beamLength, beamAngle };
   }
 
@@ -101,21 +129,22 @@ export class NoteBeamCalculator {
     angle: number
   ) {
     const { xDistance, yDistance } = getSideLengths(pointOne, pointTwo);
-    let sideA;
-    let y1Offset = 0;
-    let y2Offset = 0;
-    if (pointOne.y > pointTwo.y) {
-      const betaAngle = 180 - angle;
-      const alphaAngle = 90 - betaAngle;
-      sideA = xDistance * Math.tan(degreesToRadians(alphaAngle));
-      y1Offset = sideA - yDistance;
-    } else {
-      const alphaAngle = 90 - angle;
-      sideA = xDistance * Math.tan(degreesToRadians(alphaAngle));
-      y2Offset = sideA - yDistance;
-    }
-    const beamLength = calculateHypotenuse(xDistance, sideA);
-    return { beamLength, y1Offset, y2Offset };
+    // let sideA;
+    // let y1Offset = 0;
+    // let y2Offset = 0;
+    // if (pointOne.y > pointTwo.y) {
+    //   const betaAngle = angle;
+    //   // const alphaAngle = 90 - betaAngle;
+    //   sideA = xDistance * Math.tan(degreesToRadians(betaAngle));
+    //   y1Offset = sideA - yDistance;
+    // } else {
+    //   const alphaAngle = angle;
+    //   sideA = xDistance * Math.tan(degreesToRadians(alphaAngle));
+    //   y2Offset = sideA - yDistance;
+    // }
+    const yDist = xDistance * Math.tan(degreesToRadians(angle));
+    const beamLength = calculateHypotenuse(xDistance, yDist);
+    return beamLength;
   }
 
   static notesAreOrdered(noteCoordinates: Coordinate[]) {
