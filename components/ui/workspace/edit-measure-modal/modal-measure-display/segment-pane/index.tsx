@@ -41,7 +41,7 @@ const SegmentPane: FunctionComponent<SegmentPaneProps> = ({
       <MeasureComponent
         height={fractionToPercent(height)}
         onClick={onComponentClick.bind(null, component.yPos)}
-        isSelected={isSelected}
+        isSelected={false}
       />
     );
   });

@@ -10,20 +10,24 @@ export type SplitSegmentComponentProps = {
 };
 
 type SplitSegmentProps = {
-  Component: FunctionComponent<SplitSegmentComponentProps>;
+  getComponent: (
+    identifier: number
+  ) => FunctionComponent<SplitSegmentComponentProps>;
   identifier: number;
   rightSiblingIdentifier: number;
   width: number;
   onCollapse?: () => void;
   canSplit: boolean;
   minWidth: number;
+  isSplit: boolean;
 } & SegmentDelegates<number>;
 
 const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
-  const [isSplit, split, join] = useSplitState(props.canSplit);
+  const [isSplit, split, join] = useSplitState(props.canSplit, props.isSplit);
   if (!isSplit || props.width <= props.minWidth) {
+    const Component = props.getComponent(props.identifier);
     return (
-      <props.Component
+      <Component
         onSplit={split}
         onJoin={props.onCollapse || join}
         onCollapse={join}

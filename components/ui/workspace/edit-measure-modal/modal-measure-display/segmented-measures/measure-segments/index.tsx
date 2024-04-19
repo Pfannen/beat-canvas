@@ -33,7 +33,8 @@ const MeasureSegments: FunctionComponent<MeasureSegmentsProps> = ({
   canSegmentSplit,
 }) => {
   const getComponent =
-    (xPos: number, noteIndices?: number[]) =>
+    (noteIndices?: number[]) =>
+    (xPos: number) =>
     (props: SplitSegmentComponentProps) => {
       return (
         <SegmentPane
@@ -56,13 +57,15 @@ const MeasureSegments: FunctionComponent<MeasureSegmentsProps> = ({
       renderSegment={(props) => {
         return (
           <SplitSegment
-            Component={getComponent(props.xPos, props.noteIndices)}
+            getComponent={getComponent(props.noteIndices)}
             rightSiblingIdentifier={props.xPos + props.beatPercentage}
             identifier={props.xPos}
             width={props.width}
             canSplit={!props.noteIndices}
             minWidth={0}
             getChildrenKeys={keyFn}
+            isSplit={false}
+            key={`${props.xPos}-${props.beatPercentage}`}
           />
         );
       }}
