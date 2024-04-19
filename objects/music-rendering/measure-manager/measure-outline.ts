@@ -1,29 +1,11 @@
 import { Coordinate } from "@/objects/measurement/types";
 import { MeasureDrawData } from "@/types/music-rendering";
-
-type MeasureLine = {
-  endPoint: Coordinate;
-  startMeasureIndex: number;
-  measures: number[];
-};
-
-type MeasureIndexData = {
-  pageNumber: number;
-  lineNumber: number;
-  index: number;
-};
-
-export type IterateMeasuresArgs = {
-  startMeasureIndex: number;
-  measureCount: number;
-  setMeasureWidth: (index: number, width: number) => void;
-  getMeasureWidth: (index: number) => number;
-};
-
-export type IterateMeasuresCallback = (
-  args: IterateMeasuresArgs,
-  measureIndex: number
-) => void;
+import {
+  IterateMeasuresArgs,
+  IterateMeasuresCallback,
+  MeasureIndexData,
+  MeasureLine,
+} from "@/types/music-rendering/measure-manager";
 
 export class MeasureOutline {
   private measureHeight: number;

@@ -1,10 +1,11 @@
-import { IterateMeasuresCallback, MeasureOutline } from "./measure-outline";
+import { MeasureOutline } from "./measure-outline";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import {
   MeasureTimeSignautreCallback,
   MeasureWidthCallback,
 } from "@/types/music";
 import { serializeTimeSignature } from "@/utils/music";
+import { IterateMeasuresCallback } from "@/types/music-rendering/measure-manager";
 
 type TimeSignatureWidths = { [timeSig: string]: number };
 
