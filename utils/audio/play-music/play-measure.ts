@@ -1,5 +1,5 @@
 import { Measure } from '@/components/providers/music/types';
-import { MeasureAttributes, Repeat } from '@/types/music';
+import { MeasureAttributes } from '@/types/music';
 import { enqueueNote } from './play-note';
 import { ToneInstrument } from '@/types/audio/instrument';
 import { PersistentInstrumentAttributes } from '@/types/music/note-annotations';

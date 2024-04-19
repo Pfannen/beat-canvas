@@ -3,7 +3,7 @@ import {
 	MeasureAttributes,
 	dynamicMeasureAttributesKeys,
 	staticMeasureAttributesKeys,
-} from '../../../types/music/index';
+} from '../../../types/music';
 
 export const modifyMeasureAttribute = <K extends keyof MeasureAttributes>(
 	x: number,

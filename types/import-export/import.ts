@@ -1,14 +1,10 @@
 import { Note } from '@/components/providers/music/types';
 import {
 	DynamicMeasureAttributes,
-	MeasureAttributes,
 	MeasureAttributesMXML,
-	PartialMeasureAttributes,
 	Pitch,
-	Repeat,
 	RepeatEndings,
 	StaticMeasureAttributes,
-	TemporalMeasureAttributes,
 	Wedge,
 } from '../music';
 import { NoteAnnotations } from '../music/note-annotations';
@@ -86,7 +82,6 @@ export type ToBeCompletedAttributes = {
 	// and changing the end measure value of the correct ending to the current measure's number
 	// and deleting the entry in the tbcAttributes
 	repeatEndings?: { [ending in number]: RepeatEndings };
-	slurIds?: number[];
 };
 
 export type ToBeCompletedValues = {
@@ -117,5 +112,13 @@ export type MeasureAttributesImportHelper = (
 export type MeasureAttributesImportHelperMap = {
 	[key in string]: MeasureAttributesImportHelper;
 };
+
+// #endregion
+
+// #region MXML types
+
+export type WedgeTypeMXML = 'crescendo' | 'diminuendo' | 'stop' | 'continue';
+
+export type RepeatDirectionMXML = 'forward' | 'backward';
 
 // #endregion

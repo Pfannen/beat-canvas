@@ -1,29 +1,27 @@
-import {
-	Measure,
-	NoteType,
-	TimeSignature,
-} from '@/components/providers/music/types';
+// TODO: Switch this file to be called 'measure-attributes' in dev branch
+
+import { Measure, TimeSignature } from '@/components/providers/music/types';
 import { Dynamic } from './note-annotations';
 
 export const numberNoteTypes = [1, 2, 4, 8, 16, 32, 64];
 
-export type Pitch = "A" | "B" | "C" | "D" | "E" | "F" | "G";
+export type Pitch = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 
 export type PitchOctave = {
-  pitch: Pitch;
-  octave: number;
-  accidental?: "b" | "#";
+	pitch: Pitch;
+	octave: number;
+	accidental?: 'b' | '#';
 };
 
 export type MusicPart = {
-  attributes: MusicPartAttributes;
-  measures: Measure[];
+	attributes: MusicPartAttributes;
+	measures: Measure[];
 };
 
 export type MusicPartAttributes = {
-  instrument: string;
-  id: string;
-  name: string;
+	instrument: string;
+	id: string;
+	name: string;
 };
 
 export type Clef =
@@ -34,14 +32,15 @@ export type Clef =
 	| 'tenor'
 	| 'soprano';
 
-export type Wedge = {
+/* export type Wedge = {
 	crescendo: boolean;
 	// Don't need to store start values because it's indicated by the measure attributes it's apart of
 	measureEnd: number;
 	xEnd: number;
 };
+ */
 
-type ForwardRepeat = {
+/* type ForwardRepeat = {
 	forward: true;
 };
 
@@ -52,24 +51,51 @@ type BackwardRepeat = {
 	remainingRepeats: number;
 };
 
-export type Repeat = ForwardRepeat | BackwardRepeat;
+export type Repeat = ForwardRepeat | BackwardRepeat; */
 
-export type RepeatEndingType = 'start' | 'stop' | 'discontinue' | 'start-stop';
+// Stores whether this is the beginning of the wedge, and if so, what type
+export type Wedge =
+	| {
+			start: false;
+	  }
+	| {
+			start: true;
+			crescendo: boolean;
+	  };
+
+// Stores if the repeat is forward or backward-looking
+export type Repeat =
+	| {
+			forward: true;
+	  }
+	| {
+			forward: false;
+			repeatCount: number;
+	  };
+
+// Maps the endings that occur on the measure and their type
+// NOTE: A measure in the middle of an ending won't have an 'ending' attribute
+export type RepeatEndings = {
+	endings: number[];
+	type: RepeatEndingType;
+};
+
+export type RepeatEndingType = 'start' | 'stop' | 'discontinue';
 
 // Maps an ending number (1st ending, 2nd ending, etc.) to the measure number that it ends at
 // The ending starts at the measure the object is located in
-export type RepeatEndings = {
+/* export type RepeatEndings = {
 	[ending in number]: number;
-};
+}; */
 
 export type MusicScore = {
-  title: string;
-  parts: MusicPart[];
+	title: string;
+	parts: MusicPart[];
 };
 
 export type Metronome = {
-  beatNote: number;
-  beatsPerMinute: number;
+	beatNote: number;
+	beatsPerMinute: number;
 };
 
 export const staticMeasureAttributesKeys = new Set<keyof MeasureAttributes>([
@@ -111,12 +137,11 @@ export type TemporalMeasureAttributes = {
 };
 
 export type MeasureAttributesMXML = MeasureAttributes & {
-  quarterNoteDivisions: number;
+	quarterNoteDivisions: number;
 };
 
-
 export type MeasureTimeSignautreCallback = (
-  measureIndex: number
+	measureIndex: number
 ) => TimeSignature;
 
 export type MeasureWidthCallback = (measureIndex: number) => number;

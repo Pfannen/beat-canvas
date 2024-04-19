@@ -43,9 +43,11 @@ export const assignTemporalMeasureAttributes = (
 	}
 
 	let idx = 0;
-	while (curAttributes.length - 1 > idx && curAttributes[idx].x <= x) idx++;
+	while (idx < curAttributes.length && curAttributes[idx].x <= x) idx++;
 
-	if (curAttributes[idx].x === x) {
+	if (idx === curAttributes.length) {
+		curAttributes.push({ attributes: newAttributes, x });
+	} else if (curAttributes[idx].x === x) {
 		Object.assign(curAttributes[idx].attributes, newAttributes);
 	} else {
 		const attrCopy: Partial<DynamicMeasureAttributes> = {};

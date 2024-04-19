@@ -4,15 +4,15 @@ import {
 	MeasureAttributesImportHelperMap,
 	MeasureImportHelper,
 	MeasureImportHelperMap,
+	RepeatDirectionMXML,
+	WedgeTypeMXML,
 } from '@/types/import-export/import';
 import {
-	MeasureAttributesMXML,
 	Metronome,
 	Pitch,
 	Repeat,
 	RepeatEndingType,
 	RepeatEndings,
-	Wedge,
 } from '@/types/music';
 import {
 	getSingleElement,
@@ -23,7 +23,6 @@ import Helper from './ImportMusicXMLHelper';
 import { durationToNoteType, getYPosFromNote } from '@/utils/music';
 import { convertImportedDuration, musicXMLToClef } from '@/utils/musicXML';
 import { Note } from '@/components/providers/music/types';
-import { assignTemporalMeasureAttributes } from '@/utils/music/measures/measure-attributes';
 import { Dynamic } from '@/types/music/note-annotations';
 
 // #region misc attributes
@@ -133,7 +132,7 @@ const soundImportHelper: MeasureImportHelper = (mD, el) => {
 	mD.newDynamicAttributes.metronome = metronome;
 };
 
-const wedgeImportHelper: MeasureImportHelper = (mD, el) => {
+/* const wedgeImportHelper: MeasureImportHelper = (mD, el) => {
 	if (!verifyTagName(el, 'wedge') || !el.hasAttribute('type')) return;
 
 	const { measures: tbc } = mD.tbcValues;
@@ -153,6 +152,20 @@ const wedgeImportHelper: MeasureImportHelper = (mD, el) => {
 
 		tbc.wedge = wedge;
 		mD.newDynamicAttributes.wedge = wedge;
+	}
+}; */
+
+const wedgeImportHelper: MeasureImportHelper = (mD, el) => {
+	if (!verifyTagName(el, 'wedge') || !el.hasAttribute('type')) return;
+
+	const wedgeType = el.getAttribute('type') as WedgeTypeMXML;
+	if (wedgeType === 'stop') {
+		mD.newDynamicAttributes.wedge = { start: false };
+	} else if (wedgeType !== 'continue') {
+		mD.newDynamicAttributes.wedge = {
+			start: true,
+			crescendo: wedgeType === 'crescendo',
+		};
 	}
 };
 
@@ -182,12 +195,6 @@ const dynamicsImportHelper: MeasureImportHelper = (mD, el) => {
 
 	const dynamic = el.children[0].tagName as Dynamic;
 	mD.newDynamicAttributes.dynamic = dynamic;
-	/* mD.currentAttributes.dynamic = dynamic;
-	assignTemporalMeasureAttributes(
-		mD.newTemporalAttributes,
-		{ dynamic },
-		mD.curX
-	); */
 };
 
 const barlineImportHelper: MeasureImportHelper = (mD, el) => {
@@ -202,7 +209,7 @@ const barlineImportHelper: MeasureImportHelper = (mD, el) => {
 	}
 };
 
-const repeatImportHelper: MeasureImportHelper = (mD, el) => {
+/* const repeatImportHelper: MeasureImportHelper = (mD, el) => {
 	if (!verifyTagName(el, 'repeat') || !el.hasAttribute('direction')) return;
 
 	const forward = el.getAttribute('direction') === 'forward';
@@ -238,14 +245,35 @@ const repeatImportHelper: MeasureImportHelper = (mD, el) => {
 	}
 
 	mD.newStaticAttributes.repeat = repeat;
-	/* assignTemporalMeasureAttributes(
-		mD.newTemporalAttributes,
-		{ repeat },
-		mD.curX
-	); */
+}; */
+
+const repeatImportHelper: MeasureImportHelper = (mD, el) => {
+	if (!verifyTagName(el, 'repeat') || !el.hasAttribute('direction')) return;
+
+	const direction = el.getAttribute('direction') as RepeatDirectionMXML;
+	if (direction === 'forward') {
+		mD.newStaticAttributes.repeat = { forward: true };
+	} else if (direction === 'backward') {
+		// Make sure repeatCount is 1 or more
+		let repeatCount = 1;
+		const repeatCountStr = el.getAttribute('times');
+		// If 'times' existed on the element
+		if (repeatCountStr) {
+			// Attempt to convert it to an integer
+			repeatCount = parseInt(repeatCountStr);
+			// Make sure repeatCount is at least 1
+			repeatCount = Math.max(repeatCount, 1);
+		}
+
+		// Assign the new repeat to the current measure
+		mD.newStaticAttributes.repeat = {
+			forward: false,
+			repeatCount: repeatCount,
+		};
+	}
 };
 
-// TODO: Address multiple numbers being in the 'number' attribute
+/* // TODO: Address multiple numbers being in the 'number' attribute
 const endingImportHelper: MeasureImportHelper = (mD, el) => {
 	const { measures: tbc } = mD.tbcValues;
 	// In the repeat import helper, we provide and remove a storage location for endings
@@ -272,11 +300,6 @@ const endingImportHelper: MeasureImportHelper = (mD, el) => {
 
 		// (if we encounter an ending, we understand that as the whole measure being in that ending)
 		mD.newStaticAttributes.repeatEndings = repeatEndings;
-		/* assignTemporalMeasureAttributes(
-			mD.newTemporalAttributes,
-			{ repeatEndings },
-			mD.currentAttributes.timeSignature.beatsPerMeasure
-		); */
 	} else if (type === 'stop' || type === 'discontinue') {
 		// Check if endingNumber is present in repeatEndings
 		// Then check if endingNumber is present in the repeatEndings that endingNumber was mapped to
@@ -290,6 +313,27 @@ const endingImportHelper: MeasureImportHelper = (mD, el) => {
 		tbc.repeatEndings[endingNumber][endingNumber] = mD.curMeasureNumber;
 		delete tbc.repeatEndings[endingNumber];
 	}
+}; */
+
+const endingImportHelper: MeasureImportHelper = (mD, el) => {
+	if (
+		!verifyTagName(el, 'ending') ||
+		!el.hasAttribute('number') ||
+		!el.hasAttribute('type')
+	)
+		return;
+
+	// Converts the comma-separated list of ending numbers into a number array
+	const endings = el
+		.getAttribute('number')!
+		.split(',')
+		.map((str) => parseInt(str));
+	const type = el.getAttribute('type')! as RepeatEndingType;
+
+	mD.newStaticAttributes.repeatEndings = {
+		endings,
+		type,
+	};
 };
 
 // #endregion
@@ -360,15 +404,6 @@ const attributesImportHelper: MeasureImportHelper = (mD, el) => {
 
 	if (attributes.quarterNoteDivisions)
 		mD.currentAttributes.quarterNoteDivisions = attributes.quarterNoteDivisions;
-
-	/* Object.assign(mD.currentAttributes, newAttributes);
-	delete newAttributes.quarterNoteDivisions; */
-
-	/* assignTemporalMeasureAttributes(
-		mD.newTemporalAttributes,
-		newAttributes,
-		mD.curX
-	); */
 };
 
 // TODO: Extract direction-specifc helpers into their own map
