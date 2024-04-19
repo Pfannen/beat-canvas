@@ -8,7 +8,7 @@ import NoteSelection from "@/components/ui/reusable/note-selection";
 import { Note, NoteType } from "@/components/providers/music/types";
 import { addNote } from "@/components/providers/music/hooks/useMeasures/utils";
 import { ModificationBehavior } from "../../utils";
-import useSplitSegmentRegistry from "@/components/hooks/useSplitSegement/useSplitSegmentRegistry";
+import useSplitSegmentRegistry from "@/components/hooks/useSplitSegement-old/useSplitSegmentRegistry";
 import ModifiableMeasure from "./modifiable-measure";
 
 type ModifiableMeasuresProps = {

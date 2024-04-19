@@ -4,12 +4,12 @@ import Segment from "..";
 import { SegmentProps } from "../../types";
 import { FunctionComponent } from "react";
 import { SegmentBeat } from "@/components/providers/music/types";
-import { RegistryDelegates } from "@/components/hooks/useSplitSegement/useSplitSegmentRegistry";
+import { RegistryDelegates } from "@/components/hooks/useSplitSegement-old/useSplitSegmentRegistry";
 import { LedgerComponentRenderer } from "../../utils";
 import DisplayNote from "../../measure-item/measure-note";
 import { fractionToPercent } from "@/utils";
 import { concatClassNames } from "@/utils/css";
-import useSplitSegment from "@/components/hooks/useSplitSegement";
+import useSplitSegment from "@/components/hooks/useSplitSegement-old";
 
 type SplitSegmentProps = {
   registryDelegates: RegistryDelegates;

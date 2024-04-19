@@ -5,7 +5,7 @@ import Segments from "@/components/ui/reusable/segments";
 import { minimalSegmentGenerator } from "@/utils/segments/segment-gen-1";
 import SplitSegment, {
   SplitSegmentComponentProps,
-} from "@/components/ui/reusable/split-segment-new";
+} from "@/components/ui/reusable/split-segment";
 import {
   MeasureComponentIterator,
   MeasureComponentValues,

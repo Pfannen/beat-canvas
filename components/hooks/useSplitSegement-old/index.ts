@@ -1,4 +1,4 @@
-import { RegistryDelegates } from "@/components/hooks/useSplitSegement/useSplitSegmentRegistry";
+import { RegistryDelegates } from "@/components/hooks/useSplitSegement-old/useSplitSegmentRegistry";
 import { useEffect, useState } from "react";
 
 const useSplitSegment = (

@@ -1,48 +1,46 @@
-import { ComponentProps, FunctionComponent } from "react";
-import { RegistryDelegates } from "@/components/hooks/useSplitSegement/useSplitSegmentRegistry";
-import useSplitSegment from "@/components/hooks/useSplitSegement";
-import { OmittedComponentProps } from "@/types/polymorphic";
+import { FunctionComponent } from "react";
 import { SegmentDelegates } from "@/types/measure-modification/segments";
+import useSplitState from "@/components/hooks/useSplitState";
 
-type SplitSegmentProps<
-  C extends FunctionComponent<
-    { width: number } & OmittedComponentProps<C, "width">
-  >
-> = {
-  as: C;
-  getComponentProps: (identifier: number) => OmittedComponentProps<C, "width">;
-  registryDelegates: RegistryDelegates;
-  lhs?: number;
+export type SplitSegmentComponentProps = {
+  onSplit: () => void;
+  onJoin: () => void;
+  onCollapse: () => void;
+  width: number;
+};
+
+type SplitSegmentProps = {
+  getComponent: (
+    identifier: number
+  ) => FunctionComponent<SplitSegmentComponentProps>;
   identifier: number;
   rightSiblingIdentifier: number;
   width: number;
+  onCollapse?: () => void;
   canSplit: boolean;
   minWidth: number;
+  isSplit: boolean;
 } & SegmentDelegates<number>;
 
-const SplitSegment = <
-  C extends FunctionComponent<
-    { width: number } & OmittedComponentProps<C, "width">
-  >
->(
-  props: SplitSegmentProps<C>
-) => {
-  const Component = props.as as any;
-  const { split } = useSplitSegment(
-    props.identifier,
-    props.registryDelegates,
-    props.canSplit,
-    props.lhs
-  );
-  if (!split || props.width <= props.minWidth) {
-    const restProps = props.getComponentProps(props.identifier);
-    return <Component {...restProps} width={props.width} />;
+const SplitSegment: FunctionComponent<SplitSegmentProps> = (props) => {
+  const [isSplit, split, join] = useSplitState(props.canSplit, props.isSplit);
+  if (!isSplit || props.width <= props.minWidth) {
+    const Component = props.getComponent(props.identifier);
+    return (
+      <Component
+        onSplit={split}
+        onJoin={props.onCollapse || join}
+        onCollapse={join}
+        width={props.width}
+      />
+    );
   } else {
     const { left, right } = props.getChildrenKeys(
       props.identifier,
       props.rightSiblingIdentifier
     );
     const splitWidth = props.width / 2;
+    const onCollapse = props.onCollapse || join;
     return (
       <>
         <SplitSegment
@@ -50,13 +48,13 @@ const SplitSegment = <
           width={splitWidth}
           identifier={left}
           rightSiblingIdentifier={right}
-          lhs={undefined}
+          onCollapse={onCollapse}
         />
         <SplitSegment
           {...props}
           identifier={right}
           width={splitWidth}
-          lhs={left}
+          onCollapse={onCollapse}
         />
       </>
     );
