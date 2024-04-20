@@ -5,14 +5,17 @@ import {
   MeasureWidthCallback,
 } from "@/types/music";
 import { serializeTimeSignature } from "@/utils/music";
-import { IterateMeasuresCallback } from "@/types/music-rendering/measure-manager";
+import {
+  IterateMeasuresCallback,
+  MeasureSections,
+} from "@/types/music-rendering/measure-manager";
 
 type TimeSignatureWidths = { [timeSig: string]: number };
 
 export class MeasureManager {
   private measureCount: number;
   private dimensionData: MusicDimensionData;
-  private measureOutline: MeasureOutline;
+  private measureOutline: MeasureOutline<MeasureSections>;
   private getMeasureTimeSignature: MeasureTimeSignautreCallback;
   private getMeasureWidth: MeasureWidthCallback;
   private pxTolerence = 1;
@@ -151,7 +154,9 @@ export class MeasureManager {
         remainingWidth = this.getLineWidth();
         maxMeasureWidths = { [serialTimeSig]: width };
       }
-      this.measureOutline.addMeasure(width);
+      this.measureOutline.addMeasure(width, [
+        { key: "notes", width, metadata: undefined },
+      ]);
       currentCoordinate.x += width;
       remainingWidth -= width;
     }
