@@ -1,7 +1,10 @@
 import { Measure, Note } from '@/components/providers/music/types';
-import { MeasureAttributes } from '@/types/music';
-import { dynamicToVelocity } from '@/utils/audio/volume';
-import { MeasureAttributesRetriever } from './measure-attributes';
+import {
+	MeasureAttributes,
+	TemporalMeasureAttributes,
+	getDurationMeasureAttributes,
+} from '@/types/music';
+import { deepyCopy } from '@/utils';
 
 export const initializeMeasureAttributes = (initialMeasure: Measure) => {
 	const { staticAttributes, temporalAttributes } = initialMeasure;
@@ -46,53 +49,13 @@ export const updateMeasureAttributes = (
 	Object.assign(currentAttributes, measureAttributes);
 };
 
-/* export const measureListGenerator = function* (measures: Measure[]) {
-	const currentAttributes = initializeMeasureAttributes(measures[0]);
-
-	let curX = 0;
-	let totalMeasuresEnqueued = 0;
-	for (let i = 0; i < measures.length; i++) {
-		const measure = measures[i];
-
-		for (const { note, newAttributes } of measureGenerator(
-			measure,
-			currentAttributes
-		)) {
-			yield { note, currentAttributes, curX, measureNumber: i, newAttributes };
-		}
-
-		//if (nextMeasure >= 0) i = nextMeasure - 1;
-		totalMeasuresEnqueued++;
-
-		const { beatsPerMeasure } = currentAttributes.timeSignature;
-		curX += beatsPerMeasure;
+const durAttrs = getDurationMeasureAttributes();
+const clearDurationAttributes = (attributes: MeasureAttributes) => {
+	for (const durAttr of durAttrs) {
+		// For whatever reason, TS isn't complaining that we might be removing a required property
+		// However, the attributes resulting from getDurationMeasureAttributes are the ones that are optional
+		if (durAttr in attributes) delete attributes[durAttr];
 	}
-}; */
-
-export const measureGenerator = function* (
-	measure: Measure,
-	currentAttributes: MeasureAttributes
-) {
-	updateMeasureAttributes(currentAttributes, measure.staticAttributes);
-
-	const attrHelper = new MeasureAttributesRetriever(measure.temporalAttributes);
-	let newAttributes: Partial<MeasureAttributes> | undefined =
-		attrHelper.getNextAttributes(0);
-	if (newAttributes) Object.assign(newAttributes, measure.staticAttributes);
-	updateMeasureAttributes(currentAttributes, newAttributes);
-
-	const { notes } = measure;
-	for (const note of notes) {
-		newAttributes = attrHelper.getNextAttributes(note.x);
-		updateMeasureAttributes(currentAttributes, newAttributes);
-
-		yield { note, currentAttributes, newAttributes };
-	}
-
-	newAttributes = attrHelper.getNextAttributes(
-		currentAttributes.timeSignature.beatsPerMeasure
-	);
-	updateMeasureAttributes(currentAttributes, newAttributes);
 };
 
 export type YieldObj = {
@@ -207,5 +170,62 @@ export const noteAttributeGenerator = function* (
 		}
 
 		measureStartX += attr.timeSignature.beatsPerMeasure;
+	}
+};
+
+export const iterateAndUpdateTemporal = function* (
+	attributes: MeasureAttributes,
+	temporal?: TemporalMeasureAttributes[]
+) {
+	if (!temporal) return;
+
+	// Iterate through them, updating the attributes
+	for (let i = 0; i < temporal.length; i++) {
+		const { attributes: dA } = temporal[i];
+		updateMeasureAttributes(attributes, dA);
+		yield attributes;
+		clearDurationAttributes(attributes);
+	}
+
+	return attributes;
+};
+
+export const measureAttributeGenerator = function* (
+	measures: Measure[],
+	targetMeasureIndex: number,
+	currentAttributes?: MeasureAttributes
+) {
+	// Target index can be the length of the measures if all measure should be iterated
+	if (targetMeasureIndex > measures.length) return;
+
+	// Store the attributes
+	const attributes = currentAttributes
+		? deepyCopy(currentAttributes)
+		: initializeMeasureAttributes(measures[0]);
+
+	// Iterate through each measure, up until the target measure
+	for (let i = 0; i < targetMeasureIndex; i++) {
+		const measure = measures[i];
+		const { staticAttributes: sA, temporalAttributes: tA } = measure;
+		// Update the attributes with the current measure's static attributes
+		updateMeasureAttributes(attributes, sA);
+		yield attributes;
+		for (const _ of iterateAndUpdateTemporal(attributes, tA)) {
+			yield attributes;
+		}
+	}
+
+	// If there was a target measure
+	if (targetMeasureIndex < measures.length) {
+		// Get the static attributes and temporal attributes at x 0 (if they exist) and update
+		// the attributes with them
+		const { staticAttributes: sA, temporalAttributes: tA } =
+			measures[targetMeasureIndex];
+
+		updateMeasureAttributes(attributes, sA);
+		if (tA && tA[0].x === 0)
+			updateMeasureAttributes(attributes, tA[0].attributes);
+
+		yield attributes;
 	}
 };

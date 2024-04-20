@@ -11,7 +11,7 @@ import {
 	updateMeasureAttributes,
 } from '@/utils/music/measures/measure-generator';
 
-export const enqueueMeasure = (
+/* export const enqueueMeasure = (
 	measure: Measure,
 	currentAttributes: MeasureAttributes,
 	instrument: ToneInstrument,
@@ -36,7 +36,7 @@ export const enqueueMeasure = (
 		);
 	}
 	console.log(measure.staticAttributes?.timeSignature?.beatsPerMeasure);
-};
+}; */
 
 /* export const playMeasure = (
 	measure: Measure,

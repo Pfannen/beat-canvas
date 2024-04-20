@@ -98,6 +98,8 @@ export type Metronome = {
 	beatsPerMinute: number;
 };
 
+// Static attributes are ones that possibly change 1 time in the measure (either at the beginning or end),
+// or not at all
 export const staticMeasureAttributesKeys = new Set<keyof MeasureAttributes>([
 	'timeSignature',
 	'keySignature',
@@ -106,11 +108,19 @@ export const staticMeasureAttributesKeys = new Set<keyof MeasureAttributes>([
 	'repeatEndings',
 ]);
 
+// Dynamic attributes are ones that occur many times within a measure and have no set
+// position of where they need to be, or how many there can be
 export const dynamicMeasureAttributesKeys = new Set<keyof MeasureAttributes>([
 	'metronome',
 	'dynamic',
 	'wedge',
 ]);
+
+// Duration attributes are ones that stretch past their initial occurrence
+// For instance, a wedge (i.e. crescendo/decrescendo) gets initialized at some point in the measure
+// and stretches to another point
+export const getDurationMeasureAttributes = () =>
+	new Set<keyof MeasureAttributes>(['wedge', 'repeat', 'repeatEndings']);
 
 export type StaticMeasureAttributes = {
 	timeSignature: TimeSignature;
