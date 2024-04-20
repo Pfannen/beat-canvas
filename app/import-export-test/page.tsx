@@ -29,27 +29,6 @@ const ImportExportTestPage: FunctionComponent<
 	} = usePlayback();
 	const { musicScore, setNewMusicScore, replaceMeasures } = useMusic();
 
-	const testSelection: SelectionData[] = [
-		{
-			measureIndex: 0,
-			measureNotes: [],
-			xStart: 0,
-			xEnd: 0.75,
-			y: 0,
-			rollingAttributes: initializeMeasureAttributes({ notes: [] }),
-			nonRollingAttributes: {},
-		},
-		{
-			measureIndex: 0,
-			measureNotes: [],
-			xStart: 0.5,
-			xEnd: 0.75,
-			y: 0,
-			rollingAttributes: initializeMeasureAttributes({ notes: [] }),
-			nonRollingAttributes: {},
-		},
-	];
-
 	return (
 		<>
 			<ImportExportPage
@@ -65,11 +44,11 @@ const ImportExportTestPage: FunctionComponent<
 				volumePairs={volumePairs}
 				modifyVolume={volumeModifier.modifyVolume}
 			/>
-			<AssignerButtonRepo
-				selections={testSelection}
+			{/* <AssignerButtonRepo
+				selections={[]}
 				notePlacementValidator={stacklessNotePlacementValidator}
 				liftExecutor={() => {}}
-			/>
+			/> */}
 			<PlaybackManager
 				onPlay={playMusic}
 				onStop={stopMusic}

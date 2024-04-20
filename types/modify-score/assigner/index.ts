@@ -46,8 +46,8 @@ export interface IAttributeAssignerComponent<
 
 export interface INotePlacementAssignerComponent
 	extends IMusicAssignerComponent {
-	assigner: (noteType: NoteType) => void;
-	noteType: NoteType;
+	assigner: (noteType: NoteType, placeNote?: boolean) => void;
+	noteType?: NoteType;
 	children: ReactNode;
 }
 
@@ -72,3 +72,5 @@ export type CurriedAssigner = (
 export type AssignerLifter = (assigner: CurriedAssigner) => void;
 
 export type AssignerExecuter = (assigner: CurriedAssigner) => void;
+
+export type ValidNotePlacements = Set<NoteType | 'r'>;

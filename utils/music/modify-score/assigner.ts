@@ -2,6 +2,7 @@ import {
 	AnnotationSelectionMetadata,
 	SelectionData,
 	SelectionMetadata,
+	ValidNotePlacements,
 } from '@/types/modify-score/assigner';
 import { NoteAnnotations } from '@/types/music/note-annotations';
 import {
@@ -141,9 +142,11 @@ export const getAttributeSelectionMetadata = (selections: SelectionData[]) => {
 export const getValidNotePlacementTypes = (
 	selections: SelectionData[],
 	placementValidator: NotePlacementValidator
-) => {
-	if (selections.length === 0) return new Set<NoteType>();
+): ValidNotePlacements => {
+	if (selections.length === 0) return new Set();
 
+	// Store if at least 1 selection contains a note - used for noting that a note can be removed
+	let hasNote = false;
 	// Get an array of all note types
 	// NOTE: These are sorted in decreasing order of duration
 	const noteTypes = getNoteTypes();
@@ -157,8 +160,10 @@ export const getValidNotePlacementTypes = (
 			rollingAttributes: { timeSignature },
 			xStart,
 			measureNotes,
+			note,
 		} = selections[i];
 
+		if (note) hasNote = true;
 		// Loop while there are still note types left and we can't place the current largest
 		// note type at our current x position
 		while (
@@ -175,9 +180,19 @@ export const getValidNotePlacementTypes = (
 		}
 	}
 
-	// If no note type can fit, return null
-	if (largestValidIdx >= noteTypes.length) return new Set<NoteType>();
+	// If no note type can fit, return an empty set or one with 'r' noting only notes can be removed
+	if (largestValidIdx >= noteTypes.length) {
+		const set = new Set() as ValidNotePlacements;
+		if (hasNote) set.add('r');
+		return set;
+	}
 	// Else there exists some note types that can fit all selections, and a set
-	// of them is returned for easy lookup
-	else return new Set<NoteType>(noteTypes.slice(largestValidIdx));
+	// of them is returned for easy lookup, along with 'r' if notes can also be removed
+	else {
+		const set = new Set(
+			noteTypes.slice(largestValidIdx)
+		) as ValidNotePlacements;
+		if (hasNote) set.add('r');
+		return set;
+	}
 };

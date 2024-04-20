@@ -98,6 +98,8 @@ export const curriedModifyMeasureAttribute =
 		return true;
 	};
 
+// If notePlacementValidator isn't present, that means the notes within the selection data
+// should be removed, and noteType has no effect
 export const curriedPlaceNote =
 	(
 		noteType: NoteType,

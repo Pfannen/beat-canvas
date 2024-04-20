@@ -1,0 +1,10 @@
+.notes_container {
+	width: 100%;
+}
+
+/* NOTE: Apply better styles later */
+.remove_btn_container {
+	width: fit-content;
+	margin-inline: 16px;
+	margin-block: 8px;
+}
