@@ -1,30 +1,43 @@
 import { Coordinate } from "@/objects/measurement/types";
 import { MeasureSection, MeasureSectionMetadata } from "@/types/music";
 
-export type MeasureSectionData<T extends MeasureSection> = {
-  key: T;
-  width: number;
-  metadata: MeasureSectionMetadata[T];
-};
+export type SectionData<T> = { width: number; metadata?: T };
 
-export type MeasureManagerSection<T> = {
+export type Section<TKey, TMetadata> = { key: TKey } & SectionData<TMetadata>;
+
+export type MeasureSectionData<T extends MeasureSection> = Section<
+  T,
+  MeasureSectionMetadata[T]
+>;
+
+export type BlockSection<T> = {
   startX: number;
-  width: number;
-  metadata: T;
-};
+} & SectionData<T>;
 
-export type MeasureManagerSections = Partial<{
-  [K in MeasureSection]: MeasureManagerSection<MeasureSectionMetadata[K]>;
-}>;
+// export type MeasureManagerSections = Partial<{
+//   [K in MeasureSection]: BlockSection<MeasureSectionMetadata[K]>;
+// }>;
+
+export type BlockSections<TMetadataMap> = {
+  [K in keyof TMetadataMap]: BlockSection<TMetadataMap[K]>;
+};
 
 //#region Measure Outline Types
-export type MeasureLine = {
+export type MeasureLineMeasure<T> = { startX: number; metadata?: T };
+
+export type MeasureLine<T> = {
   endPoint: Coordinate;
   startMeasureIndex: number;
-  measures: number[]; //Start x position of measure
+  measures: MeasureLineMeasure<T>[];
 };
 
-export type MeasureLineMeasure<T> = { startX: number; metadata?: T };
+export type UncommittedMeasure<T> = { width: number; metadata?: T };
+
+export type UncommittedLine<T> = {
+  startPoint: Coordinate;
+  startMeasureIndex: number;
+  measures: UncommittedMeasure<T>[];
+};
 
 export type MeasureIndexData = {
   pageNumber: number;
@@ -44,3 +57,14 @@ export type IterateMeasuresCallback = (
   measureIndex: number
 ) => void;
 //#endregion
+
+class YourClass<TMetadataMap> {
+  // Function that expects an array with a specific structure
+  yourFunction<Key extends keyof TMetadataMap>(
+    arr: { key: Key; width: number; metadata: TMetadataMap[Key] }[]
+  ) {
+    // Your logic here
+  }
+}
+
+const c = new YourClass<MeasureSectionMetadata>();

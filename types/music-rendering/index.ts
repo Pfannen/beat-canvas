@@ -7,7 +7,6 @@ export type MeasureDrawData = {
   start: Coordinate;
   end: Coordinate;
   width: number;
-  aspectRatio: number;
   pageNumber: number;
 };
 

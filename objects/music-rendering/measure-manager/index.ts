@@ -24,27 +24,18 @@ export class MeasureManager {
   ) {
     this.measureCount = measureCount;
     this.dimensionData = dimensionData;
-    const { height } = this.dimensionData.measureDimensions;
-    this.measureOutline = new MeasureOutline(height);
+    this.measureOutline = new MeasureOutline(
+      this.dimensionData.pageDimensions.firstMeasureStart
+    );
     this.getMeasureTimeSignature = getMeasureTimeSignature;
-    // const firstMeasureTimeSig = getMeasureTimeSignature(0);
     this.getMeasureWidth = getMeasureWidth;
-    // this.widthCalculator = new MeasureWidthCalculator(
-    //   width,
-    //   firstMeasureTimeSig
-    // ); //Assuming 'width' is based on the time signature of first measure (maybe not the best idea? change later)
-    this.measureOutline.addPage();
-    const x = this.dimensionData.pageDimensions.firstMeasureStart.x;
-    const y = this.dimensionData.pageDimensions.firstMeasureStart.y;
-    this.measureOutline.addLine(x, y);
+    // const x = this.dimensionData.pageDimensions.firstMeasureStart.x;
+    // const y = this.dimensionData.pageDimensions.firstMeasureStart.y;
+    // this.measureOutline.addPage(x, y, false);
   }
 
   // Note: This doesn't take into account a measure who has a greater width due to time signature display, etc... (would need to know note display size and measure container size separately)
-  private setMeasureWidths(
-    widths: TimeSignatureWidths,
-    pageNumber: number,
-    lineNumber: number
-  ) {
+  private setMeasureWidths(widths: TimeSignatureWidths) {
     const cb: IterateMeasuresCallback = (args, measureIndex) => {
       const globalIndex = args.startMeasureIndex + measureIndex;
       const timeSignature = this.getMeasureTimeSignature(globalIndex);
@@ -52,32 +43,34 @@ export class MeasureManager {
       const width = widths[serializedTimeSignature];
       args.setMeasureWidth(measureIndex, width);
     };
-    this.measureOutline.iterateMeasures(pageNumber, lineNumber, cb);
+    this.measureOutline.iterateCurrentLine(cb);
   }
 
-  private addWidthToMeasures(
-    width: number,
-    pageNumber: number,
-    lineNumber: number
-  ) {
+  private addWidthToMeasures(width: number) {
     const cb: IterateMeasuresCallback = (args, measureIndex) => {
       const widthToAdd = width / args.measureCount;
       const currentWidth = args.getMeasureWidth(measureIndex);
       const measureWidth = currentWidth + widthToAdd;
       args.setMeasureWidth(measureIndex, measureWidth);
     };
-    this.measureOutline.iterateMeasures(pageNumber, lineNumber, cb);
+    this.measureOutline.iterateCurrentLine(cb);
   }
 
-  private getLineWidth(pageNumber: number, lineNumber: number) {
+  private getFirstLineWidth() {
     const { pageDimensions } = this.dimensionData;
     const { musicMargins } = pageDimensions;
     let contentSpace =
       pageDimensions.width - (musicMargins.left + musicMargins.right);
-    if (pageNumber === 1 && lineNumber === 1) {
-      contentSpace -= pageDimensions.firstMeasureStart.x - musicMargins.left;
-    }
+
+    contentSpace -= pageDimensions.firstMeasureStart.x - musicMargins.left;
+
     return contentSpace;
+  }
+
+  private getLineWidth() {
+    const { pageDimensions } = this.dimensionData;
+    const { musicMargins } = pageDimensions;
+    return pageDimensions.width - (musicMargins.left + musicMargins.right);
   }
 
   private getMeasureInfo(measureIndex: number) {
@@ -92,15 +85,13 @@ export class MeasureManager {
     const newLineXStart = pageDimensions.musicMargins.left;
     let nextLineYStart = currentY - measureDimensions.height;
     const nextLineYEnd = nextLineYStart - measureDimensions.height;
-    let isNewPage = false;
     if (nextLineYEnd < Math.floor(pageYEnd)) {
       nextLineYStart = pageDimensions.height - pageDimensions.musicMargins.top;
-      this.measureOutline.addPage();
-      isNewPage = true;
+      this.measureOutline.addPage(newLineXStart, nextLineYStart);
     }
     this.measureOutline.addLine(newLineXStart, nextLineYStart);
     const startCoordinate = { x: newLineXStart, y: nextLineYStart };
-    return { startCoordinate, isNewPage };
+    return startCoordinate;
   }
 
   private getWidthInfo(
@@ -129,9 +120,7 @@ export class MeasureManager {
   public compute() {
     const { pageDimensions } = this.dimensionData;
     let currentCoordinate = { ...pageDimensions.firstMeasureStart };
-    let pageNumber = 1;
-    let lineNumber = 1;
-    let remainingWidth = this.getLineWidth(pageNumber, lineNumber);
+    let remainingWidth = this.getFirstLineWidth();
     let maxMeasureWidths: TimeSignatureWidths = {};
     for (let i = 0; i < this.measureCount; i++) {
       let { width, timeSignature } = this.getMeasureInfo(i);
@@ -149,29 +138,24 @@ export class MeasureManager {
           createNewLine = true;
         } else {
           if (updateWidths) {
-            this.setMeasureWidths(maxMeasureWidths, pageNumber, lineNumber);
+            this.setMeasureWidths(maxMeasureWidths);
           }
           width = maxWidth;
         }
       }
       if (createNewLine) {
-        this.addWidthToMeasures(remainingWidth, pageNumber, lineNumber);
-        const { startCoordinate, isNewPage } = this.createNewLine(
-          currentCoordinate.y
-        );
-        lineNumber++;
-        if (isNewPage) {
-          pageNumber++;
-          lineNumber = 1;
-        }
+        this.addWidthToMeasures(remainingWidth);
+        const startCoordinate = this.createNewLine(currentCoordinate.y);
+
         currentCoordinate = startCoordinate;
-        remainingWidth = this.getLineWidth(pageNumber, lineNumber);
+        remainingWidth = this.getLineWidth();
         maxMeasureWidths = { [serialTimeSig]: width };
       }
-      this.measureOutline.addMeasure(currentCoordinate.x, width);
+      this.measureOutline.addMeasure(width);
       currentCoordinate.x += width;
       remainingWidth -= width;
     }
+    this.measureOutline.commitCurrentLine();
   }
 }
 
