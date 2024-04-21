@@ -4,17 +4,14 @@ import LayoutList from '../layout/list';
 import AnnotationsAssignerSet from './annotations/annotations-assigner-set';
 import NotePlacementAssignerSet from './place-note/note-placement-assigner-set';
 import MeasureAttributeAssignerSet from './measure-attributes/measure-attribute-assigner-set';
-import {
-	AssignerLifter,
-	CurriedAssigner,
-	SelectionData,
-} from '@/types/modify-score/assigner';
+import { AssignerLifter, CurriedAssigner } from '@/types/modify-score/assigner';
 import {
 	getAnnotationSelectionMetadata,
 	getAttributeSelectionMetadata,
 	getValidNotePlacementTypes,
 } from '@/utils/music/modify-score/assigner';
 import { NotePlacementValidator } from '@/types/modify-score';
+import { SelectionData } from '@/types/modify-score/assigner/metadata';
 
 interface AssignerButtonRepoProps {
 	selections: SelectionData[];

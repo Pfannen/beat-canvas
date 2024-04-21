@@ -1,15 +1,10 @@
 import { FunctionComponent } from 'react';
 import classes from './measure-attribute-assigner-set.module.css';
-import AssignerButtonSet from '../style/assigner-button-set';
-import DynamicAssigner from './buttons/dynamic';
 import { MeasureAttributeAssigner } from '@/types/modify-score';
 import { Dynamic } from '@/types/music/note-annotations';
-import {
-	AssignerLifter,
-	SelectionMetadata,
-} from '@/types/modify-score/assigner';
+import { AssignerLifter } from '@/types/modify-score/assigner';
+import { SelectionMetadata } from '@/types/modify-score/assigner/metadata';
 import { curriedModifyMeasureAttribute } from '@/utils/music/modify-score/music-hook-helpers';
-import AssignerDropdown from '../assigner-dropdown';
 import TimeSignatureAssigner from './time-signature-assigner';
 import MetronomeAssigner from './metronome-assigner';
 import { MeasureAttributes } from '@/types/music';

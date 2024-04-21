@@ -1,61 +1,35 @@
 import { MeasureFetcher } from '@/components/providers/music/hooks/useMeasures/utils';
 import { NoteAnnotations } from '@/types/music/note-annotations';
-import { modifyNoteAnnotation } from './note';
+import { addSlur, modifyNoteAnnotation, removeSlur } from './note';
 import { MeasureAttributes } from '@/types/music';
 import { modifyMeasureAttribute } from './measures';
-import { CurriedAssigner, SelectionData } from '@/types/modify-score/assigner';
+import {
+	AssignerCurrier,
+	CurriedAssigner,
+	SelectionData,
+	SpecialAssignerMap,
+} from '@/types/modify-score/assigner';
 import { Note, NoteType } from '@/components/providers/music/types';
 import { NotePlacementValidator } from '@/types/modify-score';
 import { placeNote, removeNote } from '../note-placement';
 
-export const modifyNoteAnnotationAdapter =
-	<K extends keyof NoteAnnotations>(
-		annotationName: K,
-		annotationValue: NoteAnnotations[K] | undefined,
-		measureIndex: number,
-		noteIndex: number
-	) =>
-	(getMeasures: MeasureFetcher) => {
-		// Get the correct measure
-		const measures = getMeasures(measureIndex, 1);
-		// Check if the measure actually exists
-		if (!measures.length) return false;
+// #region Annotations
 
-		// Extract the measure
-		const measure = measures[0];
-		// Check if the note actually exists
-		if (measure.notes.length >= noteIndex) return false;
+export const curriedModifyNoteAnnotation = <K extends keyof NoteAnnotations>(
+	annotationName: K,
+	annotationValue: NoteAnnotations[K] | undefined
+): CurriedAssigner => {
+	// If the annotation needing to be modified requires a special, non-generalized function,
+	// use the one in the map
+	if (annotationName in specialAnnotationModifiers) {
+		return specialAnnotationModifiers[annotationName](
+			annotationName,
+			annotationValue
+		);
+	}
 
-		// Extract the note
-		const note = measure.notes[noteIndex];
-		// Modify the note's annotation
-		modifyNoteAnnotation(note, annotationName, annotationValue);
-		return true;
-	};
-
-export const modifyMeasureAttributesAdapter =
-	<K extends keyof MeasureAttributes>(
-		attributeName: K,
-		attributeValue: MeasureAttributes[K] | undefined,
-		measureIndex: number,
-		xPos: number
-	) =>
-	(getMeasures: MeasureFetcher) => {
-		// Get the correct measure
-		const measures = getMeasures(measureIndex, 1);
-		// Check if the measure actually exists
-		if (!measures.length) return false;
-
-		// Modify the measure's attribute
-		modifyMeasureAttribute(xPos, measures, 0, attributeName, attributeValue);
-	};
-
-export const curriedModifyNoteAnnotation =
-	<K extends keyof NoteAnnotations>(
-		annotationName: K,
-		annotationValue: NoteAnnotations[K] | undefined
-	): CurriedAssigner =>
-	(measures, selectionData) => {
+	// Else use this general assigner function that simply adds or removes the annotation along with the given value
+	const baseAssigner: CurriedAssigner = (measures, selectionData) => {
 		if (!measures.length || !selectionData.length) return false;
 
 		const notes: Note[] = [];
@@ -77,6 +51,47 @@ export const curriedModifyNoteAnnotation =
 		return true;
 	};
 
+	return baseAssigner;
+};
+
+// A function that curries an assigner function for modifying slur annotations
+const curriedModifySlur: AssignerCurrier<NoteAnnotations, 'slur'> = (
+	annotationName,
+	annotationValue
+) => {
+	const slurAssigner: CurriedAssigner = (measures, selectionData) => {
+		// It's required that there only be 2 selections and both selections have a note
+		if (
+			selectionData.length !== 2 ||
+			!selectionData[0].note ||
+			!selectionData[1].note
+		) {
+			console.log('Must have two notes to slur');
+			return false;
+		}
+
+		// Extract required properties
+		const { note: note1, measureIndex: mIdx1 } = selectionData[0];
+		const { note: note2, measureIndex: mIdx2 } = selectionData[1];
+		// Either add or remove a slur
+		if (annotationValue) {
+			return addSlur(note1, mIdx1, note2, mIdx2);
+		} else {
+			return removeSlur(note1, note2);
+		}
+	};
+
+	return slurAssigner;
+};
+
+const specialAnnotationModifiers: SpecialAssignerMap<NoteAnnotations> = {
+	slur: curriedModifySlur,
+};
+
+// #endregion
+
+// #region Attributes
+
 export const curriedModifyMeasureAttribute =
 	<K extends keyof MeasureAttributes>(
 		attributeName: K,
@@ -97,6 +112,10 @@ export const curriedModifyMeasureAttribute =
 
 		return true;
 	};
+
+// #endregion
+
+// #region Note placement
 
 // If notePlacementValidator isn't present, that means the notes within the selection data
 // should be removed, and noteType has no effect
@@ -133,3 +152,47 @@ export const curriedPlaceNote =
 
 		return measuresModified;
 	};
+
+// #endregion
+
+/* export const modifyNoteAnnotationAdapter =
+	<K extends keyof NoteAnnotations>(
+		annotationName: K,
+		annotationValue: NoteAnnotations[K] | undefined,
+		measureIndex: number,
+		noteIndex: number
+	) =>
+	(getMeasures: MeasureFetcher) => {
+		// Get the correct measure
+		const measures = getMeasures(measureIndex, 1);
+		// Check if the measure actually exists
+		if (!measures.length) return false;
+
+		// Extract the measure
+		const measure = measures[0];
+		// Check if the note actually exists
+		if (measure.notes.length >= noteIndex) return false;
+
+		// Extract the note
+		const note = measure.notes[noteIndex];
+		// Modify the note's annotation
+		modifyNoteAnnotation(note, annotationName, annotationValue);
+		return true;
+	}; */
+
+/* export const modifyMeasureAttributesAdapter =
+	<K extends keyof MeasureAttributes>(
+		attributeName: K,
+		attributeValue: MeasureAttributes[K] | undefined,
+		measureIndex: number,
+		xPos: number
+	) =>
+	(getMeasures: MeasureFetcher) => {
+		// Get the correct measure
+		const measures = getMeasures(measureIndex, 1);
+		// Check if the measure actually exists
+		if (!measures.length) return false;
+
+		// Modify the measure's attribute
+		modifyMeasureAttribute(xPos, measures, 0, attributeName, attributeValue);
+	}; */
