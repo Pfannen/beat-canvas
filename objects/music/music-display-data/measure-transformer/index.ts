@@ -1,4 +1,3 @@
-import { NoteDisplayData } from "@/components/providers/music/types";
 import {
   Attacher,
   AttacherArgs,
@@ -9,6 +8,7 @@ import { Music } from "../../readonly-music";
 import { DisplayDataAttacher } from "../note-display-data-attacher/attachments/types";
 import { MusicIterator, MusicIteratorCallback } from "../music-iterator";
 import { MeasureRenderData } from "@/types/music/render-data";
+import { NoteDisplayData } from "@/types/music/draw-data";
 
 type AttacherData<T extends Attacher> = {
   attacher: T;

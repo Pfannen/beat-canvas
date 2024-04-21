@@ -159,6 +159,7 @@ export class MeasureRenderer {
             bodyHeight: spaceHeight,
             noteIndex,
             measureIndex,
+            annotations: ["accent"],
           });
           noteIndex++;
         } else {

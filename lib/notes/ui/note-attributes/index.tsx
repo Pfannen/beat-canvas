@@ -5,12 +5,7 @@ import NoteDot from "./note-dot";
 import NoteFlag from "./note-flag";
 import NoteLine from "./note-line";
 
-export type NoteAttribute =
-  | "sticatto"
-  | "dotted"
-  | "line-through"
-  | "eighth-flag"
-  | "sixteenth-flag";
+export type NoteAttribute = "sticatto" | "dotted" | "line-through";
 
 const sticatto: BodyAttribute = {
   container: "body",

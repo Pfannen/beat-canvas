@@ -1,14 +1,12 @@
-import {
-  NoteDisplayData,
-  NoteType,
-  TimeSignature,
-} from "@/components/providers/music/types";
-import { NoteAttribute } from "@/lib/notes/ui/note-attributes";
+import { NoteType, TimeSignature } from "@/components/providers/music/types";
 import { Coordinate } from "@/objects/measurement/types";
 import { MeasureAttributes } from "@/types/music";
 import { BlockDirection } from "../pdf";
 import { NoteDirection } from "@/lib/notes/types";
 import { MeasureComponent, MeasureComponentIterator } from "..";
+import { NoteDisplayData } from "@/types/music/draw-data";
+import { IDrawingCanvas } from ".";
+import { NoteAnnotation } from "@/types/music/note-annotations";
 
 export type StemOptions = {
   bodyWidth: number;
@@ -24,11 +22,6 @@ export type BeamFlagOptions = {
   height: number;
   width: number;
 };
-
-export type NoteAreaOptions = Pick<
-  NoteOptions,
-  "stemOffset" | "bodyHeight" | "bodyCenter"
->;
 
 export type MeasureLinesOptions = Pick<
   MeasureOptions,
@@ -50,6 +43,7 @@ export type BeatCanvasNoteDrawOptions = {
   stemHeightBodyFraction: number;
   stemWidthBodyFraction: number;
   flagHeightBodyFraction: number;
+  annotationDistanceBodyFraction: number;
 };
 
 export type BeatCanvasMeasureDrawOptions = {
@@ -61,16 +55,16 @@ export type BeatCanvasDrawOptions = {
   measure: BeatCanvasMeasureDrawOptions;
 };
 
-export type NoteOptions = {
+export type NoteDrawData = {
   type: NoteType;
   bodyCenter: Coordinate;
   bodyHeight: number;
   measureIndex: number;
   noteIndex: number;
-  // stemWidth: number;
-  // stemHeight: number;
-  attributes?: NoteAttribute[];
-} & NoteDisplayData;
+  annotations?: NoteAnnotation[];
+};
+
+export type NoteOptions = NoteDrawData & NoteDisplayData;
 
 export type MeasureOptions = {
   topLeft: Coordinate;
@@ -118,3 +112,23 @@ export type MeasureComponentContext = {
 export type MeasureComponentContextIterator = (
   measureComponent: MeasureComponent & MeasureComponentContext
 ) => void;
+
+export type DirectionOffsets = {
+  up: number;
+  down: number;
+  left: number;
+  right: number;
+};
+
+export type NoteAnnotationDrawerArgs = {
+  drawCanvas: IDrawingCanvas;
+  noteData: Omit<NoteOptions, "annotations">;
+  noteDrawOptions: BeatCanvasNoteDrawOptions;
+  offsets: DirectionOffsets;
+};
+
+export type NoteAnnotationDrawer = (args: NoteAnnotationDrawerArgs) => void;
+
+export type NoteAnnotationDrawers = {
+  [K in NoteAnnotation]: NoteAnnotationDrawer;
+};

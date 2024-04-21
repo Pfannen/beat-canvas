@@ -13,10 +13,12 @@ import {
   RestOptions,
   MeasureOptions,
   MeasureComponentContextIterator,
+  NoteAnnotationDrawerArgs,
 } from "@/types/music-rendering/canvas/beat-canvas";
 import { RestPaths } from "./svg-paths";
 import { NoteType } from "@/components/providers/music/types";
 import { NoteDirection } from "@/lib/notes/types";
+import { annotationDrawers, createOffsetsObject } from "./annotation-drawers";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
@@ -24,6 +26,7 @@ const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   stemHeightBodyFraction: 3,
   stemWidthBodyFraction: 0.15,
   flagHeightBodyFraction: 0.5,
+  annotationDistanceBodyFraction: 0.5,
 };
 
 const tempMeasureDrawOptions: BeatCanvasMeasureDrawOptions = {
@@ -179,11 +182,30 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     return { path, noteBodyFraction };
   }
 
+  private drawNoteAnnotations(noteData: NoteOptions) {
+    const offsets = createOffsetsObject(
+      noteData.bodyHeight,
+      noteData.bodyHeight * this.drawOptions.note.noteBodyAspectRatio
+    );
+    noteData.annotations?.forEach((annotation) => {
+      const drawer = annotationDrawers[annotation];
+      if (drawer) {
+        const args: NoteAnnotationDrawerArgs = {
+          drawCanvas: this.canvas,
+          noteData,
+          noteDrawOptions: this.drawOptions.note,
+          offsets,
+        };
+        drawer(args);
+      }
+    });
+  }
+
   drawNote(options: NoteOptions) {
     this.drawNoteBody(options);
     const endOfStem = this.drawNoteStem(options);
     this.drawBeamData(options, endOfStem);
-
+    this.drawNoteAnnotations(options);
     return endOfStem;
   }
 

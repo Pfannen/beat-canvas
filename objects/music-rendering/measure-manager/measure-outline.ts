@@ -250,7 +250,7 @@ export class MeasureOutline<T extends Record<string, any>> {
       throw new Error(`MeasureOutline: Invalid measure index ${measureIndex}`);
     }
     const line = this.getPageLine(indexData.pageNumber, indexData.lineNumber);
-    const measure = this.getMeasure(line, measureIndex);
+    const measure = this.getMeasure(line, indexData.index);
     const { start, end } = this.getMeasureCoordinates(line, indexData.index);
     const width = end.x - start.x;
     return {

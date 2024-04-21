@@ -1,4 +1,3 @@
-import { NoteDisplayData } from "@/components/providers/music/types";
 import { BeamableNoteData } from "@/objects/measurement";
 import { isBeamable } from "../../../../../utils/music";
 import { getDecimalPortion } from "../../../../../utils";
@@ -6,6 +5,7 @@ import { DisplayDataAttacher } from "./types";
 import { NoteDirection } from "@/lib/notes/types";
 import { Measurements } from "@/objects/measurement/measurements";
 import { NoteBeamCalculator } from "@/objects/measurement/note-beam-calculator";
+import { NoteDisplayData } from "@/types/music/draw-data";
 
 export type AttachBeamDataContext = {
   measurements: Measurements;
