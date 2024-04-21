@@ -35,7 +35,7 @@ const drawDotted: NoteAnnotationDrawer = ({
   drawCanvas.drawEllipse({
     center: { x, y },
     diameter: noteData.bodyHeight / 3,
-    aspectRatio: 1,
+    aspectRatio: noteDrawOptions.dotAnnotationAspectRatio,
   });
 };
 
@@ -54,7 +54,7 @@ const drawStaccato: NoteAnnotationDrawer = ({
   drawCanvas.drawEllipse({
     center: { x, y },
     diameter: noteData.bodyHeight / 3,
-    aspectRatio: 1,
+    aspectRatio: noteDrawOptions.dotAnnotationAspectRatio,
   });
 };
 
@@ -65,12 +65,18 @@ const drawAccent: NoteAnnotationDrawer = ({
   offsets,
 }) => {
   const bodyWidth = noteData.bodyHeight * noteDrawOptions.noteBodyAspectRatio;
-  const sideLength = bodyWidth * 1.1;
+  const sideLength = bodyWidth * 1.05;
   const annotationOffset =
     noteDrawOptions.annotationDistanceBodyFraction * noteData.bodyHeight;
   let { x, y } = noteData.bodyCenter;
-  y += annotationOffset + offsets.up;
-  offsets.up += annotationOffset;
+  if (noteData.noteDirection === "down") {
+    y += annotationOffset + offsets.up;
+    offsets.up += annotationOffset;
+  } else {
+    y -= annotationOffset + offsets.down;
+    offsets.down += annotationOffset;
+  }
+
   x += sideLength / 2;
   const angle = 15;
   drawCanvas.drawRectangle({

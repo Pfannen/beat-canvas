@@ -44,6 +44,7 @@ export type BeatCanvasNoteDrawOptions = {
   stemWidthBodyFraction: number;
   flagHeightBodyFraction: number;
   annotationDistanceBodyFraction: number;
+  dotAnnotationAspectRatio: number;
 };
 
 export type BeatCanvasMeasureDrawOptions = {

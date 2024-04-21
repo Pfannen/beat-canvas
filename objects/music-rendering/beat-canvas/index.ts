@@ -27,6 +27,7 @@ const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   stemWidthBodyFraction: 0.15,
   flagHeightBodyFraction: 0.5,
   annotationDistanceBodyFraction: 0.5,
+  dotAnnotationAspectRatio: 1,
 };
 
 const tempMeasureDrawOptions: BeatCanvasMeasureDrawOptions = {
@@ -54,9 +55,17 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
   }
 
   private combineDrawOptions(drawOptions?: DeepPartial<BeatCanvasDrawOptions>) {
-    if (drawOptions?.note?.noteBodyAspectRatio) {
-      this.drawOptions.note.noteBodyAspectRatio =
-        drawOptions.note.noteBodyAspectRatio;
+    if (drawOptions) {
+      const { note } = drawOptions;
+      if (note) {
+        if (note.noteBodyAspectRatio) {
+          this.drawOptions.note.noteBodyAspectRatio = note.noteBodyAspectRatio;
+        }
+        if (note.dotAnnotationAspectRatio) {
+          this.drawOptions.note.dotAnnotationAspectRatio =
+            note.dotAnnotationAspectRatio;
+        }
+      }
     }
   }
 

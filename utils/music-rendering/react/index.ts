@@ -19,7 +19,12 @@ export const getRelativeBeatCanvas = (
     converter,
     drawingCanvas,
     delegates,
-    { note: { noteBodyAspectRatio: converter(1.5) } } //1.5 is the original ratio
+    {
+      note: {
+        noteBodyAspectRatio: converter(1.5),
+        dotAnnotationAspectRatio: converter(1),
+      },
+    } //1.5 is the original ratio
   );
 };
 

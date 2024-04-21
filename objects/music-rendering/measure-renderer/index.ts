@@ -151,6 +151,14 @@ export class MeasureRenderer {
           const offset = this.measurements.getYFractionOffset(note.y);
           const centerY = noteSpaceHeight * offset + measureBottom.y;
           const center = { x: centerX, y: centerY };
+          const noteAnnotations = this.music.getNoteAnnotations(
+            measureIndex,
+            noteIndex
+          );
+          let annotations;
+          if (noteAnnotations) {
+            annotations = Object.keys(noteAnnotations);
+          }
           beatCanvas.drawNote({
             ...renderData,
             bodyCenter: center,
@@ -159,7 +167,7 @@ export class MeasureRenderer {
             bodyHeight: spaceHeight,
             noteIndex,
             measureIndex,
-            annotations: ["accent"],
+            annotations,
           });
           noteIndex++;
         } else {
