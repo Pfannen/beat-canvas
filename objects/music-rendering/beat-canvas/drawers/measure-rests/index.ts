@@ -14,7 +14,7 @@ const drawWholeRest: RestDrawer = ({
   const width = measureComponentHeights.space * 2;
   const height = measureComponentHeights.space / 2;
   const x = restCenter.x - width / 2;
-  const y = restCenter.y + height / 2 + measureComponentHeights.line / 2;
+  const y = restCenter.y + height + measureComponentHeights.line / 2;
 
   drawCanvas.drawRectangle({ corner: { x, y }, height, width });
 };
