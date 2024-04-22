@@ -1,9 +1,6 @@
 import { FunctionComponent } from 'react';
 import classes from './AnnotationAssignerButton.module.css';
-import {
-	IAnnotationAssignerComponent,
-	IAnnotationAssignerComponent2,
-} from '@/types/modify-score/assigner';
+import { IAnnotationAssignerComponent } from '@/types/modify-score/assigner';
 import { NoteAnnotations } from '@/types/music/note-annotations';
 import ModifyMusicAssigner from '../../style/modify-music-assigner-button';
 import {
@@ -16,22 +13,23 @@ const defaults = defaultAnnotationValues;
 // There's a lot of generic passing here, but ultimately the functional component definition
 // will pass the note annotation key to the interface
 interface AnnotationAssignerButtonProps<T extends keyof NoteAnnotations>
-	extends IAnnotationAssignerComponent2<T> {}
+	extends IAnnotationAssignerComponent<T> {}
 
-const AnnotationAssignerButton = <T extends keyof NoteAnnotations>({
+const AnnotationAssignerButton = <K extends keyof NoteAnnotations>({
 	assigner,
-	annotationName,
+	tKey: key,
 	metadataEntry,
 	children,
-}: AnnotationAssignerButtonProps<T>): JSX.Element => {
-	const assignValue = getAssignValue<NoteAnnotations, T>(
-		metadataEntry,
-		defaults[annotationName]
+	currentValue,
+}: AnnotationAssignerButtonProps<K>): JSX.Element => {
+	const assignValue = getAssignValue<NoteAnnotations, K>(
+		currentValue || defaults[key],
+		metadataEntry
 	);
 
 	return (
 		<ModifyMusicAssigner
-			onClick={() => assigner(annotationName, assignValue)}
+			onClick={() => assigner(key, assignValue)}
 			disabled={!metadataEntry}
 			add={!!assignValue}
 		>

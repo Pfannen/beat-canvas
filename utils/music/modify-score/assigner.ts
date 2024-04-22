@@ -20,26 +20,38 @@ import {
 
 // T: The type the selection metadata originates from
 // K: A key in T
-// selectionMetadataEntry: The metadata for the K
+// currentValue: The current value that is attempting to be assigned
+// metadataEntry: The metadata for the K
 export const getAssignValue = <T, K extends keyof T>(
-	selectionMetadataEntry?: SelectionMetadataEntry<T, K>,
-	defaultValue?: T[K]
+	currentValue: T[K],
+	metadataEntry?: SelectionMetadataEntry<T, K>
 ) => {
 	let assignValue: T[K] | undefined;
-	if (selectionMetadataEntry) {
-		const { value, allSelectionsHave } = selectionMetadataEntry;
-		// If all selections don't have the value, selections should be assigned a value
-		if (!allSelectionsHave) assignValue = value || defaultValue;
+	// If there's no entry, it doesn't matter what assignValue is (the querying thing shouldn't be able to be assigned)
+	if (metadataEntry) {
+		const { value, allSelectionsHave } = metadataEntry;
+		// If all selections don't have the value, selections should be assigned currentValue
+		if (!allSelectionsHave) assignValue = currentValue;
 		// Else if all selections do have the value, selections should be assigned a value
-		// if 'value' is undefined, or should delete the value if 'value' is not undefined
+		// If all selections have the value in the metadata AND the value is not undefined, we need to check
+		// if currentValue is equal to the value in the metadata - if it is, undefined
+		// (i.e. the querying thing should be removed) should be assigned, else the current value should be assigned
 		else {
-			if (!value) assignValue = defaultValue;
-			else assignValue = undefined;
+			const currentValueIsAllSelected =
+				JSON.stringify(currentValue) === JSON.stringify(value);
+			if (currentValueIsAllSelected) assignValue = undefined;
+			else assignValue = currentValue;
 		}
 	}
 
 	return assignValue;
 };
+
+export const assignerShouldDisable = (
+	metadataEntry?: SelectionMetadataEntry<any, any>
+) => !metadataEntry;
+
+export const assignerShouldAddValue = (value: any) => value !== undefined;
 
 const updateMetadataStructures = <T extends {}>(
 	metadata: SelectionMetadata<T>,
@@ -190,6 +202,18 @@ export const getAttributeSelectionMetadata = (selections: SelectionData[]) => {
 
 	return metadata as SelectionMetadata<MeasureAttributes>;
 };
+
+export const defaultAttributeValues: DefaultAssignerValueMap<MeasureAttributes> =
+	{
+		clef: 'treble',
+		dynamic: 'p',
+		keySignature: 0,
+		metronome: { beatNote: 4, beatsPerMinute: 120 },
+		repeat: { forward: true },
+		repeatEndings: { endings: [1], type: 'start' },
+		timeSignature: { beatNote: 4, beatsPerMeasure: 4 },
+		wedge: { crescendo: true, start: true },
+	};
 
 // #endregion
 

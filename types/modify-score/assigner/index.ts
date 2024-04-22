@@ -1,41 +1,37 @@
 import { NoteAnnotations } from '@/types/music/note-annotations';
-import { NoteAnnotationAssigner, MeasureAttributeAssigner } from '..';
-import { Measure, Note, NoteType } from '@/components/providers/music/types';
+import { GenericAssigner } from '..';
+import { Measure, NoteType } from '@/components/providers/music/types';
 import { ReactNode } from 'react';
 import { MeasureAttributes } from '@/types/music';
-import {
-	AnnotationSelectionMetadata,
-	AttributeSelectionMetadata,
-	SelectionData,
-} from './metadata';
+import { SelectionData, SelectionMetadata } from './metadata';
 
 export interface IMusicAssignerComponent {
 	disabled?: boolean;
 	add?: boolean;
 }
 
-export interface IAnnotationAssignerComponent<K extends keyof NoteAnnotations> {
-	assigner: NoteAnnotationAssigner;
-	// If annotationMetadata is not present, that means every selection doesn't have the ability to
-	// have the note annotation assigned to it
-	annotationMetadata?: AnnotationSelectionMetadata[K];
-}
-
-export interface IAnnotationAssignerComponent2<
-	K extends keyof NoteAnnotations
-> {
-	assigner: NoteAnnotationAssigner;
-	annotationName: K;
-	metadataEntry: AnnotationSelectionMetadata[K] | undefined;
+// If metadataEntry is not present, that means every selection doesn't have the ability to
+// have the attribute / annotation assigned to it
+export interface IGenericAssignerComponent<T, K extends keyof T> {
+	assigner: GenericAssigner<T, K>;
+	tKey: K;
+	metadataEntry: SelectionMetadata<T>[K] | undefined;
 	children: ReactNode;
+	currentValue?: T[K];
 }
 
-export interface IAttributeAssignerComponent<
-	K extends keyof MeasureAttributes
-> {
-	assigner: MeasureAttributeAssigner;
-	attributeMetadata?: AttributeSelectionMetadata[K];
+// Use this interface when you create a component that is for a specific attribute / annotation
+// (you won't need to take in the key, children, or current value because you should already know them)
+export interface IKnownGenericAssignerComponent<T, K extends keyof T> {
+	assigner: GenericAssigner<T, K>;
+	metadataEntry: SelectionMetadata<T>[K] | undefined;
 }
+
+export interface IAnnotationAssignerComponent<K extends keyof NoteAnnotations>
+	extends IGenericAssignerComponent<NoteAnnotations, K> {}
+
+export interface IAttributeAssignerComponent<K extends keyof MeasureAttributes>
+	extends IGenericAssignerComponent<MeasureAttributes, K> {}
 
 export interface INotePlacementAssignerComponent
 	extends IMusicAssignerComponent {

@@ -1,16 +1,15 @@
 import { FunctionComponent } from 'react';
 import AssignerButtonSet from '../style/assigner-button-set';
 import dropdownClasses from '../style/assigner-dropdowns.module.css';
-import AccentAssigner from './buttons/accent';
 import { NoteAnnotationAssigner } from '@/types/modify-score';
 import { curriedModifyNoteAnnotation } from '@/utils/music/modify-score/music-hook-helpers';
-import DottedAssigner from './buttons/dotted';
 import { AssignerLifter } from '@/types/modify-score/assigner';
 import { NoteAnnotations } from '@/types/music/note-annotations';
 import { SelectionMetadata } from '@/types/modify-score/assigner/metadata';
 import AnnotationAssignerButton from './buttons/annotation-assigner-button';
 import AccentSVG from '@/components/ui/svg/annotations/accent-svg';
 import DottedSVG from '@/components/ui/svg/annotations/dotted-svg';
+import SlurAssignerButton from './buttons/slur-assigner-button';
 
 interface AnnotationsAssignerSetProps {
 	liftExecuter?: AssignerLifter;
@@ -34,28 +33,25 @@ const AnnotationsAssignerSet: FunctionComponent<
 		<div style={{ width: '100%' }}>
 			<AssignerButtonSet title={'Note Annotations'}>
 				<AnnotationAssignerButton<'accent'>
-					annotationName="accent"
+					tKey="accent"
 					assigner={annotationAssigner}
 					metadataEntry={annotationMetadata?.accent}
 				>
 					<AccentSVG />
 				</AnnotationAssignerButton>
 				<AnnotationAssignerButton<'dotted'>
-					annotationName="dotted"
+					tKey="dotted"
 					assigner={annotationAssigner}
 					metadataEntry={annotationMetadata?.dotted}
 				>
 					<DottedSVG />
 				</AnnotationAssignerButton>
-				<AnnotationAssignerButton<'slur'>
-					annotationName="slur"
+				<SlurAssignerButton
 					assigner={annotationAssigner}
 					metadataEntry={annotationMetadata?.slur}
-				>
-					<p>Sl</p>
-				</AnnotationAssignerButton>
+				/>
 				<AnnotationAssignerButton<'staccato'>
-					annotationName="staccato"
+					tKey="staccato"
 					assigner={annotationAssigner}
 					metadataEntry={annotationMetadata?.staccato}
 				>

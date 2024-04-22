@@ -10,6 +10,9 @@ import MetronomeAssigner from './metronome-assigner';
 import { MeasureAttributes } from '@/types/music';
 import DynamicAssignerDropdown from './dynamic-assigner';
 import KeySignatureAssigner from './key-signature-assigner';
+import AssignerButtonSet from '../style/assigner-button-set';
+import AttributeAssignerButton from './buttons/attribute-assigner-button';
+import RepeatAssigner from './repeat-assigner';
 
 // Purely for testing purposes
 const dynamics: Dynamic[] = ['p', 'pp', 'mp', 'mf', 'fp', 'f', 'ff'];
@@ -32,32 +35,26 @@ const MeasureAttributeAssignerSet: FunctionComponent<
 
 	return (
 		<div className={classes.measure_container}>
-			{/* <AssignerButtonSet title="Measure Attributes">
-				{dynamics.map((dynamic) => (
-					<DynamicAssigner
-						key={dynamic}
-						dynamic={dynamic}
-						assigner={assigner}
-						attributeMetadata={attributeMetadata?.dynamic}
-					/>
-				))}
-			</AssignerButtonSet> */}
 			<div className={classes.dropdowns}>
 				<DynamicAssignerDropdown
-					attributeMetadata={attributeMetadata?.dynamic}
+					metadataEntry={attributeMetadata?.dynamic}
 					assigner={assigner}
 				/>
 				<KeySignatureAssigner
 					assigner={assigner}
-					attributeMetadata={attributeMetadata?.keySignature}
+					metadataEntry={attributeMetadata?.keySignature}
 				/>
 				<TimeSignatureAssigner
 					assigner={assigner}
-					attributeMetadata={attributeMetadata?.timeSignature}
+					metadataEntry={attributeMetadata?.timeSignature}
 				/>
 				<MetronomeAssigner
 					assigner={assigner}
-					attributeMetadata={attributeMetadata?.metronome}
+					metadataEntry={attributeMetadata?.metronome}
+				/>
+				<RepeatAssigner
+					assigner={assigner}
+					metadataEntry={attributeMetadata?.repeat}
 				/>
 			</div>
 		</div>
