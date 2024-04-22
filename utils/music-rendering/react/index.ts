@@ -6,7 +6,7 @@ import { ReactDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/rea
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
 import { Music } from "@/objects/music/readonly-music";
 import { BeatCanvasDel } from "@/types/music-rendering";
-import { BeatCanvasPropDelegates } from "@/types/music-rendering/canvas/clickable-beat-canvas";
+import { BeatCanvasPropDelegates } from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 
 export const getRelativeBeatCanvas = (

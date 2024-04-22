@@ -1,4 +1,4 @@
-import { IDrawingCanvas } from "@/types/music-rendering/canvas";
+import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
 import { PDFPage, degrees, rgb } from "pdf-lib";
 
 type PDFLibGenerator<T extends keyof IDrawingCanvas> = (

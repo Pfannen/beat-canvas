@@ -10,7 +10,7 @@ import { MusicLayout } from "@/objects/music-rendering/music-layout";
 import { PageDimensionParams } from "@/objects/music-rendering/music-layout/page-dimension-params";
 import { Music } from "@/objects/music/readonly-music";
 import { IBeatCanvas } from "@/types/music-rendering/canvas/beat-canvas";
-import { PropDelegates } from "@/types/music-rendering/canvas/clickable-beat-canvas";
+import { PropDelegates } from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 
 export const renderMeasures = (

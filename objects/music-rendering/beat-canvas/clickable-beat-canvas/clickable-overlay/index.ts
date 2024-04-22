@@ -1,5 +1,5 @@
 import { ReactDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas";
-import { ClickableOverlayContext } from "@/types/music-rendering/canvas/clickable-beat-canvas";
+import { ClickableOverlayContext } from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
 
 type DrawRectangleParams = Parameters<ReactDrawingCanvas["drawRectangle"]>[0];
 

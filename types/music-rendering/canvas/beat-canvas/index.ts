@@ -1,11 +1,10 @@
 import { NoteType, TimeSignature } from "@/components/providers/music/types";
 import { Coordinate } from "@/objects/measurement/types";
 import { MeasureAttributes } from "@/types/music";
-import { BlockDirection } from "../pdf";
+import { BlockDirection } from "../../pdf";
 import { NoteDirection } from "@/lib/notes/types";
-import { MeasureComponent, MeasureComponentIterator } from "..";
+import { MeasureComponent, MeasureComponentIterator } from "../..";
 import { NoteDisplayData } from "@/types/music/draw-data";
-import { IDrawingCanvas } from ".";
 import { NoteAnnotation } from "@/types/music/note-annotations";
 
 export type StemOptions = {
@@ -65,7 +64,7 @@ export type NoteDrawData = {
   annotations?: NoteAnnotation[];
 };
 
-export type NoteOptions = NoteDrawData & NoteDisplayData;
+export type NoteData = NoteDrawData & NoteDisplayData;
 
 export type MeasureOptions = {
   topLeft: Coordinate;
@@ -96,7 +95,7 @@ export type RestOptions = {
 };
 
 export interface IBeatCanvas {
-  drawNote(options: NoteOptions): any;
+  drawNote(options: NoteData): any;
   drawMeasure(options: MeasureOptions): any;
   drawRest(options: RestOptions): any;
 }
@@ -119,17 +118,4 @@ export type DirectionOffsets = {
   down: number;
   left: number;
   right: number;
-};
-
-export type NoteAnnotationDrawerArgs = {
-  drawCanvas: IDrawingCanvas;
-  noteData: Omit<NoteOptions, "annotations">;
-  noteDrawOptions: BeatCanvasNoteDrawOptions;
-  offsets: DirectionOffsets;
-};
-
-export type NoteAnnotationDrawer = (args: NoteAnnotationDrawerArgs) => void;
-
-export type NoteAnnotationDrawers = {
-  [K in NoteAnnotation]: NoteAnnotationDrawer;
 };

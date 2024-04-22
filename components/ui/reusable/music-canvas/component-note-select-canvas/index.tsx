@@ -1,7 +1,7 @@
 import {
   MeasureComponentIdentifier,
   NoteIdentifier,
-} from "@/types/music-rendering/canvas/clickable-beat-canvas";
+} from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
 import { FunctionComponent, ReactNode } from "react";
 import MusicCanvas from "..";
 import { Measure } from "@/components/providers/music/types";

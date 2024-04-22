@@ -2,7 +2,7 @@ import { UnitConverter } from "@/types";
 import { ClickableBeatCanvas } from "../clickable-beat-canvas";
 import {
   MeasureOptions,
-  NoteOptions,
+  NoteData,
   RestOptions,
 } from "@/types/music-rendering/canvas/beat-canvas";
 
@@ -16,7 +16,7 @@ export class RelativeClickableBeatCanvas extends ClickableBeatCanvas {
     super(...args);
   }
 
-  // protected drawNoteBody(options: NoteOptions): void {
+  // protected drawNoteBody(options: NoteData): void {
   //     this.canvas.drawEllipse({
   //         center: options.bodyCenter,
   //         aspectRatio: this.drawOptions.note.noteBodyAspectRatio,
@@ -25,7 +25,7 @@ export class RelativeClickableBeatCanvas extends ClickableBeatCanvas {
   //       });
   //   }
 
-  drawNote(options: NoteOptions): { x: number; y: number } {
+  drawNote(options: NoteData): { x: number; y: number } {
     options.bodyCenter.x = this.xValueConverter(options.bodyCenter.x);
     if (options.beamData?.length)
       options.beamData.length = this.xValueConverter(options.beamData.length);

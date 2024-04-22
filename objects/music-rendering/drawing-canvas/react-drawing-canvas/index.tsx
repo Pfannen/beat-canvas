@@ -1,5 +1,5 @@
 import { UnitMeasurement } from "@/types";
-import { IDrawingCanvas } from "@/types/music-rendering/canvas";
+import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
 import { PolymorphicComponentProps } from "@/types/polymorphic";
 import {
   ComponentProps,
@@ -15,7 +15,7 @@ import {
   HTMLLineOptions,
   HTMLRectangleOptions,
   HTMLSVGOptions,
-} from "@/types/music-rendering/canvas/html";
+} from "@/types/music-rendering/canvas/drawing-canvas/html";
 import { concatClassNames } from "@/utils/css";
 import { StyleCreator } from "./style-creator";
 

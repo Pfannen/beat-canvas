@@ -1,6 +1,6 @@
 import { Coordinate } from "@/objects/measurement/types";
 import { DeepPartial } from "@/types";
-import { IDrawingCanvas } from "@/types/music-rendering/canvas";
+import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
 import {
   BeatCanvasNoteDrawOptions,
   BeatCanvasMeasureDrawOptions,
@@ -9,16 +9,19 @@ import {
   StemOptions,
   MeasureLinesOptions,
   BeamFlagOptions,
-  NoteOptions,
+  NoteData,
   RestOptions,
   MeasureOptions,
   MeasureComponentContextIterator,
-  NoteAnnotationDrawerArgs,
 } from "@/types/music-rendering/canvas/beat-canvas";
 import { RestPaths } from "./svg-paths";
 import { NoteType } from "@/components/providers/music/types";
 import { NoteDirection } from "@/lib/notes/types";
-import { annotationDrawers, createOffsetsObject } from "./annotation-drawers";
+import {
+  annotationDrawers,
+  createOffsetsObject,
+} from "./drawers/note-annotations";
+import { NoteAnnotationDrawerArgs } from "@/types/music-rendering/canvas/beat-canvas/drawers/note-annotations";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
@@ -139,7 +142,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     return width;
   }
 
-  protected drawNoteBody(options: NoteOptions): void {
+  protected drawNoteBody(options: NoteData): void {
     this.canvas.drawEllipse({
       center: options.bodyCenter,
       aspectRatio: this.drawOptions.note.noteBodyAspectRatio,
@@ -152,7 +155,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     return bodyWidth * this.drawOptions.note.stemWidthBodyFraction;
   }
 
-  protected drawNoteStem(options: NoteOptions) {
+  protected drawNoteStem(options: NoteData) {
     const width = this.getNoteBodyWidth(options.bodyHeight);
     const stemHeight =
       options.bodyHeight * this.drawOptions.note.stemHeightBodyFraction +
@@ -167,7 +170,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     });
   }
 
-  protected drawBeamData(options: NoteOptions, endOfStem: Coordinate) {
+  protected drawBeamData(options: NoteData, endOfStem: Coordinate) {
     if (options.beamData) {
       const { beamData } = options;
 
@@ -191,7 +194,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     return { path, noteBodyFraction };
   }
 
-  private drawNoteAnnotations(noteData: NoteOptions) {
+  private drawNoteAnnotations(noteData: NoteData) {
     const offsets = createOffsetsObject(
       noteData.bodyHeight,
       noteData.bodyHeight * this.drawOptions.note.noteBodyAspectRatio
@@ -210,7 +213,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     });
   }
 
-  drawNote(options: NoteOptions) {
+  drawNote(options: NoteData) {
     this.drawNoteBody(options);
     const endOfStem = this.drawNoteStem(options);
     this.drawBeamData(options, endOfStem);
