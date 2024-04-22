@@ -14,7 +14,6 @@ import {
   MeasureOptions,
   MeasureComponentContextIterator,
 } from "@/types/music-rendering/canvas/beat-canvas";
-import { RestPaths } from "./svg-paths";
 import { NoteType } from "@/components/providers/music/types";
 import { NoteDirection } from "@/lib/notes/types";
 import {
@@ -22,6 +21,7 @@ import {
   createOffsetsObject,
 } from "./drawers/note-annotations";
 import { NoteAnnotationDrawerArgs } from "@/types/music-rendering/canvas/beat-canvas/drawers/note-annotations";
+import { getRestDrawer } from "./drawers/measure-rests";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
@@ -77,11 +77,10 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     del: MeasureComponentContextIterator
   ) {
     const { x, y } = options.topLeft;
+    const { line, space } = options.componentHeights;
     let currY = y;
     options.componentIterator((component) => {
-      const height = component.isLine
-        ? options.lineHeight
-        : options.spaceHeight;
+      const height = component.isLine ? line : space;
       const corner = { x, y: currY };
       del({ width: options.width, height, corner, ...component });
       currY -= height;
@@ -186,13 +185,13 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     }
   }
 
-  protected getRestData(type: NoteType) {
-    const path =
-      RestPaths[type] ||
-      "M0.460198 0.981689c0.0661241 -0.231434 0.132248 -0.462869 0.198372 -0.694303 -0.165056 0.087233 -0.327569 0.0826551 -0.397508 0.00178026C0.23029 0.253815 0.213505 0.199135 0.222152 0.148016 0.235122 0.0719736 0.304552 -0.00788403 0.380849 0.000508647c0.0386572 0.0043235 0.068413 0.0175483 0.0902848 0.0384028 0.0429807 0.0409461 0.0447609 0.095117 0.0455239 0.116734 0.00152594 0.0508647 -0.0175483 0.0892675 -0.0282299 0.107325 0.0673957 -0.00737538 0.148271 -0.0289929 0.21058 -0.0897762 0.0569685 -0.0556968 0.0719736 -0.118006 0.0793489 -0.115463 0.0167854 0.00584944 -0.0798576 0.328586 -0.128688 0.492879 -0.0556968 0.187182 -0.100966 0.342065 -0.132248 0.449135 -0.0190743 -0.00610376 -0.0381485 -0.0122075 -0.0572228 -0.0183113z";
-    const noteBodyFraction = 3;
-    return { path, noteBodyFraction };
-  }
+  // protected getRestData(type: NoteType) {
+  //   const path =
+  //     RestPaths[type] ||
+  //     "M0.460198 0.981689c0.0661241 -0.231434 0.132248 -0.462869 0.198372 -0.694303 -0.165056 0.087233 -0.327569 0.0826551 -0.397508 0.00178026C0.23029 0.253815 0.213505 0.199135 0.222152 0.148016 0.235122 0.0719736 0.304552 -0.00788403 0.380849 0.000508647c0.0386572 0.0043235 0.068413 0.0175483 0.0902848 0.0384028 0.0429807 0.0409461 0.0447609 0.095117 0.0455239 0.116734 0.00152594 0.0508647 -0.0175483 0.0892675 -0.0282299 0.107325 0.0673957 -0.00737538 0.148271 -0.0289929 0.21058 -0.0897762 0.0569685 -0.0556968 0.0719736 -0.118006 0.0793489 -0.115463 0.0167854 0.00584944 -0.0798576 0.328586 -0.128688 0.492879 -0.0556968 0.187182 -0.100966 0.342065 -0.132248 0.449135 -0.0190743 -0.00610376 -0.0381485 -0.0122075 -0.0572228 -0.0183113z";
+  //   const noteBodyFraction = 3;
+  //   return { path, noteBodyFraction };
+  // }
 
   private drawNoteAnnotations(noteData: NoteData) {
     const offsets = createOffsetsObject(
@@ -227,31 +226,34 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     this.drawMeasureLines({
       topLeft: { x, y: options.componentStartY },
       width: options.width,
-      spaceHeight: options.spaceHeight,
-      lineHeight: options.lineHeight,
+      componentHeights: options.componentHeights,
       componentIterator: options.componentIterator,
       measureIndex: options.measureIndex,
     });
     const { endBarWidthLineFraction } = this.drawOptions.measure;
-    const endBarWidth = options.lineHeight * endBarWidthLineFraction;
+    const { line: lineHeight } = options.componentHeights;
+    const endBarWidth = lineHeight * endBarWidthLineFraction;
     const corner = {
       x: x + options.width - endBarWidth,
       y: options.bodyStartY,
     };
     this.canvas.drawRectangle({
       corner,
-      height: -(options.bodyHeight - options.lineHeight / 2),
+      height: -(options.bodyHeight - lineHeight / 2),
       width: endBarWidth,
     });
   }
 
   drawRest(options: RestOptions): void {
-    const { path, noteBodyFraction } = this.getRestData(options.type);
-    this.canvas.drawSVG({
-      path,
-      center: options.center,
-      height: options.noteBodyHeight * noteBodyFraction,
-    });
+    const drawer = getRestDrawer(options.type);
+    if (drawer) {
+      drawer({
+        drawCanvas: this.canvas,
+        restCenter: options.center,
+        isDotted: false,
+        measureComponentHeights: options.measureComponentHeights,
+      });
+    }
   }
 }
 

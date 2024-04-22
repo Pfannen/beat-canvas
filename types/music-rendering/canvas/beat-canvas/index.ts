@@ -3,7 +3,11 @@ import { Coordinate } from "@/objects/measurement/types";
 import { MeasureAttributes } from "@/types/music";
 import { BlockDirection } from "../../pdf";
 import { NoteDirection } from "@/lib/notes/types";
-import { MeasureComponent, MeasureComponentIterator } from "../..";
+import {
+  MeasureComponent,
+  MeasureComponentIterator,
+  MeasureComponentValues,
+} from "../..";
 import { NoteDisplayData } from "@/types/music/draw-data";
 import { NoteAnnotation } from "@/types/music/note-annotations";
 
@@ -25,8 +29,7 @@ export type BeamFlagOptions = {
 export type MeasureLinesOptions = Pick<
   MeasureOptions,
   | "topLeft"
-  | "lineHeight"
-  | "spaceHeight"
+  | "componentHeights"
   | "width"
   // | "spaceCount"
   // | "lineCount"
@@ -74,8 +77,7 @@ export type MeasureOptions = {
   componentStartY: number;
   bodyStartY: number;
   bodyHeight: number;
-  lineHeight: number;
-  spaceHeight: number;
+  componentHeights: MeasureComponentValues;
   // lineCount: number;
   // spaceCount: number;
   // bodyStartPos: number;
@@ -91,7 +93,7 @@ export type MeasureOptions = {
 export type RestOptions = {
   type: NoteType;
   center: Coordinate;
-  noteBodyHeight: number;
+  measureComponentHeights: MeasureComponentValues;
 };
 
 export interface IBeatCanvas {

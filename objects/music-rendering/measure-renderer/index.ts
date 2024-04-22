@@ -115,6 +115,7 @@ export class MeasureRenderer {
         this.measurements.getComponentFractions();
       const lineHeight = lineFraction * noteSpaceHeight;
       const spaceHeight = spaceFraction * noteSpaceHeight;
+      const measureComponentHeights = { line: lineHeight, space: spaceHeight };
       const beatCanvas = this.getBeatCanvasForPage(measureData.pageNumber);
       beatCanvas.drawMeasure({
         topLeft: { ...measureData.start },
@@ -122,8 +123,7 @@ export class MeasureRenderer {
         height,
         componentStartY: measureData.start.y - this.componentStartOffset,
         containerPadding: padding,
-        lineHeight,
-        spaceHeight,
+        componentHeights: measureComponentHeights,
         bodyHeight: this.measureBodyHeight,
         bodyStartY: measureData.start.y - this.bodyOffset,
         measureIndex,
@@ -186,7 +186,7 @@ export class MeasureRenderer {
           beatCanvas.drawRest({
             center: { x, y },
             type: rest.type,
-            noteBodyHeight: spaceHeight,
+            measureComponentHeights,
           });
         }
       });
