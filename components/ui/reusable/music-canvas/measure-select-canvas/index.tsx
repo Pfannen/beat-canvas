@@ -1,7 +1,7 @@
 "use client";
 
 import { FunctionComponent, useMemo } from "react";
-import { MeasureIdentifier } from "@/types/music-rendering/canvas/clickable-beat-canvas";
+import { MeasureIdentifier } from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
 import { Measure } from "@/components/providers/music/types";
 import MusicCanvas from "..";
 import { MusicLayout } from "@/objects/music-rendering/music-layout";

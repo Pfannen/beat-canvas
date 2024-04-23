@@ -1,36 +1,31 @@
 import { Coordinate } from "@/objects/measurement/types";
 import { MeasureDrawData } from "@/types/music-rendering";
+import {
+  CoordinateSections,
+  IterateMeasuresArgs,
+  IterateMeasuresCallback,
+  MeasureIndexData,
+  MeasureLine,
+  MeasureLineMeasure,
+  SectionArray,
+  UncommittedLine,
+} from "@/types/music-rendering/measure-manager";
 
-type MeasureLine = {
-  endPoint: Coordinate;
-  startMeasureIndex: number;
-  measures: number[];
-};
-
-type MeasureIndexData = {
-  pageNumber: number;
-  lineNumber: number;
-  index: number;
-};
-
-export type IterateMeasuresArgs = {
-  startMeasureIndex: number;
-  measureCount: number;
-  setMeasureWidth: (index: number, width: number) => void;
-  getMeasureWidth: (index: number) => number;
-};
-
-export type IterateMeasuresCallback = (
-  args: IterateMeasuresArgs,
-  measureIndex: number
-) => void;
-
-export class MeasureOutline {
-  private measureHeight: number;
-  private pages: MeasureLine[][] = [];
+export class MeasureOutline<T extends Record<string, any>> {
+  private pages: MeasureLine<CoordinateSections<T>>[][] = [[]];
   private measureIndexData = new Map<number, MeasureIndexData>();
-  constructor(measureHeight = 0) {
-    this.measureHeight = measureHeight;
+  private currentLine?: UncommittedLine<SectionArray<T>>;
+
+  constructor(firstLineStart: Coordinate, startMeasureIndex = 0) {
+    this.currentLine = this.createEmptyLine(firstLineStart, startMeasureIndex);
+  }
+
+  private getLastPageNumber() {
+    return this.pages.length;
+  }
+
+  private getLastLineNumberForPage(pageNumber: number) {
+    return this.pages[pageNumber - 1].length;
   }
 
   private getPage(pageNumber: number) {
@@ -55,22 +50,105 @@ export class MeasureOutline {
     return lastPage[lastPage.length - 1];
   }
 
+  private checkCurrentLine() {
+    if (!this.currentLine) {
+      throw new Error("MeasureOutline: No current line");
+    }
+  }
+
   private createEmptyLine(
-    endPoint: Coordinate,
+    startPoint: Coordinate,
     startMeasureIndex: number
-  ): MeasureLine {
-    return { endPoint, startMeasureIndex, measures: [] };
+  ): UncommittedLine<SectionArray<T>> {
+    return { startPoint, startMeasureIndex, measures: [] };
+  }
+
+  public commitCurrentLine() {
+    const pageNumber = this.getLastPageNumber();
+    const lineNumber = this.getLastLineNumberForPage(pageNumber) + 1;
+    const committedLine = this.commitMeasures(pageNumber, lineNumber);
+    if (committedLine) {
+      const lastPage = this.getLastPage();
+
+      lastPage.push(committedLine);
+      this.currentLine = undefined;
+    }
+  }
+
+  private convertSections(startX: number, sectionArray?: SectionArray<T>) {
+    if (sectionArray) {
+      const sections = {} as CoordinateSections<T>;
+      sectionArray.forEach((section) => {
+        sections[section.key] = {
+          startX,
+          metadata: section.metadata,
+          width: section.width,
+        };
+        startX += section.width;
+      });
+      return sections;
+    }
+  }
+
+  private commitMeasures(pageNumber: number, lineNumber: number) {
+    if (this.currentLine) {
+      let { x, y } = this.currentLine.startPoint;
+
+      const measures = this.currentLine.measures.map((measure, index) => {
+        const measureIndex = this.currentLine!.startMeasureIndex + index;
+        const sections = this.convertSections(x, measure.sections);
+
+        this.measureIndexData.set(measureIndex, {
+          pageNumber,
+          lineNumber,
+          index,
+        });
+
+        x += measure.width;
+        const committedMeasure: MeasureLineMeasure<CoordinateSections<T>> = {
+          startX: x - measure.width,
+          metadata: sections,
+        };
+        return committedMeasure;
+      });
+
+      const committedLine: MeasureLine<CoordinateSections<T>> = {
+        endPoint: { x, y },
+        measures,
+        startMeasureIndex: this.currentLine.startMeasureIndex,
+      };
+      return committedLine;
+    }
+  }
+
+  private updateMeasureSectionWidth(
+    line: UncommittedLine<SectionArray<T>>,
+    measureIndex: number,
+    sectionIndex: number,
+    newWidth: number
+  ) {
+    const sections = line.measures[measureIndex].sections;
+    if (sections) {
+      sections[sectionIndex].width = newWidth;
+    }
+  }
+
+  private getMeasure(
+    line: MeasureLine<CoordinateSections<T>>,
+    measureIndex: number
+  ) {
+    return line.measures[measureIndex];
   }
 
   private getMeasureCoordinates(
-    line: MeasureLine,
+    line: MeasureLine<CoordinateSections<T>>,
     measureIndex: number
   ): { start: Coordinate; end: Coordinate } {
     const measureCount = line.measures.length;
-    const startXPos = line.measures[measureIndex];
+    const startXPos = line.measures[measureIndex].startX;
     let endXPos = line.endPoint.x;
     if (measureIndex < measureCount - 1) {
-      endXPos = line.measures[measureIndex + 1];
+      endXPos = line.measures[measureIndex + 1].startX;
     }
     return {
       start: { x: startXPos, y: line.endPoint.y },
@@ -79,7 +157,7 @@ export class MeasureOutline {
   }
 
   private getNextMeasureIndex() {
-    const lastPageNumber = this.pages.length;
+    const lastPageNumber = this.getLastPageNumber();
     const lastPage = this.getPage(lastPageNumber);
     let lastLine;
     if (lastPage.length === 0) {
@@ -95,59 +173,47 @@ export class MeasureOutline {
     return lastLine.startMeasureIndex + lastLine.measures.length;
   }
 
-  public addPage() {
+  public addPage(lineXPos: number, lineYPos: number) {
+    this.commitCurrentLine();
     this.pages.push([]);
+    this.addLine(lineXPos, lineYPos);
   }
 
   public addLine(xPos: number, yPos: number) {
-    //If there was "addLineToPage", would need to recompute start measure indicies (don't see a need for that functionality)
-    const lastPage = this.getLastPage();
-    const startMeasureIndex = this.getNextMeasureIndex();
-    lastPage.push(
-      this.createEmptyLine({ x: xPos, y: yPos }, startMeasureIndex)
+    this.commitCurrentLine();
+    const startMeasureIndex = this.getNextMeasureIndex(); //Maybe store this in the metadata
+    this.currentLine = this.createEmptyLine(
+      { x: xPos, y: yPos },
+      startMeasureIndex
     );
   }
 
-  public addMeasure(startXPos: number, width: number) {
-    const pageNumber = this.pages.length;
-    const page = this.getLastPage();
-    const lineNumber = page.length;
-    const lastLine = page[lineNumber - 1];
-    lastLine.measures.push(startXPos);
-    lastLine.endPoint.x = startXPos + width;
-    const index = lastLine.measures.length - 1;
-    const measureIndex = lastLine.startMeasureIndex + index;
-    this.measureIndexData.set(measureIndex, { pageNumber, lineNumber, index });
+  public addMeasure(width: number, sections?: SectionArray<T>) {
+    this.checkCurrentLine();
+    this.currentLine!.measures.push({ width, sections });
   }
 
-  private _setMeasureWidth(
-    line: MeasureLine,
-    measureIndex: number,
-    width: number
+  private getCommittedMeasureWidth(
+    line: MeasureLine<CoordinateSections<T>>,
+    measureIndex: number
   ) {
-    const currentWidth = this.getWidth(line, measureIndex);
-    const extraWidth = width - currentWidth;
-    const measureCount = line.measures.length;
-    line.endPoint.x += extraWidth;
-    for (let i = measureCount - 1; i > measureIndex; i--) {
-      line.measures[i] += extraWidth;
-    }
-  }
-
-  /// Does not preserve other measure's widths but sets the measure at 'measureIndex' to the desired width
-  public setMeasureWidth(
-    pageNumber: number,
-    lineNumber: number,
-    measureIndex: number,
-    width: number
-  ) {
-    const line = this.getPageLine(pageNumber, lineNumber);
-    this._setMeasureWidth(line, measureIndex, width);
-  }
-
-  private getWidth(line: MeasureLine, measureIndex: number) {
     const { start, end } = this.getMeasureCoordinates(line, measureIndex);
     return end.x - start.x;
+  }
+
+  private static setUncommittedMeasureWidth(
+    line: UncommittedLine<any>,
+    measureIndex: number,
+    newWidth: number
+  ) {
+    line.measures[measureIndex].width = newWidth;
+  }
+
+  private static getUncommittedMeasureWidth(
+    line: UncommittedLine<any>,
+    measureIndex: number
+  ) {
+    return line.measures[measureIndex].width;
   }
 
   public getMeasureWidth(
@@ -156,36 +222,43 @@ export class MeasureOutline {
     measureIndex: number
   ) {
     const line = this.getPageLine(pageNumber, lineNumber);
-    return this.getWidth(line, measureIndex);
+    return this.getCommittedMeasureWidth(line, measureIndex);
   }
 
-  public iterateMeasures(
-    pageNumber: number,
-    lineNumber: number,
-    cb: IterateMeasuresCallback
-  ) {
-    const line = this.getPageLine(pageNumber, lineNumber);
+  public iterateCurrentLine(cb: IterateMeasuresCallback) {
+    this.checkCurrentLine();
+    const line = this.currentLine as UncommittedLine<SectionArray<T>>;
     const args: IterateMeasuresArgs = {
-      startMeasureIndex: line.startMeasureIndex,
-      measureCount: line.measures.length,
-      getMeasureWidth: this.getWidth.bind(this, line),
-      setMeasureWidth: this._setMeasureWidth.bind(this, line),
+      startMeasureIndex: line!.startMeasureIndex,
+      measureCount: line!.measures.length,
+      getMeasureWidth: MeasureOutline.getUncommittedMeasureWidth.bind(
+        this,
+        line
+      ),
+      setMeasureWidth: MeasureOutline.setUncommittedMeasureWidth.bind(
+        this,
+        line
+      ),
+      updateSectionWidth: this.updateMeasureSectionWidth.bind(this, line),
     };
-    line.measures.forEach((_, i) => cb(args, i));
+    line!.measures.forEach((_, i) => cb(args, i));
   }
 
-  public getMeasureData(
-    measureIndex: number,
-    measureHeight?: number
-  ): MeasureDrawData {
+  public getMeasureData(measureIndex: number) {
     const indexData = this.measureIndexData.get(measureIndex);
     if (!indexData) {
       throw new Error(`MeasureOutline: Invalid measure index ${measureIndex}`);
     }
     const line = this.getPageLine(indexData.pageNumber, indexData.lineNumber);
+    const measure = this.getMeasure(line, indexData.index);
     const { start, end } = this.getMeasureCoordinates(line, indexData.index);
     const width = end.x - start.x;
-    const aspectRatio = width / (measureHeight || this.measureHeight || 1);
-    return { start, end, width, aspectRatio, pageNumber: indexData.pageNumber };
+    return {
+      start,
+      end,
+      width,
+      pageNumber: indexData.pageNumber,
+      metadata: measure.metadata,
+    };
   }
 }

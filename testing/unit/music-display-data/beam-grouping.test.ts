@@ -1,4 +1,4 @@
-import { Note, NoteDisplayData } from "@/components/providers/music/types";
+import { Note } from "@/components/providers/music/types";
 import { Music } from "@/objects/music/readonly-music";
 import {
   AttachBeamDataContext,
@@ -7,6 +7,7 @@ import {
 import { NoteDisplayDataAttcher } from "@/objects/music/music-display-data/note-display-data-attacher";
 import { Measurements } from "@/objects/measurement/measurements";
 import { BODY_CT } from "@/objects/measurement/constants";
+import { NoteDisplayData } from "@/types/music/draw-data";
 
 const aboveBelowCount = 5;
 

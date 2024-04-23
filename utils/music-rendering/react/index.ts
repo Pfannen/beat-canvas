@@ -2,24 +2,29 @@ import { Measure } from "@/components/providers/music/types";
 import { BODY_CT } from "@/objects/measurement/constants";
 import { Measurements } from "@/objects/measurement/measurements";
 import { RelativeClickableBeatCanvas } from "@/objects/music-rendering/beat-canvas/relative-clickable-beat-canvas";
-import { ReactDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas";
+import { RelativeDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/relative-drawing-canvas";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
 import { Music } from "@/objects/music/readonly-music";
 import { BeatCanvasDel } from "@/types/music-rendering";
-import { BeatCanvasPropDelegates } from "@/types/music-rendering/canvas/clickable-beat-canvas";
+import { BeatCanvasPropDelegates } from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 
 export const getRelativeBeatCanvas = (
   aspectRatio: number,
   delegates?: BeatCanvasPropDelegates
 ) => {
-  const drawingCanvas = new ReactDrawingCanvas("%");
   const converter = (xValue: number) => xValue / aspectRatio;
+  const drawingCanvas = new RelativeDrawingCanvas(converter);
   return new RelativeClickableBeatCanvas(
     converter,
     drawingCanvas,
     delegates,
-    { note: { noteBodyAspectRatio: converter(1.5) } } //1.5 is the original ratio
+    {
+      note: {
+        noteBodyAspectRatio: converter(1.5),
+        dotAnnotationAspectRatio: converter(1),
+      },
+    } //1.5 is the original ratio
   );
 };
 

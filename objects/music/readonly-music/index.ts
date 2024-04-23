@@ -6,7 +6,10 @@ import {
 } from "@/components/providers/music/types";
 import { getNoteDuration } from "@/components/providers/music/utils";
 import { NoteDirection } from "@/lib/notes/types";
-import { NoteAnnotation } from "@/types/music/note-annotations";
+import {
+  NoteAnnotation,
+  NoteAnnotations,
+} from "@/types/music/note-annotations";
 import { beamableSubdivisionLength } from "@/utils/music";
 
 export interface ReadonlyMusic {
@@ -21,11 +24,10 @@ export interface ReadonlyMusic {
     measureIndex: number,
     noteIndex: number
   ): Omit<Note, "annotations">;
-  noteHasAnnotation(
+  getNoteAnnotations(
     measureIndex: number,
-    noteIndex: number,
-    annotation: NoteAnnotation
-  ): boolean;
+    noteIndex: number
+  ): NoteAnnotations | undefined;
   getNoteDuration(measureIndex: number, noteIndex: number): number;
   getNoteDirection(measureIndex: number, noteIndex: number): NoteDirection;
   getMeasureSubdivisionLength(measureIndex: number): number;
@@ -87,16 +89,6 @@ export class Music implements ReadonlyMusic {
     return { beatsPerMeasure: 4, beatNote: 4 }; //Add time signauture data later
   }
 
-  // getMeasures(): Measure[] {
-  //   if (!this.measures) return [];
-  //   return this.measures.map((measure, i) => {
-  //     return {
-  //       attributes: { ...measure.attributes },
-  //       notes: this.getMeasureNotes(i),
-  //     };
-  //   });
-  // }
-
   getMeasures(): Measure[] {
     return this.measures || [];
   }
@@ -118,14 +110,9 @@ export class Music implements ReadonlyMusic {
     return { x: note.x, y: note.y, type: note.type };
   }
 
-  noteHasAnnotation(
-    measureIndex: number,
-    noteIndex: number,
-    annotation: NoteAnnotation
-  ): boolean {
+  getNoteAnnotations(measureIndex: number, noteIndex: number) {
     const measure = this.checkIndicies(measureIndex, noteIndex);
-    const annotations = measure.notes[noteIndex].annotations;
-    return !!(annotations && annotations[annotation]);
+    return measure.notes[noteIndex].annotations;
   }
 
   getNoteDuration(measureIndex: number, noteIndex: number): number {

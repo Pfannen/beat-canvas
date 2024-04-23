@@ -41,3 +41,7 @@
 .cursor {
   cursor: var(--style-c-cursor);
 }
+
+.scale {
+  scale: var(--style-c-scale);
+}

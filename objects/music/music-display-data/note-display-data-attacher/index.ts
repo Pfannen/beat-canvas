@@ -1,4 +1,4 @@
-import { NoteDisplayData } from "@/components/providers/music/types";
+import { NoteDisplayData } from "@/types/music/draw-data";
 import { ReadonlyMusic } from "../../readonly-music";
 import { DisplayDataAttacher } from "./attachments/types";
 

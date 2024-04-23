@@ -1,7 +1,16 @@
+<<<<<<< HEAD
 // TODO: Switch this file to be called 'measure-attributes' in dev branch
 
 import { Measure, TimeSignature } from '@/components/providers/music/types';
 import { Dynamic } from './note-annotations';
+=======
+import {
+  Measure,
+  NoteType,
+  TimeSignature,
+} from "@/components/providers/music/types";
+import { Dynamic } from "./note-annotations";
+>>>>>>> ui/measure-attribute-display
 
 export const numberNoteTypes = [1, 2, 4, 8, 16, 32, 64];
 
@@ -25,12 +34,12 @@ export type MusicPartAttributes = {
 };
 
 export type Clef =
-	| 'treble'
-	| 'alto'
-	| 'bass'
-	| 'baritone'
-	| 'tenor'
-	| 'soprano';
+  | "treble"
+  | "alto"
+  | "bass"
+  | "baritone"
+  | "tenor"
+  | "soprano";
 
 /* export type Wedge = {
 	crescendo: boolean;
@@ -45,10 +54,10 @@ export type Clef =
 };
 
 type BackwardRepeat = {
-	forward: false;
-	jumpMeasure: number;
-	repeatCount: number;
-	remainingRepeats: number;
+  forward: false;
+  jumpMeasure: number;
+  repeatCount: number;
+  remainingRepeats: number;
 };
 
 export type Repeat = ForwardRepeat | BackwardRepeat; */
@@ -101,19 +110,19 @@ export type Metronome = {
 // Static attributes are ones that possibly change 1 time in the measure (either at the beginning or end),
 // or not at all
 export const staticMeasureAttributesKeys = new Set<keyof MeasureAttributes>([
-	'timeSignature',
-	'keySignature',
-	'clef',
-	'repeat',
-	'repeatEndings',
+  "timeSignature",
+  "keySignature",
+  "clef",
+  "repeat",
+  "repeatEndings",
 ]);
 
 // Dynamic attributes are ones that occur many times within a measure and have no set
 // position of where they need to be, or how many there can be
 export const dynamicMeasureAttributesKeys = new Set<keyof MeasureAttributes>([
-	'metronome',
-	'dynamic',
-	'wedge',
+  "metronome",
+  "dynamic",
+  "wedge",
 ]);
 
 // Duration attributes are ones that stretch past their initial occurrence
@@ -123,27 +132,27 @@ export const getDurationMeasureAttributes = () =>
 	new Set<keyof MeasureAttributes>(['wedge', 'repeat', 'repeatEndings']);
 
 export type StaticMeasureAttributes = {
-	timeSignature: TimeSignature;
-	keySignature: number;
-	clef: Clef;
-	repeat?: Repeat;
-	repeatEndings?: RepeatEndings;
+  timeSignature: TimeSignature;
+  keySignature: number;
+  clef: Clef;
+  repeat?: Repeat;
+  repeatEndings?: RepeatEndings;
 };
 
 export type DynamicMeasureAttributes = {
-	metronome: Metronome;
-	dynamic: Dynamic;
-	wedge?: Wedge;
+  metronome: Metronome;
+  dynamic: Dynamic;
+  wedge?: Wedge;
 };
 
 export type MeasureAttributes = StaticMeasureAttributes &
-	DynamicMeasureAttributes;
+  DynamicMeasureAttributes;
 
 export type PartialMeasureAttributes = Partial<MeasureAttributes>;
 
 export type TemporalMeasureAttributes = {
-	x: number;
-	attributes: Partial<DynamicMeasureAttributes>;
+  x: number;
+  attributes: Partial<DynamicMeasureAttributes>;
 };
 
 export type MeasureAttributesMXML = MeasureAttributes & {
@@ -157,4 +166,11 @@ export type MeasureTimeSignautreCallback = (
 export type MeasureWidthCallback = (measureIndex: number) => number;
 
 export type TemporalMeasureAttributesMXML = TemporalMeasureAttributes &
-	MeasureAttributesMXML;
+  MeasureAttributesMXML;
+
+export type MeasureSectionMetadata = {
+  timeSignature: TimeSignature;
+  repeat: Repeat;
+};
+
+export type MeasureSection = keyof MeasureSectionMetadata;

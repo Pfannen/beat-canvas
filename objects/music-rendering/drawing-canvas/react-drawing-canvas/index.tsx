@@ -1,5 +1,5 @@
 import { UnitMeasurement } from "@/types";
-import { IDrawingCanvas } from "@/types/music-rendering/canvas";
+import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
 import { PolymorphicComponentProps } from "@/types/polymorphic";
 import {
   ComponentProps,
@@ -9,17 +9,14 @@ import {
 } from "react";
 import { CoordinateStyleCreator } from "./utils";
 import {
-  HTMLCircleOptions,
   HTMLDrawOptions,
   HTMLEllipseOptions,
-  HTMLLineOptions,
   HTMLRectangleOptions,
   HTMLSVGOptions,
-} from "@/types/music-rendering/canvas/html";
+} from "@/types/music-rendering/canvas/drawing-canvas/html";
 import { concatClassNames } from "@/utils/css";
 import { StyleCreator } from "./style-creator";
-
-const svgViewBox = "0 0 1 1";
+import { getSVGHeight, getSVGWidth } from "@/utils/svg";
 
 export class ReactDrawingCanvas implements IDrawingCanvas {
   private unit: UnitMeasurement;
@@ -66,14 +63,6 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     this.components.push(<div {...props} />);
   }
 
-  drawLine(options: HTMLLineOptions): void {
-    throw new Error("Method not implemented.");
-  }
-
-  drawCircle(options: HTMLCircleOptions): void {
-    throw new Error("Method not implemented.");
-  }
-
   drawRectangle({
     corner,
     width,
@@ -112,13 +101,32 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
   }
 
   drawSVG(options: HTMLSVGOptions): void {
+    const scale = options.scale || 1;
+    const width = options.width || getSVGWidth(options.viewBox);
+    const height = getSVGHeight(options.viewBox);
+    let x = options.x;
+    let y = options.y;
+    if (!options.center) {
+      if (options.drawOptions?.degreeRotation) {
+        y += height * scale;
+      } else {
+        y -= height * scale;
+      }
+    }
+
+    //Height is passed for the width because it seems that if width >= height, the scaling factor works correctly
     const styleCreator = new CoordinateStyleCreator(
-      options.center,
-      options.width,
-      options.height,
+      { x, y },
+      width,
+      height,
       this.unit
     );
-    styleCreator.center();
+
+    styleCreator.addScale(scale);
+    if (options.center) {
+      styleCreator.center();
+    }
+
     ReactDrawingCanvas.attachDrawOptions(
       options.drawOptions,
       styleCreator,
@@ -127,7 +135,11 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     const { style, className } =
       ReactDrawingCanvas.extractStyleData(styleCreator);
     const component = (
-      <svg viewBox={svgViewBox} style={style} className={className}>
+      <svg
+        viewBox={options.viewBox.join(" ")}
+        style={style}
+        className={className}
+      >
         <path d={options.path} />
       </svg>
     );

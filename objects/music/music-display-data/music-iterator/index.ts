@@ -1,8 +1,5 @@
-import {
-  Measure,
-  NoteDisplayData,
-  TimeSignature,
-} from "@/components/providers/music/types";
+import { Measure, TimeSignature } from "@/components/providers/music/types";
+import { NoteDisplayData } from "@/types/music/draw-data";
 import {
   MeasureComponent,
   MeasureRenderData,

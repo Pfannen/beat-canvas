@@ -2,7 +2,7 @@ import { UnitConverter } from "@/types";
 import { ClickableBeatCanvas } from "../clickable-beat-canvas";
 import {
   MeasureOptions,
-  NoteOptions,
+  NoteData,
   RestOptions,
 } from "@/types/music-rendering/canvas/beat-canvas";
 
@@ -16,19 +16,13 @@ export class RelativeClickableBeatCanvas extends ClickableBeatCanvas {
     super(...args);
   }
 
-  // protected drawNoteBody(options: NoteOptions): void {
-  //     this.canvas.drawEllipse({
-  //         center: options.bodyCenter,
-  //         aspectRatio: this.drawOptions.note.noteBodyAspectRatio,
-  //         diameter: options.bodyHeight,
-  //         drawOptions: { degreeRotation: this.drawOptions.note.noteBodyAngle },
-  //       });
-  //   }
-
-  drawNote(options: NoteOptions): { x: number; y: number } {
+  drawNote(options: NoteData): { x: number; y: number } {
+    const { displayData } = options;
     options.bodyCenter.x = this.xValueConverter(options.bodyCenter.x);
-    if (options.beamData?.length)
-      options.beamData.length = this.xValueConverter(options.beamData.length);
+    if (displayData.beamData?.length)
+      displayData.beamData.length = this.xValueConverter(
+        displayData.beamData.length
+      );
     return super.drawNote(options);
   }
 
@@ -39,13 +33,7 @@ export class RelativeClickableBeatCanvas extends ClickableBeatCanvas {
   }
 
   drawRest(options: RestOptions): void {
-    const { path, noteBodyFraction } = this.getRestData(options.type);
     options.center.x = this.xValueConverter(options.center.x);
-    this.canvas.drawSVG({
-      path,
-      center: options.center,
-      height: options.noteBodyHeight * noteBodyFraction,
-      width: this.xValueConverter(options.noteBodyHeight * noteBodyFraction),
-    });
+    super.drawRest(options);
   }
 }

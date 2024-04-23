@@ -1,6 +1,6 @@
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
 import { FunctionComponent, useMemo } from "react";
-import { BeatCanvasPropDelegates } from "@/types/music-rendering/canvas/clickable-beat-canvas";
+import { BeatCanvasPropDelegates } from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
 import { Measure } from "@/components/providers/music/types";
 import { getHTMLCanvas } from "@/utils/music-rendering";
 

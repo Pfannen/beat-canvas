@@ -1,7 +1,7 @@
 import classes from "./index.module.css";
 import { Coordinate } from "@/objects/measurement/types";
 import { UnitMeasurement } from "@/types";
-import { DimensionDirections } from "@/types/music-rendering/canvas/html";
+import { DimensionDirections } from "@/types/music-rendering/canvas/drawing-canvas/html";
 import { CSSProperties } from "react";
 
 type Style = { [key: string]: string | undefined | number };
@@ -83,6 +83,10 @@ export class StyleCreator {
 
   public addCursor = (cursor: CSSProperties["cursor"]) => {
     this.addVariableAndClass("cursor", cursor);
+  };
+
+  public addScale = (scale: number) => {
+    this.addVariableAndClass("scale", scale);
   };
 
   public getStyle = () => {

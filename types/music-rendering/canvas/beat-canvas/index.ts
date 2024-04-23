@@ -1,14 +1,15 @@
-import {
-  NoteDisplayData,
-  NoteType,
-  TimeSignature,
-} from "@/components/providers/music/types";
-import { NoteAttribute } from "@/lib/notes/ui/note-attributes";
+import { NoteType, TimeSignature } from "@/components/providers/music/types";
 import { Coordinate } from "@/objects/measurement/types";
 import { MeasureAttributes } from "@/types/music";
-import { BlockDirection } from "../pdf";
+import { BlockDirection } from "../../pdf";
 import { NoteDirection } from "@/lib/notes/types";
-import { MeasureComponent, MeasureComponentIterator } from "..";
+import {
+  MeasureComponent,
+  MeasureComponentIterator,
+  MeasureComponentValues,
+} from "../..";
+import { NoteDisplayData } from "@/types/music/draw-data";
+import { NoteAnnotation } from "@/types/music/note-annotations";
 
 export type StemOptions = {
   bodyWidth: number;
@@ -25,16 +26,10 @@ export type BeamFlagOptions = {
   width: number;
 };
 
-export type NoteAreaOptions = Pick<
-  NoteOptions,
-  "stemOffset" | "bodyHeight" | "bodyCenter"
->;
-
 export type MeasureLinesOptions = Pick<
   MeasureOptions,
   | "topLeft"
-  | "lineHeight"
-  | "spaceHeight"
+  | "componentHeights"
   | "width"
   // | "spaceCount"
   // | "lineCount"
@@ -50,6 +45,8 @@ export type BeatCanvasNoteDrawOptions = {
   stemHeightBodyFraction: number;
   stemWidthBodyFraction: number;
   flagHeightBodyFraction: number;
+  annotationDistanceBodyFraction: number;
+  dotAnnotationAspectRatio: number;
 };
 
 export type BeatCanvasMeasureDrawOptions = {
@@ -61,16 +58,16 @@ export type BeatCanvasDrawOptions = {
   measure: BeatCanvasMeasureDrawOptions;
 };
 
-export type NoteOptions = {
+export type NoteDrawData = {
   type: NoteType;
   bodyCenter: Coordinate;
   bodyHeight: number;
   measureIndex: number;
   noteIndex: number;
-  // stemWidth: number;
-  // stemHeight: number;
-  attributes?: NoteAttribute[];
-} & NoteDisplayData;
+  annotations?: NoteAnnotation[];
+};
+
+export type NoteData = NoteDrawData & { displayData: NoteDisplayData };
 
 export type MeasureOptions = {
   topLeft: Coordinate;
@@ -80,8 +77,7 @@ export type MeasureOptions = {
   componentStartY: number;
   bodyStartY: number;
   bodyHeight: number;
-  lineHeight: number;
-  spaceHeight: number;
+  componentHeights: MeasureComponentValues;
   // lineCount: number;
   // spaceCount: number;
   // bodyStartPos: number;
@@ -97,11 +93,11 @@ export type MeasureOptions = {
 export type RestOptions = {
   type: NoteType;
   center: Coordinate;
-  noteBodyHeight: number;
+  measureComponentHeights: MeasureComponentValues;
 };
 
 export interface IBeatCanvas {
-  drawNote(options: NoteOptions): any;
+  drawNote(options: NoteData): any;
   drawMeasure(options: MeasureOptions): any;
   drawRest(options: RestOptions): any;
 }
@@ -118,3 +114,10 @@ export type MeasureComponentContext = {
 export type MeasureComponentContextIterator = (
   measureComponent: MeasureComponent & MeasureComponentContext
 ) => void;
+
+export type DirectionOffsets = {
+  up: number;
+  down: number;
+  left: number;
+  right: number;
+};

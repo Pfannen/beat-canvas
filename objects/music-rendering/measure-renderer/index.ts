@@ -8,6 +8,7 @@ import {
   BeatCanvasDel,
   MeasureComponentIterator,
 } from "@/types/music-rendering";
+import { NoteAnnotation } from "@/types/music/note-annotations";
 
 export class MeasureRenderer {
   private bodyCt: number;
@@ -115,6 +116,7 @@ export class MeasureRenderer {
         this.measurements.getComponentFractions();
       const lineHeight = lineFraction * noteSpaceHeight;
       const spaceHeight = spaceFraction * noteSpaceHeight;
+      const measureComponentHeights = { line: lineHeight, space: spaceHeight };
       const beatCanvas = this.getBeatCanvasForPage(measureData.pageNumber);
       beatCanvas.drawMeasure({
         topLeft: { ...measureData.start },
@@ -122,8 +124,7 @@ export class MeasureRenderer {
         height,
         componentStartY: measureData.start.y - this.componentStartOffset,
         containerPadding: padding,
-        lineHeight,
-        spaceHeight,
+        componentHeights: measureComponentHeights,
         bodyHeight: this.measureBodyHeight,
         bodyStartY: measureData.start.y - this.bodyOffset,
         measureIndex,
@@ -151,14 +152,22 @@ export class MeasureRenderer {
           const offset = this.measurements.getYFractionOffset(note.y);
           const centerY = noteSpaceHeight * offset + measureBottom.y;
           const center = { x: centerX, y: centerY };
+          const noteAnnotations = this.music.getNoteAnnotations(
+            measureIndex,
+            noteIndex
+          );
+          let annotations: NoteAnnotation[] | undefined;
+          if (noteAnnotations) {
+            annotations = Object.keys(noteAnnotations) as NoteAnnotation[];
+          }
           beatCanvas.drawNote({
-            ...renderData,
+            displayData: renderData,
             bodyCenter: center,
             type,
-            noteDirection: renderData.noteDirection,
             bodyHeight: spaceHeight,
             noteIndex,
             measureIndex,
+            annotations,
           });
           noteIndex++;
         } else {
@@ -177,7 +186,7 @@ export class MeasureRenderer {
           beatCanvas.drawRest({
             center: { x, y },
             type: rest.type,
-            noteBodyHeight: spaceHeight,
+            measureComponentHeights,
           });
         }
       });

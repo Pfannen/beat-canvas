@@ -7,14 +7,14 @@ import {
   MeasureComponentContextIterator,
   MeasureLinesOptions,
   MeasureOptions,
-  NoteOptions,
+  NoteData,
 } from "@/types/music-rendering/canvas/beat-canvas";
 import {
   BeatCanvasPropDelegates,
   MeasureCompPropDel,
   MeasurePropDel,
   NotePropDel,
-} from "@/types/music-rendering/canvas/clickable-beat-canvas";
+} from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
 import { ClickableOverlay } from "./clickable-overlay";
 import { DeepPartial } from "@/types";
 
@@ -132,7 +132,7 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
     return this.intermDrawMeasures(options);
   }
 
-  drawNote(options: NoteOptions): { x: number; y: number } {
+  drawNote(options: NoteData): { x: number; y: number } {
     return this.intermDrawNote(options);
   }
 

@@ -1,7 +1,7 @@
 import { Coordinate } from "@/objects/measurement/types";
 import { UnitMeasurement } from "@/types";
 import { StyleCreator } from "./style-creator";
-import { DimensionDirections } from "@/types/music-rendering/canvas/html";
+import { DimensionDirections } from "@/types/music-rendering/canvas/drawing-canvas/html";
 
 export class CoordinateStyleCreator extends StyleCreator {
   constructor(

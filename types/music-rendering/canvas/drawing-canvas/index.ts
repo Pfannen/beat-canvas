@@ -1,4 +1,5 @@
 import { Coordinate } from "@/objects/measurement/types";
+import { SVGData } from "@/types/svg";
 
 export type DrawOptions<T> = {
   color: string;
@@ -9,14 +10,6 @@ export type DrawOptions<T> = {
 export type OptionsWithDrawOptions<T, U> = T & {
   drawOptions?: Partial<DrawOptions<U>>;
 };
-
-export type LineOptions = {
-  start: Coordinate;
-  end: Coordinate;
-  thickness: number;
-};
-
-export type LineDrawOptions<T = {}> = OptionsWithDrawOptions<LineOptions, T>;
 
 export type RectangleOptions = {
   corner: Coordinate;
@@ -34,11 +27,6 @@ export type CircleOptions = {
   diameter: number;
 };
 
-export type CircleDrawOptions<T = {}> = OptionsWithDrawOptions<
-  CircleOptions,
-  T
->;
-
 export type EllipseOptions = CircleOptions & {
   aspectRatio: number;
 };
@@ -48,13 +36,16 @@ export type EllipseDrawOptions<T = {}> = OptionsWithDrawOptions<
   T
 >;
 
-export type SVGOptions = { center: Coordinate; path: string; height?: number };
+export type SVGOptions = {
+  x: number;
+  y: number;
+  center?: boolean;
+  scale?: number;
+} & SVGData;
 
 export type SVGDrawOptions<T = {}> = OptionsWithDrawOptions<SVGOptions, T>;
 
 export interface IDrawingCanvas {
-  drawLine(options: LineDrawOptions): void;
-  drawCircle(options: CircleDrawOptions): void;
   drawRectangle(options: RectangleDrawOptions): void;
   drawEllipse(options: EllipseDrawOptions): void;
   drawSVG(options: SVGDrawOptions): void;

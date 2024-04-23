@@ -1,4 +1,4 @@
-import { IDrawingCanvas } from "@/types/music-rendering/canvas";
+import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
 import { PDFDocument } from "pdf-lib";
 import { PDFLibDrawingCanvas } from ".";
 import { BeatCanvas } from "../../beat-canvas";
