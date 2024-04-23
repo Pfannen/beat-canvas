@@ -20,8 +20,8 @@ import {
   createOffsetsObject,
 } from "./drawers/note-annotations";
 import { NoteAnnotationDrawerArgs } from "@/types/music-rendering/canvas/beat-canvas/drawers/note-annotations";
-import { RestDrawerDel } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-rests";
 import { getRestDrawer } from "./drawers/measure-rests";
+import { getFlagDrawer } from "./drawers/note-flags";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
@@ -88,24 +88,25 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     });
   }
 
-  private drawStem(options: StemOptions) {
-    const widthRadius = options.bodyWidth / 2;
-    const { x, y } = options.bodyCenter;
-    const corner = { x: x - widthRadius, y };
-    let height = -options.stemHeight;
-    let width = options.stemWidth;
-    if (options.direction === "up") {
-      corner.x = x + widthRadius;
-      height *= -1;
-      width *= -1;
-    }
-    this.canvas.drawRectangle({
-      corner,
-      width,
-      height,
-    });
-    return { x: corner.x, y: corner.y + height };
-  }
+  // private drawStem(options: StemOptions) {
+  //   const widthRadius = options.bodyWidth / 2;
+  //   const { x, y } = options.bodyCenter;
+  //   const corner = { x: x - widthRadius, y };
+  //   let height = -options.stemHeight;
+  //   let width = options.stemWidth;
+  //   if (options.direction === "up") {
+  //     corner.x = x + widthRadius;
+  //     height *= -1;
+  //     width *= -1;
+  //   }
+  //   this.canvas.drawRectangle({
+  //     corner,
+  //     width,
+  //     height,
+  //   });
+
+  //   return { x: corner.x, y: corner.y + height };
+  // }
 
   protected drawMeasureLines(options: MeasureLinesOptions) {
     const iteratorDel: MeasureComponentContextIterator = (context) => {
@@ -134,8 +135,6 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     });
   }
 
-  private drawNoteFlag(): void {}
-
   protected getNoteBodyWidth(bodyHeight: number) {
     const { noteBodyAspectRatio } = this.drawOptions.note;
     const width = noteBodyAspectRatio * bodyHeight;
@@ -155,19 +154,41 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     return bodyWidth * this.drawOptions.note.stemWidthBodyFraction;
   }
 
-  protected drawNoteStem(options: NoteData) {
-    const width = this.getNoteBodyWidth(options.bodyHeight);
+  private getStemData(options: NoteData) {
+    const bodyWidth = this.getNoteBodyWidth(options.bodyHeight);
     const stemHeight =
-      options.bodyHeight * this.drawOptions.note.stemHeightBodyFraction +
-      Math.abs(options.stemOffset || 0);
-    const stemWidth = this.getStemWidth(width);
-    return this.drawStem({
-      bodyCenter: options.bodyCenter,
-      stemHeight,
-      stemWidth,
-      bodyWidth: width,
-      direction: options.noteDirection,
+      options.bodyHeight * this.drawOptions.note.stemHeightBodyFraction;
+    const offsetHeight = Math.abs(options.stemOffset || 0);
+
+    const widthRadius = bodyWidth / 2;
+    const { x, y } = options.bodyCenter;
+    let height = -(stemHeight + offsetHeight);
+    const start = { x: x - widthRadius, y };
+    let width = this.getStemWidth(bodyWidth);
+    if (options.noteDirection === "up") {
+      start.x = x + widthRadius;
+      height *= -1;
+      width *= -1;
+    }
+
+    return { start, end: { x: start.x, y: y + height }, width, height };
+  }
+
+  protected drawNoteStem(options: NoteData) {
+    const stemData = this.getStemData(options);
+    this.canvas.drawRectangle({
+      corner: stemData.start,
+      width: stemData.width,
+      height: stemData.height,
     });
+    return stemData.end;
+    // return this.drawStem({
+    //   bodyCenter: options.bodyCenter,
+    //   stemHeight,
+    //   stemWidth,
+    //   bodyWidth: width,
+    //   direction: options.noteDirection,
+    // });
   }
 
   protected drawBeamData(options: NoteData, endOfStem: Coordinate) {
@@ -216,6 +237,20 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
   drawNote(options: NoteData) {
     this.drawNoteBody(options);
     const endOfStem = this.drawNoteStem(options);
+    // if (options.type === "sixteenth") {
+    //   const stemHeight =
+    //     options.bodyHeight * this.drawOptions.note.stemHeightBodyFraction;
+    //   const width = this.getNoteBodyWidth(options.bodyHeight);
+    //   const stemWidth = this.getStemWidth(width);
+    //   const flagDrawer = getFlagDrawer("sixteenth");
+    //   flagDrawer({
+    //     drawCanvas: this.canvas,
+    //     endOfStem,
+    //     noteDirection: options.noteDirection,
+    //     stemHeight,
+    //     stemWidth,
+    //   });
+    // }
     this.drawBeamData(options, endOfStem);
     this.drawNoteAnnotations(options);
     return endOfStem;

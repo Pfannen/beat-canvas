@@ -18,7 +18,7 @@ import {
 } from "@/types/music-rendering/canvas/drawing-canvas/html";
 import { concatClassNames } from "@/utils/css";
 import { StyleCreator } from "./style-creator";
-import { getSVGHeight, getSVGWidth } from "@/utils/svg";
+import { getSVGAspectRatio, getSVGHeight, getSVGWidth } from "@/utils/svg";
 
 const svgViewBox = "0 0 1 1";
 
@@ -113,16 +113,20 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
   }
 
   drawSVG(options: HTMLSVGOptions): void {
+    const scale = options.scale || 1;
+    const width = getSVGWidth(options.viewBox);
+    const height = getSVGHeight(options.viewBox);
     let x = options.x;
     let y = options.y;
+
     const styleCreator = new CoordinateStyleCreator(
       { x, y },
-      getSVGWidth(options.viewBox),
-      getSVGHeight(options.viewBox),
+      width,
+      height,
       this.unit
     );
 
-    styleCreator.addScale(options.scale || 1);
+    styleCreator.addScale(scale);
     if (options.center) {
       styleCreator.center();
     }

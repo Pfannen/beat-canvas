@@ -6,11 +6,13 @@ import MeasurePositions, {
 } from "./note-position";
 import { NoteDirection } from "@/lib/notes/types";
 import { BODY_CT } from "./constants";
+import { NoteType } from "@/components/providers/music/types";
 
 export type BeamableNoteData = {
   x: number;
   y: number;
   duration: number;
+  type: NoteType;
   stemOffset?: number;
 }; //stemOffset is in measureUnits
 

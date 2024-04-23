@@ -3,7 +3,7 @@ import {
   RestDrawers,
   SVGRest,
 } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-rests";
-import { getRestSVGData } from "./svg-paths";
+import { getRestSVGData } from "./rest-svgs";
 import { NoteType } from "@/components/providers/music/types";
 import { calculateScaleToHeight } from "@/utils/svg";
 

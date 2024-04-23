@@ -72,7 +72,13 @@ export class PDFLibDrawingCanvas {
         x = centerX + svgCenter.x;
         y = centerY + svgCenter.y;
       }
-      page.drawSvgPath(options.path, { x, y, scale, color: rgb(0, 0, 0) });
+      page.drawSvgPath(options.path, {
+        x,
+        y,
+        scale,
+        color: rgb(0, 0, 0),
+        rotate: degrees(options.drawOptions?.degreeRotation || 0),
+      });
     };
   };
 }

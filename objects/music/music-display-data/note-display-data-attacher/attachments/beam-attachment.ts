@@ -39,7 +39,9 @@ export const attachBeamData =
         // If the note only belongs to one division
         if (start === end) {
           currNote = {
-            ...note,
+            x: note.x,
+            y: note.y,
+            type: note.type,
             duration,
             stemOffset: noteDisplayData[i].stemOffset,
           };
@@ -113,9 +115,14 @@ const processBeamStack = (
     const firstNote = noteData[startNoteIndex];
     firstNote.beamData = { angle: data.beamAngle, length: data.beamLength }; //Give the first note in the stack the data
     for (let i = 0; i < beamStack.length; i++) {
-      const note = noteData[i + startNoteIndex];
+      const globalNoteIndex = i + startNoteIndex;
+      const note = noteData[globalNoteIndex];
       if (data.noteOffsets[i]) {
         note.stemOffset = data.noteOffsets[i] + (note.stemOffset || 0); //Only attach this property if necessary
+        note.beamNeighbors = {
+          left: beamStack[i - 1]?.type,
+          right: beamStack[i + 1]?.type,
+        };
       }
       note.noteDirection = direction;
     }
