@@ -1,3 +1,4 @@
+import { TrigHelpers } from "@/utils/trig";
 import { Coordinate } from "../types";
 import { BeamNote } from "./note-beam-calculator";
 
@@ -28,7 +29,30 @@ export class BeamGenerator {
     }
   }
 
-  private commitBeams(noteIndex: number, beamCount: number) {}
+  private commitBeams(noteIndex: number, beamCount = this.currentBeams.length) {
+    const { x, y } = this.notes[noteIndex];
+    for (let i = 0; i < beamCount; i++) {
+      const startCoordinate = this.currentBeams.pop()!;
+      const beamLength = TrigHelpers.calculatePointHypotenuse(
+        startCoordinate,
+        { x, y },
+        this.beamAngle
+      );
+      this.addBeamData(this.beamAngle, beamLength, noteIndex);
+    }
+  }
 
-  public getExtraBeams() {}
+  public getExtraBeams() {
+    let currentBeamCount = this.notes[0].beamCount;
+    this.notes.forEach((note, i) => {
+      const beamCount = note.beamCount;
+      const beamDifference = beamCount - currentBeamCount;
+      if (beamDifference > 0) {
+        this.addBeams(i, beamDifference);
+      } else if (beamDifference < 0) {
+        this.commitBeams(i - 1, beamDifference * -1);
+      }
+    });
+    this.commitBeams(this.notes.length - 1); //Commit the rest of the beams (if any)
+  }
 }
