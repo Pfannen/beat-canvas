@@ -4,6 +4,8 @@ export const getSVGX = (viewBox: ViewBox) => viewBox[0];
 export const getSVGY = (viewBox: ViewBox) => viewBox[1];
 export const getSVGWidth = (viewBox: ViewBox) => viewBox[2];
 export const getSVGHeight = (viewBox: ViewBox) => viewBox[3];
+export const getSVGAspectRatio = (viewBox: ViewBox) =>
+  getSVGWidth(viewBox) / getSVGHeight(viewBox);
 
 export const getSVGCenter = (viewBox: ViewBox, scale = 1) => {
   const x = getSVGX(viewBox) * scale;
@@ -21,6 +23,7 @@ export const calculateScaleToWidth = (viewBox: ViewBox, width = 1) => {
   return scale;
 };
 
+// Returns the scale factor to get the desired height
 export const calculateScaleToHeight = (viewBox: ViewBox, height = 1) => {
   const svgHeight = getSVGHeight(viewBox);
   const scale = height / svgHeight;

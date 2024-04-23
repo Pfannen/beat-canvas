@@ -1,4 +1,5 @@
 import { Coordinate } from "@/objects/measurement/types";
+import { SVGData } from "@/types/svg";
 
 export type DrawOptions<T> = {
   color: string;
@@ -48,7 +49,12 @@ export type EllipseDrawOptions<T = {}> = OptionsWithDrawOptions<
   T
 >;
 
-export type SVGOptions = { center: Coordinate; path: string; height?: number };
+export type SVGOptions = {
+  x: number;
+  y: number;
+  center?: boolean;
+  scale?: number;
+} & SVGData;
 
 export type SVGDrawOptions<T = {}> = OptionsWithDrawOptions<SVGOptions, T>;
 

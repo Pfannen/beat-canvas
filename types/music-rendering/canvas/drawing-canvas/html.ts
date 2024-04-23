@@ -37,10 +37,7 @@ export type HTMLEllipseOptions = HTMLOptions<
   "div"
 >;
 
-export type HTMLSVGOptions = SVGDrawOptions & {
-  height: number;
-  width: number;
-};
+export type HTMLSVGOptions = SVGDrawOptions;
 
 export type DimensionDirection = "positive" | "negative";
 

@@ -3,8 +3,9 @@ import {
   RestDrawers,
   SVGRest,
 } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-rests";
-import { getRestPath } from "./svg-paths";
+import { getRestSVGData } from "./svg-paths";
 import { NoteType } from "@/components/providers/music/types";
+import { calculateScaleToHeight } from "@/utils/svg";
 
 const drawWholeRest: RestDrawer = ({
   drawCanvas,
@@ -34,12 +35,18 @@ const drawHalfRest: RestDrawer = ({
 const drawSVGRest =
   (type: SVGRest): RestDrawer =>
   ({ drawCanvas, restCenter, measureComponentHeights }) => {
-    const path = getRestPath(type);
-    const height = measureComponentHeights.space * 3;
+    const { path, viewBox } = getRestSVGData(type);
+    const height = calculateScaleToHeight(
+      viewBox,
+      measureComponentHeights.space * 3
+    );
     drawCanvas.drawSVG({
+      x: restCenter.x,
+      y: restCenter.y,
       path,
-      center: restCenter,
-      height,
+      viewBox,
+      center: true,
+      scale: height,
     });
   };
 

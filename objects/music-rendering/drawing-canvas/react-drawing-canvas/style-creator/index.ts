@@ -85,6 +85,10 @@ export class StyleCreator {
     this.addVariableAndClass("cursor", cursor);
   };
 
+  public addScale = (scale: number) => {
+    this.addVariableAndClass("scale", scale);
+  };
+
   public getStyle = () => {
     return {
       style: this.cssVariables as CSSProperties,
