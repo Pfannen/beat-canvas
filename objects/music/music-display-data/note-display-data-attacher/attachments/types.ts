@@ -1,4 +1,4 @@
-import { NoteDisplayData } from "@/types/music/draw-data";
+import { NoteDisplayData } from "@/types/music-rendering/draw-data/note";
 import { ReadonlyMusic } from "../../../readonly-music";
 
 export type DisplayDataAttachmentContext = {

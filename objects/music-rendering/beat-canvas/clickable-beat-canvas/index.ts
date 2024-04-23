@@ -6,8 +6,8 @@ import {
   BeatCanvasDrawOptions,
   MeasureComponentContextIterator,
   MeasureLinesOptions,
-  MeasureOptions,
   NoteData,
+  MeasureData,
 } from "@/types/music-rendering/canvas/beat-canvas";
 import {
   BeatCanvasPropDelegates,
@@ -128,7 +128,7 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
     this.intermDrawMeasureLines(options);
   }
 
-  drawMeasure(options: MeasureOptions): void {
+  drawMeasure(options: MeasureData): void {
     return this.intermDrawMeasures(options);
   }
 

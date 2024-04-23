@@ -1,4 +1,4 @@
-import { PageSizes } from "pdf-lib";
+import { PDFDocument, PageSizes, StandardFonts } from "pdf-lib";
 import { MeasureRenderer } from "../measure-renderer";
 import { Music } from "@/objects/music/readonly-music";
 import { Measure, Note } from "@/components/providers/music/types";
@@ -13,14 +13,14 @@ export const drawPDF = async () => {
   await pdfLibManager.initializeCanvas();
   const music = new Music();
   const measures: Measure[] = [];
-  measures.push({ notes: increasingDown });
-  measures.push({ notes: increasingUp });
-  measures.push({ notes: decreasingDown });
-  measures.push({ notes: decreasingUp });
-  measures.push({ notes: constantUp });
-  measures.push({ notes: constantDown });
-  measures.push({ notes: nonOrderedUp });
-  measures.push({ notes: nonOrderedDown });
+  // measures.push({ notes: increasingDown });
+  // measures.push({ notes: increasingUp });
+  // measures.push({ notes: decreasingDown });
+  // measures.push({ notes: decreasingUp });
+  // measures.push({ notes: constantUp });
+  // measures.push({ notes: constantDown });
+  // measures.push({ notes: nonOrderedUp });
+  // measures.push({ notes: nonOrderedDown });
   measures.push({ notes: [] });
   const pageParams = PageDimensionParams.genericSheetMusic();
   const dimensions = MusicLayout.getDimensions(pageParams);
@@ -36,7 +36,9 @@ export const drawPDF = async () => {
   renderer.render();
 
   return await pdfLibManager.getPDF()!.save();
+
   // const pdfDoc = await PDFDocument.create();
+  // const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
   // pdfDoc.addPage([400, 400]);
   // const page = pdfDoc.getPage(0);
   // page.drawCircle({
@@ -44,19 +46,11 @@ export const drawPDF = async () => {
   //   y: 200,
   //   size: 5,
   // });
-  // const scale = 80;
-
-  // page.drawSvgPath(normalized.path, {
-  //   scale,
-  //   x: 200 - 9.86,
-  //   y: 200,
-  //   color: rgb(1, 0, 0),
-  // });
-  // page.drawSvgPath(nonNormalized.path, {
+  // page.drawText("This is test text", {
   //   x: 200,
   //   y: 200,
-  //   scale: calculateScaleToHeight(nonNormalized.viewBox, scale),
-  //   color: rgb(0, 0, 0),
+  //   size: 24,
+  //   font: helveticaFont,
   // });
 
   // return pdfDoc.save();

@@ -1,10 +1,10 @@
 import {
   Measure,
   Note,
-  NoteDisplayData,
   NoteType,
   TimeSignature,
 } from "@/components/providers/music/types";
+import { NoteDisplayData } from "../music-rendering/draw-data/note";
 
 export type Rest = { x: number; type: NoteType };
 

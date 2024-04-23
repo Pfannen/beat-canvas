@@ -1,7 +1,7 @@
 import { UnitConverter } from "@/types";
 import { ClickableBeatCanvas } from "../clickable-beat-canvas";
 import {
-  MeasureOptions,
+  MeasureData,
   NoteData,
   RestOptions,
 } from "@/types/music-rendering/canvas/beat-canvas";
@@ -30,7 +30,7 @@ export class RelativeClickableBeatCanvas extends ClickableBeatCanvas {
     return super.drawNote(options);
   }
 
-  drawMeasure(options: MeasureOptions): void {
+  drawMeasure(options: MeasureData): void {
     options.topLeft.x = this.xValueConverter(options.topLeft.x);
     options.width = this.xValueConverter(options.width);
     super.drawMeasure(options);

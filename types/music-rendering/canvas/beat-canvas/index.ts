@@ -8,8 +8,9 @@ import {
   MeasureComponentIterator,
   MeasureComponentValues,
 } from "../..";
-import { NoteDisplayData } from "@/types/music/draw-data";
+import { NoteDisplayData } from "@/types/music-rendering/draw-data/note";
 import { NoteAnnotation } from "@/types/music/note-annotations";
+import { MeasureDisplayData } from "../../draw-data/measure";
 
 export type StemOptions = {
   bodyWidth: number;
@@ -27,7 +28,7 @@ export type BeamFlagOptions = {
 };
 
 export type MeasureLinesOptions = Pick<
-  MeasureOptions,
+  MeasureDrawData,
   | "topLeft"
   | "componentHeights"
   | "width"
@@ -69,7 +70,7 @@ export type NoteDrawData = {
 
 export type NoteData = NoteDrawData & { displayData: NoteDisplayData };
 
-export type MeasureOptions = {
+export type MeasureDrawData = {
   topLeft: Coordinate;
   width: number;
   height: number;
@@ -78,16 +79,14 @@ export type MeasureOptions = {
   bodyStartY: number;
   bodyHeight: number;
   componentHeights: MeasureComponentValues;
-  // lineCount: number;
-  // spaceCount: number;
-  // bodyStartPos: number;
-  // bodyEndPos: number;
   topComponentIsLine: boolean;
   measureIndex: number;
   componentIterator: MeasureComponentIterator;
-  timeSignature?: TimeSignature;
-  //keySignature?: KeySignature,
   attributes?: Partial<MeasureAttributes>;
+};
+
+export type MeasureData = MeasureDrawData & {
+  displayData?: MeasureDisplayData;
 };
 
 export type RestOptions = {
@@ -98,7 +97,7 @@ export type RestOptions = {
 
 export interface IBeatCanvas {
   drawNote(options: NoteData): any;
-  drawMeasure(options: MeasureOptions): any;
+  drawMeasure(options: MeasureData): any;
   drawRest(options: RestOptions): any;
 }
 

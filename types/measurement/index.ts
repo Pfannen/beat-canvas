@@ -1,4 +1,4 @@
-import { BeamData } from "../music/draw-data";
+import { BeamData } from "../music-rendering/draw-data/note";
 
 export type BeamedNoteInfo = { beams?: BeamData[]; stemOffset: number };
 

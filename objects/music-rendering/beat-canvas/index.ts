@@ -10,8 +10,8 @@ import {
   BeamFlagOptions,
   NoteData,
   RestOptions,
-  MeasureOptions,
   MeasureComponentContextIterator,
+  MeasureData,
 } from "@/types/music-rendering/canvas/beat-canvas";
 import { NoteDirection } from "@/lib/notes/types";
 import {
@@ -22,6 +22,7 @@ import { NoteAnnotationDrawerArgs } from "@/types/music-rendering/canvas/beat-ca
 import { getRestDrawer } from "./drawers/measure-rests";
 import { getFlagDrawer } from "./drawers/note-flags";
 import { beamDrawer } from "./drawers/note-beams";
+import { timeSignatureDrawer } from "./drawers/time-signature";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
@@ -263,7 +264,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     return endOfStem;
   }
 
-  drawMeasure(options: MeasureOptions): void {
+  drawMeasure(options: MeasureData): void {
     const { x, y } = options.topLeft;
     // const offsetY = y - options.containerPadding.top;
     this.drawMeasureLines({
@@ -285,6 +286,18 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
       height: -(options.bodyHeight - lineHeight / 2),
       width: endBarWidth,
     });
+
+    if (options.displayData) {
+      const { displayData } = options;
+      if (displayData.timeSignature) {
+        timeSignatureDrawer({
+          drawCanvas: this.canvas,
+          symbol: displayData.timeSignature.symbol,
+          positions: displayData.timeSignature.positions,
+          symbolHeight: options.componentHeights.space * 2.5,
+        });
+      }
+    }
   }
 
   drawRest(options: RestOptions): void {

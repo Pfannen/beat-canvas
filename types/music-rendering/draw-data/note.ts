@@ -1,5 +1,5 @@
 import { NoteDirection } from "@/lib/notes/types";
-import { NoteAnnotations } from "./note-annotations";
+import { NoteAnnotations } from "../../music/note-annotations";
 
 export type BeamData = { angle: number; length: number; number: number };
 

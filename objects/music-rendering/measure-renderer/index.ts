@@ -9,6 +9,7 @@ import {
   MeasureComponentIterator,
 } from "@/types/music-rendering";
 import { NoteAnnotation } from "@/types/music/note-annotations";
+import { getTimeSignatureDrawData } from "@/utils/music-rendering/draw-data/measure";
 
 export class MeasureRenderer {
   private bodyCt: number;
@@ -118,6 +119,10 @@ export class MeasureRenderer {
       const spaceHeight = spaceFraction * noteSpaceHeight;
       const measureComponentHeights = { line: lineHeight, space: spaceHeight };
       const beatCanvas = this.getBeatCanvasForPage(measureData.pageNumber);
+      const measureBottom = {
+        x: measureData.start.x,
+        y: measureData.start.y - padding.top - noteSpaceHeight,
+      };
       beatCanvas.drawMeasure({
         topLeft: { ...measureData.start },
         width: measureData.width,
@@ -130,11 +135,18 @@ export class MeasureRenderer {
         measureIndex,
         topComponentIsLine: this.measurements.topComponentIsLine(),
         componentIterator: this.measureComponentIterator,
+        displayData: {
+          timeSignature: getTimeSignatureDrawData(
+            0,
+            measureData.start.x,
+            measureData.width,
+            (yPos: number) =>
+              this.measurements.getYFractionOffset(yPos) * noteSpaceHeight +
+              measureBottom.y
+          ),
+        },
       });
-      const measureBottom = {
-        x: measureData.start.x,
-        y: measureData.start.y - padding.top - noteSpaceHeight,
-      };
+
       let noteIndex = 0;
       measure.components.forEach((component) => {
         if (component.type === "note") {

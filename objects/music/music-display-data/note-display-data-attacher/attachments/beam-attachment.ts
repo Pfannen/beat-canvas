@@ -2,7 +2,7 @@ import { DisplayDataAttacher } from "./types";
 import { NoteDirection } from "@/lib/notes/types";
 import { Measurements } from "@/objects/measurement/measurements";
 import { NoteBeamCalculator } from "@/objects/measurement/note-beam/note-beam-calculator";
-import { NoteDisplayData } from "@/types/music/draw-data";
+import { NoteDisplayData } from "@/types/music-rendering/draw-data/note";
 import { BeamableNoteData } from "@/types/measurement";
 import { getNoteBeamCount } from "@/utils/music";
 import { getDecimalPortion } from "@/utils";

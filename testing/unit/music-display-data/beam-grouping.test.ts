@@ -7,7 +7,7 @@ import {
 import { NoteDisplayDataAttcher } from "@/objects/music/music-display-data/note-display-data-attacher";
 import { Measurements } from "@/objects/measurement/measurements";
 import { BODY_CT } from "@/objects/measurement/constants";
-import { NoteDisplayData } from "@/types/music/draw-data";
+import { NoteDisplayData } from "@/types/music-rendering/draw-data/note";
 
 const aboveBelowCount = 5;
 

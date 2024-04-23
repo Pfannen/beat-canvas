@@ -7,10 +7,12 @@ export const numberNoteTypes = [1, 2, 4, 8, 16, 32, 64];
 
 export type Pitch = "A" | "B" | "C" | "D" | "E" | "F" | "G";
 
+export type Accidental = "b" | "#" | "n";
+
 export type PitchOctave = {
   pitch: Pitch;
   octave: number;
-  accidental?: "b" | "#";
+  accidental?: Exclude<Accidental, "n">;
 };
 
 export type MusicPart = {
