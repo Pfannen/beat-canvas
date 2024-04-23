@@ -1,4 +1,4 @@
-import { NoteBeamCalculator } from "../../../objects/measurement/note-beam-calculator";
+import { NoteBeamCalculator } from "../../../objects/measurement/note-beam/note-beam-calculator";
 import { Coordinate } from "../../../objects/measurement/types";
 
 const expectedHypotenuse = (sideOne: number, sideTwo: number) =>

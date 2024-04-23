@@ -1,4 +1,4 @@
-import { NoteBeamCalculator } from "../../../objects/measurement/note-beam-calculator";
+import { NoteBeamCalculator } from "../../../objects/measurement/note-beam/note-beam-calculator";
 import { Coordinate } from "../../../objects/measurement/types";
 
 //#region notesAreOrdered

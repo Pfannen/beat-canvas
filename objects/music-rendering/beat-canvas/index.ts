@@ -190,16 +190,19 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     });
     const { displayData } = options;
 
-    const flagDrawer = getFlagDrawer(options.type);
-    if (flagDrawer) {
-      flagDrawer({
-        drawCanvas: this.canvas,
-        endOfStem: stemData.end,
-        noteDirection: displayData.noteDirection,
-        stemHeight: stemData.originalHeight,
-        stemWidth: Math.abs(stemData.width),
-      });
+    if (!displayData.isBeamed) {
+      const flagDrawer = getFlagDrawer(options.type);
+      if (flagDrawer) {
+        flagDrawer({
+          drawCanvas: this.canvas,
+          endOfStem: stemData.end,
+          noteDirection: displayData.noteDirection,
+          stemHeight: stemData.originalHeight,
+          stemWidth: Math.abs(stemData.width),
+        });
+      }
     }
+
     return stemData.end;
   }
 
@@ -207,15 +210,15 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     const { displayData } = options;
     if (displayData.beamData) {
       const { beamData } = displayData;
-
+      const beam = beamData[0];
       const height =
         options.bodyHeight * this.drawOptions.note.flagHeightBodyFraction;
-      const width = beamData.length;
+      const width = beam.length;
       this.drawBeamFlag({
         corner: endOfStem,
         width,
         height: getAdjustedBeamHeight(height, displayData.noteDirection),
-        angle: -beamData.angle,
+        angle: -beam.angle,
       });
     }
   }

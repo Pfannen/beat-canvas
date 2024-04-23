@@ -19,10 +19,10 @@ export class RelativeClickableBeatCanvas extends ClickableBeatCanvas {
   drawNote(options: NoteData): { x: number; y: number } {
     const { displayData } = options;
     options.bodyCenter.x = this.xValueConverter(options.bodyCenter.x);
-    if (displayData.beamData?.length)
-      displayData.beamData.length = this.xValueConverter(
-        displayData.beamData.length
-      );
+    if (displayData.beamData) {
+      const beam = displayData.beamData[0];
+      beam.length = this.xValueConverter(beam.length);
+    }
     return super.drawNote(options);
   }
 

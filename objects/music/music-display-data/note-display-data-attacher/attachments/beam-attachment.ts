@@ -1,11 +1,11 @@
-import { BeamableNoteData } from "@/objects/measurement";
-import { isBeamable } from "../../../../../utils/music";
-import { getDecimalPortion } from "../../../../../utils";
 import { DisplayDataAttacher } from "./types";
 import { NoteDirection } from "@/lib/notes/types";
 import { Measurements } from "@/objects/measurement/measurements";
-import { NoteBeamCalculator } from "@/objects/measurement/note-beam-calculator";
+import { NoteBeamCalculator } from "@/objects/measurement/note-beam/note-beam-calculator";
 import { NoteDisplayData } from "@/types/music/draw-data";
+import { BeamableNoteData } from "@/types/measurement";
+import { getNoteBeamCount } from "@/utils/music";
+import { getDecimalPortion } from "@/utils";
 
 export type AttachBeamDataContext = {
   measurements: Measurements;
@@ -29,7 +29,8 @@ export const attachBeamData =
       const note = music.getNoteData(measureIndex, i);
       let processStack = true; // If the notes in the beam stack should be beamed (this will be toggled if necessary)
       let currNote: BeamableNoteData | undefined; // The note to be pushed onto the beam stack (if undefined, no note should be pushed)
-      if (isBeamable(note.type)) {
+      const beamCount = getNoteBeamCount(note.type);
+      if (beamCount) {
         const duration = music.getNoteDuration(measureIndex, i);
         const { start, end } = noteStartEndDivisions(
           note.x,
@@ -41,7 +42,7 @@ export const attachBeamData =
           currNote = {
             x: note.x,
             y: note.y,
-            type: note.type,
+            beamCount,
             duration,
             stemOffset: noteDisplayData[i].stemOffset,
           };
@@ -113,18 +114,15 @@ const processBeamStack = (
       beatsPerMeasure
     );
     const firstNote = noteData[startNoteIndex];
-    firstNote.beamData = { angle: data.beamAngle, length: data.beamLength }; //Give the first note in the stack the data
+    firstNote.beamData = [{ angle: data.beamAngle, length: data.beamLength }]; //Give the first note in the stack the data
     for (let i = 0; i < beamStack.length; i++) {
       const globalNoteIndex = i + startNoteIndex;
       const note = noteData[globalNoteIndex];
       if (data.noteOffsets[i]) {
         note.stemOffset = data.noteOffsets[i] + (note.stemOffset || 0); //Only attach this property if necessary
-        note.beamNeighbors = {
-          left: beamStack[i - 1]?.type,
-          right: beamStack[i + 1]?.type,
-        };
       }
       note.noteDirection = direction;
+      note.isBeamed = true;
     }
   }
 };
@@ -151,13 +149,13 @@ const getNoteBeamData = (
   measureWidth: number,
   beatsPerMeasure: number
 ) => {
-  const coordinates = notes.map(({ x, y, duration, stemOffset }) => {
+  const coordinates = notes.map(({ x, y, duration, stemOffset, beamCount }) => {
     const xPos =
       Measurements.getXFractionOffset(x, duration, beatsPerMeasure) *
       measureWidth;
     const yPos = measurements.getYFractionOffset(y) * measureHeight;
 
-    return { x: xPos, y: yPos + (stemOffset || 0) };
+    return { x: xPos, y: yPos + (stemOffset || 0), beamCount };
   });
   return NoteBeamCalculator.getPositionData(coordinates, direction, 25);
 };
