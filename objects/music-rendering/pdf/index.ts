@@ -86,6 +86,7 @@ const increasingDown: Note[] = [
   { x: 0.25, y: -1, type: "sixteenth" },
   { x: 0.5, y: 4, type: "sixteenth" },
   { x: 0.75, y: 6, type: "sixteenth" },
+  { x: 1.25, y: 3, type: "eighth" },
 ];
 
 const increasingUp: Note[] = [

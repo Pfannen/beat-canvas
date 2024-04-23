@@ -1,26 +1,27 @@
-import {
-  FlagDrawer,
-  FlagNote,
-} from "@/types/music-rendering/canvas/beat-canvas/drawers/note-flags";
+import { FlagDrawer } from "@/types/music-rendering/canvas/beat-canvas/drawers/note-flags";
 import { getFlagSVG } from "./flag-svgs";
 import { calculateScaleToHeight } from "@/utils/svg";
+import { NoteType } from "@/components/providers/music/types";
+import { SVGData } from "@/types/svg";
 
 const drawSVGFlag =
-  (type: FlagNote): FlagDrawer =>
+  (flagSVG: SVGData): FlagDrawer =>
   ({ drawCanvas, noteDirection, endOfStem, stemHeight }) => {
-    const svgData = getFlagSVG(type);
     const rotation = noteDirection === "up" ? 0 : 180;
-    const scale = calculateScaleToHeight(svgData.viewBox, stemHeight / 1.25);
+    const scale = calculateScaleToHeight(flagSVG.viewBox, stemHeight / 1.25);
     drawCanvas.drawSVG({
       x: endOfStem.x,
       y: endOfStem.y,
-      path: svgData.path,
-      viewBox: svgData.viewBox,
+      path: flagSVG.path,
+      viewBox: flagSVG.viewBox,
       scale,
       drawOptions: { degreeRotation: rotation },
     });
   };
 
-export const getFlagDrawer = (type: FlagNote) => {
-  return drawSVGFlag(type);
+export const getFlagDrawer = (type: NoteType) => {
+  const flagSVG = getFlagSVG(type);
+  if (flagSVG) {
+    return drawSVGFlag(flagSVG);
+  }
 };

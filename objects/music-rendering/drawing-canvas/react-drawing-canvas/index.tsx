@@ -107,7 +107,11 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     let x = options.x;
     let y = options.y;
     if (!options.center) {
-      y -= height * scale;
+      if (options.drawOptions?.degreeRotation) {
+        y += height * scale;
+      } else {
+        y -= height * scale;
+      }
     }
 
     //Height is passed for the width because it seems that if width >= height, the scaling factor works correctly

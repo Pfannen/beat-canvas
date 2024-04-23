@@ -16,19 +16,13 @@ export class RelativeClickableBeatCanvas extends ClickableBeatCanvas {
     super(...args);
   }
 
-  // protected drawNoteBody(options: NoteData): void {
-  //     this.canvas.drawEllipse({
-  //         center: options.bodyCenter,
-  //         aspectRatio: this.drawOptions.note.noteBodyAspectRatio,
-  //         diameter: options.bodyHeight,
-  //         drawOptions: { degreeRotation: this.drawOptions.note.noteBodyAngle },
-  //       });
-  //   }
-
   drawNote(options: NoteData): { x: number; y: number } {
+    const { displayData } = options;
     options.bodyCenter.x = this.xValueConverter(options.bodyCenter.x);
-    if (options.beamData?.length)
-      options.beamData.length = this.xValueConverter(options.beamData.length);
+    if (displayData.beamData?.length)
+      displayData.beamData.length = this.xValueConverter(
+        displayData.beamData.length
+      );
     return super.drawNote(options);
   }
 

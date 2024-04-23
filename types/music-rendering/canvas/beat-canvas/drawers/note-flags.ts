@@ -2,6 +2,7 @@ import { NoteType } from "@/components/providers/music/types";
 import { IDrawingCanvas } from "../../drawing-canvas";
 import { NoteDirection } from "@/lib/notes/types";
 import { Coordinate } from "@/objects/measurement/types";
+import { SVGData } from "@/types/svg";
 
 export type FlagNote = Exclude<NoteType, "whole" | "half" | "quarter">;
 

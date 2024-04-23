@@ -8,6 +8,7 @@ import {
   BeatCanvasDel,
   MeasureComponentIterator,
 } from "@/types/music-rendering";
+import { NoteAnnotation } from "@/types/music/note-annotations";
 
 export class MeasureRenderer {
   private bodyCt: number;
@@ -155,15 +156,14 @@ export class MeasureRenderer {
             measureIndex,
             noteIndex
           );
-          let annotations;
+          let annotations: NoteAnnotation[] | undefined;
           if (noteAnnotations) {
-            annotations = Object.keys(noteAnnotations);
+            annotations = Object.keys(noteAnnotations) as NoteAnnotation[];
           }
           beatCanvas.drawNote({
-            ...renderData,
+            displayData: renderData,
             bodyCenter: center,
             type,
-            noteDirection: renderData.noteDirection,
             bodyHeight: spaceHeight,
             noteIndex,
             measureIndex,

@@ -67,7 +67,7 @@ export type NoteDrawData = {
   annotations?: NoteAnnotation[];
 };
 
-export type NoteData = NoteDrawData & NoteDisplayData;
+export type NoteData = NoteDrawData & { displayData: NoteDisplayData };
 
 export type MeasureOptions = {
   topLeft: Coordinate;

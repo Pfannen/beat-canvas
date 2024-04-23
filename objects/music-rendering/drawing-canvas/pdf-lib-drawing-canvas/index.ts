@@ -54,7 +54,7 @@ export class PDFLibDrawingCanvas {
       if (options.center) {
         const { x: centerX, y: centerY } = centerToTopLeft(x, y, scale);
         const svgCenter = getSVGCenter(options.viewBox, scale);
-        x = centerX + svgCenter.x;
+        x = centerX - svgCenter.x;
         y = centerY + svgCenter.y;
       }
       page.drawSvgPath(options.path, {
