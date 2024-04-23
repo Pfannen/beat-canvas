@@ -1,4 +1,4 @@
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 import { SVGData } from "@/types/svg";
 
 export type DrawOptions<T> = {

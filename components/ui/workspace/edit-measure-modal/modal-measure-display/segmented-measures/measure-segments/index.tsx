@@ -11,7 +11,7 @@ import {
   MeasureComponentValues,
 } from "@/types/music-rendering";
 import SegmentPane from "../../segment-pane";
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 
 type MeasureSegmentsProps = {
   measure: Measure;

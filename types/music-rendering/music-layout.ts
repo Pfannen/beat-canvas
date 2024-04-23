@@ -1,4 +1,4 @@
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 import { BlockDirection, Margins, PageDimensions } from "./pdf";
 
 export type MusicDimensionParams = {

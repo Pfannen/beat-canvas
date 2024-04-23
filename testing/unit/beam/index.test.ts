@@ -1,5 +1,5 @@
 import { NoteBeamCalculator } from "../../../objects/measurement/note-beam/note-beam-calculator";
-import { Coordinate } from "../../../objects/measurement/types";
+import { Coordinate } from "@/types";
 
 const expectedHypotenuse = (sideOne: number, sideTwo: number) =>
   Math.sqrt(Math.pow(sideOne, 2) + Math.pow(sideTwo, 2));

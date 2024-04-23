@@ -1,5 +1,5 @@
 import { NoteBeamCalculator } from "../../../objects/measurement/note-beam/note-beam-calculator";
-import { Coordinate } from "../../../objects/measurement/types";
+import { Coordinate } from "@/types";
 
 //#region notesAreOrdered
 test("notesAreOrdered - Increasing notes", () => {

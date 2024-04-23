@@ -1,4 +1,4 @@
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 import { DeepPartial } from "@/types";
 import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
 import {
@@ -6,7 +6,6 @@ import {
   BeatCanvasMeasureDrawOptions,
   IBeatCanvas,
   BeatCanvasDrawOptions,
-  StemOptions,
   MeasureLinesOptions,
   BeamFlagOptions,
   NoteData,

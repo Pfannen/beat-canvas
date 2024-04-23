@@ -1,4 +1,4 @@
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 import { MeasureSectionMetadata } from "@/types/music";
 
 export type SectionData<T> = { width: number; metadata: T };

@@ -1,4 +1,4 @@
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 import { MeasureDrawData } from "@/types/music-rendering";
 import {
   CoordinateSections,

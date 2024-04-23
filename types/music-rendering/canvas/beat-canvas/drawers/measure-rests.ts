@@ -1,5 +1,5 @@
 import { IDrawingCanvas } from "../../drawing-canvas";
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 import { MeasureComponentValues } from "@/types/music-rendering";
 import { NoteType } from "@/components/providers/music/types";
 

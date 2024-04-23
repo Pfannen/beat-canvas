@@ -6,7 +6,7 @@ import {
   MeasureComponentIterator,
   MeasureComponentValues,
 } from "@/types/music-rendering";
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 import { PositionData } from "@/types/ui/music-modal";
 
 type SegmentedMeasuresProps = {

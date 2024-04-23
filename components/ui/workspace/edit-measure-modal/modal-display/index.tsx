@@ -4,7 +4,7 @@ import { Selection } from "@/components/hooks/useSelection";
 import ModalMeasureDispay from "../modal-measure-display";
 import { ABOVE_BELOW_CT } from "@/objects/measurement/constants";
 import { PositionData } from "@/types/ui/music-modal";
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 import AssignerButtonRepo from "@/components/ui/reusable/assigner-components/assigner-button-repo";
 import { stacklessNotePlacementValidator } from "@/utils/music/note-placement";
 import { useEditMeasures } from "@/components/hooks/useEditMeasures";

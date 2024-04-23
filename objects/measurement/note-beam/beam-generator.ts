@@ -1,6 +1,6 @@
 import { TrigHelpers } from "@/utils/trig";
-import { Coordinate } from "../types";
 import { BeamNote } from "./note-beam-calculator";
+import { Coordinate } from "@/types";
 
 type AddBeamDataDel = (
   angle: number,

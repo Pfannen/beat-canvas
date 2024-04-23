@@ -1,5 +1,5 @@
 import classes from "./index.module.css";
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 import { UnitMeasurement } from "@/types";
 import { DimensionDirections } from "@/types/music-rendering/canvas/drawing-canvas/html";
 import { CSSProperties } from "react";

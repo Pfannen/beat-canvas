@@ -8,7 +8,7 @@ import { Measurements } from "@/objects/measurement/measurements";
 import { BODY_CT } from "@/objects/measurement/constants";
 import MusicCanvas from "@/components/ui/reusable/music-canvas";
 import { PositionData } from "@/types/ui/music-modal";
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 
 const lineToSpaceRatio = 1.5;
 

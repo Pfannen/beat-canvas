@@ -1,5 +1,5 @@
 import { UnitConverter } from "@/types";
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 import { ComponentProps } from "@/types/polymorphic";
 
 export type PropDelegate<T> = (data: T) => ComponentProps<"div">;

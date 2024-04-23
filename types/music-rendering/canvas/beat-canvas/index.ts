@@ -1,5 +1,5 @@
 import { NoteType, TimeSignature } from "@/components/providers/music/types";
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 import { MeasureAttributes } from "@/types/music";
 import { BlockDirection } from "../../pdf";
 import { NoteDirection } from "@/lib/notes/types";

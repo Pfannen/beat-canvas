@@ -1,4 +1,4 @@
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 import { MeasureRenderData } from "../music/render-data";
 import { TimeSignature } from "@/components/providers/music/types";
 import { IBeatCanvas } from "./canvas/beat-canvas";

@@ -1,4 +1,4 @@
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 
 export class TrigHelpers {
   static radiansToDegrees = (radians: number) => radians * (180 / Math.PI);

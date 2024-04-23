@@ -1,4 +1,4 @@
-import { Coordinate } from "@/objects/measurement/types";
+import { Coordinate } from "@/types";
 import { UnitMeasurement } from "@/types";
 import { StyleCreator } from "./style-creator";
 import { DimensionDirections } from "@/types/music-rendering/canvas/drawing-canvas/html";
