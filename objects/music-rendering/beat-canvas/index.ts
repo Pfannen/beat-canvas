@@ -237,20 +237,20 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
   drawNote(options: NoteData) {
     this.drawNoteBody(options);
     const endOfStem = this.drawNoteStem(options);
-    // if (options.type === "sixteenth") {
-    //   const stemHeight =
-    //     options.bodyHeight * this.drawOptions.note.stemHeightBodyFraction;
-    //   const width = this.getNoteBodyWidth(options.bodyHeight);
-    //   const stemWidth = this.getStemWidth(width);
-    //   const flagDrawer = getFlagDrawer("sixteenth");
-    //   flagDrawer({
-    //     drawCanvas: this.canvas,
-    //     endOfStem,
-    //     noteDirection: options.noteDirection,
-    //     stemHeight,
-    //     stemWidth,
-    //   });
-    // }
+    if (options.type === "sixteenth") {
+      const stemHeight =
+        options.bodyHeight * this.drawOptions.note.stemHeightBodyFraction;
+      const width = this.getNoteBodyWidth(options.bodyHeight);
+      const stemWidth = this.getStemWidth(width);
+      const flagDrawer = getFlagDrawer("sixteenth");
+      flagDrawer({
+        drawCanvas: this.canvas,
+        endOfStem,
+        noteDirection: options.noteDirection,
+        stemHeight,
+        stemWidth,
+      });
+    }
     this.drawBeamData(options, endOfStem);
     this.drawNoteAnnotations(options);
     return endOfStem;

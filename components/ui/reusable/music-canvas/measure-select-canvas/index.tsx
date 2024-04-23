@@ -36,7 +36,7 @@ const MeasureSelectCanvas: FunctionComponent<MeasureSelectCanvasProps> = ({
       measures={measures}
       measurements={measurements}
       aspectRatio={aspectRatio}
-      dimensions={MusicLayout.getMarginlessSheetMusic(aspectRatio)}
+      dimensions={MusicLayout.getMarginlessSheetMusic(aspectRatio, 2, 1)}
       propDelegates={{ getMeasureProps }}
     />
   );

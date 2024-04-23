@@ -16,7 +16,7 @@ import {
 } from "@/types/music-rendering/canvas/drawing-canvas/html";
 import { concatClassNames } from "@/utils/css";
 import { StyleCreator } from "./style-creator";
-import { getSVGHeight } from "@/utils/svg";
+import { getSVGHeight, getSVGWidth } from "@/utils/svg";
 
 export class ReactDrawingCanvas implements IDrawingCanvas {
   private unit: UnitMeasurement;
@@ -102,14 +102,18 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
 
   drawSVG(options: HTMLSVGOptions): void {
     const scale = options.scale || 1;
+    const width = options.width || getSVGWidth(options.viewBox);
     const height = getSVGHeight(options.viewBox);
     let x = options.x;
     let y = options.y;
+    if (!options.center) {
+      y -= height * scale;
+    }
 
     //Height is passed for the width because it seems that if width >= height, the scaling factor works correctly
     const styleCreator = new CoordinateStyleCreator(
       { x, y },
-      height,
+      width,
       height,
       this.unit
     );
