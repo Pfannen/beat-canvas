@@ -33,12 +33,24 @@ export class BeamGenerator {
   private commitBeams(noteIndex: number, beamCount = this.currentBeams.length) {
     const { x, y } = this.notes[noteIndex];
     for (let i = 0; i < beamCount; i++) {
+      let beamLength;
       const startCoordinate = this.currentBeams.pop()!;
-      const beamLength = TrigHelpers.calculatePointHypotenuse(
-        startCoordinate,
-        { x, y },
-        this.beamAngle
-      );
+      if (startCoordinate.x === x && startCoordinate.y === y) {
+        const { x, y } = this.notes[noteIndex - 1];
+        beamLength =
+          TrigHelpers.calculatePointHypotenuse(
+            { x, y },
+            startCoordinate,
+            this.beamAngle
+          ) / 2;
+      } else {
+        beamLength = TrigHelpers.calculatePointHypotenuse(
+          startCoordinate,
+          { x, y },
+          this.beamAngle
+        );
+      }
+
       this.addBeamData(this.beamAngle, beamLength, beamCount - i, noteIndex);
     }
   }

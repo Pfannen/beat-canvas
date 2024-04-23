@@ -25,7 +25,8 @@ const drawDotted: NoteAnnotationDrawer = ({
   const annotationOffset =
     noteDrawOptions.annotationDistanceBodyFraction * noteData.bodyHeight;
   let { x, y } = noteData.bodyCenter;
-  if (noteData.noteDirection === "down") {
+  const { displayData } = noteData;
+  if (displayData.noteDirection === "down") {
     x += annotationOffset + offsets.right;
     offsets.right += annotationOffset;
   } else {
@@ -69,7 +70,8 @@ const drawAccent: NoteAnnotationDrawer = ({
   const annotationOffset =
     noteDrawOptions.annotationDistanceBodyFraction * noteData.bodyHeight;
   let { x, y } = noteData.bodyCenter;
-  if (noteData.noteDirection === "down") {
+  const { displayData } = noteData;
+  if (displayData.noteDirection === "down") {
     y += annotationOffset + offsets.up;
     offsets.up += annotationOffset;
   } else {

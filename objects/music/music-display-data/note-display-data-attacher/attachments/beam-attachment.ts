@@ -120,9 +120,8 @@ const processBeamStack = (
 
       const currentStemOffset = note.stemOffset || 0;
       note.stemOffset = currentStemOffset + noteBeamData.stemOffset;
-      note.beamData = noteBeamData.beams;
+      note.beamInfo = { beams: noteBeamData.beams, index: i };
       note.noteDirection = direction;
-      note.isBeamed = true;
     }
   }
 };

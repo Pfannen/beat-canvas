@@ -21,6 +21,7 @@ import {
 import { NoteAnnotationDrawerArgs } from "@/types/music-rendering/canvas/beat-canvas/drawers/note-annotations";
 import { getRestDrawer } from "./drawers/measure-rests";
 import { getFlagDrawer } from "./drawers/note-flags";
+import { beamDrawer } from "./drawers/note-beams";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
@@ -189,7 +190,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     });
     const { displayData } = options;
 
-    if (!displayData.isBeamed) {
+    if (!displayData.beamInfo) {
       const flagDrawer = getFlagDrawer(options.type);
       if (flagDrawer) {
         flagDrawer({
@@ -200,6 +201,17 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
           stemWidth: Math.abs(stemData.width),
         });
       }
+    } else {
+      const beamHeight =
+        options.bodyHeight * this.drawOptions.note.flagHeightBodyFraction;
+      beamDrawer({
+        drawCanvas: this.canvas,
+        endOfStem: stemData.end,
+        noteDirection: displayData.noteDirection,
+        beamData: displayData.beamInfo,
+        beamHeight,
+        beamGap: beamHeight,
+      });
     }
 
     return stemData.end;
@@ -207,18 +219,20 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
 
   protected drawBeamData(options: NoteData, endOfStem: Coordinate) {
     const { displayData } = options;
-    if (displayData.beamData) {
-      const { beamData } = displayData;
-      const beam = beamData[0];
-      const height =
-        options.bodyHeight * this.drawOptions.note.flagHeightBodyFraction;
-      const width = beam.length;
-      this.drawBeamFlag({
-        corner: endOfStem,
-        width,
-        height: getAdjustedBeamHeight(height, displayData.noteDirection),
-        angle: -beam.angle,
-      });
+    if (displayData.beamInfo) {
+      const { beamInfo } = displayData;
+      if (beamInfo.beams) {
+        const beam = beamInfo.beams[0];
+        const height =
+          options.bodyHeight * this.drawOptions.note.flagHeightBodyFraction;
+        const width = beam.length;
+        this.drawBeamFlag({
+          corner: endOfStem,
+          width,
+          height: getAdjustedBeamHeight(height, displayData.noteDirection),
+          angle: -beam.angle,
+        });
+      }
     }
   }
 
@@ -244,7 +258,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
   drawNote(options: NoteData) {
     this.drawNoteBody(options);
     const endOfStem = this.drawNoteStem(options);
-    this.drawBeamData(options, endOfStem);
+    // this.drawBeamData(options, endOfStem);
     this.drawNoteAnnotations(options);
     return endOfStem;
   }
