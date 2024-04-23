@@ -105,7 +105,7 @@ const processBeamStack = (
       if (noteData[i + startNoteIndex].noteDirection === "up") upCount++;
     }
     const direction = beamStack.length / 2 < upCount ? "up" : "down"; //All notes should be the same direction so this will make the direction whatever the most common direction was
-    const data = getNoteBeamData(
+    const beamData = getNoteBeamData(
       beamStack,
       direction,
       measurements,
@@ -113,14 +113,14 @@ const processBeamStack = (
       measureWidth,
       beatsPerMeasure
     );
-    const firstNote = noteData[startNoteIndex];
-    firstNote.beamData = [{ angle: data.beamAngle, length: data.beamLength }]; //Give the first note in the stack the data
     for (let i = 0; i < beamStack.length; i++) {
       const globalNoteIndex = i + startNoteIndex;
       const note = noteData[globalNoteIndex];
-      if (data.noteOffsets[i]) {
-        note.stemOffset = data.noteOffsets[i] + (note.stemOffset || 0); //Only attach this property if necessary
-      }
+      const noteBeamData = beamData[i];
+
+      const currentStemOffset = note.stemOffset || 0;
+      note.stemOffset = currentStemOffset + noteBeamData.stemOffset;
+      note.beamData = noteBeamData.beams;
       note.noteDirection = direction;
       note.isBeamed = true;
     }

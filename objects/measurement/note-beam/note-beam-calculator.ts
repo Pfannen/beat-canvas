@@ -1,5 +1,6 @@
 import { NoteDirection } from "@/lib/notes/types";
-import { BeamData, Coordinate } from "../types";
+import { Coordinate } from "@/types";
+import { BeamedNoteInfo } from "@/types/measurement";
 import { TrigHelpers } from "@/utils/trig";
 
 export type BeamNote = Coordinate & { beamCount: number };
@@ -10,7 +11,7 @@ export class NoteBeamCalculator {
     noteData: BeamNote[],
     direction: NoteDirection,
     angleTolerance: number
-  ): BeamData {
+  ): BeamedNoteInfo[] {
     if (noteData.length < 2) {
       throw new Error("Cannot beam a single note");
     }
@@ -43,28 +44,26 @@ export class NoteBeamCalculator {
       );
     }
 
-    const noteOffsets = new Array(noteData.length);
-    noteOffsets[0] = 0;
-    noteOffsets[noteOffsets.length - 1] = 0;
+    const noteInfo = getBeamedNoteInfoArray(noteData.length);
     const isConflict = getOffsetConflictChecker(direction);
     const intersect = TrigHelpers.getYIntersection(angle, startNote, endNote);
     const offset = calculateOffset(intersect, endNote.y);
     if (isConflict(offset)) {
-      noteOffsets[0] = Math.abs(offset);
+      noteInfo[0].stemOffset = Math.abs(offset);
     } else {
-      noteOffsets[noteOffsets.length - 1] = Math.abs(offset);
+      noteInfo[noteInfo.length - 1].stemOffset = Math.abs(offset);
     }
 
     const point = { ...startNote };
     if (direction === "up") {
-      point.y += noteOffsets[0];
+      point.y += noteInfo[0].stemOffset;
     } else {
-      point.y -= noteOffsets[0];
+      point.y -= noteInfo[0].stemOffset;
     }
     let maxConflictValue = 0;
     const intersectFn = TrigHelpers.getYIntersection.bind(null, angle, point);
 
-    for (let i = 1; i < noteOffsets.length - 1; i++) {
+    for (let i = 1; i < noteInfo.length - 1; i++) {
       const note = noteData[i];
       const intersection = intersectFn(note);
       const offset = calculateOffset(intersection, note.y);
@@ -72,27 +71,24 @@ export class NoteBeamCalculator {
       if (isConflict(offset)) {
         maxConflictValue = Math.max(maxConflictValue, absoluteOffset);
       }
-      noteOffsets[i] = absoluteOffset;
+      noteInfo[i].stemOffset = absoluteOffset;
     }
 
     if (maxConflictValue) {
-      noteOffsets[0] += maxConflictValue;
-      noteOffsets[noteOffsets.length - 1] += maxConflictValue;
-      for (let i = 1; i < noteOffsets.length - 1; i++) {
-        const difference = maxConflictValue - noteOffsets[i];
+      noteInfo[0].stemOffset += maxConflictValue;
+      noteInfo[noteInfo.length - 1].stemOffset += maxConflictValue;
+      for (let i = 1; i < noteInfo.length - 1; i++) {
+        const difference = maxConflictValue - noteInfo[i].stemOffset;
         if (difference < 0) {
-          noteOffsets[i] += maxConflictValue;
+          noteInfo[i].stemOffset += maxConflictValue;
         } else {
-          noteOffsets[i] = difference;
+          noteInfo[i].stemOffset = difference;
         }
       }
     }
+    noteInfo[0].beams = [{ angle, length }];
 
-    return {
-      beamAngle: angle,
-      beamLength: length,
-      noteOffsets,
-    };
+    return noteInfo;
   }
 
   static notesAreOrdered(noteCoordinates: Coordinate[]) {
@@ -121,3 +117,15 @@ const getOffsetConflictChecker = (direction: NoteDirection) => {
 };
 
 const calculateOffset = (intersect: number, y: number) => intersect - y;
+
+const getEmptyBeamedNoteInfo = (): BeamedNoteInfo => {
+  return { stemOffset: 0 };
+};
+
+const getBeamedNoteInfoArray = (noteCount: number): BeamedNoteInfo[] => {
+  const array: BeamedNoteInfo[] = [];
+  for (let i = 0; i < noteCount; i++) {
+    array.push(getEmptyBeamedNoteInfo());
+  }
+  return array;
+};

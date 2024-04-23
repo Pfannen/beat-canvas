@@ -1,8 +1,6 @@
-export type BeamData = {
-  beamAngle: number;
-  beamLength: number;
-  noteOffsets: number[];
-};
+import { BeamData } from "../music/draw-data";
+
+export type BeamedNoteInfo = { beams?: BeamData[]; stemOffset: number };
 
 export type BeamableNoteData = {
   x: number;

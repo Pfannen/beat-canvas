@@ -20,6 +20,7 @@ export class RelativeClickableBeatCanvas extends ClickableBeatCanvas {
     const { displayData } = options;
     options.bodyCenter.x = this.xValueConverter(options.bodyCenter.x);
     if (displayData.beamData) {
+      console.log(displayData);
       const beam = displayData.beamData[0];
       beam.length = this.xValueConverter(beam.length);
     }
