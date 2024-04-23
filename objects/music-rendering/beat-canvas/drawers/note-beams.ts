@@ -1,4 +1,5 @@
 import { NoteDirection } from "@/lib/notes/types";
+import { Coordinate } from "@/types";
 import { NoteBeamDrawer } from "@/types/music-rendering/canvas/beat-canvas/drawers/note-beams";
 
 const calculateBeamOffset = (
@@ -19,26 +20,62 @@ export const beamDrawer: NoteBeamDrawer = ({
   beamGap,
 }) => {
   beamData.beams?.forEach((beam) => {
-    let drawHeight = beamHeight;
-    if (beam.number === 0 || beamData.index === 0) {
-      drawHeight = getAdjustedBeamHeight(beamHeight, noteDirection);
-    }
-    const offset = calculateBeamOffset(beamHeight, beamGap, beam.number);
-    const y =
-      noteDirection === "up" ? endOfStem.y - offset : endOfStem.y + offset;
-    const angle = beamData.index !== 0 ? -beam.angle + 180 : -beam.angle;
+    const { angle, height } = adjustBeamData(
+      beamHeight,
+      noteDirection,
+      beam.angle,
+      beam.number
+    );
+    const y = adjustYValue(
+      endOfStem.y,
+      noteDirection,
+      beamHeight,
+      beamGap,
+      beam.number
+    );
     drawCanvas.drawRectangle({
       corner: { x: endOfStem.x, y },
-      height: drawHeight,
+      height: height,
       width: beam.length,
       drawOptions: { degreeRotation: angle },
     });
   });
 };
 
-const getAdjustedBeamHeight = (height: number, direction: NoteDirection) => {
-  if (direction === "up") {
-    return height;
-  }
-  return -height;
+const adjustYValue = (
+  y: number,
+  dir: NoteDirection,
+  beamHeight: number,
+  beamGap: number,
+  beamNumber: number
+) => {
+  const offset = calculateBeamOffset(beamHeight, beamGap, beamNumber);
+  return dir === "up" ? y - offset : y + offset;
 };
+
+const adjustBeamData = (
+  height: number,
+  direction: NoteDirection,
+  angle: number,
+  beamNumber: number
+) => {
+  angle *= -1;
+  if (beamNumber !== 0) {
+    angle += 180;
+    if (direction === "up") {
+      height = -height;
+    }
+  } else {
+    if (direction === "down") {
+      height = -height;
+    }
+  }
+  return { height, angle };
+};
+
+const adjustStartPos = (
+  direction: NoteDirection,
+  angle: number,
+  start: Coordinate,
+  beamNumber: number
+) => {};
