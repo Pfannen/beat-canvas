@@ -1,11 +1,23 @@
 import { ViewBox } from "@/types/svg";
 
-export const getSVGX = (viewBox: ViewBox) => viewBox[0];
-export const getSVGY = (viewBox: ViewBox) => viewBox[1];
-export const getSVGWidth = (viewBox: ViewBox) => viewBox[2];
-export const getSVGHeight = (viewBox: ViewBox) => viewBox[3];
+const X_INDEX = 0;
+const Y_INDEX = 1;
+const WIDTH_INDEX = 2;
+const HEIGHT_INDEX = 3;
+
+export const getSVGX = (viewBox: ViewBox) => viewBox[X_INDEX];
+export const getSVGY = (viewBox: ViewBox) => viewBox[Y_INDEX];
+export const getSVGWidth = (viewBox: ViewBox) => viewBox[WIDTH_INDEX];
+export const getSVGHeight = (viewBox: ViewBox) => viewBox[HEIGHT_INDEX];
 export const getSVGAspectRatio = (viewBox: ViewBox) =>
   getSVGWidth(viewBox) / getSVGHeight(viewBox);
+export const setSVGWidth = (viewBox: ViewBox, width: number) => {
+  viewBox[WIDTH_INDEX] = width;
+};
+
+export const setSVGHeight = (viewBox: ViewBox, height: number) => {
+  viewBox[HEIGHT_INDEX] = height;
+};
 
 export const getSVGCenter = (viewBox: ViewBox, scale = 1) => {
   const x = getSVGX(viewBox) * scale;

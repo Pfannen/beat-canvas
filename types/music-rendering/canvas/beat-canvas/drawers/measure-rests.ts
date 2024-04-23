@@ -17,3 +17,5 @@ export type RestDrawer = (args: RestDrawerArgs) => void;
 export type RestDrawers = {
   [K in NoteType]: RestDrawer;
 };
+
+export type RestDrawerDel = (type: NoteType) => RestDrawer;

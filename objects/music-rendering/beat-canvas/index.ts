@@ -14,13 +14,13 @@ import {
   MeasureOptions,
   MeasureComponentContextIterator,
 } from "@/types/music-rendering/canvas/beat-canvas";
-import { NoteType } from "@/components/providers/music/types";
 import { NoteDirection } from "@/lib/notes/types";
 import {
   annotationDrawers,
   createOffsetsObject,
 } from "./drawers/note-annotations";
 import { NoteAnnotationDrawerArgs } from "@/types/music-rendering/canvas/beat-canvas/drawers/note-annotations";
+import { RestDrawerDel } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-rests";
 import { getRestDrawer } from "./drawers/measure-rests";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
@@ -50,6 +50,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
   implements IBeatCanvas
 {
   protected canvas: T;
+
   protected drawOptions: BeatCanvasDrawOptions;
   constructor(canvas: T, drawOptions?: DeepPartial<BeatCanvasDrawOptions>) {
     this.canvas = canvas;
