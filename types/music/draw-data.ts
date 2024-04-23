@@ -1,7 +1,7 @@
 import { NoteDirection } from "@/lib/notes/types";
 import { NoteAnnotations } from "./note-annotations";
 
-export type BeamData = { angle: number; length: number };
+export type BeamData = { angle: number; length: number; number: number };
 
 export type NoteAttachmentData = {
   beamData: BeamData[];

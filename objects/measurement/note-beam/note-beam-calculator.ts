@@ -2,6 +2,7 @@ import { NoteDirection } from "@/lib/notes/types";
 import { Coordinate } from "@/types";
 import { BeamedNoteInfo } from "@/types/measurement";
 import { TrigHelpers } from "@/utils/trig";
+import { BeamGenerator } from "./beam-generator";
 
 export type BeamNote = Coordinate & { beamCount: number };
 
@@ -86,7 +87,22 @@ export class NoteBeamCalculator {
         }
       }
     }
-    noteInfo[0].beams = [{ angle, length }];
+    const addBeamToNote = (
+      angle: number,
+      length: number,
+      beamNumber: number,
+      index: number
+    ) => {
+      let beams = noteInfo[index].beams;
+      if (!beams) {
+        noteInfo[index].beams = [];
+        beams = noteInfo[index].beams;
+      }
+      beams!.push({ angle, length, number: beamNumber });
+    };
+    noteInfo[0].beams = [{ angle, length, number: 0 }];
+    const beamGenerator = new BeamGenerator(noteData, angle, addBeamToNote);
+    beamGenerator.getExtraBeams();
 
     return noteInfo;
   }

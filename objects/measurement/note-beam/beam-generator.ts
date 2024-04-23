@@ -5,6 +5,7 @@ import { Coordinate } from "@/types";
 type AddBeamDataDel = (
   angle: number,
   length: number,
+  beamNumber: number,
   noteIndex: number
 ) => void;
 
@@ -38,20 +39,21 @@ export class BeamGenerator {
         { x, y },
         this.beamAngle
       );
-      this.addBeamData(this.beamAngle, beamLength, noteIndex);
+      this.addBeamData(this.beamAngle, beamLength, beamCount - i, noteIndex);
     }
   }
 
   public getExtraBeams() {
-    let currentBeamCount = this.notes[0].beamCount;
+    let currentBeamCount = 0;
     this.notes.forEach((note, i) => {
-      const beamCount = note.beamCount;
+      const beamCount = note.beamCount - 1;
       const beamDifference = beamCount - currentBeamCount;
       if (beamDifference > 0) {
         this.addBeams(i, beamDifference);
       } else if (beamDifference < 0) {
         this.commitBeams(i - 1, beamDifference * -1);
       }
+      currentBeamCount = beamCount;
     });
     this.commitBeams(this.notes.length - 1); //Commit the rest of the beams (if any)
   }
