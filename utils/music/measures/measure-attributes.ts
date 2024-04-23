@@ -3,8 +3,10 @@ import {
 	DynamicMeasureAttributes,
 	MeasureAttributes,
 	PartialMeasureAttributes,
+	RequiredMeasureAttributes,
 	StaticMeasureAttributes,
 	TemporalMeasureAttributes,
+	requiredMeasureAttributesKeys,
 	staticMeasureAttributesKeys,
 } from '@/types/music';
 import {
@@ -106,6 +108,31 @@ export const getMeasureAttributes = (
 	}
 
 	return measureAttributes;
+};
+
+export const getRequiredMeasureAttributes = (
+	measures: Measure[],
+	targetMeasureIndex: number,
+	curAttr?: MeasureAttributes,
+	xEnd?: number
+) => {
+	const attributes = getMeasureAttributes(
+		measures,
+		targetMeasureIndex,
+		curAttr,
+		xEnd
+	);
+
+	if (!attributes) return null;
+
+	const keys = Object.keys(attributes) as (keyof MeasureAttributes)[];
+	for (const key of keys) {
+		if (!requiredMeasureAttributesKeys.has(key)) {
+			delete attributes[key];
+		}
+	}
+
+	return attributes as RequiredMeasureAttributes;
 };
 
 export const getPartialMeasureAttributes = (measure: Measure, x = 0) => {

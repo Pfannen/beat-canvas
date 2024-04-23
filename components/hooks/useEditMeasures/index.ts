@@ -1,166 +1,156 @@
-import { useMusic } from "@/components/providers/music";
-import { Measure } from "@/components/providers/music/types";
-import { AssignerExecuter, SelectionData } from "@/types/modify-score/assigner";
-import { MeasureAttributes } from "@/types/music";
-import {
-  getMeasureAttributes,
-  getPartialMeasureAttributes,
-} from "@/utils/music/measures/measure-attributes";
-import { noteAttributeGenerator } from "@/utils/music/measures/measure-generator";
-import { useEffect, useRef, useState } from "react";
-import { useSelections } from "../useMultipleSelections";
-import { ScorePositionID } from "@/types/modify-score";
+import { useMusic } from '@/components/providers/music';
+import { AssignerExecuter } from '@/types/modify-score/assigner';
+import { getPartialMeasureAttributes } from '@/utils/music/measures/measure-attributes';
+import { useSelections } from '../useMultipleSelections';
+import { ScorePositionID } from '@/types/modify-score';
+import { SelectionData } from '@/types/modify-score/assigner/metadata';
+import useMeasureRange from '../useMeasureRange';
+import { useEffect } from 'react';
 
-export const useEditMeasures = (startIndex: number, endIndex: number) => {
-  const { getMeasures, invokeMeasureModifier } = useMusic();
+export const useEditMeasures = (
+	startIndex: number,
+	endIndex: number,
+	allowStackedNotes = false
+) => {
+	const { getMeasures, invokeMeasureModifier } = useMusic();
+	// Utilize the measure range hook for efficient attribute retrieval
+	const {
+		getAttributes,
+		getRangedMeasures,
+		setRangedMeasures,
+		getRangedMeasureAtIndex,
+	} = useMeasureRange(getMeasures, startIndex, endIndex);
+	// Utilize the selections hook for efficient selection look up and modification
+	const { selections, update, clearSelections, hasSelection, mapSelections } =
+		useSelections<ScorePositionID, SelectionData>();
 
-  const attributeCache = useRef<MeasureAttributes>();
-  const [editMeasures, setEditMeasures] = useState<Measure[]>(
-    getMeasures.bind(null, startIndex, endIndex - startIndex + 1, true)
-  );
+	// Executes an assigner function with the measures being edited and the current selections
+	// NOTE: Once an assigner function is executed, we need to re update all selections if we don't
+	// want to clear them after we execute the assigner function
+	const executeAssigner: AssignerExecuter = (assigner) => {
+		const copy = getRangedMeasures();
+		if (assigner(copy, selections)) {
+			setRangedMeasures(copy);
+			// Should only clear selections when the assigner is successful?
+			clearSelections();
+			//refreshSelections();
+		}
+	};
 
-  // Utilize the selections hook for efficient selection look up and modification
-  const { selections, update, clearSelections, hasSelection } = useSelections<
-    ScorePositionID,
-    SelectionData
-  >();
+	// Creates the key that's used to identify each selection
+	const createSelectionKey = (
+		measureIndex: number,
+		xStart: number,
+		y: number
+	) => {
+		// Generate the selection identifier from the parameters
+		const positionID: ScorePositionID = {
+			measureIndex,
+			x: xStart,
+		};
 
-  // On initial load and when the measures change, reset the attribute cache
-  useEffect(() => {
-    attributeCache.current = undefined;
-  }, [editMeasures]);
+		// Only if stacked notes are allowed can there be multiple selections within a segment
+		if (allowStackedNotes) positionID.y = y;
 
-  // Recomputes the edit measure's first measure's attributes if the cache is empty,
-  // else it does nothing
-  const recache = () => {
-    if (!attributeCache.current) {
-      // Attributes shouldn't be null, be need the if check
-      const attributes = getMeasureAttributes(
-        getMeasures(0, startIndex + 1),
-        startIndex
-      );
-      attributeCache.current = attributes ? attributes : undefined;
-    }
-  };
+		return positionID;
+	};
 
-  // Is this function needed?
-  function* iterateEditMeasures() {
-    recache();
+	const createSelection = (
+		measureIndex: number,
+		xStart: number,
+		xEnd: number,
+		y: number,
+		noteIndex?: number
+	) => {
+		// Get the measure attributes of the given selection
+		const attributes = getAttributes(measureIndex, xStart);
+		// Shouldn't ever be null?
+		if (attributes === null) return;
+		const measure = getRangedMeasureAtIndex(measureIndex);
 
-    for (const yieldObj of noteAttributeGenerator(
-      editMeasures,
-      attributeCache.current
-    )) {
-      yield yieldObj;
-    }
-  }
+		// Create the new selection
+		const newSelection: SelectionData = {
+			measureIndex,
+			measureNotes: measure.notes,
+			xStart,
+			xEnd,
+			y,
+			rollingAttributes: attributes,
+			nonRollingAttributes: getPartialMeasureAttributes(measure, xStart),
+			noteIndex,
+		};
 
-  // Executes an assigner function with the measures being edited and the current selections
-  // NOTE: Once an assigner function is executed, we need to re update all selections if we don't
-  // want to clear them after we execute the assigner function
-  const executeAssigner: AssignerExecuter = (assigner) => {
-    const copy = editMeasures.slice();
-    if (assigner(copy, selections)) {
-      setEditMeasures(copy);
-      // Should only clear selections when the assigner is successful?
-      clearSelections();
-    }
-  };
+		// If the selection had a note, include it in the selection details
+		const { notes } = measure;
+		if (noteIndex !== undefined && noteIndex < notes.length) {
+			newSelection.note = notes[noteIndex];
+		}
 
-  // Gets the attributes for the measure at the given index and x position
-  const getAttributes = (
-    measureIndex: number,
-    x = 0
-  ): MeasureAttributes | null => {
-    if (measureIndex >= editMeasures.length || measureIndex < 0) return null;
-    // Make sure we have measure attributes for the first edit measure
-    recache();
+		return newSelection;
+	};
 
-    // Get the attributes of the desired measure and x position
-    // Attributes shouldn't be null because the given measure index was checked
-    const attributes = getMeasureAttributes(
-      editMeasures,
-      measureIndex,
-      attributeCache.current,
-      x
-    );
-    // Return null (if the attributes were null) or a copy of the attributes
-    return attributes && { ...attributes };
-  };
+	// Updates the selections to either contain the given selection (if it doesn't already exist)
+	// or remove the given selection (if it already exists)
+	const updateSelection = (
+		measureIndex: number,
+		xStart: number,
+		xEnd: number,
+		y: number,
+		noteIndex?: number
+	) => {
+		const positionID = createSelectionKey(measureIndex, xStart, y);
 
-  // Updates the selections to either contain the given selection (if it doesn't already exist)
-  // or remove the given selection (if it already exists)
-  const updateSelection = (
-    measureIndex: number,
-    xStart: number,
-    xEnd: number,
-    y: number,
-    noteIndex?: number
-  ) => {
-    // Generate the selection identifier from the parameters
-    const positionID: ScorePositionID = {
-      measureIndex,
-      x: xStart,
-    };
+		// If the selection already exists, don't bother creating the selection data just to not use it
+		if (hasSelection(positionID)) {
+			update(positionID);
+			return;
+		}
 
-    // If the selection already exists, don't bother creating the selection data just to not use it
-    if (hasSelection(positionID)) {
-      update(positionID);
-      return;
-    }
+		const selection = createSelection(measureIndex, xStart, xEnd, y, noteIndex);
 
-    // Get the measure attributes of the given selection
-    const attributes = getAttributes(measureIndex, xStart);
-    // Shouldn't ever be null?
-    if (attributes === null) return;
-    const measure = editMeasures[measureIndex];
+		// Insert the selection along with its key
+		// NOTE: This should always insert into the selection array because we already
+		// checked if positionID existed
+		update(positionID, selection);
+	};
 
-    // Create the new selection
-    const newSelection: SelectionData = {
-      measureIndex,
-      // Deep copy measure notes
-      measureNotes: JSON.parse(JSON.stringify(measure.notes)),
-      xStart,
-      xEnd,
-      y,
-      rollingAttributes: attributes,
-      nonRollingAttributes: getPartialMeasureAttributes(measure, xStart),
-      noteIndex,
-    };
+	const refreshSelections = () => {
+		mapSelections(({ measureIndex }, { xStart, xEnd, noteIndex, y }) => {
+			const key = createSelectionKey(measureIndex, xStart, y);
+			const selection = createSelection(
+				measureIndex,
+				xStart,
+				xEnd,
+				y,
+				noteIndex
+			);
+			if (selection) {
+				return { key, value: selection };
+			} else return null;
+		});
+	};
 
-    // If the selection had a note, include it in the selection details
-    const { notes } = measure;
-    if (noteIndex !== undefined && noteIndex < notes.length) {
-      newSelection.note = notes[noteIndex];
-    }
+	const commitMeasures = () => {
+		const editMeasures = getRangedMeasures();
+		invokeMeasureModifier((getMeasures) => {
+			const measures = getMeasures();
+			const count = endIndex - startIndex + 1;
+			for (let i = 0; i < count; i++)
+				measures[i + startIndex] = editMeasures[i];
+			return true;
+		});
+	};
 
-    // Insert the selection along with its key
-    // NOTE: This should always insert into the selection array because we already
-    // checked if positionID existed
-    update(positionID, newSelection);
-  };
+	const isSegmentSelected = (measureIndex: number, x: number) => {
+		return hasSelection({ measureIndex, x });
+	};
 
-  const commitMeasures = () => {
-    invokeMeasureModifier((getMeasures) => {
-      const measures = getMeasures();
-      const count = endIndex - startIndex + 1;
-      for (let i = 0; i < count; i++)
-        measures[i + startIndex] = editMeasures[i];
-      return true;
-    });
-  };
-
-  const isSegmentSelected = (measureIndex: number, x: number) => {
-    return hasSelection({ measureIndex, x });
-  };
-
-  return {
-    editMeasures,
-    selections,
-    iterateEditMeasures,
-    executeAssigner,
-    updateSelection,
-    commitMeasures,
-    isSegmentSelected,
-  };
+	return {
+		editMeasures: getRangedMeasures(),
+		selections,
+		executeAssigner,
+		updateSelection,
+		commitMeasures,
+		isSegmentSelected,
+	};
 };

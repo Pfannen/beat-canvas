@@ -5,10 +5,6 @@ import { FunctionComponent } from 'react';
 import { useMusic } from '@/components/providers/music';
 import VolumeManager from '@/components/ui/playback/volume-manager';
 import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
-import AssignerButtonRepo from '@/components/ui/reusable/assigner-components/assigner-button-repo';
-import { stacklessNotePlacementValidator } from '@/utils/music/note-placement';
-import { SelectionData } from '@/types/modify-score/assigner';
-import { initializeMeasureAttributes } from '@/utils/music/measures/measure-generator';
 import PlaybackManager from '@/components/ui/playback/playback-manager';
 
 type ImportExportTestPageProps = {};
@@ -37,18 +33,12 @@ const ImportExportTestPage: FunctionComponent<
 					setNewMusicScore(score);
 				}}
 				setImportedAudio={setImportedAudio}
-				play={playMusic}
 				musicScore={musicScore}
 			/>
 			<VolumeManager
 				volumePairs={volumePairs}
 				modifyVolume={volumeModifier.modifyVolume}
 			/>
-			{/* <AssignerButtonRepo
-				selections={[]}
-				notePlacementValidator={stacklessNotePlacementValidator}
-				liftExecutor={() => {}}
-			/> */}
 			<PlaybackManager
 				onPlay={playMusic}
 				onStop={stopMusic}

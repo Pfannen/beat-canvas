@@ -6,7 +6,6 @@ import { modifyMeasureAttribute } from './measures';
 import {
 	AssignerCurrier,
 	CurriedAssigner,
-	SelectionData,
 	SpecialAssignerMap,
 } from '@/types/modify-score/assigner';
 import { Note, NoteType } from '@/components/providers/music/types';
@@ -63,19 +62,23 @@ const curriedModifySlur: AssignerCurrier<NoteAnnotations, 'slur'> = (
 		// It's required that there only be 2 selections and both selections have a note
 		if (
 			selectionData.length !== 2 ||
-			!selectionData[0].note ||
-			!selectionData[1].note
+			selectionData[0].noteIndex === undefined ||
+			selectionData[1].noteIndex === undefined
 		) {
 			console.log('Must have two notes to slur');
 			return false;
 		}
 
 		// Extract required properties
-		const { note: note1, measureIndex: mIdx1 } = selectionData[0];
-		const { note: note2, measureIndex: mIdx2 } = selectionData[1];
+		const { measureIndex: mIdx1, noteIndex: nIdx1 } = selectionData[0];
+		const note1 = measures[mIdx1].notes[nIdx1];
+		const { measureIndex: mIdx2, noteIndex: nIdx2 } = selectionData[1];
+		const note2 = measures[mIdx2].notes[nIdx2];
+
 		// Either add or remove a slur
 		if (annotationValue) {
-			return addSlur(note1, mIdx1, note2, mIdx2);
+			const success = addSlur(note1, mIdx1, note2, mIdx2);
+			return success;
 		} else {
 			return removeSlur(note1, note2);
 		}

@@ -90,7 +90,7 @@ const updateAllSelectionsHave = <T extends {}>(
 	allKeys.forEach((key) => {
 		if (key in metadata) {
 			const allSelectionsHave = countMap[key] === validSelectionCount;
-			metadata[key]!.allSelectionsHave = allSelectionsHave;
+			metadata[key].allSelectionsHave = allSelectionsHave;
 		} else {
 			metadata[key] = { allSelectionsHave: true };
 		}
