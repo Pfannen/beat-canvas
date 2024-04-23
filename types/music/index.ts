@@ -1,36 +1,27 @@
-<<<<<<< HEAD
 // TODO: Switch this file to be called 'measure-attributes' in dev branch
 
-import { Measure, TimeSignature } from '@/components/providers/music/types';
-import { Dynamic } from './note-annotations';
-=======
-import {
-  Measure,
-  NoteType,
-  TimeSignature,
-} from "@/components/providers/music/types";
+import { Measure, TimeSignature } from "@/components/providers/music/types";
 import { Dynamic } from "./note-annotations";
->>>>>>> ui/measure-attribute-display
 
 export const numberNoteTypes = [1, 2, 4, 8, 16, 32, 64];
 
-export type Pitch = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
+export type Pitch = "A" | "B" | "C" | "D" | "E" | "F" | "G";
 
 export type PitchOctave = {
-	pitch: Pitch;
-	octave: number;
-	accidental?: 'b' | '#';
+  pitch: Pitch;
+  octave: number;
+  accidental?: "b" | "#";
 };
 
 export type MusicPart = {
-	attributes: MusicPartAttributes;
-	measures: Measure[];
+  attributes: MusicPartAttributes;
+  measures: Measure[];
 };
 
 export type MusicPartAttributes = {
-	instrument: string;
-	id: string;
-	name: string;
+  instrument: string;
+  id: string;
+  name: string;
 };
 
 export type Clef =
@@ -64,32 +55,32 @@ export type Repeat = ForwardRepeat | BackwardRepeat; */
 
 // Stores whether this is the beginning of the wedge, and if so, what type
 export type Wedge =
-	| {
-			start: false;
-	  }
-	| {
-			start: true;
-			crescendo: boolean;
-	  };
+  | {
+      start: false;
+    }
+  | {
+      start: true;
+      crescendo: boolean;
+    };
 
 // Stores if the repeat is forward or backward-looking
 export type Repeat =
-	| {
-			forward: true;
-	  }
-	| {
-			forward: false;
-			repeatCount: number;
-	  };
+  | {
+      forward: true;
+    }
+  | {
+      forward: false;
+      repeatCount: number;
+    };
 
 // Maps the endings that occur on the measure and their type
 // NOTE: A measure in the middle of an ending won't have an 'ending' attribute
 export type RepeatEndings = {
-	endings: number[];
-	type: RepeatEndingType;
+  endings: number[];
+  type: RepeatEndingType;
 };
 
-export type RepeatEndingType = 'start' | 'stop' | 'discontinue';
+export type RepeatEndingType = "start" | "stop" | "discontinue";
 
 // Maps an ending number (1st ending, 2nd ending, etc.) to the measure number that it ends at
 // The ending starts at the measure the object is located in
@@ -98,13 +89,13 @@ export type RepeatEndingType = 'start' | 'stop' | 'discontinue';
 }; */
 
 export type MusicScore = {
-	title: string;
-	parts: MusicPart[];
+  title: string;
+  parts: MusicPart[];
 };
 
 export type Metronome = {
-	beatNote: number;
-	beatsPerMinute: number;
+  beatNote: number;
+  beatsPerMinute: number;
 };
 
 // Static attributes are ones that possibly change 1 time in the measure (either at the beginning or end),
@@ -129,7 +120,7 @@ export const dynamicMeasureAttributesKeys = new Set<keyof MeasureAttributes>([
 // For instance, a wedge (i.e. crescendo/decrescendo) gets initialized at some point in the measure
 // and stretches to another point
 export const getDurationMeasureAttributes = () =>
-	new Set<keyof MeasureAttributes>(['wedge', 'repeat', 'repeatEndings']);
+  new Set<keyof MeasureAttributes>(["wedge", "repeat", "repeatEndings"]);
 
 export type StaticMeasureAttributes = {
   timeSignature: TimeSignature;
@@ -156,11 +147,11 @@ export type TemporalMeasureAttributes = {
 };
 
 export type MeasureAttributesMXML = MeasureAttributes & {
-	quarterNoteDivisions: number;
+  quarterNoteDivisions: number;
 };
 
 export type MeasureTimeSignautreCallback = (
-	measureIndex: number
+  measureIndex: number
 ) => TimeSignature;
 
 export type MeasureWidthCallback = (measureIndex: number) => number;
