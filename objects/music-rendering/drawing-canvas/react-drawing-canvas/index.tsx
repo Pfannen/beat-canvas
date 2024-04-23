@@ -9,18 +9,14 @@ import {
 } from "react";
 import { CoordinateStyleCreator } from "./utils";
 import {
-  HTMLCircleOptions,
   HTMLDrawOptions,
   HTMLEllipseOptions,
-  HTMLLineOptions,
   HTMLRectangleOptions,
   HTMLSVGOptions,
 } from "@/types/music-rendering/canvas/drawing-canvas/html";
 import { concatClassNames } from "@/utils/css";
 import { StyleCreator } from "./style-creator";
-import { getSVGAspectRatio, getSVGHeight, getSVGWidth } from "@/utils/svg";
-
-const svgViewBox = "0 0 1 1";
+import { getSVGHeight } from "@/utils/svg";
 
 export class ReactDrawingCanvas implements IDrawingCanvas {
   private unit: UnitMeasurement;
@@ -67,14 +63,6 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     this.components.push(<div {...props} />);
   }
 
-  drawLine(options: HTMLLineOptions): void {
-    throw new Error("Method not implemented.");
-  }
-
-  drawCircle(options: HTMLCircleOptions): void {
-    throw new Error("Method not implemented.");
-  }
-
   drawRectangle({
     corner,
     width,
@@ -114,14 +102,14 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
 
   drawSVG(options: HTMLSVGOptions): void {
     const scale = options.scale || 1;
-    const width = getSVGWidth(options.viewBox);
     const height = getSVGHeight(options.viewBox);
     let x = options.x;
     let y = options.y;
 
+    //Height is passed for the width because it seems that if width >= height, the scaling factor works correctly
     const styleCreator = new CoordinateStyleCreator(
       { x, y },
-      width,
+      height,
       height,
       this.unit
     );

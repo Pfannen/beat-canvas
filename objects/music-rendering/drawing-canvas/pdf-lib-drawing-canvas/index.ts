@@ -9,19 +9,11 @@ type PDFLibGenerator<T extends keyof IDrawingCanvas> = (
 export class PDFLibDrawingCanvas {
   public static getDrawingCanvas(page: PDFPage): IDrawingCanvas {
     return {
-      drawLine: PDFLibDrawingCanvas.drawLineOnPage(page),
       drawRectangle: PDFLibDrawingCanvas.drawRectangleOnPage(page),
-      drawCircle: PDFLibDrawingCanvas.drawCircleOnPage(page),
       drawEllipse: PDFLibDrawingCanvas.drawEllipseOnPage(page),
       drawSVG: PDFLibDrawingCanvas.drawSVGOnPage(page),
     };
   }
-
-  private static drawLineOnPage: PDFLibGenerator<"drawLine"> = (page) => {
-    return (options) => {
-      page.drawLine(options);
-    };
-  };
 
   private static drawRectangleOnPage: PDFLibGenerator<"drawRectangle"> = (
     page
@@ -36,13 +28,6 @@ export class PDFLibDrawingCanvas {
         height: options.height,
         rotate: rotation ? degrees(-rotation) : undefined,
       });
-    };
-  };
-
-  private static drawCircleOnPage: PDFLibGenerator<"drawCircle"> = (page) => {
-    return (options) => {
-      const { x, y } = options.center;
-      page.drawCircle({ x, y, size: options.diameter / 2 });
     };
   };
 

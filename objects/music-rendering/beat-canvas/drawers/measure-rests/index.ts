@@ -5,7 +5,7 @@ import {
 } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-rests";
 import { getRestSVGData } from "./rest-svgs";
 import { NoteType } from "@/components/providers/music/types";
-import { calculateScaleToHeight } from "@/utils/svg";
+import { calculateScaleToHeight, setSVGWidth } from "@/utils/svg";
 
 // export class RestDrawer {
 //   private drawMap: Partial<RestDrawers>;
