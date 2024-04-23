@@ -5,9 +5,10 @@ import { useEffect, useRef, useState } from 'react';
 import { BasicPlaybackState } from 'tone';
 import { usePolling } from '../usePolling';
 
-export const usePlayback = () => {
-	const playbackManager = useRef<PlaybackManager>(new PlaybackManager());
-	const volumeModifier = playbackManager.current as IVolumeValueModifer;
+export const usePlayback = (initialPBM?: PlaybackManager) => {
+	const playbackManager = useRef<PlaybackManager>(
+		initialPBM || new PlaybackManager()
+	);
 
 	const { pollValue, startPolling, stopPolling, updatePollValue } = usePolling(
 		500,
@@ -17,10 +18,12 @@ export const usePlayback = () => {
 	const [volumePairs, setVolumePairs] = useState<VolumePair[]>([]);
 	const [playbackState, setPlaybackState] = useState<
 		BasicPlaybackState | undefined
-	>();
+	>(playbackManager.current.getPlaybackState);
 
-	const updatePlaybackState = () =>
+	const updatePlaybackState = () => {
+		console.log({ state: playbackManager.current.getPlaybackState() });
 		setPlaybackState(playbackManager.current.getPlaybackState());
+	};
 
 	const updateVolumePairs = () => {
 		const newVolumePairs = playbackManager.current.getVolumePairs();
@@ -78,7 +81,7 @@ export const usePlayback = () => {
 	return {
 		volumePairs,
 		playbackState,
-		volumeModifier,
+		playbackManager: playbackManager.current,
 		seekPercentage: pollValue,
 		setScore,
 		setImportedAudio,

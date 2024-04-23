@@ -7,6 +7,7 @@ import ImportScoreDropdown from '../taskbar/dropdown/import-score-dropdown';
 import ImportAudioDropdown from '../taskbar/dropdown/import-audio-dropdown';
 import ExportScoreDropdown from '../taskbar/dropdown/export-score-dropdown';
 import { MusicScore } from '@/types/music';
+import { concatClassNames } from '@/utils/css';
 
 interface ImportExportPageProps {
 	setScore: (score: MusicScore) => void;

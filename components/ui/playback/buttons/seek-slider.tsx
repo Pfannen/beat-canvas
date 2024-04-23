@@ -5,7 +5,7 @@ import {
 	useRef,
 } from 'react';
 import classes from './SeekSlider.module.css';
-import PlaybackSlider from './styles/playback-slider';
+import PlaybackSlider from '../styles/playback-slider';
 
 type SeekSliderOmissions = 'type' | 'min' | 'max' | 'className';
 

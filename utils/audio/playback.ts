@@ -2,7 +2,7 @@ import { VolumeManager } from './volume';
 import { MusicScore } from '@/types/music';
 import { Player, ToneAudioBuffer, context } from 'tone';
 import { enqueueMusicScore } from './play-music/play-music';
-import { isOnClient, loadFile } from '..';
+import { deepyCopy, isOnClient, loadFile } from '..';
 
 // TODO: Look into PlaybackManager following single responsibility principle
 export class PlaybackManager extends VolumeManager {
@@ -24,6 +24,20 @@ export class PlaybackManager extends VolumeManager {
 
 	getPlaybackState = () => this.maxDurationPlayer?.state;
 
+	private addAudioPlayer = (buffer: ToneAudioBuffer, id: string) => {
+		const player = new Player();
+		player.buffer = buffer;
+		this.players[id] = player;
+		this.addVolumeNode(id, player);
+		this.updateAudioDuration();
+	};
+
+	private removeAudioPlayer = (id: string) => {
+		delete this.players[id];
+		this.removeVolumeNode(id);
+		this.updateAudioDuration();
+	};
+
 	private updateAudioDuration = () => {
 		this.maxDurationPlayer = undefined;
 		for (const player of Object.values(this.players)) {
@@ -42,10 +56,7 @@ export class PlaybackManager extends VolumeManager {
 		const enqueuedBuffers = await enqueueMusicScore(this.musicScore);
 
 		for (const { name, buffer } of enqueuedBuffers) {
-			const player = new Player();
-			player.buffer = buffer;
-			this.players[name] = player;
-			this.addVolumeNode(name, player);
+			this.addAudioPlayer(buffer, name);
 		}
 	};
 
@@ -59,16 +70,13 @@ export class PlaybackManager extends VolumeManager {
 
 		this.musicScore = musicScore;
 		if (this.musicScore) await this.loadAudioBuffers();
-		this.updateAudioDuration();
 	};
 
 	setImportedAudio = async (audioFile?: File) => {
 		if (!isOnClient()) return;
 
 		if (!audioFile) {
-			delete this.players[this.playerNodeId];
-			this.removeVolumeNode(this.playerNodeId);
-			this.updateAudioDuration();
+			this.removeAudioPlayer(this.playerNodeId);
 			return true;
 		}
 
@@ -154,5 +162,63 @@ export class PlaybackManager extends VolumeManager {
 
 		// Clamp the percentage between 0 and 1
 		return Math.max(0, Math.min(percentage, 1));
+	};
+
+	private static extractBufferSection = (
+		buffer: ToneAudioBuffer,
+		[start, end]: [number, number]
+	) => {
+		if (start < 0 || end > buffer.duration || start > end) return null;
+
+		const sampleRate = buffer.sampleRate;
+		const startSample = Math.floor(start * sampleRate);
+		const endSample = Math.floor(end * sampleRate);
+		const numSamples = endSample - startSample + 1;
+
+		const originalAudio = buffer.getChannelData(0);
+		// const extractedAudio = new Float32Array(numSamples);
+		const extractedAudio = originalAudio.slice(startSample, endSample + 1);
+		/* for (let i = 0; i < numSamples; i++) {
+			extractedAudio[i] = originalAudio[startSample + i];
+		} */
+
+		const audioBuffer = new AudioContext().createBuffer(
+			1,
+			numSamples,
+			sampleRate
+		);
+		audioBuffer.copyToChannel(extractedAudio, 0);
+
+		return audioBuffer;
+	};
+
+	copy = (playbackSection?: [number, number]) => {
+		const start = playbackSection ? playbackSection[0] : 0;
+		const end = playbackSection ? playbackSection[1] : this.getMaxDuration();
+
+		const newManager = new PlaybackManager(this.musicScore);
+
+		for (const id in this.players) {
+			const player = this.players[id];
+			let curEnd = end;
+			if (curEnd > player.buffer.duration) curEnd = player.buffer.duration - 1;
+			let curStart = start < end ? start : 0;
+
+			const newBuffer = PlaybackManager.extractBufferSection(player.buffer, [
+				curStart,
+				curEnd,
+			]);
+			if (!newBuffer) {
+				console.log('BAD RANGE');
+				console.log({ start, curEnd, duration: player.buffer.duration });
+				continue;
+			}
+			const newToneBuffer = new ToneAudioBuffer().set(newBuffer);
+			newManager.addAudioPlayer(newToneBuffer, id);
+		}
+
+		console.log({ newManager });
+
+		return newManager;
 	};
 }

@@ -1,11 +1,9 @@
 import { FunctionComponent } from 'react';
 import classes from './playback-manager.module.css';
-import SeekSlider from './seek-slider';
-import SeekButton from './seek-button';
-import PlayButton from './play-button';
-import PlayStopSwapper from './play-stop-button-swapper';
+import SeekSlider from './buttons/seek-slider';
+import SeekButton from './buttons/seek-button';
+import PlayStopSwapper from './buttons/play-stop-button-swapper';
 import { BasicPlaybackState } from 'tone';
-import LayoutList from '../reusable/layout/list';
 
 interface PlaybackManagerProps {
 	title?: string;

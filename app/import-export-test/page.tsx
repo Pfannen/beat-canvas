@@ -1,11 +1,12 @@
 'use client';
 
 import ImportExportPage from '@/components/ui/import-export-test';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { useMusic } from '@/components/providers/music';
 import VolumeManager from '@/components/ui/playback/volume-manager';
 import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
 import PlaybackManager from '@/components/ui/playback/playback-manager';
+import RangedPlaybackManager from '@/components/ui/playback/ranged-playback-manager';
 
 type ImportExportTestPageProps = {};
 
@@ -18,12 +19,13 @@ const ImportExportTestPage: FunctionComponent<
 		playMusic,
 		stopMusic,
 		seekMusic,
-		volumeModifier,
+		playbackManager,
 		volumePairs,
 		playbackState,
 		seekPercentage,
 	} = usePlayback();
 	const { musicScore, setNewMusicScore, replaceMeasures } = useMusic();
+	const [testRanges, setTestRanges] = useState<[number, number]>();
 
 	return (
 		<>
@@ -37,7 +39,7 @@ const ImportExportTestPage: FunctionComponent<
 			/>
 			<VolumeManager
 				volumePairs={volumePairs}
-				modifyVolume={volumeModifier.modifyVolume}
+				modifyVolume={playbackManager.modifyVolume}
 			/>
 			<PlaybackManager
 				onPlay={playMusic}
@@ -46,6 +48,21 @@ const ImportExportTestPage: FunctionComponent<
 				seekPercentage={seekPercentage}
 				playbackState={playbackState}
 			/>
+			<button
+				onClick={() => {
+					setTestRanges([10, 50]);
+				}}
+			>
+				Quick Test
+			</button>
+
+			{testRanges && (
+				<RangedPlaybackManager
+					sourcePlaybackManager={playbackManager}
+					start={testRanges[0]}
+					end={testRanges[1]}
+				/>
+			)}
 		</>
 	);
 };
