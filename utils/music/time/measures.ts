@@ -28,7 +28,7 @@ export type MeasureDurationOptionParams = {
 export const getMeasuresStartAndEndTime = (
 	measures: Measure[],
 	options: MeasureDurationOptionParams
-) => {
+): [number, number] => {
 	// Extract options as let variables so we can easily update them if they're not provided
 	let { durationStartIndex, durationEndIndex, measureZeroAttributes } = options;
 

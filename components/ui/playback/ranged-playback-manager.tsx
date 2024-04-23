@@ -3,6 +3,7 @@ import classes from './RangedPlaybackManager.module.css';
 import { PlaybackManager } from '@/utils/audio/playback';
 import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
 import PlaybackManagerComponent from './playback-manager';
+import PlaybackVolumeManager from './playback-volume-manager';
 
 interface RangedPlaybackManagerProps {
 	sourcePlaybackManager: PlaybackManager;
@@ -30,7 +31,9 @@ const RangedPlaybackManager: FunctionComponent<RangedPlaybackManagerProps> = ({
 	} = usePlayback(rangedPBM);
 
 	return (
-		<PlaybackManagerComponent
+		<PlaybackVolumeManager
+			volumePairs={volumePairs}
+			modifyVolume={playbackManager.modifyVolume}
 			title="Ranged Measures"
 			onPlay={playMusic}
 			onStop={stopMusic}

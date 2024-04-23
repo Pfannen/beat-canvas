@@ -21,8 +21,14 @@ export const useEditMeasures = (
 		getRangedMeasureAtIndex,
 	} = useMeasureRange(getMeasures, startIndex, endIndex);
 	// Utilize the selections hook for efficient selection look up and modification
-	const { selections, update, clearSelections, hasSelection, mapSelections } =
-		useSelections<ScorePositionID, SelectionData>();
+	const {
+		selections,
+		updateSelection: update,
+		clearSelections,
+		hasSelection,
+		mapSelections,
+		getSelection,
+	} = useSelections<ScorePositionID, SelectionData>();
 
 	// Executes an assigner function with the measures being edited and the current selections
 	// NOTE: Once an assigner function is executed, we need to re update all selections if we don't
@@ -141,8 +147,16 @@ export const useEditMeasures = (
 		});
 	};
 
-	const isSegmentSelected = (measureIndex: number, x: number) => {
-		return hasSelection({ measureIndex, x });
+	const isSegmentSelected = (measureIndex: number, x: number, y: number) => {
+		return hasSelection(createSelectionKey(measureIndex, x, y));
+	};
+
+	const isYLevelSelected = (measureIndex: number, x: number, y: number) => {
+		const selectionKey = createSelectionKey(measureIndex, x, y);
+		const selection = getSelection(selectionKey);
+		if (!selection) return false;
+
+		return y === selection.y;
 	};
 
 	return {
@@ -152,5 +166,6 @@ export const useEditMeasures = (
 		updateSelection,
 		commitMeasures,
 		isSegmentSelected,
+		isYLevelSelected,
 	};
 };

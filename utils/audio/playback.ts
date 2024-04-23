@@ -176,11 +176,11 @@ export class PlaybackManager extends VolumeManager {
 		const numSamples = endSample - startSample + 1;
 
 		const originalAudio = buffer.getChannelData(0);
-		// const extractedAudio = new Float32Array(numSamples);
-		const extractedAudio = originalAudio.slice(startSample, endSample + 1);
-		/* for (let i = 0; i < numSamples; i++) {
+		const extractedAudio = new Float32Array(numSamples);
+		//const extractedAudio = originalAudio.slice(startSample, endSample + 1);
+		for (let i = 0; i < numSamples; i++) {
 			extractedAudio[i] = originalAudio[startSample + i];
-		} */
+		}
 
 		const audioBuffer = new AudioContext().createBuffer(
 			1,

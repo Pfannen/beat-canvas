@@ -71,7 +71,7 @@ export const useSelections = <K, V>() => {
 	// Updates the selections
 	// If no value is supplied, it's assumed the key and its selection should be removed
 	// Else if the key has a selection, it gets removed, else it gets added
-	const update = (key: K, value?: V) => {
+	const updateSelection = (key: K, value?: V) => {
 		if (!value) {
 			removeSelection(key);
 		} else {
@@ -108,7 +108,7 @@ export const useSelections = <K, V>() => {
 	};
 
 	return {
-		update,
+		updateSelection,
 		hasSelection,
 		getSelection,
 		clearSelections,

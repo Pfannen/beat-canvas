@@ -5,7 +5,7 @@ import SeekButton from './buttons/seek-button';
 import PlayStopSwapper from './buttons/play-stop-button-swapper';
 import { BasicPlaybackState } from 'tone';
 
-interface PlaybackManagerProps {
+export interface PlaybackManagerProps {
 	title?: string;
 	onPlay: () => void;
 	onStop: () => void;
