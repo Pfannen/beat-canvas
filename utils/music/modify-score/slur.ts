@@ -55,6 +55,15 @@ export const notesAreSlurred = (note1: Note, note2: Note) => {
 	return !!getSlurMatch(note1, note2);
 };
 
+export const slurIdsAreSlurred = (
+	startSlurId: number,
+	stopSlurIds: number[]
+) => {
+	return (
+		stopSlurIds.find((stopSlurId) => stopSlurId === startSlurId) !== undefined
+	);
+};
+
 // #region Not currently used - not sure if methods are correct
 
 const getSourceNote = (

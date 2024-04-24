@@ -61,16 +61,20 @@ export type OptionalLocationProperties = {
 };
 
 export type DurationAttributeInfoUpdater<
-	K extends keyof DurationAttributeInfo,
-	T extends keyof NoteAnnotations | keyof MeasureAttributes
+	K extends DurationAttributeKey,
+	//T extends keyof NoteAnnotations | keyof MeasureAttributes
 > = (
 	tbcDurationEntry: TBCDurationAttributeInfo[K],
-	durItem: (NoteAnnotations & MeasureAttributes)[T],
+	durItem: (NoteAnnotations & MeasureAttributes)[K],
 	measureIndex: number,
 	x: number,
 	seconds: number,
 	note?: Note
-) => {
+) => DurationInfoUpdaterReturn<K>;
+
+export type DurationInfoUpdaterReturn<K extends DurationAttributeKey> = {
 	completed?: DurationAttributeInfo[K];
 	updatedEntry: TBCDurationAttributeInfo[K];
 };
+
+export type DurationAttributeKey = keyof DurationAttributeInfo;
