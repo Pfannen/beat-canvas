@@ -9,10 +9,8 @@ import {
 	requiredMeasureAttributesKeys,
 	staticMeasureAttributesKeys,
 } from '@/types/music';
-import {
-	initializeMeasureAttributes,
-	noteAttributeGenerator,
-} from './measure-generator';
+import { initializeMeasureAttributes } from './measure-generator';
+import { noteAttributeGenerator } from './traversal';
 
 export class MeasureAttributesRetriever {
 	private index = 0;

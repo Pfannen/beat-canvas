@@ -9,12 +9,10 @@ import { PersistentInstrumentAttributes } from '@/types/music/note-annotations';
 import { Transport } from 'tone/build/esm/core/clock/Transport';
 import { getSecondsPerBeat } from '@/utils/music';
 import { expandMeasures } from '@/utils/music/measures/expand-measures';
-import {
-	initializeMeasureAttributes,
-	noteAttributeGenerator,
-} from '@/utils/music/measures/measure-generator';
+import { initializeMeasureAttributes } from '@/utils/music/measures/measure-generator';
 import { enqueueNote } from './play-note';
 import { dynamicToVelocity } from '../volume';
+import { noteAttributeGenerator } from '@/utils/music/measures/traversal';
 
 export const enqueuePart = (
 	part: MusicPart,

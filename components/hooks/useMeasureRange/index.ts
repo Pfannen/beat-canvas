@@ -6,7 +6,7 @@ import {
 	getRequiredMeasureAttributes,
 	getTemporalAttributesAtX,
 } from '@/utils/music/measures/measure-attributes';
-import { noteAttributeGenerator } from '@/utils/music/measures/measure-generator';
+import { noteAttributeGenerator } from '@/utils/music/measures/traversal';
 import { useEffect, useRef, useState } from 'react';
 
 const useMeasureRange = (

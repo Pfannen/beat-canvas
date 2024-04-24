@@ -32,27 +32,6 @@ export type Clef =
 	| 'tenor'
 	| 'soprano';
 
-/* export type Wedge = {
-	crescendo: boolean;
-	// Don't need to store start values because it's indicated by the measure attributes it's apart of
-	measureEnd: number;
-	xEnd: number;
-};
- */
-
-/* type ForwardRepeat = {
-	forward: true;
-};
-
-type BackwardRepeat = {
-	forward: false;
-	jumpMeasure: number;
-	repeatCount: number;
-	remainingRepeats: number;
-};
-
-export type Repeat = ForwardRepeat | BackwardRepeat; */
-
 // Stores whether this is the beginning of the wedge, and if so, what type
 export type Wedge =
 	| {
@@ -81,12 +60,6 @@ export type RepeatEndings = {
 };
 
 export type RepeatEndingType = 'start' | 'stop' | 'discontinue';
-
-// Maps an ending number (1st ending, 2nd ending, etc.) to the measure number that it ends at
-// The ending starts at the measure the object is located in
-/* export type RepeatEndings = {
-	[ending in number]: number;
-}; */
 
 export type MusicScore = {
 	title: string;
