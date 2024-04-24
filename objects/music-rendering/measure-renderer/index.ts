@@ -29,8 +29,8 @@ export class MeasureRenderer {
   private musicDimensions: MusicDimensionData;
   private measurements: Measurements;
   private measureComponentIterator: MeasureComponentIterator;
+  private drawNonBodyComponents: boolean;
   private measureBodyHeight: number;
-  private componentStartOffset: number;
   private bodyOffset: number;
   constructor(
     measures: Measure[],
@@ -49,6 +49,7 @@ export class MeasureRenderer {
     this.measureManager = new MeasureManager(this.musicDimensions);
     this.bodyCt = bodyCount;
     this.measurements = measurements;
+    this.drawNonBodyComponents = drawNonBodyComponents;
 
     const measureComponents = this.measurements.getMeasureComponents();
     if (drawNonBodyComponents) {
@@ -66,9 +67,6 @@ export class MeasureRenderer {
       );
     this.bodyOffset = bodyOffset + padding.top;
     this.measureBodyHeight = bodyHeight;
-    this.componentStartOffset = this.getComponentStartOffset(
-      drawNonBodyComponents
-    );
   }
 
   private getComponentStartOffset(drawNonBodyComponents: boolean) {
@@ -131,8 +129,22 @@ export class MeasureRenderer {
     });
   }
 
-  private getMeasureContainerData(measureIndex: number) {
+  private getContainerPositionData(measureIndex: number) {
     const measureData = this.measureManager.getMeasureData(measureIndex);
+    const { padding, noteSpaceHeight } = this.musicDimensions.measureDimensions;
+
+    const noteSpaceBottom = {
+      x: measureData.start.x,
+      y: measureData.start.y - padding.top - noteSpaceHeight,
+    };
+    return {
+      measureData,
+      noteSpaceBottom,
+      noteSpaceHeight,
+    };
+  }
+
+  private getContainerDimensionData() {
     const { height, padding, noteSpaceHeight } =
       this.musicDimensions.measureDimensions;
 
@@ -141,34 +153,27 @@ export class MeasureRenderer {
     const lineHeight = lineFraction * noteSpaceHeight;
     const spaceHeight = spaceFraction * noteSpaceHeight;
     const measureComponentHeights = { line: lineHeight, space: spaceHeight };
-    const noteSpaceBottom = {
-      x: measureData.start.x,
-      y: measureData.start.y - padding.top - noteSpaceHeight,
-    };
-    return {
-      measureData,
-      noteSpaceBottom,
-      measureComponentHeights,
-      noteSpaceHeight,
-      containerHeight: height,
-      padding,
-    };
+    return { measureComponentHeights, containerHeight: height, padding };
   }
 
   public render() {
     this.generateMeasureOutline();
     const renderData = this.getMusicRenderData();
+    const measureLineOffsetY = this.getComponentStartOffset(
+      this.drawNonBodyComponents
+    );
+    const containerData = this.getContainerDimensionData();
     renderData.forEach((measure, measureIndex) => {
-      const containerData = this.getMeasureContainerData(measureIndex);
+      const positionData = this.getContainerPositionData(measureIndex);
       const timeSig = this.music.getMeasureTimeSignature(measureIndex);
-      const { measureData, containerHeight } = containerData;
+      const { measureData } = positionData;
       const beatCanvas = this.getBeatCanvasForPage(measureData.pageNumber);
 
       beatCanvas.drawMeasure({
         topLeft: { ...measureData.start },
         width: measureData.width,
-        height: containerHeight,
-        componentStartY: measureData.start.y - this.componentStartOffset,
+        height: containerData.containerHeight,
+        componentStartY: measureData.start.y - measureLineOffsetY,
         containerPadding: containerData.padding,
         componentHeights: containerData.measureComponentHeights,
         bodyHeight: this.measureBodyHeight,
@@ -183,8 +188,8 @@ export class MeasureRenderer {
             measureData.width,
             (yPos: number) =>
               this.measurements.getYFractionOffset(yPos) *
-                containerData.noteSpaceHeight +
-              containerData.noteSpaceBottom.y
+                positionData.noteSpaceHeight +
+              positionData.noteSpaceBottom.y
           ),
         },
       });
@@ -196,8 +201,8 @@ export class MeasureRenderer {
       const componentHelper = new MeasureComponentHelper(
         timeSig,
         noteSection,
-        containerData.noteSpaceBottom.y,
-        containerData.noteSpaceHeight,
+        positionData.noteSpaceBottom.y,
+        positionData.noteSpaceHeight,
         this.measurements
       );
       let noteIndex = 0;
