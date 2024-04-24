@@ -1,41 +1,26 @@
 import { MeasureOutline } from "./measure-outline";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
-import {
-  IterateMeasuresCallback,
-  MeasureSectionData,
-  MeasureSections,
-} from "@/types/music-rendering/measure-manager";
-import { MeasureSection } from "@/types/music";
-import { TimeSignature } from "@/components/providers/music/types";
 import { Coordinate } from "@/types";
+import { MeasureSection } from "@/types/music";
+import { SectionArray } from "@/types/music-rendering/measure-manager/measure-outline";
+import {
+  MeasureOutlineSection,
+  MeasureSectionArray,
+  MeasureSections,
+  measureSectionOrder,
+} from "@/types/music-rendering/measure-manager";
 
 export class MeasureManager {
   protected dimensionData: MusicDimensionData;
-  protected measureOutline: MeasureOutline<MeasureSections>;
-  private measureIndexToNoteSectionIndex: Record<number, number> = {};
+  protected measureOutline: MeasureOutline<MeasureSection>;
   private widthOnLine: number;
   private startCoordinate: Coordinate;
   protected pxTolerence = 1;
   constructor(dimensionData: MusicDimensionData) {
     this.dimensionData = dimensionData;
-    this.measureOutline = new MeasureOutline(
-      this.dimensionData.pageDimensions.firstMeasureStart
-    );
     this.widthOnLine = this.getFirstLineWidth();
     this.startCoordinate = this.dimensionData.pageDimensions.firstMeasureStart;
-    // const x = this.dimensionData.pageDimensions.firstMeasureStart.x;
-    // const y = this.dimensionData.pageDimensions.firstMeasureStart.y;
-    // this.measureOutline.addPage(x, y, false);
-  }
-
-  private getMeasureWidths(...sections: MeasureSectionData<any>[]) {
-    let displayWidth = 0;
-    let nonDisplayWidth = 0;
-    sections.forEach((section) => {
-      if (section.display) displayWidth += section.width;
-      else nonDisplayWidth += section.width;
-    });
-    return { displayWidth, nonDisplayWidth };
+    this.measureOutline = new MeasureOutline(this.startCoordinate);
   }
 
   private isRoomOnLine(width: number) {
@@ -46,48 +31,36 @@ export class MeasureManager {
     );
   }
 
-  protected addMeasure(
-    measureIndex: number,
-    noteSection: MeasureSectionData<undefined>,
-    keySigSection: MeasureSectionData<number>,
-    timeSigSection?: MeasureSectionData<TimeSignature>
-  ) {
-    const { displayWidth, nonDisplayWidth } = this.getMeasureWidths(
-      noteSection,
-
-      keySigSection
+  public addMeasure(sections: MeasureSections, isLastMeasure: boolean) {
+    const sectionHelper = new MeasureSectionHelper(
+      sections,
+      measureSectionOrder
     );
-    if (this.isRoomOnLine(displayWidth)) {
+    const { width, firstMeasureWidth } = sectionHelper.getWidths();
+    if (this.isRoomOnLine(width)) {
+      const measureSections = sectionHelper.getSortedSections(true);
+      this.addMeasureToLine(width, measureSections);
     } else {
       this.commitCurrentLine();
-      //Get first-measure sections (clef, key)
-      //Get before note display sections (timesig?)
-      // Get note section
-      // Get after note sections (repeat?)
-      this.measureOutline.addMeasure(displayWidth, [{key: "clef", width: }])
+      const measureSections = sectionHelper.getSortedSections(false);
+      this.addMeasureToLine(firstMeasureWidth, measureSections);
+    }
+    if (isLastMeasure) {
+      this.commitCurrentLine();
     }
   }
 
-  // Note: This doesn't take into account a measure who has a greater width due to time signature display, etc... (would need to know note display size and measure container size separately)
-  // protected setMeasureWidths(width: number) {
-  //   const cb: IterateMeasuresCallback = (args, measureIndex) => {
-  //     const noteSectionIndex =
-  //       this.measureIndexToNoteSectionIndex[measureIndex];
-  //     args.updateSectionWidth(measureIndex, noteSectionIndex, width);
-  //   };
-  //   this.measureOutline.iterateCurrentLine(cb);
-  // }
+  private addMeasureToLine(width: number, sections: SectionArray<any>) {
+    this.widthOnLine -= width;
+    this.measureOutline.addMeasure(width, sections);
+  }
 
   private commitCurrentLine() {
-    const cb: IterateMeasuresCallback = (args, measureIndex) => {
-      const globalIndex = args.startMeasureIndex + measureIndex;
+    this.measureOutline.iterateCurrentLine((args, measureIndex) => {
       const widthToAdd = this.widthOnLine / args.measureCount;
-      const noteSectionIndex = this.measureIndexToNoteSectionIndex[globalIndex];
-      args.addToSectionWidth(measureIndex, noteSectionIndex, widthToAdd);
-    };
-    this.measureOutline.iterateCurrentLine(cb);
+      args.addToSectionWidth(measureIndex, "note", widthToAdd);
+    });
     this.createNewLine();
-    this.measureIndexToNoteSectionIndex = {};
   }
 
   private createNewLine() {
@@ -104,16 +77,6 @@ export class MeasureManager {
     this.measureOutline.addLine(newLineXStart, nextLineYStart);
     this.startCoordinate = { x: newLineXStart, y: nextLineYStart };
   }
-
-  // protected addWidthToMeasures(width: number) {
-  //   const cb: IterateMeasuresCallback = (args, measureIndex) => {
-  //     const widthToAdd = width / args.measureCount;
-  //     const currentWidth = args.getMeasureWidth(measureIndex);
-  //     const measureWidth = currentWidth + widthToAdd;
-  //     args.setMeasureWidth(measureIndex, measureWidth);
-  //   };
-  //   this.measureOutline.iterateCurrentLine(cb);
-  // }
 
   protected getFirstLineWidth() {
     const { pageDimensions } = this.dimensionData;
@@ -132,21 +95,6 @@ export class MeasureManager {
     return pageDimensions.width - (musicMargins.left + musicMargins.right);
   }
 
-  private getWidthInfo(width: number, timeSig: string) {
-    let updateWidths = false;
-    const maxWidth = this.timeSignatureWidths[timeSig];
-    if (width <= maxWidth) {
-      width = maxWidth;
-    } else {
-      if (maxWidth !== undefined) {
-        updateWidths = true;
-      }
-      maxMeasureWidths[timeSig] = width;
-    }
-
-    return { width, updateWidths };
-  }
-
   protected static isWithinTolerence = (
     valOne: number,
     valTwo: number,
@@ -159,5 +107,43 @@ export class MeasureManager {
 
   public getMeasureData(measureIndex: number) {
     return this.measureOutline.getMeasureData(measureIndex);
+  }
+}
+
+class MeasureSectionHelper {
+  constructor(
+    private sections: MeasureSections,
+    private sectionSortMap: Record<MeasureSection, number>
+  ) {}
+
+  private iterateSections(
+    reducer: (section: MeasureOutlineSection<any>) => any
+  ) {
+    this.sections.required.forEach(reducer);
+    this.sections.optional.forEach(reducer);
+  }
+
+  public getWidths() {
+    let width = 0;
+    let firstMeasureWidth = 0;
+    this.iterateSections((section) => {
+      if (section.displayByDefault) width += section.width;
+      else firstMeasureWidth += section.width;
+    });
+
+    return { width, firstMeasureWidth };
+  }
+
+  public getSortedSections(filterRequired: boolean) {
+    const combinedSections: MeasureSectionArray<MeasureSection> = [];
+    this.iterateSections((section) => {
+      if (!filterRequired || section.displayByDefault) {
+        combinedSections.push(section);
+      }
+    });
+    combinedSections.sort((a, b) => {
+      return this.sectionSortMap[a.key] - this.sectionSortMap[b.key];
+    });
+    return combinedSections;
   }
 }

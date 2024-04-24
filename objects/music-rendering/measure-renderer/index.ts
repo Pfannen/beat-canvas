@@ -10,9 +10,11 @@ import {
 } from "@/types/music-rendering";
 import { NoteAnnotation } from "@/types/music/note-annotations";
 import { getTimeSignatureDrawData } from "@/utils/music-rendering/draw-data/measure";
+import { Measure } from "@/components/providers/music/types";
 
 export class MeasureRenderer {
   private bodyCt: number;
+  private measures: Measure[];
   private music: Music;
   private getBeatCanvasForPage: BeatCanvasDel;
   private transformer: MeasureTransformer;
@@ -24,17 +26,20 @@ export class MeasureRenderer {
   private componentStartOffset: number;
   private bodyOffset: number;
   constructor(
-    music: Music,
+    measures: Measure[],
     musicDimensions: MusicDimensionData,
     getBeatCanvasForPage: BeatCanvasDel,
     measurements: Measurements,
     bodyCount: number,
     drawNonBodyComponents = false
   ) {
-    this.music = music;
+    this.measures = measures;
     this.musicDimensions = musicDimensions;
     this.getBeatCanvasForPage = getBeatCanvasForPage;
-    this.transformer = new MeasureTransformer(music);
+    this.music = new Music();
+    this.music.setMeasures(measures);
+    this.transformer = new MeasureTransformer(this.music);
+    this.measureManager = new MeasureManager(this.musicDimensions);
     this.bodyCt = bodyCount;
     this.measurements = measurements;
 
@@ -75,24 +80,7 @@ export class MeasureRenderer {
     };
   }
 
-  private initializeMeasureManager() {
-    const widthCalc = new MeasureWidthCalculator(
-      this.musicDimensions.measureDimensions.width,
-      this.music.getMeasureTimeSignature(0)
-    );
-    const getMeasureWidth = (measureIndex: number) => {
-      return widthCalc.getMeasureWidth(
-        { components: [] },
-        { beatsPerMeasure: 4, beatNote: 4 }
-      );
-    };
-    this.measureManager = new MeasureManager(
-      this.music.getMeasureCount(),
-      this.musicDimensions,
-      getMeasureWidth,
-      this.music.getMeasureTimeSignature.bind(this.music)
-    );
-    this.measureManager.compute();
+  private getRenderData() {
     this.transformer.computeDisplayData([
       {
         attacher: "beam-data",
@@ -102,11 +90,11 @@ export class MeasureRenderer {
         },
       },
     ]);
+    return this.transformer.getMeasureRenderData();
   }
 
   public render() {
-    this.initializeMeasureManager();
-    const renderData = this.transformer.getMeasureRenderData();
+    const renderData = this.getRenderData();
     renderData.forEach((measure, measureIndex) => {
       const timeSig = this.music.getMeasureTimeSignature(measureIndex);
       const measureData = this.measureManager.getMeasureData(measureIndex);
