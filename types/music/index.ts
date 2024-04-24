@@ -161,9 +161,9 @@ export type MeasureWidthCallback = (measureIndex: number) => number;
 export type TemporalMeasureAttributesMXML = TemporalMeasureAttributes &
   MeasureAttributesMXML;
 
-export type MeasureSectionMetadata = {
-  timeSignature: TimeSignature;
-  repeat: Repeat;
-};
+export type MeasureSectionMetadata = Pick<
+  StaticMeasureAttributes,
+  "clef" | "timeSignature" | "keySignature" | "repeat"
+> & { note: undefined };
 
 export type MeasureSection = keyof MeasureSectionMetadata;

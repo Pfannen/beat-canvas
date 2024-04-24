@@ -121,7 +121,7 @@ export class MeasureOutline<T extends Record<string, any>> {
     }
   }
 
-  private updateMeasureSectionWidth(
+  private setMeasureSectionWidth(
     line: UncommittedLine<SectionArray<T>>,
     measureIndex: number,
     sectionIndex: number,
@@ -130,6 +130,18 @@ export class MeasureOutline<T extends Record<string, any>> {
     const sections = line.measures[measureIndex].sections;
     if (sections) {
       sections[sectionIndex].width = newWidth;
+    }
+  }
+
+  private addToMeasureSectionWidth(
+    line: UncommittedLine<SectionArray<T>>,
+    measureIndex: number,
+    sectionIndex: number,
+    newWidth: number
+  ) {
+    const sections = line.measures[measureIndex].sections;
+    if (sections) {
+      sections[sectionIndex].width += newWidth;
     }
   }
 
@@ -239,7 +251,8 @@ export class MeasureOutline<T extends Record<string, any>> {
         this,
         line
       ),
-      updateSectionWidth: this.updateMeasureSectionWidth.bind(this, line),
+      setSectionWidth: this.setMeasureSectionWidth.bind(this, line),
+      addToSectionWidth: this.addToMeasureSectionWidth.bind(this, line),
     };
     line!.measures.forEach((_, i) => cb(args, i));
   }
