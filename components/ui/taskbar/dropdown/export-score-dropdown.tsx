@@ -2,17 +2,24 @@ import { FunctionComponent } from 'react';
 import classes from './ExportScoreDropdown.module.css';
 import TaskbarDropdown from './taskbar-dropdown';
 import JSONBracesSVG from '../../svg/json-braces';
-import { exportJSONScore, exportMusicXMLScore } from '@/utils/import-export';
+import {
+	exportAudioBuffer,
+	exportJSONScore,
+	exportMusicXMLScore,
+} from '@/utils/import-export';
 import { MusicScore } from '@/types/music';
 import XMLBracesSVG from '../../svg/xml-braces';
 import ExportIconSVG from '../../svg/export-icon-svg';
+import MP3SVG from '../../svg/mp3';
 
-interface ExportScoreDropdownProps {
+export interface ExportScoreDropdownProps {
 	musicScore?: MusicScore;
+	getAudioBuffer?: () => Promise<AudioBuffer | null>;
 }
 
 const ExportScoreDropdown: FunctionComponent<ExportScoreDropdownProps> = ({
 	musicScore,
+	getAudioBuffer,
 }) => {
 	return (
 		<TaskbarDropdown title="Export" headerIcon={<ExportIconSVG />}>
@@ -31,6 +38,21 @@ const ExportScoreDropdown: FunctionComponent<ExportScoreDropdownProps> = ({
 			>
 				MusicXML
 				<XMLBracesSVG />
+			</button>
+			<button
+				onClick={async () => {
+					if (!getAudioBuffer) return;
+
+					const buffer = await getAudioBuffer();
+					if (!buffer) return;
+					exportAudioBuffer(
+						buffer,
+						musicScore ? musicScore.title : 'Nice test'
+					);
+				}}
+			>
+				Mp3
+				<MP3SVG />
 			</button>
 		</TaskbarDropdown>
 	);

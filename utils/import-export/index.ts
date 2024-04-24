@@ -6,16 +6,24 @@ import { musicXMLToJSON } from './importMusicXML';
 import { loadFile } from '..';
 import { FileScoreRetriever } from '@/types/import-export';
 import { validateMusicScore } from '../schemas/validators';
+import { ToneAudioBuffer, ToneAudioBuffers } from 'tone';
+// @ts-ignore
+import * as audioBufferToBlob from 'audiobuffer-to-blob';
+import { toneBufferToAudioBuffer } from './audio-buffer-utils';
 
 export const exportData = (
 	content: string,
 	contentType: string,
 	fileName: string
 ) => {
-	const tempAnchor = document.createElement('a');
 	const file = new Blob([content], { type: contentType });
 
-	tempAnchor.href = URL.createObjectURL(file);
+	exportBlob(file, fileName);
+};
+
+export const exportBlob = (blob: Blob, fileName: string) => {
+	const tempAnchor = document.createElement('a');
+	tempAnchor.href = URL.createObjectURL(blob);
 	tempAnchor.download = fileName;
 	tempAnchor.click();
 };
@@ -68,4 +76,9 @@ export const importJSONScore: FileScoreRetriever = async (file) => {
 		console.log('There was an error processing the json file...');
 		return null;
 	}
+};
+
+export const exportAudioBuffer = (buffer: AudioBuffer, fileName = '') => {
+	const blob = audioBufferToBlob(buffer) as Blob;
+	exportBlob(new Blob([blob], { type: 'audio/mp3' }), fileName);
 };

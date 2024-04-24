@@ -3,6 +3,11 @@ import { MusicScore } from '@/types/music';
 import { Player, ToneAudioBuffer, context } from 'tone';
 import { enqueueMusicScore } from './play-music/play-music';
 import { deepyCopy, isOnClient, loadFile } from '..';
+import {
+	toneBuffersToAudioBuffer,
+	toneBufferToAudioBuffer,
+} from '../import-export/audio-buffer-utils';
+import { ToneBufferVolumePair } from '@/types/audio/volume';
 
 // TODO: Look into PlaybackManager following single responsibility principle
 export class PlaybackManager extends VolumeManager {
@@ -23,6 +28,8 @@ export class PlaybackManager extends VolumeManager {
 		this.maxDurationPlayer ? this.maxDurationPlayer.buffer.duration : 0;
 
 	getPlaybackState = () => this.maxDurationPlayer?.state;
+
+	managerHasAudio = () => !!this.getMaxDuration();
 
 	private addAudioPlayer = (buffer: ToneAudioBuffer, id: string) => {
 		const player = new Player();
@@ -164,34 +171,6 @@ export class PlaybackManager extends VolumeManager {
 		return Math.max(0, Math.min(percentage, 1));
 	};
 
-	private static extractBufferSection = (
-		buffer: ToneAudioBuffer,
-		[start, end]: [number, number]
-	) => {
-		if (start < 0 || end > buffer.duration || start > end) return null;
-
-		const sampleRate = buffer.sampleRate;
-		const startSample = Math.floor(start * sampleRate);
-		const endSample = Math.floor(end * sampleRate);
-		const numSamples = endSample - startSample + 1;
-
-		const originalAudio = buffer.getChannelData(0);
-		const extractedAudio = new Float32Array(numSamples);
-		//const extractedAudio = originalAudio.slice(startSample, endSample + 1);
-		for (let i = 0; i < numSamples; i++) {
-			extractedAudio[i] = originalAudio[startSample + i];
-		}
-
-		const audioBuffer = new AudioContext().createBuffer(
-			1,
-			numSamples,
-			sampleRate
-		);
-		audioBuffer.copyToChannel(extractedAudio, 0);
-
-		return audioBuffer;
-	};
-
 	copy = (playbackSection?: [number, number]) => {
 		const start = playbackSection ? playbackSection[0] : 0;
 		const end = playbackSection ? playbackSection[1] : this.getMaxDuration();
@@ -204,7 +183,7 @@ export class PlaybackManager extends VolumeManager {
 			if (curEnd > player.buffer.duration) curEnd = player.buffer.duration - 1;
 			let curStart = start < end ? start : 0;
 
-			const newBuffer = PlaybackManager.extractBufferSection(player.buffer, [
+			const newBuffer = toneBufferToAudioBuffer(player.buffer, [
 				curStart,
 				curEnd,
 			]);
@@ -220,5 +199,20 @@ export class PlaybackManager extends VolumeManager {
 		console.log({ newManager });
 
 		return newManager;
+	};
+
+	getMergedAudioBufffer = async () => {
+		const volumePairs = this.getVolumePairs();
+
+		const toneVolumePairs: ToneBufferVolumePair[] = [];
+		volumePairs.forEach(({ audioId, volumePercentage }) => {
+			if (audioId in this.players) {
+				toneVolumePairs.push({
+					buffer: this.players[audioId].buffer,
+					volumePercentage,
+				});
+			}
+		});
+		return await toneBuffersToAudioBuffer(toneVolumePairs);
 	};
 }

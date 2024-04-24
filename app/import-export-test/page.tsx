@@ -1,7 +1,7 @@
 'use client';
 
 import ImportExportPage from '@/components/ui/import-export-test';
-import { FunctionComponent, useRef, useState } from 'react';
+import { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { useMusic } from '@/components/providers/music';
 import VolumeManager from '@/components/ui/playback/volume-manager';
 import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
@@ -36,14 +36,10 @@ const ImportExportTestPage: FunctionComponent<
 				setScore={(score) => {
 					setScore(score);
 					setNewMusicScore(score);
-					const ranges = getMeasuresStartAndEndTime(score.parts[0].measures, {
-						durationStartIndex: 14,
-						durationEndIndex: 20,
-					});
-					if (ranges) setTestRanges(ranges);
 				}}
 				setImportedAudio={setImportedAudio}
 				musicScore={musicScore}
+				getAudioBuffer={playbackManager.getMergedAudioBufffer}
 			/>
 			<PlaybackVolumeManager
 				volumePairs={volumePairs}
@@ -54,13 +50,21 @@ const ImportExportTestPage: FunctionComponent<
 				seekPercentage={seekPercentage}
 				playbackState={playbackState}
 			/>
-			{/* <button
+			<button
 				onClick={() => {
-					setTestRanges([19.354838709677416, 32.9032258064516]);
+					if (!musicScore) return;
+					const ranges = getMeasuresStartAndEndTime(
+						musicScore.parts[0].measures,
+						{
+							durationStartIndex: 14,
+							durationEndIndex: 20,
+						}
+					);
+					setTestRanges(ranges);
 				}}
 			>
 				Quick Test
-			</button> */}
+			</button>
 
 			{testRanges && playbackManager && (
 				<RangedPlaybackManager
