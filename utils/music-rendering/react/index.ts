@@ -35,10 +35,8 @@ export const drawMeasures = (
   getCanvasForPage: BeatCanvasDel,
   drawAboveBelow: boolean
 ) => {
-  const music = new Music();
-  music.setMeasures(measures);
   const renderer = new MeasureRenderer(
-    music,
+    measures,
     dimensions,
     getCanvasForPage,
     measurements,

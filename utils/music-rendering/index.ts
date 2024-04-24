@@ -20,10 +20,8 @@ export const renderMeasures = (
   const pageParams = PageDimensionParams.genericSheetMusic();
   const dimensions = MusicLayout.getDimensions(pageParams);
   const measurements = new Measurements(ABOVE_BELOW_CT, BODY_CT, 3);
-  const music = new Music();
-  music.setMeasures(measures);
   const renderer = new MeasureRenderer(
-    music,
+    measures,
     dimensions,
     getBeatCanvasForPage,
     measurements,
@@ -61,8 +59,6 @@ export const getHTMLCanvas = (
   lineToSpaceRatio = 3,
   getBeatCanvas?: BeatCanvasDel
 ) => {
-  const music = new Music();
-  music.setMeasures(measures);
   const drawingCanvas = new ReactDrawingCanvas("%");
   const converter = (xValue: number) => xValue / aspectRatio;
   let beatCanvas;
@@ -82,7 +78,7 @@ export const getHTMLCanvas = (
     lineToSpaceRatio
   );
   const renderer = new MeasureRenderer(
-    music,
+    measures,
     musicDimensions,
     () => beatCanvas,
     measurements,

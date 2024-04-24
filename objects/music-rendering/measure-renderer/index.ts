@@ -1,7 +1,6 @@
 import { MeasureTransformer } from "@/objects/music/music-display-data/measure-transformer";
 import { Music } from "@/objects/music/readonly-music";
 import { MeasureManager } from "../measure-manager";
-import { MeasureWidthCalculator } from "../measure-manager/measure-width-calculator";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
 import {
@@ -80,7 +79,7 @@ export class MeasureRenderer {
     };
   }
 
-  private getRenderData() {
+  private getMusicRenderData() {
     this.transformer.computeDisplayData([
       {
         attacher: "beam-data",
@@ -92,9 +91,38 @@ export class MeasureRenderer {
     ]);
     return this.transformer.getMeasureRenderData();
   }
+  private generateMeasureOutline() {
+    const { measureDimensions } = this.musicDimensions;
+    this.measures.forEach((measure, i) => {
+      this.measureManager.addMeasure(
+        {
+          required: [
+            {
+              key: "note",
+              width: measureDimensions.width,
+              displayByDefault: true,
+            },
+            {
+              key: "clef",
+              width: measureDimensions.width / 6,
+              displayByDefault: false,
+            },
+            {
+              key: "keySignature",
+              width: measureDimensions.width / 5,
+              displayByDefault: false,
+            },
+          ],
+          optional: [],
+        },
+        i === this.measures.length - 1
+      );
+    });
+  }
 
   public render() {
-    const renderData = this.getRenderData();
+    this.generateMeasureOutline();
+    const renderData = this.getMusicRenderData();
     renderData.forEach((measure, measureIndex) => {
       const timeSig = this.music.getMeasureTimeSignature(measureIndex);
       const measureData = this.measureManager.getMeasureData(measureIndex);
@@ -111,6 +139,7 @@ export class MeasureRenderer {
         x: measureData.start.x,
         y: measureData.start.y - padding.top - noteSpaceHeight,
       };
+      console.log(measureData.width);
       beatCanvas.drawMeasure({
         topLeft: { ...measureData.start },
         width: measureData.width,

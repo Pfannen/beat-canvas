@@ -133,6 +133,8 @@ export class MeasureOutline<T extends string> {
     const globalIndex = line.startMeasureIndex + measureIndex;
     const sections = line.measures[measureIndex].sections!;
     const sectionIndex = this.getSectionIndex(globalIndex, sectionKey);
+    const widthDifference = newWidth - sections[sectionIndex].width;
+    line.measures[measureIndex].width += widthDifference;
     sections[sectionIndex].width = newWidth;
   }
 
@@ -146,6 +148,7 @@ export class MeasureOutline<T extends string> {
     const sections = line.measures[measureIndex].sections!;
     const sectionIndex = this.getSectionIndex(globalIndex, sectionKey);
     sections[sectionIndex].width += extraWidth;
+    line.measures[measureIndex].width += extraWidth;
   }
 
   private getCommittedMeasure(

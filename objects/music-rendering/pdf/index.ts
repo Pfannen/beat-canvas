@@ -27,7 +27,7 @@ export const drawPDF = async () => {
   const measurements = new Measurements(ABOVE_BELOW_CT, BODY_CT, 3);
   music.setMeasures(measures);
   const renderer = new MeasureRenderer(
-    music,
+    measures,
     dimensions,
     pdfLibManager.getBeatCanvasForPage.bind(pdfLibManager),
     measurements,
