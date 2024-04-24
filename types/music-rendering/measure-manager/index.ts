@@ -40,11 +40,11 @@ export type MeasureSections = {
   >;
 };
 
-const t: MeasureSections = {
-  required: {
-    clef: { width: 10, metadata: 1, displayByDefault: false },
-  },
-}; //Stuck here, metadata can be any required type
+// const t: MeasureSections = {
+//   required: {
+//     clef: { width: 10, metadata: 1, displayByDefault: false },
+//   },
+// }; //Stuck here, metadata can be any required type
 
 export const measureSectionOrder: Record<MeasureSection, number> = {
   clef: 0,
@@ -62,13 +62,17 @@ export type SectionArray<T extends Record<string, any>> = {
   [K in keyof T]: Section<K, T[K]>;
 }[keyof T][];
 
-export type CoordinateSection<T> = {
+export type CoordinateSection<TKey, TMetadata> = {
   startX: number;
-} & SectionData<T>;
+} & Section<TKey, TMetadata>;
 
-export type CoordinateSections<T extends Record<string, any>> = {
-  [K in keyof T]: CoordinateSection<T[K]>;
-};
+export type CooridinateSectionArray<T extends Record<string, any>> = {
+  [K in keyof T]: CoordinateSection<K, T[K]>;
+}[keyof T][];
+
+// export type CoordinateSections<T extends Record<string, any>> = {
+//   [K in keyof T]: CoordinateSection<T[K]>;
+// };
 
 //#region Measure Outline Types
 export type MeasureLineMeasure<T> = { startX: number; metadata?: T };
@@ -93,25 +97,25 @@ export type MeasureIndexData = {
   index: number;
 };
 
-export type IterateMeasuresArgs = {
+export type IterateMeasuresArgs<T extends Record<string, any>> = {
   startMeasureIndex: number;
   measureCount: number;
   setSectionWidth: (
-    index: number,
-    sectionIndex: number,
+    measureIndex: number,
+    sectionKey: keyof T,
     newWidth: number
   ) => void;
   addToSectionWidth: (
-    index: number,
-    sectionIndex: number,
+    measureIndex: number,
+    sectionKey: keyof T,
     extraWidth: number
   ) => void;
-  setMeasureWidth: (index: number, width: number) => void;
-  getMeasureWidth: (index: number) => number;
+  setMeasureWidth: (measureIndex: number, width: number) => void;
+  getMeasureWidth: (measureIndex: number) => number;
 };
 
-export type IterateMeasuresCallback = (
-  args: IterateMeasuresArgs,
+export type IterateMeasuresCallback<T extends Record<string, any>> = (
+  args: IterateMeasuresArgs<T>,
   measureIndex: number
 ) => void;
 //#endregion

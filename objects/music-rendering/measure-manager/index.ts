@@ -62,7 +62,9 @@ export class MeasureManager {
       this.commitCurrentLine();
       //Get first-measure sections (clef, key)
       //Get before note display sections (timesig?)
-      //
+      // Get note section
+      // Get after note sections (repeat?)
+      this.measureOutline.addMeasure(displayWidth, [{key: "clef", width: }])
     }
   }
 

@@ -1,7 +1,6 @@
 import { Coordinate } from "@/types";
-import { MeasureDrawData } from "@/types/music-rendering";
 import {
-  CoordinateSections,
+  CooridinateSectionArray,
   IterateMeasuresArgs,
   IterateMeasuresCallback,
   MeasureIndexData,
@@ -12,8 +11,12 @@ import {
 } from "@/types/music-rendering/measure-manager";
 
 export class MeasureOutline<T extends Record<string, any>> {
-  private pages: MeasureLine<CoordinateSections<T>>[][] = [[]];
+  private pages: MeasureLine<CooridinateSectionArray<T>>[][] = [[]];
   private measureIndexData = new Map<number, MeasureIndexData>();
+  private measureIndexToSectionIndex = new Map<
+    number,
+    Record<keyof T, number>
+  >();
   private currentLine?: UncommittedLine<SectionArray<T>>;
 
   constructor(firstLineStart: Coordinate, startMeasureIndex = 0) {
@@ -77,13 +80,9 @@ export class MeasureOutline<T extends Record<string, any>> {
 
   private convertSections(startX: number, sectionArray?: SectionArray<T>) {
     if (sectionArray) {
-      const sections = {} as CoordinateSections<T>;
+      const sections: CooridinateSectionArray<T> = [];
       sectionArray.forEach((section) => {
-        sections[section.key] = {
-          startX,
-          metadata: section.metadata,
-          width: section.width,
-        };
+        sections.push({ ...section, startX });
         startX += section.width;
       });
       return sections;
@@ -105,14 +104,15 @@ export class MeasureOutline<T extends Record<string, any>> {
         });
 
         x += measure.width;
-        const committedMeasure: MeasureLineMeasure<CoordinateSections<T>> = {
-          startX: x - measure.width,
-          metadata: sections,
-        };
+        const committedMeasure: MeasureLineMeasure<CooridinateSectionArray<T>> =
+          {
+            startX: x - measure.width,
+            metadata: sections,
+          };
         return committedMeasure;
       });
 
-      const committedLine: MeasureLine<CoordinateSections<T>> = {
+      const committedLine: MeasureLine<CooridinateSectionArray<T>> = {
         endPoint: { x, y },
         measures,
         startMeasureIndex: this.currentLine.startMeasureIndex,
@@ -121,39 +121,45 @@ export class MeasureOutline<T extends Record<string, any>> {
     }
   }
 
+  private getSectionIndex(globalMeasureIndex: number, sectionKey: keyof T) {
+    const sectionIndices =
+      this.measureIndexToSectionIndex.get(globalMeasureIndex)!;
+    return sectionIndices[sectionKey];
+  }
+
   private setMeasureSectionWidth(
-    line: UncommittedLine<SectionArray<T>>,
     measureIndex: number,
-    sectionIndex: number,
+    sectionKey: keyof T,
     newWidth: number
   ) {
-    const sections = line.measures[measureIndex].sections;
-    if (sections) {
-      sections[sectionIndex].width = newWidth;
-    }
+    const line = this.currentLine!;
+    const globalIndex = line.startMeasureIndex + measureIndex;
+    const sections = line.measures[measureIndex].sections!;
+    const sectionIndex = this.getSectionIndex(globalIndex, sectionKey);
+    sections[sectionIndex].width = newWidth;
   }
 
   private addToMeasureSectionWidth(
-    line: UncommittedLine<SectionArray<T>>,
     measureIndex: number,
-    sectionIndex: number,
-    newWidth: number
+    sectionKey: keyof T,
+    extraWidth: number
   ) {
-    const sections = line.measures[measureIndex].sections;
-    if (sections) {
-      sections[sectionIndex].width += newWidth;
-    }
+    const line = this.currentLine!;
+    const globalIndex = line.startMeasureIndex + measureIndex;
+    const sections = line.measures[measureIndex].sections!;
+    const sectionIndex = this.getSectionIndex(globalIndex, sectionKey);
+    sections[sectionIndex].width += extraWidth;
   }
 
-  private getMeasure(
-    line: MeasureLine<CoordinateSections<T>>,
+  private getCommittedMeasure(
+    line: MeasureLine<CooridinateSectionArray<T>>,
     measureIndex: number
   ) {
     return line.measures[measureIndex];
   }
 
   private getMeasureCoordinates(
-    line: MeasureLine<CoordinateSections<T>>,
+    line: MeasureLine<CooridinateSectionArray<T>>,
     measureIndex: number
   ): { start: Coordinate; end: Coordinate } {
     const measureCount = line.measures.length;
@@ -200,32 +206,39 @@ export class MeasureOutline<T extends Record<string, any>> {
     );
   }
 
+  private insertSectionIndicies(
+    measureIndex: number,
+    sections?: SectionArray<T>
+  ) {
+    const keyToIndex = {} as Record<keyof T, number>;
+    sections?.forEach((section, i) => {
+      keyToIndex[section.key] = i;
+    });
+    this.measureIndexToSectionIndex.set(measureIndex, keyToIndex);
+  }
+
   public addMeasure(width: number, sections?: SectionArray<T>) {
     this.checkCurrentLine();
+    const line = this.currentLine!;
+    const measureIndex = line.startMeasureIndex + line.measures.length;
+    this.insertSectionIndicies(measureIndex, sections);
     this.currentLine!.measures.push({ width, sections });
   }
 
   private getCommittedMeasureWidth(
-    line: MeasureLine<CoordinateSections<T>>,
+    line: MeasureLine<CooridinateSectionArray<T>>,
     measureIndex: number
   ) {
     const { start, end } = this.getMeasureCoordinates(line, measureIndex);
     return end.x - start.x;
   }
 
-  private static setUncommittedMeasureWidth(
-    line: UncommittedLine<any>,
-    measureIndex: number,
-    newWidth: number
-  ) {
-    line.measures[measureIndex].width = newWidth;
+  private setUncommittedMeasureWidth(measureIndex: number, newWidth: number) {
+    this.currentLine!.measures[measureIndex].width = newWidth;
   }
 
-  private static getUncommittedMeasureWidth(
-    line: UncommittedLine<any>,
-    measureIndex: number
-  ) {
-    return line.measures[measureIndex].width;
+  private getUncommittedMeasureWidth(measureIndex: number) {
+    return this.currentLine!.measures[measureIndex].width;
   }
 
   public getMeasureWidth(
@@ -237,23 +250,23 @@ export class MeasureOutline<T extends Record<string, any>> {
     return this.getCommittedMeasureWidth(line, measureIndex);
   }
 
-  public iterateCurrentLine(cb: IterateMeasuresCallback) {
-    this.checkCurrentLine();
+  private createIteraterArgs() {
     const line = this.currentLine as UncommittedLine<SectionArray<T>>;
-    const args: IterateMeasuresArgs = {
+    const args: IterateMeasuresArgs<T> = {
       startMeasureIndex: line!.startMeasureIndex,
       measureCount: line!.measures.length,
-      getMeasureWidth: MeasureOutline.getUncommittedMeasureWidth.bind(
-        this,
-        line
-      ),
-      setMeasureWidth: MeasureOutline.setUncommittedMeasureWidth.bind(
-        this,
-        line
-      ),
-      setSectionWidth: this.setMeasureSectionWidth.bind(this, line),
-      addToSectionWidth: this.addToMeasureSectionWidth.bind(this, line),
+      getMeasureWidth: this.getUncommittedMeasureWidth.bind(this),
+      setMeasureWidth: this.setUncommittedMeasureWidth.bind(this),
+      setSectionWidth: this.setMeasureSectionWidth.bind(this),
+      addToSectionWidth: this.addToMeasureSectionWidth.bind(this),
     };
+    return args;
+  }
+
+  public iterateCurrentLine(cb: IterateMeasuresCallback<T>) {
+    this.checkCurrentLine();
+    const line = this.currentLine as UncommittedLine<SectionArray<T>>;
+    const args = this.createIteraterArgs();
     line!.measures.forEach((_, i) => cb(args, i));
   }
 
@@ -263,7 +276,7 @@ export class MeasureOutline<T extends Record<string, any>> {
       throw new Error(`MeasureOutline: Invalid measure index ${measureIndex}`);
     }
     const line = this.getPageLine(indexData.pageNumber, indexData.lineNumber);
-    const measure = this.getMeasure(line, indexData.index);
+    const measure = this.getCommittedMeasure(line, indexData.index);
     const { start, end } = this.getMeasureCoordinates(line, indexData.index);
     const width = end.x - start.x;
     return {
