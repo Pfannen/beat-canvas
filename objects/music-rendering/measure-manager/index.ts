@@ -41,12 +41,12 @@ export class MeasureManager {
       const measureSections = sectionHelper.getSortedSections(true);
       this.addMeasureToLine(width, measureSections);
     } else {
-      this.commitCurrentLine();
+      this.commitCurrentLine(true);
       const measureSections = sectionHelper.getSortedSections(false);
       this.addMeasureToLine(firstMeasureWidth, measureSections);
     }
     if (isLastMeasure) {
-      this.commitCurrentLine();
+      this.commitCurrentLine(false);
     }
   }
 
@@ -55,11 +55,14 @@ export class MeasureManager {
     this.measureOutline.addMeasure(width, sections);
   }
 
-  private commitCurrentLine() {
-    this.measureOutline.iterateCurrentLine((args, measureIndex) => {
-      const widthToAdd = this.widthOnLine / args.measureCount;
-      args.addToSectionWidth(measureIndex, "note", widthToAdd);
-    });
+  private commitCurrentLine(addRemainingWidth: boolean) {
+    if (addRemainingWidth) {
+      this.measureOutline.iterateCurrentLine((args, measureIndex) => {
+        const widthToAdd = this.widthOnLine / args.measureCount;
+        args.addToSectionWidth(measureIndex, "note", widthToAdd);
+      });
+    }
+
     this.createNewLine();
   }
 
@@ -105,6 +108,10 @@ export class MeasureManager {
     return true;
   };
 
+  public getMeasureSection(measureIndex: number, section: MeasureSection) {
+    return this.measureOutline.getMeasureSection(measureIndex, section);
+  }
+
   public getMeasureData(measureIndex: number) {
     return this.measureOutline.getMeasureData(measureIndex);
   }
@@ -117,18 +124,18 @@ class MeasureSectionHelper {
   ) {}
 
   private iterateSections(
-    reducer: (section: MeasureOutlineSection<any>) => any
+    reducer: (section: MeasureOutlineSection<any>, isRequired: boolean) => any
   ) {
-    this.sections.required.forEach(reducer);
-    this.sections.optional.forEach(reducer);
+    this.sections.required.forEach((section) => reducer(section, true));
+    this.sections.optional.forEach((section) => reducer(section, false));
   }
 
   public getWidths() {
     let width = 0;
     let firstMeasureWidth = 0;
-    this.iterateSections((section) => {
+    this.iterateSections((section, isRequired) => {
       if (section.displayByDefault) width += section.width;
-      else firstMeasureWidth += section.width;
+      firstMeasureWidth += section.width;
     });
 
     return { width, firstMeasureWidth };

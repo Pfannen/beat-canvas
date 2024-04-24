@@ -199,14 +199,14 @@ export class MeasureOutline<T extends string> {
 
   public addLine(xPos: number, yPos: number) {
     this.commitCurrentLine();
-    const startMeasureIndex = this.getNextMeasureIndex(); //Maybe store this in the metadata
+    const startMeasureIndex = this.getNextMeasureIndex();
     this.currentLine = this.createEmptyLine(
       { x: xPos, y: yPos },
       startMeasureIndex
     );
   }
 
-  private insertSectionIndicies(
+  private insertSectionIndices(
     measureIndex: number,
     sections?: SectionArray<T>
   ) {
@@ -221,7 +221,7 @@ export class MeasureOutline<T extends string> {
     this.checkCurrentLine();
     const line = this.currentLine!;
     const measureIndex = line.startMeasureIndex + line.measures.length;
-    this.insertSectionIndicies(measureIndex, sections);
+    this.insertSectionIndices(measureIndex, sections);
     this.currentLine!.measures.push({ width, sections });
   }
 
@@ -270,11 +270,19 @@ export class MeasureOutline<T extends string> {
     line!.measures.forEach((_, i) => cb(args, i));
   }
 
-  public getMeasureData(measureIndex: number) {
-    const indexData = this.measureIndexData.get(measureIndex);
-    if (!indexData) {
-      throw new Error(`MeasureOutline: Invalid measure index ${measureIndex}`);
+  public getMeasureSection(measureIndex: number, key: T) {
+    const indexData = this.measureIndexData.get(measureIndex)!;
+    const line = this.getPageLine(indexData.pageNumber, indexData.lineNumber);
+    const measure = this.getCommittedMeasure(line, indexData.index);
+    const sectionIndices = this.measureIndexToSectionIndex.get(measureIndex)!;
+    const sectionIndex = sectionIndices[key];
+    if (measure.metadata) {
+      return measure.metadata[sectionIndex];
     }
+  }
+
+  public getMeasureData(measureIndex: number) {
+    const indexData = this.measureIndexData.get(measureIndex)!;
     const line = this.getPageLine(indexData.pageNumber, indexData.lineNumber);
     const measure = this.getCommittedMeasure(line, indexData.index);
     const { start, end } = this.getMeasureCoordinates(line, indexData.index);
