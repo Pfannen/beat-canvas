@@ -19,13 +19,17 @@ export const renderMeasures = (
 ) => {
   const pageParams = PageDimensionParams.genericSheetMusic();
   const dimensions = MusicLayout.getDimensions(pageParams);
-  const measurements = new Measurements(ABOVE_BELOW_CT, BODY_CT, 3);
+  const measurements = new Measurements(
+    ABOVE_BELOW_CT,
+    BODY_CT,
+    3,
+    dimensions.measureDimensions
+  );
   const renderer = new MeasureRenderer(
     measures,
     dimensions,
     getBeatCanvasForPage,
-    measurements,
-    BODY_CT
+    measurements
   );
   renderer.render();
 };
@@ -65,7 +69,8 @@ export const getHTMLCanvas = (
   const measurements = new Measurements(
     ABOVE_BELOW_CT,
     BODY_CT,
-    lineToSpaceRatio
+    lineToSpaceRatio,
+    musicDimensions.measureDimensions
   );
   if (getBeatCanvas) {
     beatCanvas = getBeatCanvas();
@@ -83,8 +88,7 @@ export const getHTMLCanvas = (
     measures,
     musicDimensions,
     () => beatCanvas,
-    measurements,
-    BODY_CT
+    measurements
   );
   renderer.render();
   return beatCanvas.createCanvas({

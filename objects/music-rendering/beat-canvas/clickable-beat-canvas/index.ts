@@ -28,9 +28,10 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
     drawingCanvas: ReactDrawingCanvas,
     measurements: Measurements,
     delegates?: BeatCanvasPropDelegates,
-    drawOptions?: DeepPartial<BeatCanvasDrawOptions>
+    drawOptions?: DeepPartial<BeatCanvasDrawOptions>,
+    drawAboveBelow?: boolean
   ) {
-    super(drawingCanvas, measurements, drawOptions);
+    super(drawingCanvas, measurements, drawOptions, drawAboveBelow);
     this.overlay = new ClickableOverlay(
       drawingCanvas.drawRectangle.bind(drawingCanvas)
     );
@@ -45,7 +46,7 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
         const dimensions = this.measurements.getMeasureDimensions();
         const props = measureHandler({ measureIndex: options.measureIndex });
         super.drawMeasure(options);
-        const height = -dimensions.noteSpaceHeight;
+        const height = -dimensions.height;
         const width = options.totalWidth;
         this.overlay.createOverlay(
           {

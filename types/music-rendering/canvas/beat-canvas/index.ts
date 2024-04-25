@@ -1,7 +1,10 @@
-import { NoteType, TimeSignature } from "@/components/providers/music/types";
+import { NoteType } from "@/components/providers/music/types";
 import { Coordinate } from "@/types";
-import { MeasureAttributes, MeasureSection } from "@/types/music";
-import { BlockDirection } from "../../pdf";
+import {
+  DynamicMeasureAttributes,
+  MeasureSection,
+  StaticMeasureAttributes,
+} from "@/types/music";
 import { NoteDirection } from "@/lib/notes/types";
 import {
   MeasureComponent,
@@ -10,7 +13,6 @@ import {
 } from "../..";
 import { NoteDisplayData } from "@/types/music-rendering/draw-data/note";
 import { NoteAnnotation } from "@/types/music/note-annotations";
-import { MeasureDisplayData } from "../../draw-data/measure";
 import { CoordinateSectionArray } from "../../measure-manager/measure-outline";
 
 export type StemOptions = {
@@ -31,10 +33,7 @@ export type BeamFlagOptions = {
 export type MeasureLinesOptions = Pick<
   MeasureDrawData,
   "measureIndex" | "totalWidth" | "topLeft"
-> & {
-  componentIterator: MeasureComponentIterator;
-};
-
+>;
 export type BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: number;
   noteBodyAngle: number;
@@ -70,12 +69,11 @@ export type MeasureDrawData = {
   sections: CoordinateSectionArray<MeasureSection>;
   totalWidth: number;
   measureIndex: number;
-  componentIterator: MeasureComponentIterator;
-  attributes?: Partial<MeasureAttributes>;
 };
 
 export type MeasureData = MeasureDrawData & {
-  displayData?: Partial<MeasureDisplayData>;
+  sectionAttributes: StaticMeasureAttributes;
+  dynamicAttributes?: Partial<DynamicMeasureAttributes>;
 };
 
 export type RestOptions = {

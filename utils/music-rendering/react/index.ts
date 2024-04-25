@@ -1,10 +1,8 @@
 import { Measure } from "@/components/providers/music/types";
-import { BODY_CT } from "@/objects/measurement/constants";
 import { Measurements } from "@/objects/measurement/measurements";
 import { RelativeClickableBeatCanvas } from "@/objects/music-rendering/beat-canvas/relative-clickable-beat-canvas";
 import { RelativeDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/relative-drawing-canvas";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
-import { Music } from "@/objects/music/readonly-music";
 import { BeatCanvasDel, MeasureSectionToggle } from "@/types/music-rendering";
 import { BeatCanvasPropDelegates } from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
@@ -12,7 +10,8 @@ import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 export const getRelativeBeatCanvas = (
   aspectRatio: number,
   measurements: Measurements,
-  delegates?: BeatCanvasPropDelegates
+  delegates?: BeatCanvasPropDelegates,
+  drawAboveBelow?: boolean
 ) => {
   const converter = (xValue: number) => xValue / aspectRatio;
   const drawingCanvas = new RelativeDrawingCanvas(converter);
@@ -26,7 +25,8 @@ export const getRelativeBeatCanvas = (
         noteBodyAspectRatio: converter(1.5),
         dotAnnotationAspectRatio: converter(1),
       },
-    } //1.5 is the original ratio
+    }, //1.5 is the original ratio
+    drawAboveBelow
   );
 };
 
@@ -35,7 +35,6 @@ export const drawMeasures = (
   dimensions: MusicDimensionData,
   measurements: Measurements,
   getCanvasForPage: BeatCanvasDel,
-  drawAboveBelow: boolean,
   sectionToggleList?: MeasureSectionToggle
 ) => {
   const renderer = new MeasureRenderer(
@@ -43,8 +42,6 @@ export const drawMeasures = (
     dimensions,
     getCanvasForPage,
     measurements,
-    BODY_CT,
-    drawAboveBelow,
     sectionToggleList
   );
   renderer.render();

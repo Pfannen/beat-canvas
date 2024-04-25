@@ -7,7 +7,7 @@ import {
   MeasureSectionHandlers,
 } from "@/types/music-rendering/draw-data/measure";
 import { CoordinateSection } from "@/types/music-rendering/measure-manager/measure-outline";
-import { iterateSection } from "@/utils/music-rendering/segment-calculation";
+import { iterateSection } from "@/utils/music-rendering/section-calculation";
 
 export const getKeySignatureDrawData = (
   keySignature: number,

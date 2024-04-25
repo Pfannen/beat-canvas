@@ -57,6 +57,12 @@ export class Measurements {
     return space * spaceFraction + line * lineFraction;
   }
 
+  public getYOffset(yPos: number) {
+    return (
+      this.getYFractionOffset(yPos) * this.measureDimensions.noteSpaceHeight
+    );
+  }
+
   public static getXFractionOffset(
     xPos: number,
     noteLength: number,

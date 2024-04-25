@@ -3,11 +3,7 @@ import { Music } from "@/objects/music/readonly-music";
 import { MeasureManager } from "../measure-manager";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
-import {
-  BeatCanvasDel,
-  MeasureComponentIterator,
-  MeasureSectionToggle,
-} from "@/types/music-rendering";
+import { BeatCanvasDel, MeasureSectionToggle } from "@/types/music-rendering";
 import { NoteAnnotation } from "@/types/music/note-annotations";
 import {
   Measure,
@@ -15,17 +11,10 @@ import {
   TimeSignature,
 } from "@/components/providers/music/types";
 import { getNoteDuration } from "@/components/providers/music/utils";
-import {
-  CoordinateSection,
-  CoordinateSectionArray,
-} from "@/types/music-rendering/measure-manager/measure-outline";
-import { MeasureSection, MeasureSectionMetadata } from "@/types/music";
-import { getMeasureSectionHandler } from "./measure-section-handlers";
-import { MeasureSectionHandlerContext } from "@/types/music-rendering/draw-data/measure";
-import { MeasureData } from "@/types/music-rendering/canvas/beat-canvas";
+import { CoordinateSection } from "@/types/music-rendering/measure-manager/measure-outline";
+import { MeasureSectionMetadata } from "@/types/music";
 
 export class MeasureRenderer {
-  private bodyCt: number;
   private measures: Measure[];
   private music: Music;
   private getBeatCanvasForPage: BeatCanvasDel;
@@ -33,15 +22,11 @@ export class MeasureRenderer {
   private measureManager!: MeasureManager;
   private musicDimensions: MusicDimensionData;
   private measurements: Measurements;
-  private measureComponentIterator: MeasureComponentIterator;
-  private drawNonBodyComponents: boolean;
   constructor(
     measures: Measure[],
     musicDimensions: MusicDimensionData,
     getBeatCanvasForPage: BeatCanvasDel,
     measurements: Measurements,
-    bodyCount: number,
-    drawNonBodyComponents = false,
     sectionToggleList?: MeasureSectionToggle
   ) {
     this.measures = measures;
@@ -54,18 +39,7 @@ export class MeasureRenderer {
       this.musicDimensions,
       sectionToggleList
     );
-    this.bodyCt = bodyCount;
     this.measurements = measurements;
-    this.drawNonBodyComponents = drawNonBodyComponents;
-
-    const measureComponents = this.measurements.getMeasureComponents();
-    if (drawNonBodyComponents) {
-      this.measureComponentIterator =
-        measureComponents.iterateMeasureComponents.bind(measureComponents);
-    } else {
-      this.measureComponentIterator =
-        measureComponents.iterateBodyComponents.bind(measureComponents);
-    }
   }
 
   private getMeasureDimensions(measureIndex: number) {
@@ -149,22 +123,22 @@ export class MeasureRenderer {
     return { measureComponentHeights, containerHeight: height, padding };
   }
 
-  private getMeasureDisplayData(
-    sectionData: MeasureSectionMetadata,
-    sections: CoordinateSectionArray<MeasureSection>,
-    measureContext: MeasureSectionHandlerContext
-  ) {
-    const displayData: MeasureData["displayData"] = {};
-    sections.forEach((section) => {
-      const handler = getMeasureSectionHandler(section.key);
-      if (handler) {
-        const data = sectionData[section.key] as never;
-        const sectionDisplayData = handler(data, section, measureContext);
-        displayData[section.key] = sectionDisplayData as any;
-      }
-    });
-    return displayData;
-  }
+  // private getMeasureDisplayData(
+  //   sectionData: MeasureSectionMetadata,
+  //   sections: CoordinateSectionArray<MeasureSection>,
+  //   measureContext: MeasureSectionHandlerContext
+  // ) {
+  //   const displayData: MeasureData["displayData"] = {};
+  //   sections.forEach((section) => {
+  //     const handler = getMeasureSectionHandler(section.key);
+  //     if (handler) {
+  //       const data = sectionData[section.key] as never;
+  //       const sectionDisplayData = handler(data, section, measureContext);
+  //       displayData[section.key] = sectionDisplayData as any;
+  //     }
+  //   });
+  //   return displayData;
+  // }
 
   public render() {
     this.generateMeasureOutline();
@@ -189,20 +163,25 @@ export class MeasureRenderer {
         sections: measureData.metadata!,
         totalWidth: measureData.width,
         measureIndex,
-        componentIterator: this.measureComponentIterator,
-        displayData: this.getMeasureDisplayData(
-          measureMetadata,
-          measureData.metadata!,
-          {
-            getYOffset: this.measurements.getYFractionOffset.bind(
-              this.measurements
-            ),
-            noteSpaceBottomY: positionData.noteSpaceBottom.y,
-            noteSpaceHeight: positionData.noteSpaceHeight,
-            bodyHeight: this.measurements.getBodyHeight(),
-          }
-        ),
-      }); //Adjust beat canvas draw measures and add methods: drawKeySignature, drawTimeSignature?
+        sectionAttributes: {
+          keySignature: 0,
+          clef: "alto",
+          timeSignature: timeSig,
+        },
+      });
+
+      // displayData: this.getMeasureDisplayData(
+      //   measureMetadata,
+      //   measureData.metadata!,
+      //   {
+      //     getYOffset: this.measurements.getYFractionOffset.bind(
+      //       this.measurements
+      //     ),
+      //     noteSpaceBottomY: positionData.noteSpaceBottom.y,
+      //     noteSpaceHeight: positionData.noteSpaceHeight,
+      //     bodyHeight: this.measurements.getBodyHeight(),
+      //   }
+      // ),
 
       const noteSection = this.measureManager.getMeasureSection(
         measureIndex,

@@ -35,8 +35,7 @@ export const drawPDF = async () => {
     measures,
     dimensions,
     pdfLibManager.getBeatCanvasForPage.bind(pdfLibManager),
-    measurements,
-    BODY_CT
+    measurements
   );
   renderer.render();
 

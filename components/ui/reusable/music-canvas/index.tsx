@@ -33,14 +33,14 @@ const MusicCanvas: FunctionComponent<MusicCanvasProps> = ({
   const beatCanvas = getRelativeBeatCanvas(
     aspectRatio,
     measurements,
-    propDelegates
+    propDelegates,
+    drawAboveBelow
   );
   drawMeasures(
     measures,
     dimensions,
     measurements,
     () => beatCanvas,
-    drawAboveBelow,
     sectionToggleList
   );
 

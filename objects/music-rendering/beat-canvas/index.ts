@@ -22,8 +22,11 @@ import { NoteAnnotationDrawerArgs } from "@/types/music-rendering/canvas/beat-ca
 import { getRestDrawer } from "./drawers/measure-rests";
 import { getFlagDrawer } from "./drawers/note-flags";
 import { beamDrawer } from "./drawers/note-beams";
-import { keySignatureDrawer } from "./drawers/time-signature";
 import { Measurements } from "@/objects/measurement/measurements";
+import { CoordinateSectionArray } from "@/types/music-rendering/measure-manager/measure-outline";
+import { MeasureSection, StaticMeasureAttributes } from "@/types/music";
+import { getMeasureSectionDrawer } from "./drawers/measure-sections";
+import { MeasureSectionDrawerArgs } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-section";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
@@ -55,6 +58,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
   protected drawOptions: BeatCanvasDrawOptions;
   protected measurements: Measurements;
   protected measureComponentStartYOffset: number;
+  protected measureComponentIterator;
   constructor(
     canvas: T,
     measurements: Measurements,
@@ -68,6 +72,14 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     this.measureComponentStartYOffset = drawNonBodyComponents
       ? this.measurements.getMeasureDimensions().padding.top
       : this.measurements.getBodyTopOffset();
+    const measureComponents = this.measurements.getMeasureComponents();
+    if (drawNonBodyComponents) {
+      this.measureComponentIterator =
+        measureComponents.iterateMeasureComponents.bind(measureComponents);
+    } else {
+      this.measureComponentIterator =
+        measureComponents.iterateBodyComponents.bind(measureComponents);
+    }
   }
 
   private combineDrawOptions(drawOptions?: DeepPartial<BeatCanvasDrawOptions>) {
@@ -92,7 +104,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     const { x, y } = options.topLeft;
     const { line, space } = this.measurements.getComponentHeights();
     let currY = y;
-    options.componentIterator((component) => {
+    this.measureComponentIterator((component) => {
       const height = component.isLine ? line : space;
       const corner = { x, y: currY };
       del({ width: options.totalWidth, height, corner, ...component });
@@ -277,11 +289,9 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
 
   drawMeasure(options: MeasureData): void {
     let { x, y } = options.topLeft;
-    // const offsetY = y - options.containerPadding.top;
     this.drawMeasureLines({
       topLeft: { x, y: y - this.measureComponentStartYOffset },
       totalWidth: options.totalWidth,
-      componentIterator: options.componentIterator,
       measureIndex: options.measureIndex,
     });
     const { endBarWidthLineFraction } = this.drawOptions.measure;
@@ -299,18 +309,50 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
       height: bodyHeight - lineHeight / 2,
       width: endBarWidth,
     });
+    const dimensions = this.measurements.getMeasureDimensions();
+    this.drawMeasureSections(
+      y - (dimensions.noteSpaceHeight + dimensions.padding.top),
+      options.sections as any,
+      options.sectionAttributes
+    );
 
-    if (options.displayData) {
-      const { displayData } = options;
-      if (displayData.keySignature) {
-        keySignatureDrawer({
-          drawCanvas: this.canvas,
-          symbol: displayData.keySignature.symbol,
-          positions: displayData.keySignature.positions,
-          symbolHeight: this.measurements.getComponentHeights().space * 2.5,
-        });
-      }
-    }
+    // if (options.displayData) {
+    //   const { displayData } = options;
+    //   if (displayData.keySignature) {
+    //     keySignatureDrawer({
+    //       drawCanvas: this.canvas,
+    //       symbol: displayData.keySignature.symbol,
+    //       positions: displayData.keySignature.positions,
+    //       symbolHeight: this.measurements.getComponentHeights().space * 2.5,
+    //     });
+    //   }
+    // }
+  }
+
+  private yPosToAbsolute(measureBottomY: number, yPos: number) {
+    return this.measurements.getYOffset(yPos) + measureBottomY;
+  }
+
+  protected drawMeasureSections(
+    measureBottomY: number,
+    sections: CoordinateSectionArray<Exclude<MeasureSection, "note">>,
+    sectionAttributes: StaticMeasureAttributes
+  ) {
+    const yPosToAbsolute = this.yPosToAbsolute.bind(this, measureBottomY);
+
+    sections.forEach((section) => {
+      const drawer = getMeasureSectionDrawer(section.key);
+      const data = sectionAttributes[section.key];
+      const args: MeasureSectionDrawerArgs<typeof section.key> = {
+        drawCanvas: this.canvas,
+        bodyHeight: this.measurements.getBodyHeight(),
+        componentHeights: this.measurements.getComponentHeights(),
+        yPosToAbsolute,
+        data,
+        section,
+      };
+      drawer(args as never);
+    });
   }
 
   drawRest(options: RestOptions): void {
