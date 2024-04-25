@@ -1,13 +1,13 @@
 import { Coordinate, UnitConverter } from "@/types";
-import { TimeSignatureDrawData } from "@/types/music-rendering/draw-data/measure";
+import { KeySignatureDrawData } from "@/types/music-rendering/draw-data/measure";
 import { iterateSection } from "../segment-calculation";
 
-export const getTimeSignatureDrawData = (
-  timeSignature: number,
+export const getKeySignatureDrawData = (
+  keySignature: number,
   startX: number,
   sectionWidth: number,
   yPosToAbsolute: UnitConverter<number, number>
-): TimeSignatureDrawData => {
+): KeySignatureDrawData => {
   const symbol = "b";
   const symbolYPositions = [4, 7, 3, 6];
   const widthPerSymbol = sectionWidth / symbolYPositions.length;

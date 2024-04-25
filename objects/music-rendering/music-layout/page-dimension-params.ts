@@ -3,7 +3,10 @@ import { MusicDimensionParams } from "@/types/music-rendering/music-layout";
 import { PageSizes } from "pdf-lib";
 
 export class PageDimensionParams {
-  static genericSheetMusic(): MusicDimensionParams {
+  static genericSheetMusic(
+    measuresPerLine = 2,
+    linesPerPage = 7
+  ): MusicDimensionParams {
     const pageSize = PageSizes.A4;
     const pageDimensions = { width: pageSize[0], height: pageSize[1] };
     return {
@@ -15,8 +18,8 @@ export class PageDimensionParams {
         right: "medium",
       }),
       minHeaderSpace: 0.1 * pageDimensions.height,
-      measuresPerLine: 2,
-      linesPerPage: 7,
+      measuresPerLine,
+      linesPerPage,
       measurePaddingFractions: { top: 0.1, bottom: 0.2 },
     };
   }

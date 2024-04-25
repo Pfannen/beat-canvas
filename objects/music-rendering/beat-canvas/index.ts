@@ -289,11 +289,11 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
 
     if (options.displayData) {
       const { displayData } = options;
-      if (displayData.timeSignature) {
+      if (displayData.keySignature) {
         timeSignatureDrawer({
           drawCanvas: this.canvas,
-          symbol: displayData.timeSignature.symbol,
-          positions: displayData.timeSignature.positions,
+          symbol: displayData.keySignature.symbol,
+          positions: displayData.keySignature.positions,
           symbolHeight: options.componentHeights.space * 2.5,
         });
       }

@@ -86,7 +86,7 @@ export type MeasureDrawData = {
 };
 
 export type MeasureData = MeasureDrawData & {
-  displayData?: MeasureDisplayData;
+  displayData?: Partial<MeasureDisplayData>;
 };
 
 export type RestOptions = {

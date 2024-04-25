@@ -31,15 +31,22 @@ export class MeasureManager {
     );
   }
 
-  public addMeasure(sections: MeasureSections, isLastMeasure: boolean) {
+  public addMeasure(
+    sections: MeasureSections,
+    measureIndex: number,
+    isLastMeasure: boolean
+  ) {
     const sectionHelper = new MeasureSectionHelper(
       sections,
       measureSectionOrder
     );
     const { width, firstMeasureWidth } = sectionHelper.getWidths();
     if (this.isRoomOnLine(width)) {
-      const measureSections = sectionHelper.getSortedSections(true);
-      this.addMeasureToLine(width, measureSections);
+      const measureWidth = measureIndex === 0 ? firstMeasureWidth : width;
+      const measureSections = sectionHelper.getSortedSections(
+        measureIndex !== 0
+      );
+      this.addMeasureToLine(measureWidth, measureSections);
     } else {
       this.commitCurrentLine(true);
       const measureSections = sectionHelper.getSortedSections(false);
@@ -62,7 +69,6 @@ export class MeasureManager {
         args.addToSectionWidth(measureIndex, "note", widthToAdd);
       });
     }
-
     this.createNewLine();
   }
 
@@ -78,14 +84,14 @@ export class MeasureManager {
       this.measureOutline.addPage(newLineXStart, nextLineYStart);
     }
     this.measureOutline.addLine(newLineXStart, nextLineYStart);
+    this.widthOnLine = this.getLineWidth();
     this.startCoordinate = { x: newLineXStart, y: nextLineYStart };
   }
 
   protected getFirstLineWidth() {
     const { pageDimensions } = this.dimensionData;
     const { musicMargins } = pageDimensions;
-    let contentSpace =
-      pageDimensions.width - (musicMargins.left + musicMargins.right);
+    let contentSpace = this.getLineWidth();
 
     contentSpace -= pageDimensions.firstMeasureStart.x - musicMargins.left;
 
@@ -98,12 +104,13 @@ export class MeasureManager {
     return pageDimensions.width - (musicMargins.left + musicMargins.right);
   }
 
+  //Is valOne within tolerence of valTwo
   protected static isWithinTolerence = (
     valOne: number,
     valTwo: number,
     tolerence: number
   ) => {
-    const difference = valOne - valTwo;
+    const difference = valTwo - valOne;
     if (difference < 0) return tolerence > -difference;
     return true;
   };

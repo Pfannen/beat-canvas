@@ -89,11 +89,9 @@ export class MeasureOutline<T extends string> {
   private commitMeasures(pageNumber: number, lineNumber: number) {
     if (this.currentLine) {
       let { x, y } = this.currentLine.startPoint;
-
       const measures = this.currentLine.measures.map((measure, index) => {
         const measureIndex = this.currentLine!.startMeasureIndex + index;
         const sections = this.convertSections(x, measure.sections);
-
         this.measureIndexData.set(measureIndex, {
           pageNumber,
           lineNumber,
@@ -108,7 +106,6 @@ export class MeasureOutline<T extends string> {
           };
         return committedMeasure;
       });
-
       const committedLine: MeasureLine<CoordinateSectionArray<T>> = {
         endPoint: { x, y },
         measures,
