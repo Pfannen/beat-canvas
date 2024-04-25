@@ -6,29 +6,30 @@ import {
 import { iterateSection } from "@/utils/music-rendering/section-calculation";
 import { getAccidentalSVG } from "./key-signature/accidental-svgs";
 import {
-  calculateScaleToHeight,
   calculateScaleToWidth,
   convertWidthScaleToHeightScale,
 } from "@/utils/svg";
 import { MeasureSection } from "@/types/music";
+import { getKeySignatureData } from "./key-signature/widths";
 
 export const keySignatureSectionDrawer: MeasureSectionDrawer<
   "keySignature"
 > = ({ drawCanvas, data, componentHeights, section, yPosToAbsolute }) => {
-  const symbol = "b";
+  const { symbol, symbolWidth, positions } = getKeySignatureData(
+    data,
+    componentHeights.space
+  );
   const svg = getAccidentalSVG(symbol);
-  const symbolYPositions = [4, 7, 3, 6]; //Ab
-  const widthPerSymbol = section.width / symbolYPositions.length;
   iterateSection(
     section.width,
     section.startX,
-    symbolYPositions.length,
+    positions.length,
     true,
     (x, i) => {
-      const widthScale = calculateScaleToWidth(svg.viewBox, widthPerSymbol);
+      const widthScale = calculateScaleToWidth(svg.viewBox, symbolWidth);
       const scale =
         convertWidthScaleToHeightScale(svg.viewBox, widthScale) * 1.75;
-      const y = yPosToAbsolute(symbolYPositions[i]);
+      const y = yPosToAbsolute(positions[i]);
       drawCanvas.drawSVG({
         path: svg.path,
         viewBox: svg.viewBox,
@@ -37,7 +38,7 @@ export const keySignatureSectionDrawer: MeasureSectionDrawer<
         center: true,
         scale,
       });
-      x += widthPerSymbol;
+      x += symbolWidth;
     }
   );
 };

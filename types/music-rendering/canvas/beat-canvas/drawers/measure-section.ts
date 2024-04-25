@@ -1,10 +1,6 @@
 import { IDrawingCanvas } from "../../drawing-canvas";
-import { Coordinate, UnitConverter } from "@/types";
-import {
-  Accidental,
-  MeasureSection,
-  MeasureSectionMetadata,
-} from "@/types/music";
+import { UnitConverter } from "@/types";
+import { MeasureSection, MeasureSectionMetadata } from "@/types/music";
 import { MeasureComponentValues } from "@/types/music-rendering";
 import { CoordinateSection } from "@/types/music-rendering/measure-manager/measure-outline";
 
@@ -24,3 +20,24 @@ export type MeasureSectionDrawer<T extends MeasureSection> = (
 export type MeasureSectionDrawers = {
   [K in MeasureSection]: MeasureSectionDrawer<K>;
 };
+
+export type MeasureSectionWidthArgs = {
+  bodyHeight: number;
+  componentHeights: MeasureComponentValues;
+};
+
+export type MeasureSectionWidthHandlers = {
+  [K in MeasureSection]: (
+    args: MeasureSectionWidthArgs,
+    data: MeasureSectionMetadata[K]
+  ) => number;
+};
+
+export type InitialMeasureSection<T extends MeasureSection> = {
+  key: MeasureSection;
+  displayByDefault: boolean;
+  data: MeasureSectionMetadata[T];
+};
+
+export type InitialMeasureSectionArray =
+  InitialMeasureSection<MeasureSection>[];

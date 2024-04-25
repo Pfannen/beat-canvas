@@ -12,7 +12,9 @@ import {
 } from "@/components/providers/music/types";
 import { getNoteDuration } from "@/components/providers/music/utils";
 import { CoordinateSection } from "@/types/music-rendering/measure-manager/measure-outline";
-import { MeasureSectionMetadata } from "@/types/music";
+import { MeasureSection, MeasureSectionMetadata } from "@/types/music";
+import { InitialMeasureSectionArray } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-section";
+import { formatInitialSections } from "../beat-canvas/drawers/measure-sections/initial-section-handlers";
 
 export class MeasureRenderer {
   private measures: Measure[];
@@ -65,30 +67,27 @@ export class MeasureRenderer {
     ]);
     return this.transformer.getMeasureRenderData();
   }
-  private generateMeasureOutline() {
-    this.measureManager;
+
+  private generateMeasureOutline(
+    getMeasureMetadata: (measureIndex: number) => InitialMeasureSectionArray
+  ) {
     const { measureDimensions } = this.musicDimensions;
     this.measures.forEach((measure, i) => {
+      const sections = getMeasureMetadata(i);
+      const { required, optional } = formatInitialSections(sections, {
+        bodyHeight: this.measurements.getBodyHeight(),
+        componentHeights: this.measurements.getComponentHeights(),
+      });
+      const noteSection = {
+        key: "note",
+        width: measureDimensions.width,
+        displayByDefault: true,
+      };
+      required.push(noteSection as any);
       this.measureManager.addMeasure(
         {
-          required: [
-            {
-              key: "note",
-              width: measureDimensions.width,
-              displayByDefault: true,
-            },
-            {
-              key: "clef",
-              width: 0,
-              displayByDefault: false,
-            },
-            {
-              key: "keySignature",
-              width: measureDimensions.width / 5,
-              displayByDefault: false,
-            },
-          ],
-          optional: [],
+          required,
+          optional,
         },
         i,
         i === this.measures.length - 1
@@ -123,25 +122,8 @@ export class MeasureRenderer {
     return { measureComponentHeights, containerHeight: height, padding };
   }
 
-  // private getMeasureDisplayData(
-  //   sectionData: MeasureSectionMetadata,
-  //   sections: CoordinateSectionArray<MeasureSection>,
-  //   measureContext: MeasureSectionHandlerContext
-  // ) {
-  //   const displayData: MeasureData["displayData"] = {};
-  //   sections.forEach((section) => {
-  //     const handler = getMeasureSectionHandler(section.key);
-  //     if (handler) {
-  //       const data = sectionData[section.key] as never;
-  //       const sectionDisplayData = handler(data, section, measureContext);
-  //       displayData[section.key] = sectionDisplayData as any;
-  //     }
-  //   });
-  //   return displayData;
-  // }
-
   public render() {
-    this.generateMeasureOutline();
+    this.generateMeasureOutline(() => sections);
     const renderData = this.getMusicRenderData();
     const containerData = this.getContainerDimensionData();
     renderData.forEach((measure, measureIndex) => {
@@ -152,12 +134,7 @@ export class MeasureRenderer {
         measureData.pageNumber,
         this.measurements
       );
-      const measureMetadata: MeasureSectionMetadata = {
-        keySignature: 0,
-        clef: "alto",
-        timeSignature: timeSig,
-        note: undefined,
-      };
+
       beatCanvas.drawMeasure({
         topLeft: { ...measureData.start },
         sections: measureData.metadata!,
@@ -267,3 +244,13 @@ class MeasureComponentHelper {
     return { x: noteCenterX, y: centerY };
   }
 }
+
+const sections: InitialMeasureSectionArray = [
+  { key: "clef", data: "alto", displayByDefault: true },
+  { key: "keySignature", data: 0, displayByDefault: true },
+  {
+    key: "timeSignature",
+    data: { beatNote: 4, beatsPerMeasure: 4 },
+    displayByDefault: true,
+  },
+];
