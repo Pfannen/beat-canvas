@@ -1,8 +1,8 @@
-import { TimeSignatureDrawer } from "@/types/music-rendering/canvas/beat-canvas/drawers/time-signature";
+import { KeySignatureDrawer } from "@/types/music-rendering/canvas/beat-canvas/drawers/time-signature";
 import { getAccidentalSVG } from "./accidental-svgs";
 import { calculateScaleToHeight } from "@/utils/svg";
 
-export const timeSignatureDrawer: TimeSignatureDrawer = ({
+export const keySignatureDrawer: KeySignatureDrawer = ({
   drawCanvas,
   symbol,
   symbolHeight,

@@ -2,6 +2,7 @@ import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
 import { PDFDocument } from "pdf-lib";
 import { PDFLibDrawingCanvas } from ".";
 import { BeatCanvas } from "../../beat-canvas";
+import { Measurements } from "@/objects/measurement/measurements";
 
 export class PDFLibDrawingCanvasManager {
   private pdfDoc?: PDFDocument;
@@ -40,9 +41,9 @@ export class PDFLibDrawingCanvasManager {
     return this.pageIndexToCanvas.get(pageIndex)!;
   }
 
-  public getBeatCanvasForPage(pageNumber: number) {
+  public getBeatCanvasForPage(pageNumber: number, measurements: Measurements) {
     const drawingCanvas = this.getDrawingCanvasForPage(pageNumber);
-    return new BeatCanvas(drawingCanvas);
+    return new BeatCanvas(drawingCanvas, measurements);
   }
 
   public getPDF() {

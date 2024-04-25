@@ -21,8 +21,18 @@ const MeasureSelectCanvas: FunctionComponent<MeasureSelectCanvasProps> = ({
   onMeasureClick,
   getMeasureClassName,
 }) => {
+  const dimensions = useMemo(
+    () => MusicLayout.getMarginlessSheetMusic(aspectRatio),
+    []
+  );
   const measurements = useMemo(
-    () => new Measurements(ABOVE_BELOW_CT, BODY_CT, 3),
+    () =>
+      new Measurements(
+        ABOVE_BELOW_CT,
+        BODY_CT,
+        3,
+        dimensions.measureDimensions
+      ),
     []
   );
   const getMeasureProps = (identifier: MeasureIdentifier) => {

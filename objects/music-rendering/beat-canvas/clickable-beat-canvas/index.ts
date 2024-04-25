@@ -17,6 +17,7 @@ import {
 } from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
 import { ClickableOverlay } from "./clickable-overlay";
 import { DeepPartial } from "@/types";
+import { Measurements } from "@/objects/measurement/measurements";
 
 export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
   private overlay: ClickableOverlay;
@@ -25,10 +26,11 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
   private intermDrawMeasureLines!: BeatCanvas["drawMeasureLines"]; //This is a protected method, need to store it outside of the beat canvas property
   constructor(
     drawingCanvas: ReactDrawingCanvas,
+    measurements: Measurements,
     delegates?: BeatCanvasPropDelegates,
     drawOptions?: DeepPartial<BeatCanvasDrawOptions>
   ) {
-    super(drawingCanvas, drawOptions);
+    super(drawingCanvas, measurements, drawOptions);
     this.overlay = new ClickableOverlay(
       drawingCanvas.drawRectangle.bind(drawingCanvas)
     );
@@ -40,10 +42,11 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
   private setDrawMeasure(measureHandler?: MeasurePropDel) {
     if (measureHandler) {
       this.intermDrawMeasures = (options) => {
+        const dimensions = this.measurements.getMeasureDimensions();
         const props = measureHandler({ measureIndex: options.measureIndex });
         super.drawMeasure(options);
-        const height = -options.height;
-        const width = options.width;
+        const height = -dimensions.noteSpaceHeight;
+        const width = options.totalWidth;
         this.overlay.createOverlay(
           {
             topLeft: options.topLeft,
@@ -81,7 +84,7 @@ export class ClickableBeatCanvas extends BeatCanvas<ReactDrawingCanvas> {
             props,
           });
         };
-        return BeatCanvas.iterateMeasureLines(options, iteratorDel);
+        return this.iterateMeasureLines(options, iteratorDel);
       };
     } else {
       this.intermDrawMeasureLines = super.drawMeasureLines;

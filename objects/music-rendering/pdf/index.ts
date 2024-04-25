@@ -24,7 +24,12 @@ export const drawPDF = async () => {
   measures.push({ notes: [] });
   const pageParams = PageDimensionParams.genericSheetMusic(3);
   const dimensions = MusicLayout.getDimensions(pageParams);
-  const measurements = new Measurements(ABOVE_BELOW_CT, BODY_CT, 3);
+  const measurements = new Measurements(
+    ABOVE_BELOW_CT,
+    BODY_CT,
+    3,
+    dimensions.measureDimensions
+  );
   music.setMeasures(measures);
   const renderer = new MeasureRenderer(
     measures,

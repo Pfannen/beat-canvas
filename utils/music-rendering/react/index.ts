@@ -11,6 +11,7 @@ import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 
 export const getRelativeBeatCanvas = (
   aspectRatio: number,
+  measurements: Measurements,
   delegates?: BeatCanvasPropDelegates
 ) => {
   const converter = (xValue: number) => xValue / aspectRatio;
@@ -18,6 +19,7 @@ export const getRelativeBeatCanvas = (
   return new RelativeClickableBeatCanvas(
     converter,
     drawingCanvas,
+    measurements,
     delegates,
     {
       note: {

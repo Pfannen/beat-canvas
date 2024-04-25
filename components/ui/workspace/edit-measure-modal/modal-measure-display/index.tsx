@@ -32,7 +32,13 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
     [measures.length]
   );
   const measurements = useMemo(
-    () => new Measurements(aboveBelowCt, BODY_CT, lineToSpaceRatio),
+    () =>
+      new Measurements(
+        aboveBelowCt,
+        BODY_CT,
+        lineToSpaceRatio,
+        dimensions.measureDimensions
+      ),
     []
   );
   const measureComponents = measurements.getMeasureComponents();

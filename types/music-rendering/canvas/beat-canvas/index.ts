@@ -1,6 +1,6 @@
 import { NoteType, TimeSignature } from "@/components/providers/music/types";
 import { Coordinate } from "@/types";
-import { MeasureAttributes } from "@/types/music";
+import { MeasureAttributes, MeasureSection } from "@/types/music";
 import { BlockDirection } from "../../pdf";
 import { NoteDirection } from "@/lib/notes/types";
 import {
@@ -11,6 +11,7 @@ import {
 import { NoteDisplayData } from "@/types/music-rendering/draw-data/note";
 import { NoteAnnotation } from "@/types/music/note-annotations";
 import { MeasureDisplayData } from "../../draw-data/measure";
+import { CoordinateSectionArray } from "../../measure-manager/measure-outline";
 
 export type StemOptions = {
   bodyWidth: number;
@@ -29,16 +30,10 @@ export type BeamFlagOptions = {
 
 export type MeasureLinesOptions = Pick<
   MeasureDrawData,
-  | "topLeft"
-  | "componentHeights"
-  | "width"
-  // | "spaceCount"
-  // | "lineCount"
-  // | "topComponentIsLine"
-  // | "bodyEndPos"
-  // | "bodyStartPos"
-  | "measureIndex"
-> & { componentIterator: MeasureComponentIterator };
+  "measureIndex" | "totalWidth" | "topLeft"
+> & {
+  componentIterator: MeasureComponentIterator;
+};
 
 export type BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: number;
@@ -72,14 +67,8 @@ export type NoteData = NoteDrawData & { displayData: NoteDisplayData };
 
 export type MeasureDrawData = {
   topLeft: Coordinate;
-  width: number;
-  height: number;
-  containerPadding: BlockDirection<number>;
-  componentStartY: number;
-  bodyStartY: number;
-  bodyHeight: number;
-  componentHeights: MeasureComponentValues;
-  topComponentIsLine: boolean;
+  sections: CoordinateSectionArray<MeasureSection>;
+  totalWidth: number;
   measureIndex: number;
   componentIterator: MeasureComponentIterator;
   attributes?: Partial<MeasureAttributes>;

@@ -62,21 +62,23 @@ export const getHTMLCanvas = (
   const drawingCanvas = new ReactDrawingCanvas("%");
   const converter = (xValue: number) => xValue / aspectRatio;
   let beatCanvas;
+  const measurements = new Measurements(
+    ABOVE_BELOW_CT,
+    BODY_CT,
+    lineToSpaceRatio
+  );
   if (getBeatCanvas) {
     beatCanvas = getBeatCanvas();
   } else {
     beatCanvas = new RelativeClickableBeatCanvas(
       converter,
       drawingCanvas,
+      measurements,
       delegates,
       { note: { noteBodyAspectRatio: 1.5 / aspectRatio } }
     );
   }
-  const measurements = new Measurements(
-    ABOVE_BELOW_CT,
-    BODY_CT,
-    lineToSpaceRatio
-  );
+
   const renderer = new MeasureRenderer(
     measures,
     musicDimensions,

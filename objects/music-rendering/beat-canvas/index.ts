@@ -22,7 +22,8 @@ import { NoteAnnotationDrawerArgs } from "@/types/music-rendering/canvas/beat-ca
 import { getRestDrawer } from "./drawers/measure-rests";
 import { getFlagDrawer } from "./drawers/note-flags";
 import { beamDrawer } from "./drawers/note-beams";
-import { timeSignatureDrawer } from "./drawers/time-signature";
+import { keySignatureDrawer } from "./drawers/time-signature";
+import { Measurements } from "@/objects/measurement/measurements";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
@@ -51,12 +52,22 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
   implements IBeatCanvas
 {
   protected canvas: T;
-
   protected drawOptions: BeatCanvasDrawOptions;
-  constructor(canvas: T, drawOptions?: DeepPartial<BeatCanvasDrawOptions>) {
+  protected measurements: Measurements;
+  protected measureComponentStartYOffset: number;
+  constructor(
+    canvas: T,
+    measurements: Measurements,
+    drawOptions?: DeepPartial<BeatCanvasDrawOptions>,
+    drawNonBodyComponents = false
+  ) {
     this.canvas = canvas;
     this.drawOptions = getDrawOptions();
     this.combineDrawOptions(drawOptions);
+    this.measurements = measurements;
+    this.measureComponentStartYOffset = drawNonBodyComponents
+      ? this.measurements.getMeasureDimensions().padding.top
+      : this.measurements.getBodyTopOffset();
   }
 
   private combineDrawOptions(drawOptions?: DeepPartial<BeatCanvasDrawOptions>) {
@@ -74,17 +85,17 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     }
   }
 
-  protected static iterateMeasureLines(
+  protected iterateMeasureLines(
     options: MeasureLinesOptions,
     del: MeasureComponentContextIterator
   ) {
     const { x, y } = options.topLeft;
-    const { line, space } = options.componentHeights;
+    const { line, space } = this.measurements.getComponentHeights();
     let currY = y;
     options.componentIterator((component) => {
       const height = component.isLine ? line : space;
       const corner = { x, y: currY };
-      del({ width: options.width, height, corner, ...component });
+      del({ width: options.totalWidth, height, corner, ...component });
       currY -= height;
     });
   }
@@ -124,7 +135,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
         });
       }
     };
-    BeatCanvas.iterateMeasureLines(options, iteratorDel);
+    this.iterateMeasureLines(options, iteratorDel);
   }
 
   private drawBeamFlag(options: BeamFlagOptions): void {
@@ -265,36 +276,38 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
   }
 
   drawMeasure(options: MeasureData): void {
-    const { x, y } = options.topLeft;
+    let { x, y } = options.topLeft;
     // const offsetY = y - options.containerPadding.top;
     this.drawMeasureLines({
-      topLeft: { x, y: options.componentStartY },
-      width: options.width,
-      componentHeights: options.componentHeights,
+      topLeft: { x, y: y - this.measureComponentStartYOffset },
+      totalWidth: options.totalWidth,
       componentIterator: options.componentIterator,
       measureIndex: options.measureIndex,
     });
     const { endBarWidthLineFraction } = this.drawOptions.measure;
-    const { line: lineHeight } = options.componentHeights;
+    const { line: lineHeight } = this.measurements.getComponentHeights();
     const endBarWidth = lineHeight * endBarWidthLineFraction;
+    const bodyHeight = this.measurements.getBodyHeight();
+    const bodyTopOffset = y - this.measurements.getBodyTopOffset();
+    const bodyBottomY = bodyTopOffset - this.measurements.getBodyHeight();
     const corner = {
-      x: x + options.width - endBarWidth,
-      y: options.bodyStartY,
+      x: x + options.totalWidth - endBarWidth,
+      y: bodyBottomY,
     };
     this.canvas.drawRectangle({
       corner,
-      height: -(options.bodyHeight - lineHeight / 2),
+      height: bodyHeight - lineHeight / 2,
       width: endBarWidth,
     });
 
     if (options.displayData) {
       const { displayData } = options;
       if (displayData.keySignature) {
-        timeSignatureDrawer({
+        keySignatureDrawer({
           drawCanvas: this.canvas,
           symbol: displayData.keySignature.symbol,
           positions: displayData.keySignature.positions,
-          symbolHeight: options.componentHeights.space * 2.5,
+          symbolHeight: this.measurements.getComponentHeights().space * 2.5,
         });
       }
     }

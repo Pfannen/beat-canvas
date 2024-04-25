@@ -10,6 +10,7 @@ export type MeasureSectionHandlerContext = {
   getYOffset: (yPos: number) => number;
   noteSpaceBottomY: number;
   noteSpaceHeight: number;
+  bodyHeight: number;
 };
 
 export type MeasureSectionHandler<T extends MeasureSection> = (

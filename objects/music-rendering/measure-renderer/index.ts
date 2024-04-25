@@ -35,8 +35,6 @@ export class MeasureRenderer {
   private measurements: Measurements;
   private measureComponentIterator: MeasureComponentIterator;
   private drawNonBodyComponents: boolean;
-  private measureBodyHeight: number;
-  private bodyOffset: number;
   constructor(
     measures: Measure[],
     musicDimensions: MusicDimensionData,
@@ -68,22 +66,6 @@ export class MeasureRenderer {
       this.measureComponentIterator =
         measureComponents.iterateBodyComponents.bind(measureComponents);
     }
-    const { padding } = this.musicDimensions.measureDimensions;
-    const { bodyHeight, bodyOffset } =
-      this.measurements.getMeasureDimensionData(
-        musicDimensions.measureDimensions.noteSpaceHeight,
-        this.bodyCt
-      );
-    this.bodyOffset = bodyOffset + padding.top;
-    this.measureBodyHeight = bodyHeight;
-  }
-
-  private getComponentStartOffset(drawNonBodyComponents: boolean) {
-    const { measureDimensions } = this.musicDimensions;
-    if (!drawNonBodyComponents) {
-      return this.bodyOffset;
-    }
-    return measureDimensions.padding.top;
   }
 
   private getMeasureDimensions(measureIndex: number) {
@@ -168,22 +150,16 @@ export class MeasureRenderer {
   }
 
   private getMeasureDisplayData(
-    sections: CoordinateSectionArray<MeasureSection>,
     sectionData: MeasureSectionMetadata,
-    bottomY: number,
-    height: number
+    sections: CoordinateSectionArray<MeasureSection>,
+    measureContext: MeasureSectionHandlerContext
   ) {
-    const context: MeasureSectionHandlerContext = {
-      getYOffset: this.measurements.getYFractionOffset.bind(this.measurements),
-      noteSpaceBottomY: bottomY,
-      noteSpaceHeight: height,
-    };
     const displayData: MeasureData["displayData"] = {};
     sections.forEach((section) => {
       const handler = getMeasureSectionHandler(section.key);
       if (handler) {
         const data = sectionData[section.key] as never;
-        const sectionDisplayData = handler(data, section, context);
+        const sectionDisplayData = handler(data, section, measureContext);
         displayData[section.key] = sectionDisplayData as any;
       }
     });
@@ -193,15 +169,15 @@ export class MeasureRenderer {
   public render() {
     this.generateMeasureOutline();
     const renderData = this.getMusicRenderData();
-    const measureLineOffsetY = this.getComponentStartOffset(
-      this.drawNonBodyComponents
-    );
     const containerData = this.getContainerDimensionData();
     renderData.forEach((measure, measureIndex) => {
       const positionData = this.getContainerPositionData(measureIndex);
       const timeSig = this.music.getMeasureTimeSignature(measureIndex);
       const { measureData } = positionData;
-      const beatCanvas = this.getBeatCanvasForPage(measureData.pageNumber);
+      const beatCanvas = this.getBeatCanvasForPage(
+        measureData.pageNumber,
+        this.measurements
+      );
       const measureMetadata: MeasureSectionMetadata = {
         keySignature: 0,
         clef: "alto",
@@ -210,23 +186,23 @@ export class MeasureRenderer {
       };
       beatCanvas.drawMeasure({
         topLeft: { ...measureData.start },
-        width: measureData.width,
-        height: containerData.containerHeight,
-        componentStartY: measureData.start.y - measureLineOffsetY,
-        containerPadding: containerData.padding,
-        componentHeights: containerData.measureComponentHeights,
-        bodyHeight: this.measureBodyHeight,
-        bodyStartY: measureData.start.y - this.bodyOffset,
+        sections: measureData.metadata!,
+        totalWidth: measureData.width,
         measureIndex,
-        topComponentIsLine: this.measurements.topComponentIsLine(),
         componentIterator: this.measureComponentIterator,
         displayData: this.getMeasureDisplayData(
-          measureData.metadata!,
           measureMetadata,
-          positionData.noteSpaceBottom.y,
-          positionData.noteSpaceHeight
+          measureData.metadata!,
+          {
+            getYOffset: this.measurements.getYFractionOffset.bind(
+              this.measurements
+            ),
+            noteSpaceBottomY: positionData.noteSpaceBottom.y,
+            noteSpaceHeight: positionData.noteSpaceHeight,
+            bodyHeight: this.measurements.getBodyHeight(),
+          }
         ),
-      });
+      }); //Adjust beat canvas draw measures and add methods: drawKeySignature, drawTimeSignature?
 
       const noteSection = this.measureManager.getMeasureSection(
         measureIndex,

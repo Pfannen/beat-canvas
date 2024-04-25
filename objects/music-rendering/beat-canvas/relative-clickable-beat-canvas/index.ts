@@ -32,7 +32,7 @@ export class RelativeClickableBeatCanvas extends ClickableBeatCanvas {
 
   drawMeasure(options: MeasureData): void {
     options.topLeft.x = this.xValueConverter(options.topLeft.x);
-    options.width = this.xValueConverter(options.width);
+    options.totalWidth = this.xValueConverter(options.totalWidth);
     super.drawMeasure(options);
   }
 
