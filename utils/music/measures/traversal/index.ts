@@ -3,37 +3,45 @@ import { MeasureAttributes, TemporalMeasureAttributes } from '@/types/music';
 import {
 	OptionalLocationProperties,
 	PartLocationInfo,
+	RequiredLocationProperties,
 	TBCDurationAttributeInfo,
 } from '@/types/music/measure-traversal';
 import { initializeMeasureAttributes } from '../measure-generator';
 import { getSecondsBetweenXs } from '../../time';
 import { updateDurationStore } from './helpers';
+import { getNoteDuration } from '@/components/providers/music/utils';
+
+const getLastNoteXEnd = (
+	curLastNoteXEnd: number,
+	curX: number,
+	beatNote: number,
+	note?: Note
+) => {
+	// chords shouldn't advance the x position, neither should no note
+	if (note && !(note.annotations && note.annotations.chord)) {
+		return curX + getNoteDuration(note.type, beatNote);
+	} else return curLastNoteXEnd;
+};
 
 const createLocObj = (
-	currentAttributes: MeasureAttributes,
-	measureStartX: number,
-	curX: number,
-	measureIndex: number,
-	curSeconds: number,
 	durStore: TBCDurationAttributeInfo,
+	curSeconds: number,
+	required: RequiredLocationProperties,
 	optionals?: OptionalLocationProperties
 ) => {
 	const locInfo: PartLocationInfo = {
-		currentAttributes,
-		measureStartX,
-		curX,
-		measureIndex,
+		...required,
 	};
 
 	const completedDurInfo = updateDurationStore(
 		durStore,
-		measureIndex,
-		curX,
+		required.measureIndex,
+		required.curX,
 		curSeconds,
 		optionals
 	);
 	if (completedDurInfo) locInfo.completedDurationAttributes = completedDurInfo;
-	
+
 	if (optionals) Object.assign(locInfo, optionals);
 
 	return locInfo;
@@ -95,15 +103,27 @@ export const noteAttributeGenerator = function* (
 	for (let i = 0; i < measures.length; i++) {
 		// The x-value of the last location that was yielded
 		let lastX = 0;
+		let lastNoteXEnd = 0;
 		const measure = measures[i];
 		const { staticAttributes, temporalAttributes, notes } = measure;
 		const tA = temporalAttributes || [];
 
 		// Yield a loc obj for the beginning of the measure
-		yield createLocObj(attr, measureStartX, 0, i, curSeconds, durStore, {
-			newAttributes: staticAttributes,
-			measureStart: true,
-		});
+		yield createLocObj(
+			durStore,
+			curSeconds,
+			{
+				currentAttributes: attr,
+				measureStartX,
+				curX: 0,
+				measureIndex: i,
+				lastNoteXEnd,
+			},
+			{
+				newAttributes: staticAttributes,
+				measureStart: true,
+			}
+		);
 
 		let aIdx = 0;
 		let nIdx = 0;
@@ -127,15 +147,24 @@ export const noteAttributeGenerator = function* (
 			);
 
 			yield createLocObj(
-				attr,
-				measureStartX,
-				nextX,
-				i,
-				curSeconds,
 				durStore,
+				curSeconds,
+				{
+					currentAttributes: attr,
+					measureStartX,
+					curX: nextX,
+					measureIndex: i,
+					lastNoteXEnd,
+				},
 				optionals
 			);
 			lastX = nextX;
+			lastNoteXEnd = getLastNoteXEnd(
+				lastNoteXEnd,
+				nextX,
+				attr.timeSignature.beatNote,
+				optionals.note
+			);
 
 			optionalsInfo = getOptionalsInfo(notes, nIdx, tA, aIdx);
 		}
@@ -150,12 +179,15 @@ export const noteAttributeGenerator = function* (
 
 		// Yield an object for the end of a measure
 		yield createLocObj(
-			attr,
-			measureStartX,
-			attr.timeSignature.beatsPerMeasure,
-			i,
-			curSeconds,
 			durStore,
+			curSeconds,
+			{
+				currentAttributes: attr,
+				measureStartX,
+				curX: attr.timeSignature.beatsPerMeasure,
+				measureIndex: i,
+				lastNoteXEnd,
+			},
 			{ measureEnd: true }
 		);
 

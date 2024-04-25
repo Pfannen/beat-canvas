@@ -4,13 +4,21 @@ import { NoteAnnotations } from './note-annotations';
 
 export type PartLocationInfo = {
 	currentAttributes: MeasureAttributes;
+	// The cumuluative x position that the measure started on
 	measureStartX: number;
 	curX: number;
 	measureIndex: number;
+	// The x position of the last yielded note of the current measure
+	lastNoteXEnd: number;
+	// If it's the start of a measure
 	measureStart?: boolean;
+	// If it's the end of a measure
 	measureEnd?: boolean;
+	// The new attributes at the current x position
 	newAttributes?: Partial<MeasureAttributes>;
+	// The note at the current x position
 	note?: Note;
+	// The duration attributes that have completed at the current x position
 	completedDurationAttributes?: DurationAttributeInfo;
 };
 
@@ -57,17 +65,28 @@ export type TBCWedgeDurationInfo = StartDurationInfo & {
 	crescendo: boolean;
 };
 
-export type OptionalLocationProperties = {
-	note?: Note;
-	newAttributes?: Partial<MeasureAttributes>;
-	measureStart?: boolean;
-	measureEnd?: boolean;
+type RequiredLocationPropertyKeys =
+	| 'currentAttributes'
+	| 'measureStartX'
+	| 'curX'
+	| 'measureIndex'
+	| 'lastNoteXEnd';
+
+export type RequiredLocationProperties = {
+	[key in RequiredLocationPropertyKeys]: PartLocationInfo[key];
 };
 
-export type DurationAttributeInfoUpdater<
-	K extends DurationAttributeKey
-	//T extends keyof NoteAnnotations | keyof MeasureAttributes
-> = (
+type OptionalLocationPropertyKeys =
+	| 'note'
+	| 'newAttributes'
+	| 'measureStart'
+	| 'measureEnd';
+
+export type OptionalLocationProperties = {
+	[key in OptionalLocationPropertyKeys]?: PartLocationInfo[key];
+};
+
+export type DurationAttributeInfoUpdater<K extends DurationAttributeKey> = (
 	tbcDurationEntry: TBCDurationAttributeInfo[K],
 	durItem: (NoteAnnotations & MeasureAttributes)[K],
 	measureIndex: number,
