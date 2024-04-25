@@ -33,12 +33,8 @@ const createLocObj = (
 		optionals
 	);
 	if (completedDurInfo) locInfo.completedDurationAttributes = completedDurInfo;
-
-	if (optionals) {
-		const { note, newAttributes } = optionals;
-		locInfo.newAttributes = newAttributes;
-		locInfo.note = note;
-	}
+	
+	if (optionals) Object.assign(locInfo, optionals);
 
 	return locInfo;
 };
@@ -106,6 +102,7 @@ export const noteAttributeGenerator = function* (
 		// Yield a loc obj for the beginning of the measure
 		yield createLocObj(attr, measureStartX, 0, i, curSeconds, durStore, {
 			newAttributes: staticAttributes,
+			measureStart: true,
 		});
 
 		let aIdx = 0;
@@ -142,7 +139,6 @@ export const noteAttributeGenerator = function* (
 
 			optionalsInfo = getOptionalsInfo(notes, nIdx, tA, aIdx);
 		}
-
 		// Update the number of seconds that have elapsed here to account for the measure switch
 		// that occurs at the end of each measure iteration (use the beats per measure as the x)
 		curSeconds += getSecondsBetweenXs(
@@ -151,6 +147,18 @@ export const noteAttributeGenerator = function* (
 			attr.metronome,
 			attr.timeSignature
 		);
+
+		// Yield an object for the end of a measure
+		yield createLocObj(
+			attr,
+			measureStartX,
+			attr.timeSignature.beatsPerMeasure,
+			i,
+			curSeconds,
+			durStore,
+			{ measureEnd: true }
+		);
+
 		measureStartX += attr.timeSignature.beatsPerMeasure;
 	}
 };

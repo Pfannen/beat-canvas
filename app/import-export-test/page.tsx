@@ -5,7 +5,7 @@ import { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { useMusic } from '@/components/providers/music';
 import VolumeManager from '@/components/ui/playback/volume-manager';
 import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
-import RangedPlaybackManager from '@/components/ui/playback/ranged-playback-manager';
+import LoopPlaybackManager from '@/components/ui/playback/loop-playback/loop-playback-manager';
 import PlaybackVolumeManager from '@/components/ui/playback/playback-volume-manager';
 import { MusicScore } from '@/types/music';
 import { PlaybackManager } from '@/utils/audio/playback';
@@ -57,7 +57,7 @@ const ImportExportTestPage: FunctionComponent<
 						musicScore.parts[0].measures,
 						{
 							durationStartIndex: 14,
-							durationEndIndex: 20,
+							durationEndIndex: 15,
 						}
 					);
 					setTestRanges(ranges);
@@ -67,7 +67,7 @@ const ImportExportTestPage: FunctionComponent<
 			</button>
 
 			{testRanges && playbackManager && (
-				<RangedPlaybackManager
+				<LoopPlaybackManager
 					sourcePlaybackManager={playbackManager}
 					start={testRanges[0]}
 					end={testRanges[1]}

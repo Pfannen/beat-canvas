@@ -7,6 +7,8 @@ export type PartLocationInfo = {
 	measureStartX: number;
 	curX: number;
 	measureIndex: number;
+	measureStart?: boolean;
+	measureEnd?: boolean;
 	newAttributes?: Partial<MeasureAttributes>;
 	note?: Note;
 	completedDurationAttributes?: DurationAttributeInfo;
@@ -58,10 +60,12 @@ export type TBCWedgeDurationInfo = StartDurationInfo & {
 export type OptionalLocationProperties = {
 	note?: Note;
 	newAttributes?: Partial<MeasureAttributes>;
+	measureStart?: boolean;
+	measureEnd?: boolean;
 };
 
 export type DurationAttributeInfoUpdater<
-	K extends DurationAttributeKey,
+	K extends DurationAttributeKey
 	//T extends keyof NoteAnnotations | keyof MeasureAttributes
 > = (
 	tbcDurationEntry: TBCDurationAttributeInfo[K],

@@ -29,8 +29,6 @@ export class PlaybackManager extends VolumeManager {
 
 	getPlaybackState = () => this.maxDurationPlayer?.state;
 
-	managerHasAudio = () => !!this.getMaxDuration();
-
 	private addAudioPlayer = (buffer: ToneAudioBuffer, id: string) => {
 		const player = new Player();
 		player.buffer = buffer;
@@ -46,6 +44,7 @@ export class PlaybackManager extends VolumeManager {
 	};
 
 	private updateAudioDuration = () => {
+		if (this.maxDurationPlayer) this.maxDurationPlayer.onstop = () => {};
 		this.maxDurationPlayer = undefined;
 		for (const player of Object.values(this.players)) {
 			if (!this.maxDurationPlayer) this.maxDurationPlayer = player;
@@ -55,6 +54,10 @@ export class PlaybackManager extends VolumeManager {
 				this.maxDurationPlayer = player;
 			}
 		}
+		if (this.maxDurationPlayer)
+			this.maxDurationPlayer.onstop = () => {
+				if (this.maxDurationPlayer?.state === 'stopped') this.stop();
+			};
 	};
 
 	private loadAudioBuffers = async () => {
@@ -126,7 +129,7 @@ export class PlaybackManager extends VolumeManager {
 
 	stop = () => {
 		for (const player of Object.values(this.players)) {
-			if (player.state === 'stopped') return;
+			if (player.state === 'stopped') continue;
 			player.stop();
 		}
 
@@ -157,8 +160,9 @@ export class PlaybackManager extends VolumeManager {
 		let percentage = 0;
 		// If the player is stopped, secondsIntoPlayback *should* be updated correctly and
 		// it's divided the max player's duration
-		if (this.maxDurationPlayer.state === 'stopped')
+		if (this.maxDurationPlayer.state === 'stopped') {
 			percentage = this.secondsIntoPlayback / this.getMaxDuration();
+		}
 		// Else the player is playing, and we need to get the length of the current play session
 		// and add it to secondsIntoPlayback and finally divided it by the max player's duration
 		else {

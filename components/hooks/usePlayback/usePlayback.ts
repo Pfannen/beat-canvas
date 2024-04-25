@@ -21,7 +21,6 @@ export const usePlayback = (initialPBM?: PlaybackManager) => {
 	>(playbackManager.current.getPlaybackState);
 
 	const updatePlaybackState = () => {
-		console.log({ state: playbackManager.current.getPlaybackState() });
 		setPlaybackState(playbackManager.current.getPlaybackState());
 	};
 
@@ -70,6 +69,15 @@ export const usePlayback = (initialPBM?: PlaybackManager) => {
 	// Doing so in the useState initializer causes hydration issues due to
 	// playback manager only doing certain things when being ran on the client
 	useEffect(updateVolumePairs, []);
+
+	useEffect(() => {
+		const curState = playbackManager.current.getPlaybackState();
+		/* setPlaybackState((state) => {
+			if (curState !== state) return curState;
+			else return state;
+		}); */
+		if (curState !== playbackState) setPlaybackState(curState);
+	}, [pollValue, playbackState]);
 
 	useEffect(adjustPolling, [
 		playbackState,

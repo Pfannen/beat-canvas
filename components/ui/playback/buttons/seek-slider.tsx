@@ -12,11 +12,13 @@ type SeekSliderOmissions = 'type' | 'min' | 'max' | 'className';
 interface SeekSliderProps {
 	onSeek?: (seekPercent: number) => void;
 	seekPercentage?: number;
+	disableUserSliding?: boolean;
 }
 
 const SeekSlider: FunctionComponent<SeekSliderProps> = ({
 	onSeek,
 	seekPercentage,
+	disableUserSliding,
 }) => {
 	const isSeekingRef = useRef<boolean>(false);
 	const seekRef = useRef<HTMLInputElement>(null);
@@ -45,6 +47,7 @@ const SeekSlider: FunctionComponent<SeekSliderProps> = ({
 			onMouseUp={(event) => seek(+event.currentTarget.value)}
 			onTouchEnd={(event) => seek(+event.currentTarget.value)}
 			inputRef={seekRef}
+			disabled={disableUserSliding}
 		/>
 	);
 };

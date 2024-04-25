@@ -12,6 +12,8 @@ export interface PlaybackManagerProps {
 	onSeek: (seekPercent: number) => void;
 	seekPercentage?: number;
 	playbackState?: BasicPlaybackState;
+	disableUserSliding?: boolean;
+	stopPlaybackOnButtonSeek?: boolean;
 }
 
 const PlaybackManager: FunctionComponent<PlaybackManagerProps> = ({
@@ -21,6 +23,8 @@ const PlaybackManager: FunctionComponent<PlaybackManagerProps> = ({
 	onSeek,
 	seekPercentage,
 	playbackState,
+	disableUserSliding,
+	stopPlaybackOnButtonSeek = true,
 }) => {
 	return (
 		<div className={classes.playback_manager}>
@@ -29,7 +33,7 @@ const PlaybackManager: FunctionComponent<PlaybackManagerProps> = ({
 				<SeekButton
 					onClick={() => {
 						onSeek(0);
-						onStop();
+						stopPlaybackOnButtonSeek && onStop();
 					}}
 				/>
 				<PlayStopSwapper
@@ -39,13 +43,17 @@ const PlaybackManager: FunctionComponent<PlaybackManagerProps> = ({
 				<SeekButton
 					onClick={() => {
 						onSeek(1);
-						onStop();
+						stopPlaybackOnButtonSeek && onStop();
 					}}
 					right
 				/>
 			</div>
 			<div className={classes.slider_container}>
-				<SeekSlider onSeek={onSeek} seekPercentage={seekPercentage} />
+				<SeekSlider
+					onSeek={onSeek}
+					seekPercentage={seekPercentage}
+					disableUserSliding={disableUserSliding}
+				/>
 			</div>
 		</div>
 	);

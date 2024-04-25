@@ -10,12 +10,9 @@ import { MusicScore } from '@/types/music';
 
 interface PlaybackVolumeManagerProps
 	extends VolumeManagerProps,
-		PlaybackManagerProps {
-	rangedManager?: { sourcePBM: PlaybackManager; start: number; end: number };
-}
+		PlaybackManagerProps {}
 
 const PlaybackVolumeManager: FunctionComponent<PlaybackVolumeManagerProps> = ({
-	rangedManager,
 	volumePairs,
 	modifyVolume,
 	title,
@@ -24,25 +21,9 @@ const PlaybackVolumeManager: FunctionComponent<PlaybackVolumeManagerProps> = ({
 	onSeek,
 	seekPercentage,
 	playbackState,
+	disableUserSliding,
+	stopPlaybackOnButtonSeek,
 }) => {
-	const [initPlaybackManager, _] = useState<PlaybackManager | undefined>(() => {
-		if (rangedManager) {
-			const { sourcePBM, start, end } = rangedManager;
-			return sourcePBM.copy([start, end]);
-		} else return undefined;
-	});
-	/* const {
-		playMusic,
-		stopMusic,
-		seekMusic,
-		playbackManager,
-		volumePairs,
-		playbackState,
-		seekPercentage,
-		setImportedAudio,
-		setScore,
-	} = usePlayback(initPlaybackManager); */
-
 	return (
 		<div>
 			<VolumeManager volumePairs={volumePairs} modifyVolume={modifyVolume} />
@@ -53,6 +34,8 @@ const PlaybackVolumeManager: FunctionComponent<PlaybackVolumeManagerProps> = ({
 				onSeek={onSeek}
 				seekPercentage={seekPercentage}
 				playbackState={playbackState}
+				disableUserSliding={disableUserSliding}
+				stopPlaybackOnButtonSeek={stopPlaybackOnButtonSeek}
 			/>
 		</div>
 	);
