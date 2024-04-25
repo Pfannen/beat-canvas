@@ -5,7 +5,7 @@ import { RelativeClickableBeatCanvas } from "@/objects/music-rendering/beat-canv
 import { RelativeDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/relative-drawing-canvas";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
 import { Music } from "@/objects/music/readonly-music";
-import { BeatCanvasDel } from "@/types/music-rendering";
+import { BeatCanvasDel, MeasureSectionToggle } from "@/types/music-rendering";
 import { BeatCanvasPropDelegates } from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 
@@ -33,7 +33,8 @@ export const drawMeasures = (
   dimensions: MusicDimensionData,
   measurements: Measurements,
   getCanvasForPage: BeatCanvasDel,
-  drawAboveBelow: boolean
+  drawAboveBelow: boolean,
+  sectionToggleList?: MeasureSectionToggle
 ) => {
   const renderer = new MeasureRenderer(
     measures,
@@ -41,7 +42,8 @@ export const drawMeasures = (
     getCanvasForPage,
     measurements,
     BODY_CT,
-    drawAboveBelow
+    drawAboveBelow,
+    sectionToggleList
   );
   renderer.render();
   //   return beatCanvas.createCanvas({

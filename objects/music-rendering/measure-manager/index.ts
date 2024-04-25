@@ -9,16 +9,22 @@ import {
   MeasureSections,
   measureSectionOrder,
 } from "@/types/music-rendering/measure-manager";
+import { MeasureSectionToggle } from "@/types/music-rendering";
 
 export class MeasureManager {
   protected dimensionData: MusicDimensionData;
   protected measureOutline: MeasureOutline<MeasureSection>;
   private widthOnLine: number;
   private startCoordinate: Coordinate;
+  private sectionToggleList?: MeasureSectionToggle;
   protected pxTolerence = 1;
-  constructor(dimensionData: MusicDimensionData) {
+  constructor(
+    dimensionData: MusicDimensionData,
+    sectionToggleList?: MeasureSectionToggle
+  ) {
     this.dimensionData = dimensionData;
     this.widthOnLine = this.getFirstLineWidth();
+    this.sectionToggleList = sectionToggleList;
     this.startCoordinate = this.dimensionData.pageDimensions.firstMeasureStart;
     this.measureOutline = new MeasureOutline(this.startCoordinate);
   }
@@ -38,7 +44,8 @@ export class MeasureManager {
   ) {
     const sectionHelper = new MeasureSectionHelper(
       sections,
-      measureSectionOrder
+      measureSectionOrder,
+      this.sectionToggleList
     );
     const { width, firstMeasureWidth } = sectionHelper.getWidths();
     if (this.isRoomOnLine(width)) {
@@ -127,22 +134,32 @@ export class MeasureManager {
 class MeasureSectionHelper {
   constructor(
     private sections: MeasureSections,
-    private sectionSortMap: Record<MeasureSection, number>
+    private sectionSortMap: Record<MeasureSection, number>,
+    private sectionToggleList?: MeasureSectionToggle
   ) {}
 
   private iterateSections(
-    reducer: (section: MeasureOutlineSection<any>, isRequired: boolean) => any
+    reducer: (
+      section: MeasureOutlineSection<MeasureSection>,
+      isRequired: boolean
+    ) => any
   ) {
     this.sections.required.forEach((section) => reducer(section, true));
     this.sections.optional.forEach((section) => reducer(section, false));
+  }
+
+  private isSectionToggled(key: MeasureSection) {
+    return !this.sectionToggleList || this.sectionToggleList[key];
   }
 
   public getWidths() {
     let width = 0;
     let firstMeasureWidth = 0;
     this.iterateSections((section, isRequired) => {
-      if (section.displayByDefault) width += section.width;
-      firstMeasureWidth += section.width;
+      if (this.isSectionToggled(section.key)) {
+        if (section.displayByDefault) width += section.width;
+        firstMeasureWidth += section.width;
+      }
     });
 
     return { width, firstMeasureWidth };
@@ -151,7 +168,10 @@ class MeasureSectionHelper {
   public getSortedSections(filterRequired: boolean) {
     const combinedSections: MeasureSectionArray<MeasureSection> = [];
     this.iterateSections((section) => {
-      if (!filterRequired || section.displayByDefault) {
+      if (
+        this.isSectionToggled(section.key) &&
+        (!filterRequired || section.displayByDefault)
+      ) {
         combinedSections.push(section);
       }
     });

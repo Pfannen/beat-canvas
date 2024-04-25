@@ -42,6 +42,7 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
       aspectRatio={aspectRatio}
       dimensions={dimensions}
       measurements={measurements}
+      sectionToggleList={{ note: true }}
       drawAboveBelow
     >
       <SegmentedMeasures

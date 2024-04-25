@@ -7,6 +7,7 @@ import {
 } from "@/utils/music-rendering/react";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
+import { MeasureSectionToggle } from "@/types/music-rendering";
 
 type MusicCanvasProps = {
   measures: Measure[];
@@ -14,6 +15,7 @@ type MusicCanvasProps = {
   propDelegates?: BeatCanvasPropDelegates;
   dimensions: MusicDimensionData;
   measurements: Measurements;
+  sectionToggleList?: MeasureSectionToggle;
   drawAboveBelow?: boolean;
   children?: ReactNode;
 };
@@ -24,6 +26,7 @@ const MusicCanvas: FunctionComponent<MusicCanvasProps> = ({
   propDelegates,
   dimensions,
   measurements,
+  sectionToggleList,
   drawAboveBelow = false,
   children,
 }) => {
@@ -33,7 +36,8 @@ const MusicCanvas: FunctionComponent<MusicCanvasProps> = ({
     dimensions,
     measurements,
     () => beatCanvas,
-    drawAboveBelow
+    drawAboveBelow,
+    sectionToggleList
   );
 
   return beatCanvas.createCanvas({

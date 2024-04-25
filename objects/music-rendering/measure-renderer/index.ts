@@ -6,28 +6,22 @@ import { Measurements } from "@/objects/measurement/measurements";
 import {
   BeatCanvasDel,
   MeasureComponentIterator,
+  MeasureSectionToggle,
 } from "@/types/music-rendering";
 import { NoteAnnotation } from "@/types/music/note-annotations";
-import { getKeySignatureDrawData } from "@/utils/music-rendering/draw-data/measure";
 import {
   Measure,
   NoteType,
   TimeSignature,
 } from "@/components/providers/music/types";
-import { NoteComponent } from "@/types/music/render-data";
 import { getNoteDuration } from "@/components/providers/music/utils";
-import { Coordinate } from "@/types";
 import {
   CoordinateSection,
   CoordinateSectionArray,
 } from "@/types/music-rendering/measure-manager/measure-outline";
 import { MeasureSection, MeasureSectionMetadata } from "@/types/music";
 import { getMeasureSectionHandler } from "./measure-section-handlers";
-import {
-  MeasureDisplayData,
-  MeasureSectionHandler,
-  MeasureSectionHandlerContext,
-} from "@/types/music-rendering/draw-data/measure";
+import { MeasureSectionHandlerContext } from "@/types/music-rendering/draw-data/measure";
 import { MeasureData } from "@/types/music-rendering/canvas/beat-canvas";
 
 export class MeasureRenderer {
@@ -49,7 +43,8 @@ export class MeasureRenderer {
     getBeatCanvasForPage: BeatCanvasDel,
     measurements: Measurements,
     bodyCount: number,
-    drawNonBodyComponents = false
+    drawNonBodyComponents = false,
+    sectionToggleList?: MeasureSectionToggle
   ) {
     this.measures = measures;
     this.musicDimensions = musicDimensions;
@@ -57,7 +52,10 @@ export class MeasureRenderer {
     this.music = new Music();
     this.music.setMeasures(measures);
     this.transformer = new MeasureTransformer(this.music);
-    this.measureManager = new MeasureManager(this.musicDimensions);
+    this.measureManager = new MeasureManager(
+      this.musicDimensions,
+      sectionToggleList
+    );
     this.bodyCt = bodyCount;
     this.measurements = measurements;
     this.drawNonBodyComponents = drawNonBodyComponents;
