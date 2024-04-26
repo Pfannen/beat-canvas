@@ -3,7 +3,7 @@ import { Music } from "@/objects/music/readonly-music";
 import { MeasureManager } from "../measure-manager";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
-import { BeatCanvasDel, MeasureSectionToggle } from "@/types/music-rendering";
+import { MeasureSectionToggle } from "@/types/music-rendering";
 import { NoteAnnotation } from "@/types/music/note-annotations";
 import {
   Measure,
@@ -21,6 +21,7 @@ import { InitialMeasureSectionArray } from "@/types/music-rendering/canvas/beat-
 import { formatInitialSections } from "../beat-canvas/drawers/measure-sections/initial-section-handlers";
 import { noteAttributeGenerator } from "@/utils/music/measures/traversal";
 import { CanvasManager } from "@/types/music-rendering/canvas/canvas-manager";
+import { IBeatCanvas } from "@/types/music-rendering/canvas/beat-canvas";
 
 export class MeasureRenderer {
   private measures: Measure[];
@@ -28,7 +29,7 @@ export class MeasureRenderer {
   private canvasManager: CanvasManager;
   private transformer: MeasureTransformer;
   private measureManager!: MeasureManager;
-  private musicDimensions: MusicDimensionData;
+  protected musicDimensions: MusicDimensionData;
   private measurements: Measurements;
   constructor(
     measures: Measure[],
@@ -158,26 +159,13 @@ export class MeasureRenderer {
         measureData.pageNumber
       );
 
-      beatCanvas.drawMeasure({
+      this.drawMeasure(beatCanvas, {
         topLeft: { ...measureData.start },
         sections: measureData.metadata!,
         totalWidth: measureData.width,
         measureIndex,
         sectionAttributes: measureDetails[measureIndex].attributes,
-      });
-
-      // displayData: this.getMeasureDisplayData(
-      //   measureMetadata,
-      //   measureData.metadata!,
-      //   {
-      //     getYOffset: this.measurements.getYFractionOffset.bind(
-      //       this.measurements
-      //     ),
-      //     noteSpaceBottomY: positionData.noteSpaceBottom.y,
-      //     noteSpaceHeight: positionData.noteSpaceHeight,
-      //     bodyHeight: this.measurements.getBodyHeight(),
-      //   }
-      // ),
+      }); //Call this.drawMeasures so if a class extends this one, it can hook into the measure drawing (for overlays)
 
       const noteSection = this.measureManager.getMeasureSection(
         measureIndex,
@@ -229,6 +217,13 @@ export class MeasureRenderer {
         }
       });
     });
+  }
+
+  protected drawMeasure(
+    beatCanvas: IBeatCanvas,
+    measureData: Parameters<IBeatCanvas["drawMeasure"]>[0]
+  ) {
+    beatCanvas.drawMeasure(measureData);
   }
 }
 

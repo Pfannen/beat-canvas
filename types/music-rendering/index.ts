@@ -39,3 +39,12 @@ export type MeasureComponentIterator = (
 ) => void;
 
 export type MeasureSectionToggle = Partial<Record<MeasureSection, boolean>>;
+
+export type MeasureRenderArgs = {
+  measureIndex: number;
+  width: number;
+  height: number;
+  topLeft: Coordinate;
+};
+
+export type MeasureRenderDel = (args: MeasureRenderArgs) => void;
