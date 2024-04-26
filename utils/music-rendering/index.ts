@@ -3,20 +3,17 @@
 import { Measure } from "@/components/providers/music/types";
 import { ABOVE_BELOW_CT, BODY_CT } from "@/objects/measurement/constants";
 import { Measurements } from "@/objects/measurement/measurements";
-import { RelativeClickableBeatCanvas } from "@/objects/music-rendering/beat-canvas/relative-clickable-beat-canvas";
+import { RelativeCanvasManager } from "@/objects/music-rendering/beat-canvas/relative-clickable-beat-canvas/manager";
 import { ReactDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
 import { PageDimensionParams } from "@/objects/music-rendering/music-layout/page-dimension-params";
-import { Music } from "@/objects/music/readonly-music";
-import { IBeatCanvas } from "@/types/music-rendering/canvas/beat-canvas";
 import { PropDelegates } from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
+import { CanvasManager } from "@/types/music-rendering/canvas/canvas-manager";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
+import { ReactNode } from "react";
 
-export const renderMeasures = (
-  measures: Measure[],
-  getBeatCanvasForPage: (pageNum: number) => IBeatCanvas
-) => {
+export const renderMeasures = (measures: Measure[], manager: CanvasManager) => {
   const pageParams = PageDimensionParams.genericSheetMusic();
   const dimensions = MusicLayout.getDimensions(pageParams);
   const measurements = new Measurements(
@@ -28,7 +25,7 @@ export const renderMeasures = (
   const renderer = new MeasureRenderer(
     measures,
     dimensions,
-    getBeatCanvasForPage,
+    manager,
     measurements
   );
   renderer.render();
@@ -53,45 +50,44 @@ const createMockMeasures = () => {
   return measures;
 };
 
-type BeatCanvasDel = () => RelativeClickableBeatCanvas;
-
 export const getHTMLCanvas = (
   aspectRatio: number,
   measures: Measure[],
   musicDimensions: MusicDimensionData,
   delegates?: Partial<PropDelegates>,
-  lineToSpaceRatio = 3,
-  getBeatCanvas?: BeatCanvasDel
+  lineToSpaceRatio = 3
 ) => {
-  const drawingCanvas = new ReactDrawingCanvas("%");
   const converter = (xValue: number) => xValue / aspectRatio;
-  let beatCanvas;
   const measurements = new Measurements(
     ABOVE_BELOW_CT,
     BODY_CT,
     lineToSpaceRatio,
     musicDimensions.measureDimensions
   );
-  if (getBeatCanvas) {
-    beatCanvas = getBeatCanvas();
-  } else {
-    beatCanvas = new RelativeClickableBeatCanvas(
-      converter,
-      drawingCanvas,
-      measurements,
-      delegates,
-      { note: { noteBodyAspectRatio: 1.5 / aspectRatio } }
-    );
-  }
+
+  const manager = new RelativeCanvasManager(
+    measurements,
+    converter,
+    delegates,
+    { note: { noteBodyAspectRatio: 1.5 / aspectRatio } },
+    false
+  );
 
   const renderer = new MeasureRenderer(
     measures,
     musicDimensions,
-    () => beatCanvas,
+    manager,
     measurements
   );
   renderer.render();
-  return beatCanvas.createCanvas({
-    style: { position: "relative", width: "100%", height: "100%" },
-  });
+  const canvasCount = manager.getPageCount();
+  const canvases: ReactNode[] = [];
+  for (let i = 0; i < canvasCount; i++) {
+    canvases.push(
+      manager.createCanvas(i, {
+        style: { position: "relative", width: "100%", height: "100%" },
+      })
+    );
+  }
+  return canvases;
 };

@@ -2,15 +2,27 @@ import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
 import { PDFDocument } from "pdf-lib";
 import { PDFLibDrawingCanvas } from ".";
 import { BeatCanvas } from "../../beat-canvas";
-import { Measurements } from "@/objects/measurement/measurements";
+import { CanvasManager } from "@/types/music-rendering/canvas/canvas-manager";
 
-export class PDFLibDrawingCanvasManager {
+export class PDFLibCanvasManager extends CanvasManager {
   private pdfDoc?: PDFDocument;
   private pageSize: [number, number];
-  private pageCount = 0;
-  private pageIndexToCanvas: Map<number, IDrawingCanvas> = new Map();
-  constructor(pageSize: [number, number]) {
+  private pages: Map<number, IDrawingCanvas> = new Map();
+  constructor(
+    pageSize: [number, number],
+    ...args: ConstructorParameters<typeof CanvasManager>
+  ) {
+    super(...args);
     this.pageSize = pageSize;
+  }
+
+  protected _getPage(pageNumber: number) {
+    const drawingCanvas = this.pages.get(pageNumber)!;
+    return new BeatCanvas(drawingCanvas, this.measurements);
+  }
+
+  public getPageCount() {
+    return this.pages.size;
   }
 
   private checkPDFDoc() {
@@ -23,27 +35,11 @@ export class PDFLibDrawingCanvasManager {
     this.pdfDoc = await PDFDocument.create();
   }
 
-  public addPage() {
+  protected _addPage(pageNumber: number) {
     this.checkPDFDoc();
     const newPage = this.pdfDoc!.addPage(this.pageSize);
     const drawCanvas = PDFLibDrawingCanvas.getDrawingCanvas(newPage);
-    this.pageIndexToCanvas.set(this.pageCount, drawCanvas);
-    this.pageCount++;
-  }
-
-  public getDrawingCanvasForPage(pageNumber: number) {
-    const pageGap = pageNumber - this.pageCount;
-    for (let i = pageGap; i > 0; i--) {
-      // Generate needed pages to get "pageNumber" number of pages
-      this.addPage();
-    }
-    const pageIndex = pageNumber - 1;
-    return this.pageIndexToCanvas.get(pageIndex)!;
-  }
-
-  public getBeatCanvasForPage(pageNumber: number, measurements: Measurements) {
-    const drawingCanvas = this.getDrawingCanvasForPage(pageNumber);
-    return new BeatCanvas(drawingCanvas, measurements);
+    this.pages.set(pageNumber, drawCanvas);
   }
 
   public getPDF() {

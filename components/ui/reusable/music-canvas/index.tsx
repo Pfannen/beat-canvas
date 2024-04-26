@@ -3,7 +3,7 @@ import { FunctionComponent, ReactNode } from "react";
 import { Measure } from "@/components/providers/music/types";
 import {
   drawMeasures,
-  getRelativeBeatCanvas,
+  getRelativeBeatCanvasManager,
 } from "@/utils/music-rendering/react";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
@@ -30,21 +30,15 @@ const MusicCanvas: FunctionComponent<MusicCanvasProps> = ({
   drawAboveBelow = false,
   children,
 }) => {
-  const beatCanvas = getRelativeBeatCanvas(
+  const manager = getRelativeBeatCanvasManager(
     aspectRatio,
     measurements,
     propDelegates,
     drawAboveBelow
   );
-  drawMeasures(
-    measures,
-    dimensions,
-    measurements,
-    () => beatCanvas,
-    sectionToggleList
-  );
+  drawMeasures(measures, dimensions, measurements, manager, sectionToggleList);
 
-  return beatCanvas.createCanvas({
+  return manager.getPages({
     style: { position: "relative", width: "100%", height: "100%" },
     children,
   });

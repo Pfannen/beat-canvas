@@ -7,8 +7,6 @@ import {
 } from "@/types/music-rendering/canvas/beat-canvas";
 
 export class RelativeClickableBeatCanvas extends ClickableBeatCanvas {
-  // private xValueConverter: UnitConverter<number, number>;
-
   constructor(
     private xValueConverter: UnitConverter<number, number>,
     ...args: ConstructorParameters<typeof ClickableBeatCanvas>
