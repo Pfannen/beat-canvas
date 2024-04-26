@@ -1,15 +1,13 @@
 'use client';
 
 import { MusicScore } from '@/types/music';
-import { createMusicXMLScore } from './exportMusicXML';
 import { musicXMLToJSON } from './importMusicXML';
 import { loadFile } from '..';
 import { FileScoreRetriever } from '@/types/import-export';
 import { validateMusicScore } from '../schemas/validators';
-import { ToneAudioBuffer, ToneAudioBuffers } from 'tone';
 // @ts-ignore
 import * as audioBufferToBlob from 'audiobuffer-to-blob';
-import { toneBufferToAudioBuffer } from './audio-buffer-utils';
+import { createMusicXMLScore } from './export-mxml';
 
 export const exportData = (
 	content: string,
