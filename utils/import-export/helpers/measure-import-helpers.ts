@@ -36,7 +36,7 @@ const noteImportHelper: MeasureImportHelper = (mD, el) => {
 	if (mD.curX >= beatsPerMeasure) return;
 
 	// TODO: Make getNoteDetails a non-default export
-	const { pitch, octave, duration, annotations } = Helper.getNoteDetails(
+	const { pitch, octave, duration, type, annotations } = Helper.getNoteDetails(
 		el,
 		mD.tbcValues.notes
 	);
@@ -52,7 +52,8 @@ const noteImportHelper: MeasureImportHelper = (mD, el) => {
 		const note: Note = {
 			x: mD.curX,
 			y: getYPosFromNote({ pitch, octave }, currentAttributes.clef),
-			type: durationToNoteType(trueDuration, beatNote),
+			//type: durationToNoteType(trueDuration, beatNote),
+			type: type || durationToNoteType(duration, beatNote),
 		};
 		if (annotations && Object.keys(annotations).length > 0)
 			note.annotations = annotations;

@@ -19,7 +19,9 @@ const getLastNoteXEnd = (
 ) => {
 	// chords shouldn't advance the x position, neither should no note
 	if (note && !(note.annotations && note.annotations.chord)) {
-		return curX + getNoteDuration(note.type, beatNote);
+		return (
+			curX + getNoteDuration(note.type, beatNote, note.annotations?.dotted)
+		);
 	} else return curLastNoteXEnd;
 };
 

@@ -1,3 +1,6 @@
+import { NoteType } from '@/components/providers/music/types';
+import { NoteTypeMXML } from '@/types/import-export/import';
+
 export const createAppend = (
 	root: XMLDocument,
 	parent: Element,
@@ -45,4 +48,45 @@ export const getSingleElement = (
 
 export const verifyTagName = (element: Element, expectedTagName: string) => {
 	return element.tagName === expectedTagName;
+};
+
+const mxmlNoteTypeToBeatCanvasNoteType: { [key in NoteTypeMXML]: NoteType } = {
+	whole: 'whole',
+	half: 'half',
+	quarter: 'quarter',
+	eighth: 'eighth',
+	'16th': 'sixteenth',
+	'32nd': 'thirtysecond',
+	'64th': 'sixtyfourth',
+	'128th': 'sixtyfourth',
+};
+
+export const convertFromMXMLNoteType = (mxmlNoteType: NoteTypeMXML) => {
+	const noteType = mxmlNoteTypeToBeatCanvasNoteType[mxmlNoteType];
+	if (!noteType) {
+		console.error('Unknown mxml note type: ' + mxmlNoteType);
+		return 'quarter';
+	}
+
+	return noteType;
+};
+
+const beatCanvasNoteTypeToMXMLNoteType: { [key in NoteType]: NoteTypeMXML } = {
+	whole: 'whole',
+	half: 'half',
+	quarter: 'quarter',
+	eighth: 'eighth',
+	sixteenth: '16th',
+	thirtysecond: '32nd',
+	sixtyfourth: '64th',
+};
+
+export const convertToMXMLNoteType = (noteType: NoteType) => {
+	const mxmlNoteType = beatCanvasNoteTypeToMXMLNoteType[noteType];
+	if (!mxmlNoteType) {
+		console.error('Unknown beat canvas note type: ' + noteType);
+		return 'quarter';
+	}
+
+	return mxmlNoteType;
 };

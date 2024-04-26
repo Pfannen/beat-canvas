@@ -42,7 +42,8 @@ export type NotePlacer = (
 	note: Note,
 	notes: Note[],
 	placementValidator: NotePlacementValidator,
-	timeSignature: TimeSignature
+	timeSignature: TimeSignature,
+	isDotted?: true
 ) => boolean;
 
 // Identifies a position in a score

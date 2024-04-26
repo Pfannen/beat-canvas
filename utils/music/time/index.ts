@@ -58,9 +58,14 @@ export const getSecondsBetweenXs = (
 export const getSecondsDurationOfNoteType = (
 	noteType: NoteType,
 	metronome: Metronome,
-	timeSignature: TimeSignature
+	timeSignature: TimeSignature,
+	isDotted?: true
 ) => {
-	const noteXDuration = getNoteDuration(noteType, timeSignature.beatNote);
+	const noteXDuration = getNoteDuration(
+		noteType,
+		timeSignature.beatNote,
+		isDotted
+	);
 
 	return getSecondsBetweenXs(0, noteXDuration, metronome, timeSignature);
 };

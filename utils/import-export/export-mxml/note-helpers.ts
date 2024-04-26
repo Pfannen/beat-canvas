@@ -17,6 +17,7 @@ import {
 	createXMLElement,
 } from './utils';
 import { minimalSegmentGenerator } from '@/utils/segments/segment-gen-1';
+import { convertToMXMLNoteType } from '../helpers/xml-helpers';
 
 const pitchEC = (note: Note, clef: Clef) => {
 	const pitchEl = createXMLElement('pitch');
@@ -39,10 +40,14 @@ export const noteEC = (note: Note, beatNote: number, clef: Clef) => {
 	const pitchEl = pitchEC(note, clef);
 
 	const durationEl = createXMLElement('duration');
-	durationEl.textContent = getNoteDuration(note.type, beatNote).toString();
+	durationEl.textContent = getNoteDuration(
+		note.type,
+		beatNote,
+		note.annotations?.dotted
+	).toString();
 
 	const typeEl = createXMLElement('type');
-	typeEl.textContent = note.type;
+	typeEl.textContent = convertToMXMLNoteType(note.type);
 
 	noteEl.appendChild(pitchEl);
 	noteEl.appendChild(durationEl);
@@ -178,17 +183,39 @@ export const restsEC = (
 	if (curX > beatsPerMeasure || curX <= lastNoteX || lastNoteX < 0) return [];
 	const restsData = minimalSegmentGenerator(lastNoteX, curX);
 
-	return restsData.map(({ count, segmentBeat }) => {
+	const restEls: Element[] = [];
+
+	restsData.forEach(({ count, segmentBeat }) => {
 		const noteEl = createXMLElement('note');
 		const restEl = createXMLElement('rest');
 		const durationEl = createXMLElement('duration');
 		const typeEl = createXMLElement('type');
 
-		const duration = count * segmentBeat;
-		durationEl.textContent = duration.toString();
-		typeEl.textContent = durationToNoteType(duration, beatNote);
+		durationEl.textContent = segmentBeat.toString();
+		typeEl.textContent = convertToMXMLNoteType(
+			durationToNoteType(segmentBeat, beatNote)
+		);
+
+		appendElements(noteEl, [restEl, durationEl, typeEl]);
+		restEls.push(noteEl);
+		for (let i = 0; i < count; i++) {
+			restEls.push(noteEl.cloneNode() as Element);
+		}
+	});
+
+	return restEls;
+
+	/* return restsData.map(({ count, segmentBeat }) => {
+		const noteEl = createXMLElement('note');
+		const restEl = createXMLElement('rest');
+		const durationEl = createXMLElement('duration');
+		const typeEl = createXMLElement('type');
+
+		//const duration = count * segmentBeat;
+		durationEl.textContent = segmentBeat.toString();
+		typeEl.textContent = durationToNoteType(segmentBeat, beatNote);
 
 		appendElements(noteEl, [restEl, durationEl, typeEl]);
 		return noteEl;
-	});
+	}); */
 };

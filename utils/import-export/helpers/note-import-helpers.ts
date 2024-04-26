@@ -3,6 +3,7 @@ import {
 	NoteImportAnnotationsHelperMap,
 	NoteImportHelper,
 	NoteImportHelperMap,
+	NoteTypeMXML,
 } from '@/types/import-export/import';
 import {
 	Accidental,
@@ -11,11 +12,13 @@ import {
 	SlurMXMLImport,
 } from '@/types/music/note-annotations';
 import {
+	convertFromMXMLNoteType,
 	getSingleElement,
 	validateElements,
 	verifyTagName,
 } from './xml-helpers';
 import { Pitch } from '@/types/music';
+import { NoteType } from '@/components/providers/music/types';
 
 const pitchOctaveImportHelper: NoteImportHelper = (nD, el) => {
 	if (!verifyTagName(el, 'pitch')) return;
@@ -55,6 +58,11 @@ const chordImportHelper: NoteImportHelper = (nD, el) => {
 	nD.annotations.chord = true;
 };
 
+const typeImportHelper: NoteImportHelper = (nD, el) => {
+	if (!verifyTagName(el, 'type') || !el.textContent) return;
+	nD.type = convertFromMXMLNoteType(el.textContent as NoteTypeMXML) as NoteType;
+};
+
 const articulationsImportHelper: NoteImportAnnotationsHelper = (
 	details,
 	el
@@ -87,6 +95,12 @@ const staccatoImportHelper: NoteImportAnnotationsHelper = (details, el) => {
 	if (!verifyTagName(el, 'staccato')) return;
 	const { a } = details;
 	a.staccato = true;
+};
+
+const dotImportHelper: NoteImportHelper = (nD, el) => {
+	if (!verifyTagName(el, 'dot')) return;
+
+	nD.annotations.dotted = true;
 };
 
 const dynamicsImportHelper: NoteImportAnnotationsHelper = (details, el) => {
@@ -155,6 +169,8 @@ export const noteImportHelperMap: NoteImportHelperMap = {
 	notations: notationsImportHelper,
 	accidental: accidentalImportHelper,
 	chord: chordImportHelper,
+	type: typeImportHelper,
+	dot: dotImportHelper,
 };
 
 export const notationsImportHelperMap: NoteImportAnnotationsHelperMap = {

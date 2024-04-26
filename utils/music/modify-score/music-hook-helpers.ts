@@ -141,7 +141,15 @@ export const curriedPlaceNote =
 						type: noteType,
 					};
 
-					if (placeNote(note, notes, notePlacementValidator, timeSignature))
+					if (
+						placeNote(
+							note,
+							notes,
+							notePlacementValidator,
+							timeSignature,
+							note.annotations?.dotted
+						)
+					)
 						measuresModified = true;
 				}
 			);

@@ -24,7 +24,7 @@ const getItemsForMeasure = (measure: Measure, measurements: Measurement) => {
   const notes = measure.notes;
   for (let i = 0; i < notes.length; i++) {
     const note = notes[i];
-    const noteDuration = getNoteDuration(note.type, 4);
+    const noteDuration = getNoteDuration(note.type, 4, note.annotations?.dotted);
     const restLength = note.x - currX;
     if (restLength) {
       components.push(getDisplayRest(restLength, currX, 4, measurements));
@@ -83,7 +83,7 @@ const getDisplayNote = (
   measurements: Measurement,
   extraAttributes?: NoteAttributeComponent<any>[]
 ) => {
-  const length = getNoteDuration(note.type, 4);
+  const length = getNoteDuration(note.type, 4, note.annotations?.dotted);
   const { x, y } = measurements.getNoteOffset({ ...note, length });
   const component = (
     <MeasureNote

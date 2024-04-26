@@ -31,6 +31,7 @@ export const minimalSegmentGenerator: SegmentGenerator = (
 		remainingDistance -= beat;
 	}
 
+	// TODO: Should we start at 4 ?
 	let currentBeat: SegmentBeat = 1; //The segment length to start with
 	while (remainingDistance > 0 && currentBeat >= smallestSegmentBeat) {
 		//While the distance hasn't been fully covered

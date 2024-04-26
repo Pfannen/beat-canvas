@@ -23,7 +23,7 @@ const getCompleteNoteData = (
 	const { y, type, annotations } = note;
 	const { timeSignature, keySignature, clef } = measureAttributes;
 
-	const noteDuration = getNoteDuration(type, timeSignature.beatNote);
+	const noteDuration = getNoteDuration(type, timeSignature.beatNote, annotations?.dotted);
 	const pitchOctave = getNoteFromYPos(y, clef);
 
 	applyKeySignature(keySignature, pitchOctave);
