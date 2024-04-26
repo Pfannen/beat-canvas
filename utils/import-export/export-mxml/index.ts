@@ -3,6 +3,7 @@ import {
 	appendElement,
 	appendElements,
 	createMusicXMLDocument,
+	createPartListEl,
 	createXMLElement,
 } from './utils';
 import { noteAttributeGenerator } from '@/utils/music/measures/traversal';
@@ -21,22 +22,34 @@ const createPartElement = (partId: string) => {
 	return partElement;
 };
 
+// TODO: Rests not always getting placed correctly, look into generator or partEC
 const partEC = (part: MusicPart) => {
 	const partElement = createPartElement(part.attributes.id);
 
 	let measureElement: Element | null = null;
 	for (const locObj of noteAttributeGenerator(part.measures)) {
-		const { measureStart, measureIndex, note, newAttributes } = locObj;
+		const {
+			measureStart,
+			measureEnd,
+			measureIndex,
+			note,
+			newAttributes,
+			currentAttributes,
+			curX,
+			lastNoteXEnd,
+		} = locObj;
+		const { timeSignature, clef } = currentAttributes;
 
 		if (measureStart) {
 			if (measureElement) appendElement(partElement, measureElement);
 			measureElement = createMeasureElement(measureIndex);
 		}
 
-		if (note) {
-			const { lastNoteXEnd, curX, currentAttributes } = locObj;
-			const { clef, timeSignature } = currentAttributes;
+		if (newAttributes) {
+			appendElements(measureElement!, attributesEC(newAttributes));
+		}
 
+		if (note) {
 			// If rests need to be generated (might not always be the case)
 			if (lastNoteXEnd !== curX) {
 				appendElements(
@@ -52,20 +65,32 @@ const partEC = (part: MusicPart) => {
 			);
 		}
 
-		if (newAttributes) {
-			appendElements(measureElement!, attributesEC(newAttributes));
+		if (measureEnd && lastNoteXEnd !== curX) {
+			appendElements(
+				measureElement!,
+				restsEC(lastNoteXEnd, curX, timeSignature)
+			);
 		}
 	}
+
+	if (measureElement) appendElement(partElement, measureElement);
 
 	return partElement;
 };
 
 export const createMusicXMLScore = (score: MusicScore) => {
-	const [root, scoreXML] = createMusicXMLDocument();
+	const [root, scoreEl] = createMusicXMLDocument();
+	const partListEl = createPartListEl(score.parts);
+	appendElement(scoreEl, partListEl);
 
 	for (const part of score.parts) {
-		appendElement(scoreXML, partEC(part));
+		appendElement(scoreEl, partEC(part));
 	}
+
+	const divisionsEl = createXMLElement('divisions');
+	divisionsEl.textContent = '1';
+	const firstAttrEl = scoreEl.querySelector('attributes');
+	if (firstAttrEl) firstAttrEl.appendChild(divisionsEl);
 
 	return root;
 };

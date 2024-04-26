@@ -113,7 +113,7 @@ const timeSignatureEC: AttributePEC<'timeSignature'> = (timeSignature) => {
 	const beatTypeEl = createXMLElement('beat-type');
 
 	beatsEl.textContent = beatsPerMeasure.toString();
-	beatTypeEl.textContent = durationToNoteType(1, beatsPerMeasure);
+	beatTypeEl.textContent = beatNote.toString();
 
 	appendElements(timeEl, [beatsEl, beatTypeEl]);
 

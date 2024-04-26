@@ -1,4 +1,5 @@
 import { ParentElementStore } from '@/types/import-export/export-mxml';
+import { MusicPart } from '@/types/music';
 
 export const createXMLElement = (name: string) => {
 	return document.createElement(name) as Element;
@@ -34,6 +35,8 @@ export const assignToParent = <T extends ParentElementStore, K extends keyof T>(
 	appendElements(parentStore[parent]!, elements);
 };
 
+export const createDirectionTypeEl = () => createXMLElement('direction-type');
+
 export const createMusicXMLDocument = () => {
 	const header =
 		'<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE score-partwise><score-partwise></score-partwise>';
@@ -49,4 +52,20 @@ export const createMusicXMLDocument = () => {
 	return [root, scoreXML] as [Document, Element];
 };
 
-export const createDirectionTypeEl = () => createXMLElement('direction-type');
+export const createPartListEl = (parts: MusicPart[]) => {
+	const partListEl = createXMLElement('part-list');
+
+	for (const part of parts) {
+		const scorePartEl = createXMLElement('score-part');
+		const partNameEl = createXMLElement('part-name');
+
+		const { id, instrument } = part.attributes;
+		scorePartEl.setAttribute('id', id);
+		partNameEl.textContent = instrument;
+
+		appendElement(scorePartEl, partNameEl);
+		appendElement(partListEl, scorePartEl);
+	}
+
+	return partListEl;
+};
