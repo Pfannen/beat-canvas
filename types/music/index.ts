@@ -85,6 +85,14 @@ export const dynamicMeasureAttributesKeys = new Set<
   keyof DynamicMeasureAttributes
 >(["metronome", "dynamic", "wedge"]);
 
+export const requiredMeasureAttributesKeys = new Set<keyof MeasureAttributes>([
+  "timeSignature",
+  "keySignature",
+  "clef",
+  "metronome",
+  "dynamic",
+]);
+
 // Duration attributes are ones that stretch past their initial occurrence
 // For instance, a wedge (i.e. crescendo/decrescendo) gets initialized at some point in the measure
 // and stretches to another point

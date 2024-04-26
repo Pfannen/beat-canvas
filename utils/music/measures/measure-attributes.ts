@@ -1,144 +1,140 @@
-import { Measure } from '@/components/providers/music/types';
+import { Measure } from "@/components/providers/music/types";
 import {
-	DynamicMeasureAttributes,
-	MeasureAttributes,
-	PartialMeasureAttributes,
-	RequiredMeasureAttributes,
-	StaticMeasureAttributes,
-	TemporalMeasureAttributes,
-	requiredMeasureAttributesKeys,
-	staticMeasureAttributesKeys,
-} from '@/types/music';
-import { initializeMeasureAttributes } from './measure-generator';
-import { noteAttributeGenerator } from './traversal';
+  DynamicMeasureAttributes,
+  MeasureAttributes,
+  RequiredMeasureAttributes,
+  TemporalMeasureAttributes,
+  requiredMeasureAttributesKeys,
+} from "@/types/music";
+import { noteAttributeGenerator } from "./traversal";
 
 export class MeasureAttributesRetriever {
-	private index = 0;
-	private length = 0;
+  private index = 0;
+  private length = 0;
 
-	constructor(private timedMeasureAttributes?: TemporalMeasureAttributes[]) {
-		if (timedMeasureAttributes) this.length = timedMeasureAttributes.length;
-	}
+  constructor(private timedMeasureAttributes?: TemporalMeasureAttributes[]) {
+    if (timedMeasureAttributes) this.length = timedMeasureAttributes.length;
+  }
 
-	getNextAttributes(curX: number) {
-		if (this.index >= this.length) return;
+  getNextAttributes(curX: number) {
+    if (this.index >= this.length) return;
 
-		const nextAttributes = this.timedMeasureAttributes![this.index];
-		if (nextAttributes.x <= curX) return nextAttributes.attributes;
-	}
+    const nextAttributes = this.timedMeasureAttributes![this.index];
+    if (nextAttributes.x <= curX) return nextAttributes.attributes;
+  }
 }
 
 export const assignTemporalMeasureAttributes = (
-	curAttributes: TemporalMeasureAttributes[],
-	newAttributes: Partial<DynamicMeasureAttributes>,
-	x: number
+  curAttributes: TemporalMeasureAttributes[],
+  newAttributes: Partial<DynamicMeasureAttributes>,
+  x: number
 ) => {
-	if (Object.keys(newAttributes).length === 0) return;
+  if (Object.keys(newAttributes).length === 0) return;
 
-	if (curAttributes.length === 0) {
-		const attrCopy: Partial<DynamicMeasureAttributes> = {};
-		Object.assign(attrCopy, newAttributes);
-		curAttributes.push({ x, attributes: attrCopy });
-		return;
-	}
+  if (curAttributes.length === 0) {
+    const attrCopy: Partial<DynamicMeasureAttributes> = {};
+    Object.assign(attrCopy, newAttributes);
+    curAttributes.push({ x, attributes: attrCopy });
+    return;
+  }
 
-	let idx = 0;
-	while (idx < curAttributes.length && curAttributes[idx].x <= x) idx++;
+  let idx = 0;
+  while (idx < curAttributes.length && curAttributes[idx].x <= x) idx++;
 
-	if (idx === curAttributes.length) {
-		curAttributes.push({ attributes: newAttributes, x });
-	} else if (curAttributes[idx].x === x) {
-		Object.assign(curAttributes[idx].attributes, newAttributes);
-	} else {
-		const attrCopy: Partial<DynamicMeasureAttributes> = {};
-		Object.assign(attrCopy, newAttributes);
-		const timedMeasureAttributes: TemporalMeasureAttributes = {
-			x,
-			attributes: attrCopy,
-		};
-		// Insert the attributes after the one at idx
-		curAttributes.splice(idx, 0, timedMeasureAttributes);
-	}
+  if (idx === curAttributes.length) {
+    curAttributes.push({ attributes: newAttributes, x });
+  } else if (curAttributes[idx].x === x) {
+    Object.assign(curAttributes[idx].attributes, newAttributes);
+  } else {
+    const attrCopy: Partial<DynamicMeasureAttributes> = {};
+    Object.assign(attrCopy, newAttributes);
+    const timedMeasureAttributes: TemporalMeasureAttributes = {
+      x,
+      attributes: attrCopy,
+    };
+    // Insert the attributes after the one at idx
+    curAttributes.splice(idx, 0, timedMeasureAttributes);
+  }
 };
 
 // TODO: Use binary search
 export const getTemporalAttributesAtX = (measure: Measure, x: number) => {
-	const { temporalAttributes: tA } = measure;
-	if (!tA) return null;
+  const { temporalAttributes: tA } = measure;
+  if (!tA) return null;
 
-	let i = 0;
-	while (i < tA.length && tA[i].x < x) i++;
-	if (i < tA.length && tA[i].x === x) return tA[i].attributes;
-	else return null;
+  let i = 0;
+  while (i < tA.length && tA[i].x < x) i++;
+  if (i < tA.length && tA[i].x === x) return tA[i].attributes;
+  else return null;
 };
 
 // 'measures' should be all the measures prior to the target measure where you don't have
 // measure attributes for
 // 'curAttr' are the attributes of the first measure in the array
 export const getMeasureAttributes = (
-	measures: Measure[],
-	targetMeasureIndex: number,
-	curAttr?: MeasureAttributes,
-	xEnd?: number
+  measures: Measure[],
+  targetMeasureIndex: number,
+  curAttr?: MeasureAttributes,
+  xEnd?: number
 ) => {
-	// Check if given target index is valid
-	if (targetMeasureIndex >= measures.length || targetMeasureIndex < 0)
-		return null;
+  // Check if given target index is valid
+  if (targetMeasureIndex >= measures.length || targetMeasureIndex < 0)
+    return null;
 
-	// Create a variable to store measure attributes
-	let measureAttributes: MeasureAttributes | null = null;
-	// Iterate through the measures, initially using curAttr if present
-	for (const scoreLocDetails of noteAttributeGenerator(measures, curAttr)) {
-		// If we've reached the target index, assign the local attribute variable
-		// and break (don't need to iterate through the remaining measures)
-		if (scoreLocDetails.measureIndex === targetMeasureIndex) {
-			measureAttributes = scoreLocDetails.currentAttributes;
-			break;
-		}
-	}
+  // Create a variable to store measure attributes
+  let measureAttributes: MeasureAttributes | null = null;
+  // Iterate through the measures, initially using curAttr if present
+  for (const scoreLocDetails of noteAttributeGenerator(measures, curAttr)) {
+    // If we've reached the target index, assign the local attribute variable
+    // and break (don't need to iterate through the remaining measures)
+    if (scoreLocDetails.measureIndex === targetMeasureIndex) {
+      measureAttributes = scoreLocDetails.currentAttributes;
+      break;
+    }
+  }
 
-	// If for some reason we didn't reach the target measure, return null
-	if (!measureAttributes) return null;
-	// If we need the temporal attributes, get them and assign them to the current attributes
-	if (xEnd !== undefined) {
-		const tA = getTemporalAttributesAtX(measures[targetMeasureIndex], xEnd);
-		if (tA) Object.assign(measureAttributes, tA);
-	}
+  // If for some reason we didn't reach the target measure, return null
+  if (!measureAttributes) return null;
+  // If we need the temporal attributes, get them and assign them to the current attributes
+  if (xEnd !== undefined) {
+    const tA = getTemporalAttributesAtX(measures[targetMeasureIndex], xEnd);
+    if (tA) Object.assign(measureAttributes, tA);
+  }
 
-	return measureAttributes;
+  return measureAttributes;
 };
 
 export const getRequiredMeasureAttributes = (
-	measures: Measure[],
-	targetMeasureIndex: number,
-	curAttr?: MeasureAttributes,
-	xEnd?: number
+  measures: Measure[],
+  targetMeasureIndex: number,
+  curAttr?: MeasureAttributes,
+  xEnd?: number
 ) => {
-	const attributes = getMeasureAttributes(
-		measures,
-		targetMeasureIndex,
-		curAttr,
-		xEnd
-	);
+  const attributes = getMeasureAttributes(
+    measures,
+    targetMeasureIndex,
+    curAttr,
+    xEnd
+  );
 
-	if (!attributes) return null;
+  if (!attributes) return null;
 
-	const keys = Object.keys(attributes) as (keyof MeasureAttributes)[];
-	for (const key of keys) {
-		if (!requiredMeasureAttributesKeys.has(key)) {
-			delete attributes[key];
-		}
-	}
+  const keys = Object.keys(attributes) as (keyof MeasureAttributes)[];
+  for (const key of keys) {
+    if (!requiredMeasureAttributesKeys.has(key)) {
+      delete attributes[key];
+    }
+  }
 
-	return attributes as RequiredMeasureAttributes;
+  return attributes as RequiredMeasureAttributes;
 };
 
 export const getPartialMeasureAttributes = (measure: Measure, x = 0) => {
-	const partialMA: Partial<MeasureAttributes> = {};
-	if (measure.staticAttributes)
-		Object.assign(partialMA, measure.staticAttributes);
-	const tA = getTemporalAttributesAtX(measure, x);
-	if (tA) Object.assign(partialMA, tA);
+  const partialMA: Partial<MeasureAttributes> = {};
+  if (measure.staticAttributes)
+    Object.assign(partialMA, measure.staticAttributes);
+  const tA = getTemporalAttributesAtX(measure, x);
+  if (tA) Object.assign(partialMA, tA);
 
-	return partialMA;
+  return partialMA;
 };
