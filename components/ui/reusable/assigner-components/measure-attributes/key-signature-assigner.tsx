@@ -1,33 +1,31 @@
 import { FunctionComponent } from 'react';
 import classes from './KeySignatureAssigner.module.css';
 import AssignerDropdown from '../assigner-dropdown';
-import { IAttributeAssignerComponent } from '@/types/modify-score/assigner';
+import {
+	IAttributeAssignerComponent,
+	IKnownGenericAssignerComponent,
+} from '@/types/modify-score/assigner';
 import { getAssignValue } from '@/utils/music/modify-score/assigner';
 import { MeasureAttributes } from '@/types/music';
 
 const keySignatures: string[] = ['C', 'F', 'Bb', 'Eb', 'Ab', 'Db'];
 
 interface KeySignatureAssignerProps
-	extends IAttributeAssignerComponent<'keySignature'> {}
+	extends IKnownGenericAssignerComponent<MeasureAttributes, 'keySignature'> {}
 
 const KeySignatureAssigner: FunctionComponent<KeySignatureAssignerProps> = ({
 	assigner,
-	attributeMetadata,
+	metadataEntry,
 }) => {
-	const assignValue = getAssignValue<MeasureAttributes, 'keySignature'>(
-		attributeMetadata,
-		0
-	);
-
 	return (
-		<AssignerDropdown
-			onClick={(ksValue) => assigner('keySignature', parseInt(ksValue))}
+		<AssignerDropdown<MeasureAttributes, 'keySignature'>
+			tKey={'keySignature'}
+			assigner={assigner}
 			label="Key Signature"
-			disabled={!attributeMetadata}
-			add={assignValue !== undefined}
+			metadataEntry={metadataEntry}
 		>
 			{keySignatures.map((sig, i) => {
-				return { displayValue: sig, value: i.toString(), el: <p>{sig}</p> };
+				return { displayValue: sig, value: i, el: <p>{sig}</p> };
 			})}
 		</AssignerDropdown>
 	);

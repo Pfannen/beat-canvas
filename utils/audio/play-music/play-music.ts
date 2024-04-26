@@ -5,6 +5,8 @@ import { enqueuePart } from './play-part';
 import { getInstrument } from '../instruments';
 import { ToneInstrument } from '@/types/audio/instrument';
 import { EnqueuedBuffer } from '@/types/audio/play-music';
+import { expandMeasures } from '@/utils/music/measures/expand-measures';
+import { getMeasuresStartAndEndTime } from '@/utils/music/time/measures';
 
 export const enqueueMusicScore = async (score: MusicScore) => {
 	const { parts } = score;
@@ -12,19 +14,25 @@ export const enqueueMusicScore = async (score: MusicScore) => {
 
 	console.time('Loading parts...');
 	for (const part of parts) {
+		// Expand the measures here so we can get the total duration of the score
+		const expandedMeasures = expandMeasures(part.measures);
+		// Index 1 stores the time at which the last measure ends
+		const [_, partDuration] = getMeasuresStartAndEndTime(expandedMeasures);
+		console.log({ partDuration });
+
 		const buffer = await Offline(
 			({ transport }) => {
 				const { attributes } = part;
 				let instrument: ToneInstrument;
 
 				instrument = getInstrument(attributes.instrument).toDestination();
-				enqueuePart(part, instrument, transport);
+				enqueuePart(part, instrument, transport, expandedMeasures);
 
 				transport.start(0);
 				// Record time (first argument) affects the time it takes to render by how much you move it
 				// Sampling rate (last argument) plays a significant role in the time it takes to render a part
 			},
-			200,
+			partDuration + 0.5,
 			1,
 			7500
 		);

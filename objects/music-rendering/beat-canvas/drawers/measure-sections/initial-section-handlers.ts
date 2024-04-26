@@ -16,6 +16,7 @@ const requiredSections: { [K in MeasureSection]: boolean } = {
   keySignature: true,
   timeSignature: false,
   repeat: false,
+  repeatEndings: false,
 };
 
 const isRequiredSection = (section: MeasureSection) =>

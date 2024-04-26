@@ -1,4 +1,4 @@
-import { Param, Player, ToneAudioNode, Volume } from 'tone';
+import { Param, Player, ToneAudioBuffer, ToneAudioNode, Volume } from 'tone';
 import { ToneInstrument } from './instrument';
 
 export type VolumeNode = Volume | Player | ToneInstrument;
@@ -24,5 +24,15 @@ export type VolumeManagerParams = {
 
 export type VolumePair = {
 	audioId: string;
+	volumePercentage: number;
+};
+
+export type ToneBufferVolumePair = {
+	buffer: ToneAudioBuffer;
+	volumePercentage: number;
+};
+
+export type AudioBufferVolumePair = {
+	buffer: AudioBuffer;
 	volumePercentage: number;
 };

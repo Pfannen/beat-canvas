@@ -2,7 +2,12 @@ import { VolumeManager } from './volume';
 import { MusicScore } from '@/types/music';
 import { Player, ToneAudioBuffer, context } from 'tone';
 import { enqueueMusicScore } from './play-music/play-music';
-import { isOnClient, loadFile } from '..';
+import { deepyCopy, isOnClient, loadFile } from '..';
+import {
+	toneBuffersToAudioBuffer,
+	toneBufferToAudioBuffer,
+} from '../import-export/audio-buffer-utils';
+import { ToneBufferVolumePair } from '@/types/audio/volume';
 
 // TODO: Look into PlaybackManager following single responsibility principle
 export class PlaybackManager extends VolumeManager {
@@ -24,7 +29,22 @@ export class PlaybackManager extends VolumeManager {
 
 	getPlaybackState = () => this.maxDurationPlayer?.state;
 
+	private addAudioPlayer = (buffer: ToneAudioBuffer, id: string) => {
+		const player = new Player();
+		player.buffer = buffer;
+		this.players[id] = player;
+		this.addVolumeNode(id, player);
+		this.updateAudioDuration();
+	};
+
+	private removeAudioPlayer = (id: string) => {
+		delete this.players[id];
+		this.removeVolumeNode(id);
+		this.updateAudioDuration();
+	};
+
 	private updateAudioDuration = () => {
+		if (this.maxDurationPlayer) this.maxDurationPlayer.onstop = () => {};
 		this.maxDurationPlayer = undefined;
 		for (const player of Object.values(this.players)) {
 			if (!this.maxDurationPlayer) this.maxDurationPlayer = player;
@@ -34,6 +54,10 @@ export class PlaybackManager extends VolumeManager {
 				this.maxDurationPlayer = player;
 			}
 		}
+		if (this.maxDurationPlayer)
+			this.maxDurationPlayer.onstop = () => {
+				if (this.maxDurationPlayer?.state === 'stopped') this.stop();
+			};
 	};
 
 	private loadAudioBuffers = async () => {
@@ -42,10 +66,7 @@ export class PlaybackManager extends VolumeManager {
 		const enqueuedBuffers = await enqueueMusicScore(this.musicScore);
 
 		for (const { name, buffer } of enqueuedBuffers) {
-			const player = new Player();
-			player.buffer = buffer;
-			this.players[name] = player;
-			this.addVolumeNode(name, player);
+			this.addAudioPlayer(buffer, name);
 		}
 	};
 
@@ -59,16 +80,13 @@ export class PlaybackManager extends VolumeManager {
 
 		this.musicScore = musicScore;
 		if (this.musicScore) await this.loadAudioBuffers();
-		this.updateAudioDuration();
 	};
 
 	setImportedAudio = async (audioFile?: File) => {
 		if (!isOnClient()) return;
 
 		if (!audioFile) {
-			delete this.players[this.playerNodeId];
-			this.removeVolumeNode(this.playerNodeId);
-			this.updateAudioDuration();
+			this.removeAudioPlayer(this.playerNodeId);
 			return true;
 		}
 
@@ -111,7 +129,7 @@ export class PlaybackManager extends VolumeManager {
 
 	stop = () => {
 		for (const player of Object.values(this.players)) {
-			if (player.state === 'stopped') return;
+			if (player.state === 'stopped') continue;
 			player.stop();
 		}
 
@@ -142,8 +160,9 @@ export class PlaybackManager extends VolumeManager {
 		let percentage = 0;
 		// If the player is stopped, secondsIntoPlayback *should* be updated correctly and
 		// it's divided the max player's duration
-		if (this.maxDurationPlayer.state === 'stopped')
+		if (this.maxDurationPlayer.state === 'stopped') {
 			percentage = this.secondsIntoPlayback / this.getMaxDuration();
+		}
 		// Else the player is playing, and we need to get the length of the current play session
 		// and add it to secondsIntoPlayback and finally divided it by the max player's duration
 		else {
@@ -154,5 +173,50 @@ export class PlaybackManager extends VolumeManager {
 
 		// Clamp the percentage between 0 and 1
 		return Math.max(0, Math.min(percentage, 1));
+	};
+
+	copy = (playbackSection?: [number, number]) => {
+		const start = playbackSection ? playbackSection[0] : 0;
+		const end = playbackSection ? playbackSection[1] : this.getMaxDuration();
+
+		const newManager = new PlaybackManager(this.musicScore);
+
+		for (const id in this.players) {
+			const player = this.players[id];
+			let curEnd = end;
+			if (curEnd > player.buffer.duration) curEnd = player.buffer.duration - 1;
+			let curStart = start < end ? start : 0;
+
+			const newBuffer = toneBufferToAudioBuffer(player.buffer, [
+				curStart,
+				curEnd,
+			]);
+			if (!newBuffer) {
+				console.log('BAD RANGE');
+				console.log({ start, curEnd, duration: player.buffer.duration });
+				continue;
+			}
+			const newToneBuffer = new ToneAudioBuffer().set(newBuffer);
+			newManager.addAudioPlayer(newToneBuffer, id);
+		}
+
+		console.log({ newManager });
+
+		return newManager;
+	};
+
+	getMergedAudioBufffer = async () => {
+		const volumePairs = this.getVolumePairs();
+
+		const toneVolumePairs: ToneBufferVolumePair[] = [];
+		volumePairs.forEach(({ audioId, volumePercentage }) => {
+			if (audioId in this.players) {
+				toneVolumePairs.push({
+					buffer: this.players[audioId].buffer,
+					volumePercentage,
+				});
+			}
+		});
+		return await toneBuffersToAudioBuffer(toneVolumePairs);
 	};
 }

@@ -1,48 +1,37 @@
 import { NoteAnnotations } from '@/types/music/note-annotations';
-import { NoteAnnotationAssigner, MeasureAttributeAssigner } from '..';
-import { Measure, Note, NoteType } from '@/components/providers/music/types';
+import { GenericAssigner } from '..';
+import { Measure, NoteType } from '@/components/providers/music/types';
 import { ReactNode } from 'react';
 import { MeasureAttributes } from '@/types/music';
-
-export type SelectionMetadata<T> = {
-	// If the 'value' key is present, that means at least 1 selection has that value
-	// The 'allSelectionsHave' key determines if all the selections have the value 'value'
-	[key in keyof T]: { value?: T[key]; allSelectionsHave: boolean };
-};
-
-export type AnnotationSelectionMetadata = SelectionMetadata<NoteAnnotations>;
-
-// Example: { accent: { value: 'strong', allSelectionsHave: true } } -> at least 1 selection is able to have
-// an accent assigned to it, and all the applicable selections have a 'strong' accent assigned
-// Result: The accent assigner button should have the accent annotation removed from all applicable selections
-
-// Example: { accidental: { value: undefined, allSelectionsHave: true } } -> at least 1 selection is able to have
-// an accidental assigned to it, and all the applicable selections don't have the accidental annotation assigned
-// Result: The accidental assigner button should add the selected accidental value to each applicable selection
-
-// Example: No metadata -> There's no selections that are able to have an annotation assigned
-// Result: Do nothing - assigner button should be disabled
-
-export type AttributeSelectionMetadata = SelectionMetadata<MeasureAttributes>;
+import { SelectionData, SelectionMetadata } from './metadata';
 
 export interface IMusicAssignerComponent {
 	disabled?: boolean;
 	add?: boolean;
 }
 
-export interface IAnnotationAssignerComponent<K extends keyof NoteAnnotations> {
-	assigner: NoteAnnotationAssigner;
-	// If annotationMetadata is not present, that means every selection doesn't have the ability to
-	// have the note annotation assigned to it
-	annotationMetadata?: AnnotationSelectionMetadata[K];
+// If metadataEntry is not present, that means every selection doesn't have the ability to
+// have the attribute / annotation assigned to it
+export interface IGenericAssignerComponent<T, K extends keyof T> {
+	assigner: GenericAssigner<T, K>;
+	tKey: K;
+	metadataEntry: SelectionMetadata<T>[K] | undefined;
+	children: ReactNode;
+	currentValue?: T[K];
 }
 
-export interface IAttributeAssignerComponent<
-	K extends keyof MeasureAttributes
-> {
-	assigner: MeasureAttributeAssigner;
-	attributeMetadata?: AttributeSelectionMetadata[K];
+// Use this interface when you create a component that is for a specific attribute / annotation
+// (you won't need to take in the key, children, or current value because you should already know them)
+export interface IKnownGenericAssignerComponent<T, K extends keyof T> {
+	assigner: GenericAssigner<T, K>;
+	metadataEntry: SelectionMetadata<T>[K] | undefined;
 }
+
+export interface IAnnotationAssignerComponent<K extends keyof NoteAnnotations>
+	extends IGenericAssignerComponent<NoteAnnotations, K> {}
+
+export interface IAttributeAssignerComponent<K extends keyof MeasureAttributes>
+	extends IGenericAssignerComponent<MeasureAttributes, K> {}
 
 export interface INotePlacementAssignerComponent
 	extends IMusicAssignerComponent {
@@ -51,26 +40,33 @@ export interface INotePlacementAssignerComponent
 	children: ReactNode;
 }
 
-// NOTE: Work-in-progress
-export type SelectionData = {
-	measureIndex: number;
-	measureNotes: Note[];
-	rollingAttributes: MeasureAttributes;
-	nonRollingAttributes: Partial<MeasureAttributes>;
-	xStart: number;
-	xEnd: number;
-	y: number;
-	noteIndex?: number;
-	note?: Note;
-};
+// A function that curries an assigner function
+export type AssignerCurrier<T, K extends keyof T> = (
+	key: K,
+	value: T[K] | undefined
+) => CurriedAssigner;
 
+// An assigner function is a function that takes in an array of measures along
+// with an array of selection data and does something to the data. The reason for the
+// currying is so that the function knows how to manipulate its given data while allowing
+// outside entities only needing to give it the measures and selection data.
 export type CurriedAssigner = (
 	measures: Measure[],
 	selectionData: SelectionData[]
 ) => boolean;
 
+// An object that points from keys of the given type to a function
+// that curries an assigner function for the key
+export type SpecialAssignerMap<T> = {
+	[key in keyof T]: AssignerCurrier<T, key>;
+};
+
+// A function that hoists an assigner function
 export type AssignerLifter = (assigner: CurriedAssigner) => void;
 
+// A function that executes an assigner function
 export type AssignerExecuter = (assigner: CurriedAssigner) => void;
 
+// A set representing valid note placements (typically resulting from inspecting selection data)
+// The 'r' is used to denote that notes in the selection can also be removed
 export type ValidNotePlacements = Set<NoteType | 'r'>;

@@ -2,7 +2,7 @@ import { Note, NoteType } from '@/components/providers/music/types';
 import {
 	SelectionData,
 	SelectionMetadata,
-} from '@/types/modify-score/assigner';
+} from '@/types/modify-score/assigner/metadata';
 import { MeasureAttributes } from '@/types/music';
 import { NoteAnnotations } from '@/types/music/note-annotations';
 import { getNoteTypes } from '../../utils/music';

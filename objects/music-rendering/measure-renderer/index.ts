@@ -14,16 +14,12 @@ import { getNoteDuration } from "@/components/providers/music/utils";
 import { CoordinateSection } from "@/types/music-rendering/measure-manager/measure-outline";
 import {
   MeasureAttributes,
-  MeasureSection,
-  MeasureSectionMetadata,
+  StaticMeasureAttributes,
   staticMeasureAttributesKeys,
 } from "@/types/music";
-import {
-  InitialMeasureSection,
-  InitialMeasureSectionArray,
-} from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-section";
+import { InitialMeasureSectionArray } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-section";
 import { formatInitialSections } from "../beat-canvas/drawers/measure-sections/initial-section-handlers";
-import { noteAttributeGenerator } from "@/utils/music/measures/measure-generator";
+import { noteAttributeGenerator } from "@/utils/music/measures/traversal";
 
 export class MeasureRenderer {
   private measures: Measure[];
@@ -105,10 +101,20 @@ export class MeasureRenderer {
   }
 
   private generateMeasureAttributes() {
-    const measureSections: InitialMeasureSectionArray[] = [];
+    const measureSections: {
+      sections: InitialMeasureSectionArray;
+      attributes: StaticMeasureAttributes;
+    }[] = [];
     for (const locObj of noteAttributeGenerator(this.measures)) {
-      locObj.currentAttributes;
+      if (locObj.measureStart) {
+        const measureDetails = combineMeasureSectionObjects(
+          locObj.currentAttributes,
+          locObj.newAttributes
+        );
+        measureSections.push(measureDetails);
+      }
     }
+    return measureSections;
   }
 
   private getContainerPositionData(measureIndex: number) {
@@ -139,7 +145,8 @@ export class MeasureRenderer {
   }
 
   public render() {
-    this.generateMeasureOutline(() => sections);
+    const measureDetails = this.generateMeasureAttributes();
+    this.generateMeasureOutline((i) => measureDetails[i].sections);
     const renderData = this.getMusicRenderData();
     const containerData = this.getContainerDimensionData();
     renderData.forEach((measure, measureIndex) => {
@@ -156,11 +163,7 @@ export class MeasureRenderer {
         sections: measureData.metadata!,
         totalWidth: measureData.width,
         measureIndex,
-        sectionAttributes: {
-          keySignature: 0,
-          clef: "alto",
-          timeSignature: timeSig,
-        },
+        sectionAttributes: measureDetails[measureIndex].attributes,
       });
 
       // displayData: this.getMeasureDisplayData(
@@ -273,8 +276,9 @@ const sections: InitialMeasureSectionArray = [
 
 const combineMeasureSectionObjects = (
   currentAttributes: MeasureAttributes,
-  newAttributes?: MeasureAttributes
+  newAttributes?: Partial<MeasureAttributes>
 ) => {
+  const attributes = {} as StaticMeasureAttributes;
   const sections: InitialMeasureSectionArray = [];
   if (newAttributes) {
     staticMeasureAttributesKeys.forEach((key) => {
@@ -284,12 +288,14 @@ const combineMeasureSectionObjects = (
       } else {
         sections.push({ key, displayByDefault: false, data });
       }
+      attributes[key] = data as never;
     });
   } else {
     staticMeasureAttributesKeys.forEach((key) => {
       const data = currentAttributes[key];
-      sections.push({ key, displayByDefault: false, data });
+      data && sections.push({ key, displayByDefault: false, data });
+      attributes[key] = currentAttributes[key] as never;
     });
   }
-  return sections;
+  return { sections, attributes };
 };

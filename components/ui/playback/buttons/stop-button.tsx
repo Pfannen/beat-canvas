@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
 import classes from './StopButton.module.css';
-import PlaybackButton from './styles/playback-button';
-import StopButtonSVG from '../svg/stop-button-svg';
+import PlaybackButton from '../styles/playback-button';
+import StopButtonSVG from '../../svg/stop-button-svg';
 
 interface StopButtonProps {
 	onClick?: () => void;

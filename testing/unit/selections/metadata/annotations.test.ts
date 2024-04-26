@@ -1,7 +1,7 @@
 import {
 	SelectionData,
 	SelectionMetadata,
-} from '../../../../types/modify-score/assigner';
+} from '../../../../types/modify-score/assigner/metadata';
 import { Note } from '../../../../components/providers/music/types';
 import { NoteAnnotations } from '../../../../types/music/note-annotations';
 import { MeasureAttributes } from '../../../../types/music';

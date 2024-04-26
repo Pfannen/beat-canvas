@@ -1,9 +1,4 @@
-import {
-	AnnotationSelectionMetadata,
-	SelectionData,
-	SelectionMetadata,
-	ValidNotePlacements,
-} from '@/types/modify-score/assigner';
+import { ValidNotePlacements } from '@/types/modify-score/assigner';
 import { NoteAnnotations } from '@/types/music/note-annotations';
 import {
 	getMeasureAttributeKeys,
@@ -11,35 +6,52 @@ import {
 	getNoteTypes,
 } from '..';
 import { MeasureAttributes } from '@/types/music';
-import { NoteType } from '@/components/providers/music/types';
 import { NotePlacementValidator } from '@/types/modify-score';
+import {
+	AnnotationSelectionMetadata,
+	CountMap,
+	SelectionData,
+	SelectionMetadata,
+	MetadataEntryUpdater,
+	MetadataEntryUpdaterMap,
+	SelectionMetadataEntry,
+	DefaultAssignerValueMap,
+} from '@/types/modify-score/assigner/metadata';
 
 // T: The type the selection metadata originates from
 // K: A key in T
-// selectionMetadataEntry: The metadata for the K
+// currentValue: The current value that is attempting to be assigned
+// metadataEntry: The metadata for the K
 export const getAssignValue = <T, K extends keyof T>(
-	selectionMetadataEntry?: SelectionMetadata<T>[K],
-	defaultValue?: T[K]
+	currentValue: T[K],
+	metadataEntry?: SelectionMetadataEntry<T, K>
 ) => {
 	let assignValue: T[K] | undefined;
-	if (selectionMetadataEntry) {
-		const { value, allSelectionsHave } = selectionMetadataEntry;
-		// If all selections don't have the value, selections should be assigned a value
-		if (!allSelectionsHave) assignValue = value || defaultValue;
+	// If there's no entry, it doesn't matter what assignValue is (the querying thing shouldn't be able to be assigned)
+	if (metadataEntry) {
+		const { value, allSelectionsHave } = metadataEntry;
+		// If all selections don't have the value, selections should be assigned currentValue
+		if (!allSelectionsHave) assignValue = currentValue;
 		// Else if all selections do have the value, selections should be assigned a value
-		// if 'value' is undefined, or should delete the value if 'value' is not undefined
+		// If all selections have the value in the metadata AND the value is not undefined, we need to check
+		// if currentValue is equal to the value in the metadata - if it is, undefined
+		// (i.e. the querying thing should be removed) should be assigned, else the current value should be assigned
 		else {
-			if (!value) assignValue = defaultValue;
-			else assignValue = undefined;
+			const currentValueIsAllSelected =
+				JSON.stringify(currentValue) === JSON.stringify(value);
+			if (currentValueIsAllSelected) assignValue = undefined;
+			else assignValue = currentValue;
 		}
 	}
 
 	return assignValue;
 };
 
-type CountMap<T> = {
-	[key in keyof T]?: number;
-};
+export const assignerShouldDisable = (
+	metadataEntry?: SelectionMetadataEntry<any, any>
+) => !metadataEntry;
+
+export const assignerShouldAddValue = (value: any) => value !== undefined;
 
 const updateMetadataStructures = <T extends {}>(
 	metadata: SelectionMetadata<T>,
@@ -72,17 +84,26 @@ const updateAllSelectionsHave = <T extends {}>(
 	metadata: SelectionMetadata<T>,
 	countMap: CountMap<T>,
 	allKeys: (keyof T)[],
-	validSelectionCount: number
+	validSelectionCount: number,
+	updaterMap?: MetadataEntryUpdaterMap<T>
 ) => {
 	allKeys.forEach((key) => {
 		if (key in metadata) {
 			const allSelectionsHave = countMap[key] === validSelectionCount;
-			metadata[key]!.allSelectionsHave = allSelectionsHave;
+			metadata[key].allSelectionsHave = allSelectionsHave;
 		} else {
 			metadata[key] = { allSelectionsHave: true };
 		}
+
+		if (updaterMap && key in updaterMap) {
+			if (updaterMap[key](metadata[key], countMap[key], validSelectionCount)) {
+				delete metadata[key];
+			}
+		}
 	});
 };
+
+// #region Annotations
 
 export const getAnnotationSelectionMetadata = (selections: SelectionData[]) => {
 	if (selections.length === 0) return null;
@@ -110,12 +131,57 @@ export const getAnnotationSelectionMetadata = (selections: SelectionData[]) => {
 		metadata,
 		countMap,
 		getNoteAnnotationKeys(),
-		notesSelected
+		notesSelected,
+		specialAnnotationsMetadataUpdaterMap
 	);
 
-	// All annotations will have metadata associated with them
-	return metadata as SelectionMetadata<Required<NoteAnnotations>>;
+	return metadata;
 };
+
+const slurMetadataUpdater: MetadataEntryUpdater<NoteAnnotations, 'slur'> = (
+	metadataEntry,
+	countMapEntry,
+	validSelectionCount
+) => {
+	// If there is no metadata entry, we can't do much (it should always be present, though)
+	// We must have exactly 2 notes selected to do anything with a slur
+	// We also must have 2 notes that have a slur or 2 notes that do not have a slur
+	// (the count map entry may be undefined if no slurs were encountered)
+	// Return true in these cases to denote the slur annotation is not applicable for the selections
+	if (
+		!metadataEntry ||
+		validSelectionCount !== 2 ||
+		(countMapEntry !== undefined && countMapEntry !== 2 && countMapEntry !== 0)
+	) {
+		return true;
+	}
+
+	// If there's two notes that have a slur, the 'value' field of the metadata should be an object
+	// If there's two notes that don't have a slur, the 'value' field should be undefined already
+	// (These are what we want)
+
+	return false;
+};
+
+const specialAnnotationsMetadataUpdaterMap: MetadataEntryUpdaterMap<NoteAnnotations> =
+	{
+		slur: slurMetadataUpdater,
+	};
+
+export const defaultAnnotationValues: DefaultAssignerValueMap<NoteAnnotations> =
+	{
+		slur: {},
+		accent: 'strong',
+		accidental: 'flat',
+		chord: true,
+		staccato: true,
+		dotted: true,
+		dynamic: 'p',
+	};
+
+// #endregion
+
+// #region Attributes
 
 export const getAttributeSelectionMetadata = (selections: SelectionData[]) => {
 	if (selections.length === 0) return null;
@@ -136,6 +202,22 @@ export const getAttributeSelectionMetadata = (selections: SelectionData[]) => {
 
 	return metadata as SelectionMetadata<MeasureAttributes>;
 };
+
+export const defaultAttributeValues: DefaultAssignerValueMap<MeasureAttributes> =
+	{
+		clef: 'treble',
+		dynamic: 'p',
+		keySignature: 0,
+		metronome: { beatNote: 4, beatsPerMinute: 120 },
+		repeat: { forward: true },
+		repeatEndings: { endings: [1], type: 'start' },
+		timeSignature: { beatNote: 4, beatsPerMeasure: 4 },
+		wedge: { crescendo: true, start: true },
+	};
+
+// #endregion
+
+// #region Note placement
 
 // NOTE: Can update this method to use binary search, but number of note types are
 // small enough where it doesn't matter
@@ -196,3 +278,5 @@ export const getValidNotePlacementTypes = (
 		return set;
 	}
 };
+
+// #endregion

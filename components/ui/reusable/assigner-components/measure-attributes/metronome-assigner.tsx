@@ -4,17 +4,20 @@ import AssignerInputLayout from '../style/assigner-input-layout';
 import AssignerInputField from '../style/assigner-input-field';
 import ModifyMusicAssigner from '../style/modify-music-assigner-button';
 import AssignerDropdownField from '../style/assigner-dropdown-field';
-import { DropdownItemDisplay } from '../assigner-dropdown';
+import { AssignerDropdownItemDisplay } from '../assigner-dropdown';
 import WholeNoteSVG from '@/components/ui/svg/notes/whole-note';
 import HalfNoteSVG from '@/components/ui/svg/notes/half-note';
 import QuarterNoteSVG from '@/components/ui/svg/notes/quarter-note';
 import EighthNoteSVG from '@/components/ui/svg/notes/eigth-note';
 import SixteenthNoteSVG from '@/components/ui/svg/notes/sixteenth-note';
-import { IAttributeAssignerComponent } from '@/types/modify-score/assigner';
+import {
+	IAttributeAssignerComponent,
+	IKnownGenericAssignerComponent,
+} from '@/types/modify-score/assigner';
 import { getAssignValue } from '@/utils/music/modify-score/assigner';
 import { MeasureAttributes } from '@/types/music';
 
-const nameNoteTypesWithElement: DropdownItemDisplay[] = [
+const nameNoteTypesWithElement: AssignerDropdownItemDisplay[] = [
 	{ value: '1', displayValue: 'whole', el: <WholeNoteSVG /> },
 	{ value: '2', displayValue: 'half', el: <HalfNoteSVG /> },
 	{ value: '4', displayValue: 'quarter', el: <QuarterNoteSVG /> },
@@ -26,21 +29,21 @@ const maxBPM = 360;
 const defaultBPM = 60;
 
 interface MetronomeAssignerProps
-	extends IAttributeAssignerComponent<'metronome'> {}
+	extends IKnownGenericAssignerComponent<MeasureAttributes, 'metronome'> {}
 
 const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
 	assigner,
-	attributeMetadata,
+	metadataEntry,
 }) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [bpm, setBPM] = useState(defaultBPM);
-	const [beatNote, setBeatNote] = useState<DropdownItemDisplay>(
+	const [beatNote, setBeatNote] = useState<AssignerDropdownItemDisplay>(
 		nameNoteTypesWithElement[2]
 	);
 
 	const assignValue = getAssignValue<MeasureAttributes, 'metronome'>(
-		attributeMetadata,
-		{ beatsPerMinute: defaultBPM, beatNote: 4 }
+		{ beatsPerMinute: defaultBPM, beatNote: 4 },
+		metadataEntry
 	);
 
 	return (
@@ -69,14 +72,14 @@ const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
 					ref1={inputRef}
 					min={minBPM}
 					max={maxBPM}
-					disabled={!attributeMetadata}
+					disabled={!metadataEntry}
 				/>{' '}
 				<AssignerDropdownField
 					onChange={(e) =>
 						setBeatNote(nameNoteTypesWithElement[e.target.selectedIndex])
 					}
 					defaultValue={4}
-					disabled={!attributeMetadata}
+					disabled={!metadataEntry}
 				>
 					{nameNoteTypesWithElement}
 				</AssignerDropdownField>
@@ -89,7 +92,7 @@ const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
 					})
 				}
 				add={!!assignValue}
-				disabled={!attributeMetadata}
+				disabled={!metadataEntry}
 			>
 				<div
 					style={{
