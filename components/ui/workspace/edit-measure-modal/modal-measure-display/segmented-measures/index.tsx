@@ -14,6 +14,7 @@ type SegmentedMeasuresProps = {
   onPositionClick: (position: Coordinate, positionData: PositionData) => void;
   isSegmentSelected: (measureIndex: number, xPos: number) => boolean;
   componentIterator: MeasureComponentIterator;
+  isYPosSelected: (measureIndex: number, xPos: number, yPos: number) => boolean;
   componentFractions: MeasureComponentValues;
   noteHeight: number;
   noteOffset: number;
@@ -24,6 +25,7 @@ const SegmentedMeasures: FunctionComponent<SegmentedMeasuresProps> = ({
   onPositionClick,
   isSegmentSelected,
   componentIterator,
+  isYPosSelected,
   componentFractions,
   noteHeight,
   noteOffset,
@@ -48,6 +50,7 @@ const SegmentedMeasures: FunctionComponent<SegmentedMeasuresProps> = ({
             noteContainerHeight={noteHeight}
             isSegmentSelected={(xPos) => isSegmentSelected(i, xPos)}
             canSegmentSplit={() => true}
+            isYPosSelected={isYPosSelected.bind(null, i)}
           />
         </div>
       ))}
