@@ -117,12 +117,11 @@ const sectionDrawers: MeasureSectionDrawers = {
   keySignature: keySignatureSectionDrawer,
   clef: clefSectionDrawer,
   timeSignature: timeSignatureSectionDrawer,
-  repeat: function (args: MeasureSectionDrawerArgs<"repeat">): void {
-    console.log("Draw repeat", args.data);
-  },
-  note: function (args: MeasureSectionDrawerArgs<"note">): void {
-    console.log("Draw note", args.data);
-  },
+  repeat: function (args: MeasureSectionDrawerArgs<"repeat">): void {},
+  note: function (args: MeasureSectionDrawerArgs<"note">): void {},
+  repeatEndings: function (
+    args: MeasureSectionDrawerArgs<"repeatEndings">
+  ): void {},
 };
 
 export const getMeasureSectionDrawer = (section: MeasureSection) => {

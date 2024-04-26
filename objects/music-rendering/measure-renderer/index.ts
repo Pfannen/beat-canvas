@@ -159,7 +159,7 @@ export class MeasureRenderer {
         measureData.pageNumber
       );
 
-      this.drawMeasure(beatCanvas, {
+      beatCanvas.drawMeasure({
         topLeft: { ...measureData.start },
         sections: measureData.metadata!,
         totalWidth: measureData.width,
@@ -217,13 +217,6 @@ export class MeasureRenderer {
         }
       });
     });
-  }
-
-  protected drawMeasure(
-    beatCanvas: IBeatCanvas,
-    measureData: Parameters<IBeatCanvas["drawMeasure"]>[0]
-  ) {
-    beatCanvas.drawMeasure(measureData);
   }
 }
 

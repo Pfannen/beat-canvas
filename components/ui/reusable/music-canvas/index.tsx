@@ -1,41 +1,28 @@
-import { BeatCanvasPropDelegates } from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
 import { FunctionComponent, ReactNode } from "react";
 import { Measure } from "@/components/providers/music/types";
-import {
-  drawMeasures,
-  getRelativeBeatCanvasManager,
-} from "@/utils/music-rendering/react";
+import { drawMeasures } from "@/utils/music-rendering/react";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
 import { MeasureSectionToggle } from "@/types/music-rendering";
+import { ReactCanvasManager } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/manager";
 
 type MusicCanvasProps = {
   measures: Measure[];
-  aspectRatio: number;
-  propDelegates?: BeatCanvasPropDelegates;
   dimensions: MusicDimensionData;
   measurements: Measurements;
+  manager: ReactCanvasManager;
   sectionToggleList?: MeasureSectionToggle;
-  drawAboveBelow?: boolean;
   children?: ReactNode;
 };
 
 const MusicCanvas: FunctionComponent<MusicCanvasProps> = ({
   measures,
-  aspectRatio,
-  propDelegates,
   dimensions,
   measurements,
+  manager,
   sectionToggleList,
-  drawAboveBelow = false,
   children,
 }) => {
-  const manager = getRelativeBeatCanvasManager(
-    aspectRatio,
-    measurements,
-    propDelegates,
-    drawAboveBelow
-  );
   drawMeasures(measures, dimensions, measurements, manager, sectionToggleList);
 
   return manager.getPages({

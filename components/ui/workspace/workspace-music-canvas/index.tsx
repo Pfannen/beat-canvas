@@ -27,16 +27,17 @@ const WorkspaceMusicCanvas: FunctionComponent<WorkspaceMusicCanvasProps> = ({
       <MeasureSelectCanvas
         measures={measures}
         aspectRatio={aspectRatio}
-        onMeasureClick={({ measureIndex }) => {
-          onMeasureClick(measureIndex);
-        }}
-        getMeasureClassName={({ measureIndex }) => {
-          return areMeasuresSelected
-            ? isMeasureSelected(measureIndex)
-              ? classes.selected
-              : classes.not_selected
-            : "";
-        }}
+        // onMeasureClick={({ measureIndex }) => {
+        //   onMeasureClick(measureIndex);
+        // }}
+        // getMeasureClassName={({ measureIndex }) => {
+        //   return areMeasuresSelected
+        //     ? isMeasureSelected(measureIndex)
+        //       ? classes.selected
+        //       : classes.not_selected
+        //     : "";
+        // }}
+        onMeasureRendered={console.log}
       />
     </div>
   );

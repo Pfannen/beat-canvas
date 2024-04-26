@@ -1,28 +1,20 @@
-import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
 import { PDFDocument } from "pdf-lib";
 import { PDFLibDrawingCanvas } from ".";
-import { BeatCanvas } from "../../beat-canvas";
 import { CanvasManager } from "@/types/music-rendering/canvas/canvas-manager";
+import { Measurements } from "@/objects/measurement/measurements";
 
 export class PDFLibCanvasManager extends CanvasManager {
   private pdfDoc?: PDFDocument;
-  private pageSize: [number, number];
-  private pages: Map<number, IDrawingCanvas> = new Map();
-  constructor(
-    pageSize: [number, number],
-    ...args: ConstructorParameters<typeof CanvasManager>
-  ) {
-    super(...args);
-    this.pageSize = pageSize;
+  constructor(private pageSize: [number, number], measurements: Measurements) {
+    super(measurements);
   }
 
-  protected _getPage(pageNumber: number) {
-    const drawingCanvas = this.pages.get(pageNumber)!;
-    return new BeatCanvas(drawingCanvas, this.measurements);
-  }
-
-  public getPageCount() {
-    return this.pages.size;
+  protected getDrawingCanvasConstructor() {
+    return () => {
+      this.checkPDFDoc();
+      const newPage = this.pdfDoc!.addPage(this.pageSize);
+      return PDFLibDrawingCanvas.getDrawingCanvas(newPage);
+    };
   }
 
   private checkPDFDoc() {
@@ -33,13 +25,6 @@ export class PDFLibCanvasManager extends CanvasManager {
 
   public async initializeCanvas() {
     this.pdfDoc = await PDFDocument.create();
-  }
-
-  protected _addPage(pageNumber: number) {
-    this.checkPDFDoc();
-    const newPage = this.pdfDoc!.addPage(this.pageSize);
-    const drawCanvas = PDFLibDrawingCanvas.getDrawingCanvas(newPage);
-    this.pages.set(pageNumber, drawCanvas);
   }
 
   public getPDF() {

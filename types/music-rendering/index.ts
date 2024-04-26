@@ -40,11 +40,10 @@ export type MeasureComponentIterator = (
 
 export type MeasureSectionToggle = Partial<Record<MeasureSection, boolean>>;
 
-export type MeasureRenderArgs = {
+export type MeasureNotifierArgs = {
   measureIndex: number;
   width: number;
-  height: number;
   topLeft: Coordinate;
 };
 
-export type MeasureRenderDel = (args: MeasureRenderArgs) => void;
+export type MeasureNotifier = (args: MeasureNotifierArgs) => void;

@@ -36,22 +36,24 @@ export class BeamGenerator {
       let beamLength;
       const startCoordinate = this.currentBeams.pop()!;
       if (startCoordinate.x === x && startCoordinate.y === y) {
-        const { x, y } = this.notes[noteIndex - 1];
-        beamLength =
-          TrigHelpers.calculatePointHypotenuse(
-            { x, y },
+        if (this.notes[noteIndex - 1]) {
+          const { x, y } = this.notes[noteIndex - 1];
+          beamLength =
+            TrigHelpers.calculatePointHypotenuse(
+              { x, y },
+              startCoordinate,
+              this.beamAngle
+            ) / 2;
+        } else {
+          beamLength = TrigHelpers.calculatePointHypotenuse(
             startCoordinate,
+            { x, y },
             this.beamAngle
-          ) / 2;
-      } else {
-        beamLength = TrigHelpers.calculatePointHypotenuse(
-          startCoordinate,
-          { x, y },
-          this.beamAngle
-        );
-      }
+          );
+        }
 
-      this.addBeamData(this.beamAngle, beamLength, beamCount - i, noteIndex);
+        this.addBeamData(this.beamAngle, beamLength, beamCount - i, noteIndex);
+      }
     }
   }
 

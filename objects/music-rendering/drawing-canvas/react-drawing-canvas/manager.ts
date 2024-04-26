@@ -1,39 +1,34 @@
-import { UnitMeasurement } from "@/types";
-import { IBeatCanvas } from "@/types/music-rendering/canvas/beat-canvas";
 import { CanvasManager } from "@/types/music-rendering/canvas/canvas-manager";
 import { ReactDrawingCanvas } from ".";
 import { ReactNode } from "react";
+import { Measurements } from "@/objects/measurement/measurements";
+import { UnitMeasurement } from "@/types";
+import { BeatCanvasConstructor } from "@/types/music-rendering/canvas/beat-canvas";
 
-export abstract class ReactCanvasManager extends CanvasManager {
-  private pages: Map<number, ReactDrawingCanvas> = new Map();
-  private unit: UnitMeasurement;
+export class ReactCanvasManager extends CanvasManager<ReactDrawingCanvas> {
   constructor(
-    unit: UnitMeasurement,
-    ...args: ConstructorParameters<typeof CanvasManager>
+    private unit: UnitMeasurement,
+    private bCanvasConstructor: BeatCanvasConstructor<ReactDrawingCanvas>,
+    measurements: Measurements
   ) {
-    super(...args);
-    this.unit = unit;
+    super(measurements);
   }
 
-  protected _addPage(pageNumber: number): void {
-    this.pages.set(pageNumber, new ReactDrawingCanvas(this.unit));
+  protected getDrawingCanvasConstructor(): () => ReactDrawingCanvas {
+    return () => {
+      return new ReactDrawingCanvas(this.unit);
+    };
   }
 
-  protected _getDrawingCanvasPage(pageNumber: number) {
-    return this.pages.get(pageNumber)!;
-  }
-
-  abstract _getPage(pageNumber: number): IBeatCanvas;
-
-  public getPageCount(): number {
-    return this.pages.size;
+  protected getBeatCanvasConstructor(): BeatCanvasConstructor<ReactDrawingCanvas> {
+    return this.bCanvasConstructor;
   }
 
   public createCanvas(
     pageNumber: number,
     ...args: Parameters<ReactDrawingCanvas["createCanvas"]>
   ) {
-    return this.pages.get(pageNumber)!.createCanvas(...args);
+    return this._getDrawingCanvasPage(pageNumber)!.createCanvas(...args);
   }
 
   public getPages(...args: Parameters<ReactDrawingCanvas["createCanvas"]>) {

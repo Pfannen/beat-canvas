@@ -351,7 +351,9 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
         data,
         section,
       };
-      drawer(args as never);
+      if (drawer) {
+        drawer(args as never);
+      }
     });
   }
 

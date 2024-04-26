@@ -24,8 +24,7 @@ const sectionWidthHandlers: MeasureSectionWidthHandlers = {
     args: MeasureSectionWidthArgs,
     data: RepeatEndings | undefined
   ): number {
-    console.log(data);
-    throw new Error(`${data}`);
+    return 1;
   },
 };
 

@@ -14,6 +14,9 @@ import {
 import { NoteDisplayData } from "@/types/music-rendering/draw-data/note";
 import { NoteAnnotation } from "@/types/music/note-annotations";
 import { CoordinateSectionArray } from "../../measure-manager/measure-outline";
+import { IDrawingCanvas } from "../drawing-canvas";
+import { Measurements } from "@/objects/measurement/measurements";
+import { BeatCanvas } from "@/objects/music-rendering/beat-canvas";
 
 export type StemOptions = {
   bodyWidth: number;
@@ -88,13 +91,16 @@ export interface IBeatCanvas {
   drawRest(options: RestOptions): any;
 }
 
+export type BeatCanvasConstructor<T extends IDrawingCanvas> = (
+  drawingCanvas: T,
+  measurements: Measurements
+) => IBeatCanvas;
+
 /* **** */
 export type MeasureComponentContext = {
   width: number;
   height: number;
-  // isLine: boolean;
   corner: Coordinate;
-  // isBody: boolean;
 };
 
 export type MeasureComponentContextIterator = (
@@ -107,3 +113,5 @@ export type DirectionOffsets = {
   left: number;
   right: number;
 };
+
+export type BeatCanvasCreator = (drawingCanvas: IDrawingCanvas) => IBeatCanvas;
