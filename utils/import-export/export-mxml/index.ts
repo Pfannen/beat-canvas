@@ -1,11 +1,13 @@
 import { MusicPart, MusicScore } from '@/types/music';
 import {
 	appendElement,
+	appendElements,
 	createMusicXMLDocument,
 	createXMLElement,
 } from './utils';
 import { noteAttributeGenerator } from '@/utils/music/measures/traversal';
-import { noteEC } from './note-helpers';
+import { noteEC, restsEC } from './note-helpers';
+import { attributesEC } from './measure-helpers';
 
 const createMeasureElement = (index: number) => {
 	const el = createXMLElement('measure');
@@ -24,22 +26,35 @@ const partEC = (part: MusicPart) => {
 
 	let measureElement: Element | null = null;
 	for (const locObj of noteAttributeGenerator(part.measures)) {
-		if (locObj.measureStart) {
+		const { measureStart, measureIndex, note, newAttributes } = locObj;
+
+		if (measureStart) {
 			if (measureElement) appendElement(partElement, measureElement);
-			measureElement = createMeasureElement(locObj.measureIndex);
+			measureElement = createMeasureElement(measureIndex);
 		}
 
-		if (locObj.note) {
-			const {
-				timeSignature: { beatNote },
-				clef,
-			} = locObj.currentAttributes;
-			appendElement(measureElement!, noteEC(locObj.note, beatNote, clef));
+		if (note) {
+			const { lastNoteXEnd, curX, currentAttributes } = locObj;
+			const { clef, timeSignature } = currentAttributes;
+
+			// If rests need to be generated (might not always be the case)
+			if (lastNoteXEnd !== curX) {
+				appendElements(
+					measureElement!,
+					restsEC(lastNoteXEnd, curX, timeSignature)
+				);
+			}
+
+			// Create the current note
+			appendElement(
+				measureElement!,
+				noteEC(note, timeSignature.beatNote, clef)
+			);
 		}
 
-        if (locObj.newAttributes) {
-            
-        }
+		if (newAttributes) {
+			appendElements(measureElement!, attributesEC(newAttributes));
+		}
 	}
 
 	return partElement;

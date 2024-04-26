@@ -57,13 +57,12 @@ export type AnnotationsPEAMap = ParentElementAssignerMap<
 >;
 
 export type AttributePEC<K extends keyof MeasureAttributes> =
-	PropertyElementCreator<MeasureAttributes, K>;
+	PropertyElementCreator<Required<MeasureAttributes>, K>;
 
 export type AttributesParentElementName =
 	| 'attributes'
 	| 'direction'
-	| 'barline'
-	| 'measure';
+	| 'barline';
 
 export type AttributesParentStore =
 	ParentElementStore<AttributesParentElementName>;

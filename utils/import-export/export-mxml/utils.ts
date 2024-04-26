@@ -8,8 +8,13 @@ export const appendElement = (parent: Element, child: Element) => {
 	parent.appendChild(child);
 };
 
-export const appendElements = (parent: Element, children: Element[]) => {
-	children.forEach((el) => appendElement(parent, el));
+export const appendElements = (
+	parent: Element,
+	children: (Element | undefined | null)[]
+) => {
+	children.forEach((el) => {
+		if (el) appendElement(parent, el);
+	});
 };
 
 export const addParentElement = <K extends keyof ParentElementStore>(
@@ -43,3 +48,5 @@ export const createMusicXMLDocument = () => {
 
 	return [root, scoreXML] as [Document, Element];
 };
+
+export const createDirectionTypeEl = () => createXMLElement('direction-type');
