@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
 import classes from './SeekButton.module.css';
-import PlaybackButton from './styles/playback-button';
-import FullSeekSVG from '../svg/full-seek-svg';
+import PlaybackButton from '../styles/playback-button';
+import FullSeekSVG from '../../svg/full-seek-svg';
 
 interface SeekButtonProps {
 	onClick?: () => void;

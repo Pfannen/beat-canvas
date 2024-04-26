@@ -1,3 +1,4 @@
+import { deepyCopy } from '@/utils';
 import { useRef, useState } from 'react';
 
 export const useSelections = <K, V>() => {
@@ -5,8 +6,30 @@ export const useSelections = <K, V>() => {
 	const keyToSelectionValue = useRef<{ [key in string]: V }>({});
 
 	// Stringifies the given key so it can serve as a key in a js object
-	// Allows selection keys to be js objects
+	// Allows selection keys to be js objects or arrays
 	const stringifyKey = (key: K) => JSON.stringify(key);
+
+	// NOTE: Could override an existing key
+	const addKey = (key: K, selectionValue: V) => {
+		const strKey = stringifyKey(key);
+		if (strKey in keyToSelectionValue.current) {
+			const remove = keyToSelectionValue.current[strKey];
+			filterSelections(remove);
+		}
+		keyToSelectionValue.current[strKey] = selectionValue;
+	};
+
+	const deleteKey = (key: K) =>
+		delete keyToSelectionValue.current[stringifyKey(key)];
+
+	const filterSelections = (removeSelection: V) => {
+		const newSelections = selections.filter(
+			(selection) => selection !== removeSelection
+		);
+
+		if (newSelections.length !== selections.length)
+			setSelections(newSelections);
+	};
 
 	// Returns the selection mapped to the key, or null
 	const getSelection = (key: K) => {
@@ -17,7 +40,7 @@ export const useSelections = <K, V>() => {
 	};
 
 	// Gets all the selections
-	const getSelections = () => [...selections];
+	const getSelections = () => deepyCopy(selections);
 
 	// Returns whether or not the key has a selection
 	const hasSelection = (key: K) => !!getSelection(key);
@@ -27,14 +50,8 @@ export const useSelections = <K, V>() => {
 		const remove = getSelection(key);
 		if (!remove) return false;
 
-		delete keyToSelectionValue.current[stringifyKey(key)];
-		const newSelections = selections.filter(
-			(selection) => selection !== remove
-		);
-
-		if (newSelections.length !== selections.length) {
-			setSelections(newSelections);
-		}
+		deleteKey(key);
+		filterSelections(remove);
 
 		return true;
 	};
@@ -44,7 +61,7 @@ export const useSelections = <K, V>() => {
 		const selectionExists = !!getSelection(key);
 		if (selectionExists) return false;
 
-		keyToSelectionValue.current[stringifyKey(key)] = selection;
+		addKey(key, selection);
 		const newSelections = [...selections, selection];
 		setSelections(newSelections);
 
@@ -54,7 +71,7 @@ export const useSelections = <K, V>() => {
 	// Updates the selections
 	// If no value is supplied, it's assumed the key and its selection should be removed
 	// Else if the key has a selection, it gets removed, else it gets added
-	const update = (key: K, value?: V) => {
+	const updateSelection = (key: K, value?: V) => {
 		if (!value) {
 			removeSelection(key);
 		} else {
@@ -69,11 +86,33 @@ export const useSelections = <K, V>() => {
 		setSelections([]);
 	};
 
+	const mapSelections = (
+		mapper: (key: K, value: V) => { key: K; value: V } | null | undefined
+	) => {
+		const newSelections: V[] = [];
+		const newMap: { [key in string]: V } = {};
+
+		const keys = Object.keys(keyToSelectionValue.current);
+		for (const key of keys) {
+			const selection = keyToSelectionValue.current[key];
+			const destructedKey = JSON.parse(key) as K;
+			const update = mapper(destructedKey, selection);
+			if (update) {
+				newMap[stringifyKey(update.key)] = selection;
+				newSelections.push(selection);
+			}
+		}
+
+		keyToSelectionValue.current = newMap;
+		setSelections(newSelections);
+	};
+
 	return {
-		update,
+		updateSelection,
 		hasSelection,
 		getSelection,
 		clearSelections,
+		mapSelections,
 		selections: getSelections(),
 	};
 };

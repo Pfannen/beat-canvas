@@ -1,37 +1,40 @@
-import {
-	ChangeEventHandler,
-	FunctionComponent,
-	ReactNode,
-	useState,
-} from 'react';
-import classes from './assigner-dropdown.module.css';
+import { ChangeEventHandler, ReactNode, useState } from 'react';
 import ModifyMusicAssigner from './style/modify-music-assigner-button';
 import AssignerInputLayout from './style/assigner-input-layout';
 import AssignerDropdownField, {
 	DropdownItem,
 } from './style/assigner-dropdown-field';
-import { IMusicAssignerComponent } from '@/types/modify-score/assigner';
+import { IGenericAssignerComponent } from '@/types/modify-score/assigner';
+import {
+	assignerShouldAddValue,
+	assignerShouldDisable,
+	getAssignValue,
+} from '@/utils/music/modify-score/assigner';
 
-export type DropdownItemDisplay = DropdownItem & {
+export type AssignerDropdownItemDisplay<T = string> = DropdownItem<T> & {
 	el: ReactNode;
 };
 
-interface AssignerDropdownProps extends IMusicAssignerComponent {
-	onClick: (value: string) => void;
+interface AssignerDropdownProps<T, K extends keyof T>
+	extends Omit<IGenericAssignerComponent<T, K>, 'children'> {
 	label: string;
-	children: DropdownItemDisplay[];
+	children: AssignerDropdownItemDisplay<T[K]>[];
 }
 
-const AssignerDropdown: FunctionComponent<AssignerDropdownProps> = ({
-	onClick,
+const AssignerDropdown = <T, K extends keyof T>({
+	assigner,
 	label,
 	children,
-	disabled,
-	add,
-}) => {
-	const [selectedItem, setSelectedItem] = useState<DropdownItemDisplay>(
-		children[0]
-	);
+	tKey,
+	metadataEntry,
+}: AssignerDropdownProps<T, K>) => {
+	const [selectedItem, setSelectedItem] = useState<
+		AssignerDropdownItemDisplay<T[K]>
+	>(children[0]);
+
+	const assignValue = getAssignValue<T, K>(selectedItem.value, metadataEntry);
+	const disabled = assignerShouldDisable(metadataEntry);
+	const add = assignerShouldAddValue(assignValue);
 
 	const onOptionSelected: ChangeEventHandler<HTMLSelectElement> = (event) => {
 		const newSelectedItem = children[event.target.selectedIndex];
@@ -41,7 +44,7 @@ const AssignerDropdown: FunctionComponent<AssignerDropdownProps> = ({
 	return (
 		<AssignerInputLayout disabled={disabled}>
 			<label htmlFor={label}>{label}: </label>
-			<AssignerDropdownField
+			<AssignerDropdownField<T[K]>
 				id={label}
 				onChange={onOptionSelected}
 				disabled={disabled}
@@ -49,7 +52,7 @@ const AssignerDropdown: FunctionComponent<AssignerDropdownProps> = ({
 				{children}
 			</AssignerDropdownField>
 			<ModifyMusicAssigner
-				onClick={onClick.bind(null, selectedItem.value)}
+				onClick={() => assigner(tKey, assignValue)}
 				disabled={disabled}
 				add={add}
 			>

@@ -4,7 +4,7 @@ import { useMusic } from '@/components/providers/music';
 import { IVolumeValueModifer, VolumePair } from '@/types/audio/volume';
 import PlaybackSlider from '../styles/playback-slider';
 
-interface VolumeManagerProps {
+export interface VolumeManagerProps {
 	modifyVolume: (audioId: string, volumePct: number) => void;
 	volumePairs: VolumePair[];
 }

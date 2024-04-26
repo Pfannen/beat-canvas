@@ -5,9 +5,10 @@ import { useEffect, useRef, useState } from 'react';
 import { BasicPlaybackState } from 'tone';
 import { usePolling } from '../usePolling';
 
-export const usePlayback = () => {
-	const playbackManager = useRef<PlaybackManager>(new PlaybackManager());
-	const volumeModifier = playbackManager.current as IVolumeValueModifer;
+export const usePlayback = (initialPBM?: PlaybackManager) => {
+	const playbackManager = useRef<PlaybackManager>(
+		initialPBM || new PlaybackManager()
+	);
 
 	const { pollValue, startPolling, stopPolling, updatePollValue } = usePolling(
 		500,
@@ -17,10 +18,11 @@ export const usePlayback = () => {
 	const [volumePairs, setVolumePairs] = useState<VolumePair[]>([]);
 	const [playbackState, setPlaybackState] = useState<
 		BasicPlaybackState | undefined
-	>();
+	>(playbackManager.current.getPlaybackState);
 
-	const updatePlaybackState = () =>
+	const updatePlaybackState = () => {
 		setPlaybackState(playbackManager.current.getPlaybackState());
+	};
 
 	const updateVolumePairs = () => {
 		const newVolumePairs = playbackManager.current.getVolumePairs();
@@ -68,6 +70,15 @@ export const usePlayback = () => {
 	// playback manager only doing certain things when being ran on the client
 	useEffect(updateVolumePairs, []);
 
+	useEffect(() => {
+		const curState = playbackManager.current.getPlaybackState();
+		/* setPlaybackState((state) => {
+			if (curState !== state) return curState;
+			else return state;
+		}); */
+		if (curState !== playbackState) setPlaybackState(curState);
+	}, [pollValue, playbackState]);
+
 	useEffect(adjustPolling, [
 		playbackState,
 		startPolling,
@@ -78,7 +89,7 @@ export const usePlayback = () => {
 	return {
 		volumePairs,
 		playbackState,
-		volumeModifier,
+		playbackManager: playbackManager.current,
 		seekPercentage: pollValue,
 		setScore,
 		setImportedAudio,

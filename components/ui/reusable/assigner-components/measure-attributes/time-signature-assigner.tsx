@@ -5,23 +5,26 @@ import AssignerInputField from '../style/assigner-input-field';
 import { MeasureAttributes, numberNoteTypes } from '@/types/music';
 import ModifyMusicAssigner from '../style/modify-music-assigner-button';
 import AssignerDropdownField from '../style/assigner-dropdown-field';
-import { IAttributeAssignerComponent } from '@/types/modify-score/assigner';
+import {
+	IAttributeAssignerComponent,
+	IKnownGenericAssignerComponent,
+} from '@/types/modify-score/assigner';
 import { getAssignValue } from '@/utils/music/modify-score/assigner';
 
 interface TimeSignatureAssignerProps
-	extends IAttributeAssignerComponent<'timeSignature'> {}
+	extends IKnownGenericAssignerComponent<MeasureAttributes, 'timeSignature'> {}
 
 const TimeSignatureAssigner: FunctionComponent<TimeSignatureAssignerProps> = ({
 	assigner,
-	attributeMetadata,
+	metadataEntry,
 }) => {
 	const [beatsPerMeasure, setBeatsPerMeasure] = useState(4);
 	const [beatNote, setBeatNote] = useState(4);
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const assignValue = getAssignValue<MeasureAttributes, 'timeSignature'>(
-		attributeMetadata,
-		{ beatNote: 4, beatsPerMeasure: 4 }
+		{ beatNote: 4, beatsPerMeasure: 4 },
+		metadataEntry
 	);
 
 	return (
@@ -50,13 +53,13 @@ const TimeSignatureAssigner: FunctionComponent<TimeSignatureAssignerProps> = ({
 					min="1"
 					max="99"
 					ref1={inputRef}
-					disabled={!attributeMetadata}
+					disabled={!metadataEntry}
 				/>{' '}
 				/{' '}
 				<AssignerDropdownField
 					onChange={(e) => setBeatNote(parseInt(e.target.value))}
 					defaultValue={4}
-					disabled={!attributeMetadata}
+					disabled={!metadataEntry}
 				>
 					{
 						numberNoteTypes.map((num) => ({
@@ -73,7 +76,7 @@ const TimeSignatureAssigner: FunctionComponent<TimeSignatureAssignerProps> = ({
 						beatsPerMeasure: beatsPerMeasure,
 					})
 				}
-				disabled={!attributeMetadata}
+				disabled={!metadataEntry}
 				add={!!assignValue}
 			>
 				<p style={{ display: 'inline' }}>{beatsPerMeasure}</p>/

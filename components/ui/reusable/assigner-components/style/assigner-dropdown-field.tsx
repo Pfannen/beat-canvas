@@ -1,27 +1,31 @@
 import { FunctionComponent, ReactNode, SelectHTMLAttributes } from 'react';
 import classes from './AssignerDropdownField.module.css';
 
-export type DropdownItem = {
+// Default type of T is a string
+export type DropdownItem<T = string> = {
 	displayValue?: string;
-	value: string;
+	value: T;
 };
 
-interface AssignerDropdownFieldProps
+interface AssignerDropdownFieldProps<T>
 	extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'children'> {
-	children: DropdownItem[];
+	children: DropdownItem<T>[];
 }
 
-const AssignerDropdownField: FunctionComponent<AssignerDropdownFieldProps> = ({
+const AssignerDropdownField = <T extends any = string>({
 	children,
 	...props
-}) => {
+}: AssignerDropdownFieldProps<T>): JSX.Element => {
 	return (
 		<select {...props}>
-			{children.map(({ value, displayValue }) => (
-				<option key={value} value={value}>
-					{displayValue || value}
-				</option>
-			))}
+			{children.map(({ value, displayValue }) => {
+				const valueString = JSON.stringify(value);
+				return (
+					<option key={valueString} value={valueString}>
+						{displayValue?.toString() || valueString}
+					</option>
+				);
+			})}
 		</select>
 	);
 };

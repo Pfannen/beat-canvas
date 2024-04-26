@@ -13,6 +13,7 @@
 	"dependencies": {
 		"@types/react-modal": "^3.16.3",
 		"ajv": "^8.12.0",
+		"audiobuffer-to-blob": "^1.0.2",
 		"next": "14.1.0",
 		"pdf-lib": "^1.17.1",
 		"react": "^18",

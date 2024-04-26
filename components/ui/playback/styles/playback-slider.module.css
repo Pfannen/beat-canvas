@@ -7,6 +7,11 @@
 	border-radius: 16px;
 }
 
+.slider:disabled {
+	cursor: default;
+	opacity: 0.5;
+}
+
 .slider::-webkit-slider-runnable-track {
 	height: 10px;
 	background: #ccc;
