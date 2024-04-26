@@ -12,9 +12,18 @@ import {
 } from "@/components/providers/music/types";
 import { getNoteDuration } from "@/components/providers/music/utils";
 import { CoordinateSection } from "@/types/music-rendering/measure-manager/measure-outline";
-import { MeasureSection, MeasureSectionMetadata } from "@/types/music";
-import { InitialMeasureSectionArray } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-section";
+import {
+  MeasureAttributes,
+  MeasureSection,
+  MeasureSectionMetadata,
+  staticMeasureAttributesKeys,
+} from "@/types/music";
+import {
+  InitialMeasureSection,
+  InitialMeasureSectionArray,
+} from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-section";
 import { formatInitialSections } from "../beat-canvas/drawers/measure-sections/initial-section-handlers";
+import { noteAttributeGenerator } from "@/utils/music/measures/measure-generator";
 
 export class MeasureRenderer {
   private measures: Measure[];
@@ -93,6 +102,13 @@ export class MeasureRenderer {
         i === this.measures.length - 1
       );
     });
+  }
+
+  private generateMeasureAttributes() {
+    const measureSections: InitialMeasureSectionArray[] = [];
+    for (const locObj of noteAttributeGenerator(this.measures)) {
+      locObj.currentAttributes;
+    }
   }
 
   private getContainerPositionData(measureIndex: number) {
@@ -254,3 +270,26 @@ const sections: InitialMeasureSectionArray = [
     displayByDefault: true,
   },
 ];
+
+const combineMeasureSectionObjects = (
+  currentAttributes: MeasureAttributes,
+  newAttributes?: MeasureAttributes
+) => {
+  const sections: InitialMeasureSectionArray = [];
+  if (newAttributes) {
+    staticMeasureAttributesKeys.forEach((key) => {
+      const data = newAttributes[key] || currentAttributes[key];
+      if (data) {
+        sections.push({ key, displayByDefault: true, data });
+      } else {
+        sections.push({ key, displayByDefault: false, data });
+      }
+    });
+  } else {
+    staticMeasureAttributesKeys.forEach((key) => {
+      const data = currentAttributes[key];
+      sections.push({ key, displayByDefault: false, data });
+    });
+  }
+  return sections;
+};

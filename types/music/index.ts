@@ -102,21 +102,15 @@ export type Metronome = {
 
 // Static attributes are ones that possibly change 1 time in the measure (either at the beginning or end),
 // or not at all
-export const staticMeasureAttributesKeys = new Set<keyof MeasureAttributes>([
-  "timeSignature",
-  "keySignature",
-  "clef",
-  "repeat",
-  "repeatEndings",
-]);
+export const staticMeasureAttributesKeys = new Set<
+  keyof StaticMeasureAttributes
+>(["timeSignature", "keySignature", "clef", "repeat", "repeatEndings"]);
 
 // Dynamic attributes are ones that occur many times within a measure and have no set
 // position of where they need to be, or how many there can be
-export const dynamicMeasureAttributesKeys = new Set<keyof MeasureAttributes>([
-  "metronome",
-  "dynamic",
-  "wedge",
-]);
+export const dynamicMeasureAttributesKeys = new Set<
+  keyof DynamicMeasureAttributes
+>(["metronome", "dynamic", "wedge"]);
 
 // Duration attributes are ones that stretch past their initial occurrence
 // For instance, a wedge (i.e. crescendo/decrescendo) gets initialized at some point in the measure
@@ -161,9 +155,8 @@ export type MeasureWidthCallback = (measureIndex: number) => number;
 export type TemporalMeasureAttributesMXML = TemporalMeasureAttributes &
   MeasureAttributesMXML;
 
-export type MeasureSectionMetadata = Pick<
-  StaticMeasureAttributes,
-  "clef" | "timeSignature" | "keySignature" | "repeat"
-> & { note: undefined };
+export type MeasureSectionMetadata = StaticMeasureAttributes & {
+  note: undefined;
+};
 
 export type MeasureSection = keyof MeasureSectionMetadata;
