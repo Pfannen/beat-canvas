@@ -40,3 +40,15 @@ export const deepyCopy = <T>(item: T): T => {
 export const indexIsValid = (index: number, length: number) => {
 	return index >= 0 && index < length;
 };
+
+export const indexRangeIsValid = (
+	startIndex: number,
+	endIndex: number,
+	length: number
+) => {
+	return (
+		indexIsValid(startIndex, length) &&
+		indexIsValid(endIndex, length) &&
+		startIndex <= endIndex
+	);
+};

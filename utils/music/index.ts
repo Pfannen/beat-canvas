@@ -1,4 +1,5 @@
 import {
+	Note,
 	NoteType,
 	SegmentBeat,
 	TimeSignature,
@@ -141,6 +142,11 @@ export const getYPosFromNote = (note: PitchOctave, clef: Clef) => {
 	const yPos = octaveSteps * 7 + stepsToC + stepsToTargetPitch;
 
 	return yPos;
+};
+
+export const getNoteAtX = (notes: Note[], x: number) => {
+	const note = notes.find((note) => note.x === x);
+	return note;
 };
 
 const quarterDurationToNoteType: { [key in number]: NoteType } = {
