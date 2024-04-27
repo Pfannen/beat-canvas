@@ -2,6 +2,7 @@ import { PDFDocument } from "pdf-lib";
 import { PDFLibDrawingCanvas } from ".";
 import { CanvasManager } from "@/types/music-rendering/canvas/canvas-manager";
 import { Measurements } from "@/objects/measurement/measurements";
+import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
 
 export class PDFLibCanvasManager extends CanvasManager {
   private pdfDoc?: PDFDocument;
@@ -9,12 +10,10 @@ export class PDFLibCanvasManager extends CanvasManager {
     super(measurements);
   }
 
-  protected getDrawingCanvasConstructor() {
-    return () => {
-      this.checkPDFDoc();
-      const newPage = this.pdfDoc!.addPage(this.pageSize);
-      return PDFLibDrawingCanvas.getDrawingCanvas(newPage);
-    };
+  createDrawingCanvas(): IDrawingCanvas {
+    this.checkPDFDoc();
+    const newPage = this.pdfDoc!.addPage(this.pageSize);
+    return PDFLibDrawingCanvas.getDrawingCanvas(newPage);
   }
 
   private checkPDFDoc() {

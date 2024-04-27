@@ -1,0 +1,15 @@
+.pane {
+  position: absolute;
+
+  width: var(--width);
+  height: var(--height);
+  left: var(--left);
+  top: var(--top);
+
+  cursor: pointer;
+}
+
+.not_selected {
+  background-color: lightgray;
+  opacity: 0.25;
+}

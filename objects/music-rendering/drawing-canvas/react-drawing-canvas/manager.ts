@@ -7,28 +7,27 @@ import { BeatCanvasConstructor } from "@/types/music-rendering/canvas/beat-canva
 
 export class ReactCanvasManager extends CanvasManager<ReactDrawingCanvas> {
   constructor(
+    measurements: Measurements,
     private unit: UnitMeasurement,
-    private bCanvasConstructor: BeatCanvasConstructor<ReactDrawingCanvas>,
-    measurements: Measurements
+    beatCanvasConstructor?: BeatCanvasConstructor<ReactDrawingCanvas>
   ) {
     super(measurements);
+
+    if (beatCanvasConstructor) {
+      this.getBeatCanvasConstructor = () => (canvas, measurements) =>
+        beatCanvasConstructor(canvas, measurements);
+    }
   }
 
-  protected getDrawingCanvasConstructor(): () => ReactDrawingCanvas {
-    return () => {
-      return new ReactDrawingCanvas(this.unit);
-    };
-  }
-
-  protected getBeatCanvasConstructor(): BeatCanvasConstructor<ReactDrawingCanvas> {
-    return this.bCanvasConstructor;
+  createDrawingCanvas(): ReactDrawingCanvas {
+    return new ReactDrawingCanvas(this.unit);
   }
 
   public createCanvas(
     pageNumber: number,
     ...args: Parameters<ReactDrawingCanvas["createCanvas"]>
   ) {
-    return this._getDrawingCanvasPage(pageNumber)!.createCanvas(...args);
+    return this.getDrawingCanvasPage(pageNumber)!.createCanvas(...args);
   }
 
   public getPages(...args: Parameters<ReactDrawingCanvas["createCanvas"]>) {

@@ -1,7 +1,7 @@
 import { BeatCanvasConstructor } from "@/types/music-rendering/canvas/beat-canvas";
 import { ReactDrawingCanvas } from ".";
 import { ReactCanvasManager } from "./manager";
-import { NotificationBeatCanvas } from "../../beat-canvas/overlay-wrapper";
+import { NotificationBeatCanvas } from "../../beat-canvas/notification-wrapper";
 import { MeasureNotifier } from "@/types/music-rendering";
 
 export class ReactNotificationManager extends ReactCanvasManager {
@@ -11,7 +11,7 @@ export class ReactNotificationManager extends ReactCanvasManager {
   ) {
     super(...args);
   }
-  protected getBeatCanvasConstructor(): BeatCanvasConstructor<ReactDrawingCanvas> {
+  public getBeatCanvasConstructor(): BeatCanvasConstructor<ReactDrawingCanvas> {
     return (drawingCanvas, measurements) => {
       const beatCanvas = super.getBeatCanvasConstructor()(
         drawingCanvas,

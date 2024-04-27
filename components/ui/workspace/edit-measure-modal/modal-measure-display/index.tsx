@@ -9,6 +9,7 @@ import { BODY_CT } from "@/objects/measurement/constants";
 import MusicCanvas from "@/components/ui/reusable/music-canvas";
 import { PositionData } from "@/types/ui/music-modal";
 import { Coordinate } from "@/types";
+import { createRelativeBeatCanvasManager } from "@/utils/music-rendering/react";
 
 const lineToSpaceRatio = 1.5;
 
@@ -47,11 +48,10 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
   return (
     <MusicCanvas
       measures={measures}
-      aspectRatio={aspectRatio}
       dimensions={dimensions}
       measurements={measurements}
       sectionToggleList={{ note: true }}
-      drawAboveBelow
+      manager={createRelativeBeatCanvasManager(aspectRatio, measurements, true)}
     >
       <SegmentedMeasures
         measures={measures}

@@ -7,6 +7,8 @@ export const numToUnit = (val: number, unit: "px" | "%" | "deg") => {
   return val + unit;
 };
 
+export const toPercent = (val: number) => val + "%";
+
 export const numIsUndefined = <T>(val?: number) =>
   val === undefined ? false : true;
 

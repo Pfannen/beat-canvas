@@ -46,4 +46,11 @@ export type MeasureNotifierArgs = {
   topLeft: Coordinate;
 };
 
+export type MeasureRenderArgs = {
+  measureIndex: number;
+  width: string;
+  height: string;
+  topLeft: Coordinate<string>;
+};
+
 export type MeasureNotifier = (args: MeasureNotifierArgs) => void;

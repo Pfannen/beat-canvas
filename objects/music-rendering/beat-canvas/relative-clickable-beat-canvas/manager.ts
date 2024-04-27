@@ -1,8 +1,5 @@
 import { DeepPartial, UnitConverter } from "@/types";
-import {
-  BeatCanvasConstructor,
-  BeatCanvasDrawOptions,
-} from "@/types/music-rendering/canvas/beat-canvas";
+import { BeatCanvasDrawOptions } from "@/types/music-rendering/canvas/beat-canvas";
 import { RelativeClickableBeatCanvas } from ".";
 import { ReactCanvasManager } from "../../drawing-canvas/react-drawing-canvas/manager";
 import { BeatCanvasPropDelegates } from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
@@ -17,18 +14,18 @@ export class RelativeCanvasManager extends ReactCanvasManager {
     private drawOptions?: DeepPartial<BeatCanvasDrawOptions>,
     private drawAboveBelow?: boolean
   ) {
-    super("%", measurements);
-  }
-
-  protected getBeatCanvasConstructor(): BeatCanvasConstructor<ReactDrawingCanvas> {
-    return (drawingCanvas, measurements) =>
-      new RelativeClickableBeatCanvas(
-        this.xValueConverter,
-        drawingCanvas,
-        measurements,
-        this.delegates,
-        this.drawOptions,
-        this.drawAboveBelow
-      );
+    super(
+      measurements,
+      "%",
+      (drawingCanvas, measurements) =>
+        new RelativeClickableBeatCanvas(
+          this.xValueConverter,
+          drawingCanvas,
+          measurements,
+          this.delegates,
+          this.drawOptions,
+          this.drawAboveBelow
+        )
+    );
   }
 }

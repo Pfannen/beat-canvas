@@ -1,30 +1,34 @@
 import { Measurements } from "@/objects/measurement/measurements";
-import { BeatCanvasConstructor } from "../beat-canvas";
+import { BeatCanvasConstructor, IBeatCanvas } from "../beat-canvas";
 import { IDrawingCanvas } from "../drawing-canvas";
 import { BeatCanvas } from "@/objects/music-rendering/beat-canvas";
 
-export abstract class CanvasManager<T extends IDrawingCanvas = IDrawingCanvas> {
-  private beatCanvasConstructor!: BeatCanvasConstructor<T>;
-  private drawingCanvasConstructor!: () => T;
+export interface ICanvasGetter {
+  getCanvasForPage(pageNumber: number): IBeatCanvas;
+}
+
+export abstract class CanvasManager<T extends IDrawingCanvas = IDrawingCanvas>
+  implements ICanvasGetter
+{
   private pages: T[] = [];
-  private measurements: Measurements;
+  public measurements: Measurements;
   constructor(measurements: Measurements) {
     this.measurements = measurements;
-    this.drawingCanvasConstructor = this.getDrawingCanvasConstructor();
-    this.beatCanvasConstructor = this.getBeatCanvasConstructor();
   }
 
-  protected abstract getDrawingCanvasConstructor(): () => T;
+  abstract createDrawingCanvas(): T;
 
-  protected getBeatCanvasConstructor(): BeatCanvasConstructor<T> {
-    return (canvas, measurements) => new BeatCanvas(canvas, measurements);
+  public getBeatCanvasConstructor(): BeatCanvasConstructor<T> {
+    return (canvas, measurements) => {
+      return new BeatCanvas(canvas, measurements);
+    };
   }
 
-  private _addDrawingCanvasPage(): void {
-    this.pages.push(this.drawingCanvasConstructor());
+  public addDrawingCanvasPage(): void {
+    this.pages.push(this.createDrawingCanvas());
   }
 
-  protected _getDrawingCanvasPage(pageNumber: number): T {
+  public getDrawingCanvasPage(pageNumber: number): T {
     return this.pages[pageNumber - 1];
   }
 
@@ -35,10 +39,11 @@ export abstract class CanvasManager<T extends IDrawingCanvas = IDrawingCanvas> {
   public getCanvasForPage(pageNumber: number) {
     const pageCount = this.getPageCount();
     for (let i = pageCount; i < pageNumber; i++) {
-      this._addDrawingCanvasPage();
+      this.addDrawingCanvasPage();
     }
-    return this.beatCanvasConstructor(
-      this._getDrawingCanvasPage(pageNumber),
+    const beatCanvasConstructor = this.getBeatCanvasConstructor();
+    return beatCanvasConstructor(
+      this.getDrawingCanvasPage(pageNumber),
       this.measurements
     );
   }

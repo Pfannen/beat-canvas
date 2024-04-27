@@ -3,6 +3,7 @@
   height: 100vh;
   aspect-ratio: var(--aspect-ratio);
   max-height: 950px;
+  position: relative;
 }
 
 .selected {
