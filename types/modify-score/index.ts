@@ -33,8 +33,16 @@ export type NotePlacementValidator = (
 	notes: Note[],
 	x: number,
 	noteType: NoteType,
-	timeSignature: TimeSignature
+	timeSignature: TimeSignature,
+	isDotted?: true
 ) => number;
+
+// Returns whether or not the given note can be dotted
+export type DottedValidator = (
+	notes: Note[],
+	noteIndex: number,
+	timeSignature: TimeSignature
+) => boolean;
 
 // Places the given note into the note array after checking against the given validator
 // X position is given in the note and the time signature is needed for valid placement checkings

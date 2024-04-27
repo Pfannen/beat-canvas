@@ -14,7 +14,7 @@ import {
 	IAttributeAssignerComponent,
 	IKnownGenericAssignerComponent,
 } from '@/types/modify-score/assigner';
-import { getAssignValue } from '@/utils/music/modify-score/assigner';
+import { getAssignValue } from '@/utils/music/modify-score/metadata-helpers';
 import { MeasureAttributes } from '@/types/music';
 
 const nameNoteTypesWithElement: AssignerDropdownItemDisplay[] = [

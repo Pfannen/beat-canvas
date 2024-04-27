@@ -198,8 +198,8 @@ export const restsEC = (
 
 		appendElements(noteEl, [restEl, durationEl, typeEl]);
 		restEls.push(noteEl);
-		for (let i = 0; i < count; i++) {
-			restEls.push(noteEl.cloneNode() as Element);
+		for (let i = 1; i < count; i++) {
+			restEls.push(noteEl.cloneNode(true) as Element);
 		}
 	});
 

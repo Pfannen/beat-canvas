@@ -44,6 +44,8 @@ export type BaseDurationInfo = StartDurationInfo & EndDurationInfo;
 export type SlurDurationInfo = BaseDurationInfo & {
 	maxYPos: number;
 	minYPos: number;
+	startNoteYPos: number;
+	endNoteYPos: number;
 };
 
 export type WedgeDurationInfo = BaseDurationInfo & {
@@ -58,6 +60,7 @@ export type TBCDurationAttributeInfo = {
 export type TBCSlurDurationInfo = StartDurationInfo & {
 	maxYPos: number;
 	minYPos: number;
+	startNoteYPos: number;
 	slurId: number;
 };
 

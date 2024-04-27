@@ -4,9 +4,14 @@ import {
 	TimeSignature,
 } from '@/components/providers/music/types';
 import { getNoteDuration } from '../../components/providers/music/utils'; // Jest doesn't like '@'
-import { NotePlacementValidator, NotePlacer } from '@/types/modify-score';
+import {
+	DottedValidator,
+	NotePlacementValidator,
+	NotePlacer,
+} from '@/types/modify-score';
 import { rightHandSplits } from '.';
 import { findPositionIndex } from '../../components/providers/music/hooks/useMeasures/utils'; // Jest doesn't like '@'
+import { indexIsValid } from '..';
 
 // NOTE: This method should really only be used when it's known the x-value is valid
 // in terms of not cutting off any prior notes (also, it doesn't look ahead so notes
@@ -69,6 +74,25 @@ export const stacklessNotePlacementValidator: NotePlacementValidator = (
 
 	// The note is able to be placed at the given x
 	return positionIdx;
+};
+
+export const stacklessDottedValidator: DottedValidator = (
+	notes,
+	noteIndex,
+	tS
+) => {
+	if (!indexIsValid(noteIndex, notes.length)) return false;
+
+	const note = notes[noteIndex];
+	if (note.annotations?.dotted) return false;
+
+	const dottedDur = getNoteDuration(note.type, tS.beatNote, true);
+	if (indexIsValid(noteIndex + 1, notes.length)) {
+		const nextNote = notes[noteIndex + 1];
+		if (nextNote.x < note.x + dottedDur) return false;
+	}
+
+	return note.x + dottedDur <= tS.beatsPerMeasure;
 };
 
 export const placeNote: NotePlacer = (note, notes, validator, tS) => {

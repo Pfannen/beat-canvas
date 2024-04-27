@@ -1,11 +1,11 @@
-import { SelectionData } from '../../../../types/modify-score/assigner';
+import { SelectionData } from '../../../../types/modify-score/assigner/metadata';
 import {
 	createNote,
 	createSelection,
 	validateGreatestNoteType,
 } from '../../helpers';
 import { MeasureAttributes } from '../../../../types/music';
-import { getValidNotePlacementTypes } from '../../../../utils/music/modify-score/assigner';
+import { getValidNotePlacementTypes } from '../../../../utils/music/modify-score/metadata-helpers/note-placement';
 import { NotePlacementValidator } from '../../../../types/modify-score';
 import { stacklessNotePlacementValidator } from '../../../../utils/music/note-placement';
 import { Note } from '@/components/providers/music/types';

@@ -12,7 +12,7 @@ import EighthNoteSVG from '@/components/ui/svg/notes/eigth-note';
 import WholeNoteSVG from '@/components/ui/svg/notes/whole-note';
 import HalfNoteSVG from '@/components/ui/svg/notes/half-note';
 import SixteenthNoteSVG from '@/components/ui/svg/notes/sixteenth-note';
-import { curriedPlaceNote } from '@/utils/music/modify-score/music-hook-helpers';
+import { curriedPlaceNote } from '@/utils/music/modify-score/curried-assigners';
 import { NotePlacementValidator } from '@/types/modify-score';
 
 interface NotePlacementAssignerSetProps {

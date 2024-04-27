@@ -9,7 +9,7 @@ import {
 	assignerShouldAddValue,
 	assignerShouldDisable,
 	getAssignValue,
-} from '@/utils/music/modify-score/assigner';
+} from '@/utils/music/modify-score/metadata-helpers';
 
 export type AssignerDropdownItemDisplay<T = string> = DropdownItem<T> & {
 	el: ReactNode;

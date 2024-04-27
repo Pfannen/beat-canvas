@@ -6,6 +6,10 @@ import { ScorePositionID } from '@/types/modify-score';
 import { SelectionData } from '@/types/modify-score/assigner/metadata';
 import useMeasureRange from '../useMeasureRange';
 import { useEffect } from 'react';
+import {
+	stacklessDottedValidator,
+	stacklessNotePlacementValidator,
+} from '@/utils/music/note-placement';
 
 export const useEditMeasures = (
 	startIndex: number,
@@ -35,6 +39,7 @@ export const useEditMeasures = (
 	// want to clear them after we execute the assigner function
 	const executeAssigner: AssignerExecuter = (assigner) => {
 		const copy = getRangedMeasures();
+		console.log({ selections });
 		if (assigner(copy, selections)) {
 			setRangedMeasures(copy);
 			// Should only clear selections when the assigner is successful?
@@ -84,6 +89,7 @@ export const useEditMeasures = (
 			rollingAttributes: attributes,
 			nonRollingAttributes: getPartialMeasureAttributes(measure, xStart),
 			noteIndex,
+			dottedValidator: stacklessDottedValidator,
 		};
 
 		// If the selection had a note, include it in the selection details

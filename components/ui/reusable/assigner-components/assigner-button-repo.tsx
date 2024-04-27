@@ -1,17 +1,16 @@
-import { FunctionComponent, useRef } from 'react';
-import classes from './AssignerButtonRepo.module.css';
+import { FunctionComponent } from 'react';
 import LayoutList from '../layout/list';
 import AnnotationsAssignerSet from './annotations/annotations-assigner-set';
 import NotePlacementAssignerSet from './place-note/note-placement-assigner-set';
 import MeasureAttributeAssignerSet from './measure-attributes/measure-attribute-assigner-set';
-import { AssignerLifter, CurriedAssigner } from '@/types/modify-score/assigner';
-import {
-	getAnnotationSelectionMetadata,
-	getAttributeSelectionMetadata,
-	getValidNotePlacementTypes,
-} from '@/utils/music/modify-score/assigner';
+import { AssignerLifter } from '@/types/modify-score/assigner';
 import { NotePlacementValidator } from '@/types/modify-score';
-import { SelectionData } from '@/types/modify-score/assigner/metadata';
+import {
+	SelectionData,
+	SelectionMetadata,
+} from '@/types/modify-score/assigner/metadata';
+import { getAssignerStructures } from '@/utils/music/modify-score/metadata-helpers';
+import { MeasureAttributes } from '@/types/music';
 
 interface AssignerButtonRepoProps {
 	selections: SelectionData[];
@@ -24,13 +23,8 @@ const AssignerButtonRepo: FunctionComponent<AssignerButtonRepoProps> = ({
 	notePlacementValidator,
 	liftExecutor,
 }) => {
-	// NOTE: Could make a single function to retrieve both - would be faster too
-	const annotationMetadata = getAnnotationSelectionMetadata(selections);
-	const attributeMetadata = getAttributeSelectionMetadata(selections);
-	const validPlacementTypes = getValidNotePlacementTypes(
-		selections,
-		notePlacementValidator
-	);
+	const { annotationMetadata, attributeMetadata, validPlacementTypes } =
+		getAssignerStructures(selections, notePlacementValidator);
 
 	return (
 		<LayoutList
@@ -49,7 +43,10 @@ const AssignerButtonRepo: FunctionComponent<AssignerButtonRepoProps> = ({
 			/>
 			<MeasureAttributeAssignerSet
 				liftExecuter={liftExecutor}
-				attributeMetadata={attributeMetadata || undefined}
+				attributeMetadata={
+					(attributeMetadata as SelectionMetadata<MeasureAttributes>) ||
+					undefined
+				}
 			/>
 		</LayoutList>
 	);
