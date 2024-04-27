@@ -103,26 +103,6 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     });
   }
 
-  // private drawStem(options: StemOptions) {
-  //   const widthRadius = options.bodyWidth / 2;
-  //   const { x, y } = options.bodyCenter;
-  //   const corner = { x: x - widthRadius, y };
-  //   let height = -options.stemHeight;
-  //   let width = options.stemWidth;
-  //   if (options.direction === "up") {
-  //     corner.x = x + widthRadius;
-  //     height *= -1;
-  //     width *= -1;
-  //   }
-  //   this.canvas.drawRectangle({
-  //     corner,
-  //     width,
-  //     height,
-  //   });
-
-  //   return { x: corner.x, y: corner.y + height };
-  // }
-
   protected drawMeasureLines(options: MeasureLinesOptions) {
     const iteratorDel: MeasureComponentContextIterator = (context) => {
       let color = "black";

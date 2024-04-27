@@ -175,6 +175,7 @@ export class MeasureRenderer {
       const beatCanvas = this.canvasManager.getCanvasForPage(
         measureData.pageNumber
       );
+
       beatCanvas.drawMeasure({
         topLeft: { ...measureData.start },
         sections: measureData.metadata!,
@@ -188,6 +189,7 @@ export class MeasureRenderer {
         measureIndex,
         "note"
       )!;
+
       const componentHelper = new MeasureComponentHelper(
         timeSig,
         noteSection,

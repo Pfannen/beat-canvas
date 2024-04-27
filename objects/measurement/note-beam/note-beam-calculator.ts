@@ -55,15 +55,13 @@ export class NoteBeamCalculator {
       noteInfo[noteInfo.length - 1].stemOffset = Math.abs(offset);
     }
 
-    const point = { ...startNote };
-    if (direction === "up") {
-      point.y += noteInfo[0].stemOffset;
-    } else {
-      point.y -= noteInfo[0].stemOffset;
-    }
+    const point = adjustNoteYForOffset(
+      startNote,
+      noteInfo[0].stemOffset,
+      direction
+    );
     let maxConflictValue = 0;
     const intersectFn = TrigHelpers.getYIntersection.bind(null, angle, point);
-
     for (let i = 1; i < noteInfo.length - 1; i++) {
       const note = noteData[i];
       const intersection = intersectFn(note);
@@ -78,13 +76,17 @@ export class NoteBeamCalculator {
     if (maxConflictValue) {
       noteInfo[0].stemOffset += maxConflictValue;
       noteInfo[noteInfo.length - 1].stemOffset += maxConflictValue;
+      const point = adjustNoteYForOffset(
+        startNote,
+        noteInfo[0].stemOffset,
+        direction
+      );
+      const intersectFn = TrigHelpers.getYIntersection.bind(null, angle, point);
       for (let i = 1; i < noteInfo.length - 1; i++) {
-        const difference = maxConflictValue - noteInfo[i].stemOffset;
-        if (difference < 0) {
-          noteInfo[i].stemOffset += maxConflictValue;
-        } else {
-          noteInfo[i].stemOffset = difference;
-        }
+        const note = noteData[i];
+        const intersect = intersectFn(note);
+        const offset = calculateOffset(intersect, note.y);
+        noteInfo[i].stemOffset = Math.abs(offset);
       }
     }
     const addBeamToNote = (
@@ -126,6 +128,20 @@ export class NoteBeamCalculator {
     return { angle: 0, length };
   }
 }
+
+const adjustNoteYForOffset = (
+  point: Coordinate,
+  offset: number,
+  direction: NoteDirection
+) => {
+  const newPoint = { ...point };
+  if (direction === "up") {
+    newPoint.y += offset;
+  } else {
+    newPoint.y -= offset;
+  }
+  return newPoint;
+};
 
 const getOffsetConflictChecker = (direction: NoteDirection) => {
   if (direction === "up") return (offset: number) => offset < 0;
