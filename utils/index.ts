@@ -1,3 +1,5 @@
+import { UnitMeasurement } from "@/types";
+
 export const fractionToPercent = (val: number) => numToUnit(val, "%");
 
 export const numToUnit = (val: number, unit: "px" | "%" | "deg") => {
@@ -7,7 +9,7 @@ export const numToUnit = (val: number, unit: "px" | "%" | "deg") => {
   return val + unit;
 };
 
-export const toPercent = (val: number) => val + "%";
+export const appendUnit = (val: number, unit: UnitMeasurement) => val + unit;
 
 export const numIsUndefined = <T>(val?: number) =>
   val === undefined ? false : true;

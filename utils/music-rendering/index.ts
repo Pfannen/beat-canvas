@@ -40,6 +40,10 @@ export const createYValueConverter = (
   return (yValue: number) => aspectRatio / yValue;
 };
 
+export const getRedundantConverter = (): UnitConverter<number, number> => {
+  return (val) => val;
+};
+
 export const getRelativeCanvasDrawOptions = (
   aspectRatio: number
 ): DeepPartial<BeatCanvasDrawOptions> => {

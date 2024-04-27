@@ -19,6 +19,7 @@ export class NotificationBeatCanvas implements IBeatCanvas {
       topLeft: options.topLeft,
       width: options.totalWidth,
       measureIndex: options.measureIndex,
+      pageNumber: options.pageNumber,
     });
     this.beatCanvas.drawMeasure(options);
   }

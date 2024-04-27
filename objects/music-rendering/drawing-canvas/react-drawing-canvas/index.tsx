@@ -1,4 +1,4 @@
-import { UnitMeasurement } from "@/types";
+import { UnitConverter, UnitMeasurement } from "@/types";
 import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
 import { PolymorphicComponentProps } from "@/types/polymorphic";
 import {
@@ -17,12 +17,18 @@ import {
 import { concatClassNames } from "@/utils/css";
 import { StyleCreator } from "./style-creator";
 import { getSVGHeight, getSVGWidth } from "@/utils/svg";
+import { getRedundantConverter } from "@/utils/music-rendering";
 
 export class ReactDrawingCanvas implements IDrawingCanvas {
   private unit: UnitMeasurement;
+  private svgWidthConverter: UnitConverter<number, number>;
   private components: ReactElement[] = [];
-  constructor(unit: UnitMeasurement) {
+  constructor(
+    unit: UnitMeasurement,
+    svgWidthConverter?: UnitConverter<number, number>
+  ) {
     this.unit = unit;
+    this.svgWidthConverter = svgWidthConverter || getRedundantConverter();
   }
 
   private static attachDrawOptions(
@@ -102,7 +108,7 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
 
   drawSVG(options: HTMLSVGOptions): void {
     const scale = options.scale || 1;
-    const width = options.width || getSVGWidth(options.viewBox);
+    const width = this.svgWidthConverter(getSVGWidth(options.viewBox));
     const height = getSVGHeight(options.viewBox);
     let x = options.x;
     let y = options.y;

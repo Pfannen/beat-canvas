@@ -61,6 +61,7 @@ export type NoteDrawData = {
   bodyCenter: Coordinate;
   bodyHeight: number;
   measureIndex: number;
+  pageNumber: number;
   noteIndex: number;
   annotations?: NoteAnnotation[];
 };
@@ -72,6 +73,7 @@ export type MeasureDrawData = {
   sections: CoordinateSectionArray<MeasureSection>;
   totalWidth: number;
   measureIndex: number;
+  pageNumber: number;
 };
 
 export type MeasureData = MeasureDrawData & {

@@ -178,6 +178,7 @@ export class MeasureRenderer {
         sections: measureData.metadata!,
         totalWidth: measureData.width,
         measureIndex,
+        pageNumber: measureData.pageNumber,
         sectionAttributes: measureDetails[measureIndex].attributes,
       }); //Call this.drawMeasures so if a class extends this one, it can hook into the measure drawing (for overlays)
 
@@ -217,6 +218,7 @@ export class MeasureRenderer {
             bodyHeight: containerData.measureComponentHeights.space,
             noteIndex,
             measureIndex,
+            pageNumber: measureData.pageNumber,
             annotations,
           });
           noteIndex++;

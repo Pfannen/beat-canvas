@@ -10,7 +10,6 @@ import {
   MeasureNotifierArgs,
   MeasureRenderArgs,
 } from "@/types/music-rendering";
-import { toPercent } from "@/utils";
 import { ReactCanvasManager } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/manager";
 import { withNotifications } from "@/objects/music-rendering/beat-canvas/notification-wrapper/manager";
 
@@ -41,14 +40,10 @@ const MeasureSelectCanvas: FunctionComponent<MeasureSelectCanvasProps> = ({
   );
 
   const onMeasureRender = (args: MeasureNotifierArgs) => {
-    const renderArgs = {
-      topLeft: {
-        x: toPercent(args.topLeft.x),
-        y: toPercent(100 - args.topLeft.y),
-      },
-      width: toPercent(args.width),
-      height: toPercent(dimensions.measureDimensions.height),
-      measureIndex: args.measureIndex,
+    const renderArgs: MeasureRenderArgs = {
+      ...args,
+      height: dimensions.measureDimensions.height,
+      unit: "%",
     };
     onMeasureRendered(renderArgs);
   };

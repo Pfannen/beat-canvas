@@ -1,9 +1,10 @@
-import { Coordinate, UnitConverter } from "@/types";
+import { Coordinate, UnitConverter, UnitMeasurement } from "@/types";
 import { MeasureRenderData } from "../music/render-data";
 import { TimeSignature } from "@/components/providers/music/types";
 import { IBeatCanvas } from "./canvas/beat-canvas";
 import { MeasureSection } from "../music";
 import { Measurements } from "@/objects/measurement/measurements";
+import { MeasureUnit } from "@/objects/measurement/measure-unit-converter";
 
 export type MeasureDrawData = {
   start: Coordinate;
@@ -42,16 +43,15 @@ export type MeasureSectionToggle = Partial<Record<MeasureSection, boolean>>;
 
 export type MeasureNotifierArgs = {
   measureIndex: number;
+  pageNumber: number;
   width: number;
   topLeft: Coordinate;
 };
 
 export type MeasureRenderArgs = {
-  measureIndex: number;
-  width: string;
-  height: string;
-  topLeft: Coordinate<string>;
-};
+  height: number;
+  unit: UnitMeasurement;
+} & MeasureNotifierArgs;
 
 export type MeasureNotifier = (args: MeasureNotifierArgs) => void;
 
