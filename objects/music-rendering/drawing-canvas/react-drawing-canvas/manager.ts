@@ -3,19 +3,22 @@ import { ReactDrawingCanvas } from ".";
 import { ReactNode } from "react";
 import { Measurements } from "@/objects/measurement/measurements";
 import { UnitMeasurement } from "@/types";
-import { BeatCanvasConstructor } from "@/types/music-rendering/canvas/beat-canvas";
+import { BeatCanvas } from "../../beat-canvas";
+import { getRelativeCanvasDrawOptions } from "@/utils/music-rendering";
 
 export class ReactCanvasManager extends CanvasManager<ReactDrawingCanvas> {
   constructor(
     measurements: Measurements,
     private unit: UnitMeasurement,
-    beatCanvasConstructor?: BeatCanvasConstructor<ReactDrawingCanvas>
+    aspectRatio?: number,
+    drawNonBodyComponents?: boolean
   ) {
     super(measurements);
-
-    if (beatCanvasConstructor) {
-      this.getBeatCanvasConstructor = () => (canvas, measurements) =>
-        beatCanvasConstructor(canvas, measurements);
+    if (unit === "%" && aspectRatio) {
+      const drawOptions = getRelativeCanvasDrawOptions(aspectRatio);
+      this.getBeatCanvasConstructor = () => (c, m) => {
+        return new BeatCanvas(c, m, drawOptions, drawNonBodyComponents);
+      };
     }
   }
 

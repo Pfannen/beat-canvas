@@ -8,6 +8,7 @@ import { MeasureSectionToggle } from "@/types/music-rendering";
 import { BeatCanvasPropDelegates } from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
 import { CanvasManager } from "@/types/music-rendering/canvas/canvas-manager";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
+import { createXValueConverter } from "..";
 
 export const getRelativeBeatCanvas = (
   drawingCanvas: ReactDrawingCanvas,
@@ -16,7 +17,7 @@ export const getRelativeBeatCanvas = (
   delegates?: BeatCanvasPropDelegates,
   drawAboveBelow?: boolean
 ) => {
-  const converter = (xValue: number) => xValue / aspectRatio;
+  const converter = createXValueConverter(aspectRatio);
   const beatCanvas = new RelativeClickableBeatCanvas(
     converter,
     drawingCanvas,
@@ -38,19 +39,7 @@ export const createRelativeBeatCanvasManager = (
   measurements: Measurements,
   drawAboveBelow?: boolean
 ) => {
-  return new ReactCanvasManager(
-    measurements,
-    "%",
-    (drawCanvas, measurements) => {
-      return getRelativeBeatCanvas(
-        drawCanvas,
-        aspectRatio,
-        measurements,
-        undefined,
-        drawAboveBelow
-      );
-    }
-  );
+  return new ReactCanvasManager(measurements, "%", aspectRatio, drawAboveBelow);
 };
 
 export const drawMeasures = (

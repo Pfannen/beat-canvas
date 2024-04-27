@@ -38,3 +38,12 @@ export const loadFile = async (
 export const deepyCopy = <T>(item: T): T => {
   return JSON.parse(JSON.stringify(item));
 };
+
+export const mergePartial = <T extends Record<any, any>>(
+  objOne: T,
+  objTwo?: Partial<T>
+) => {
+  for (const key in objTwo) {
+    objOne[key] = objTwo[key]!;
+  }
+};

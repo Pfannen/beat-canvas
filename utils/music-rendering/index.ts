@@ -3,14 +3,12 @@
 import { Measure } from "@/components/providers/music/types";
 import { ABOVE_BELOW_CT, BODY_CT } from "@/objects/measurement/constants";
 import { Measurements } from "@/objects/measurement/measurements";
-import { RelativeCanvasManager } from "@/objects/music-rendering/beat-canvas/relative-clickable-beat-canvas/manager";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
 import { PageDimensionParams } from "@/objects/music-rendering/music-layout/page-dimension-params";
-import { PropDelegates } from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
+import { DeepPartial, UnitConverter } from "@/types";
+import { BeatCanvasDrawOptions } from "@/types/music-rendering/canvas/beat-canvas";
 import { CanvasManager } from "@/types/music-rendering/canvas/canvas-manager";
-import { MusicDimensionData } from "@/types/music-rendering/music-layout";
-import { ReactNode } from "react";
 
 export const renderMeasures = (measures: Measure[], manager: CanvasManager) => {
   const pageParams = PageDimensionParams.genericSheetMusic();
@@ -30,21 +28,30 @@ export const renderMeasures = (measures: Measure[], manager: CanvasManager) => {
   renderer.render();
 };
 
-const createMockMeasures = () => {
-  const measures: Measure[] = [];
-  const measureCount = 2;
-  for (let i = 0; i < measureCount; i++) {
-    measures.push({
-      notes: [
-        { x: 0, y: -1, type: "eighth" },
-        { x: 0.5, y: 1, type: "eighth" },
-        { x: 1, y: 10, type: "quarter" },
-        { x: 2, y: -1, type: "eighth" },
-        { x: 2.5, y: -1, type: "eighth" },
-        { x: 3, y: -1, type: "eighth" },
-        { x: 3.5, y: -1, type: "eighth" },
-      ],
-    });
-  }
-  return measures;
+export const createXValueConverter = (
+  aspectRatio: number
+): UnitConverter<number, number> => {
+  return (xValue: number) => xValue / aspectRatio;
+};
+
+export const createYValueConverter = (
+  aspectRatio: number
+): UnitConverter<number, number> => {
+  return (yValue: number) => aspectRatio / yValue;
+};
+
+export const getRelativeCanvasDrawOptions = (
+  aspectRatio: number
+): DeepPartial<BeatCanvasDrawOptions> => {
+  const xConverter = createXValueConverter(aspectRatio);
+  return {
+    note: {
+      noteBodyAspectRatio: xConverter(1.5),
+      dotAnnotationAspectRatio: xConverter(1),
+      stemWidthBodyFraction: xConverter(0.15),
+    },
+    measure: {
+      endBarWidthLineFraction: xConverter(1.25),
+    },
+  };
 };

@@ -9,6 +9,11 @@
   cursor: pointer;
 }
 
+.selected {
+  background-color: #50c878;
+  opacity: 0.1;
+}
+
 .not_selected {
   background-color: lightgray;
   opacity: 0.25;

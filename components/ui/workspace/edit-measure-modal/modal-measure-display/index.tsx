@@ -9,7 +9,7 @@ import { BODY_CT } from "@/objects/measurement/constants";
 import MusicCanvas from "@/components/ui/reusable/music-canvas";
 import { PositionData } from "@/types/ui/music-modal";
 import { Coordinate } from "@/types";
-import { createRelativeBeatCanvasManager } from "@/utils/music-rendering/react";
+import { ReactCanvasManager } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/manager";
 
 const lineToSpaceRatio = 1.5;
 
@@ -31,7 +31,7 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
   isYPosSelected,
 }) => {
   const dimensions = useMemo(
-    () => MusicLayout.getMarginlessSheetMusic(aspectRatio, 1, measures.length),
+    () => MusicLayout.getMarginlessSheetMusic(100, 100, 1, measures.length),
     [measures.length]
   );
   const measurements = useMemo(
@@ -51,7 +51,7 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
       dimensions={dimensions}
       measurements={measurements}
       sectionToggleList={{ note: true }}
-      manager={createRelativeBeatCanvasManager(aspectRatio, measurements, true)}
+      manager={new ReactCanvasManager(measurements, "%", aspectRatio, true)}
     >
       <SegmentedMeasures
         measures={measures}

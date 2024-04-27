@@ -27,6 +27,7 @@ import { CoordinateSectionArray } from "@/types/music-rendering/measure-manager/
 import { MeasureSection, StaticMeasureAttributes } from "@/types/music";
 import { getMeasureSectionDrawer } from "./drawers/measure-sections";
 import { MeasureSectionDrawerArgs } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-section";
+import { mergePartial } from "@/utils";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
@@ -55,7 +56,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
   implements IBeatCanvas
 {
   protected canvas: T;
-  protected drawOptions: BeatCanvasDrawOptions;
+  protected drawOptions!: BeatCanvasDrawOptions;
   protected measurements: Measurements;
   protected measureComponentStartYOffset: number;
   protected measureComponentIterator;
@@ -66,8 +67,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     drawNonBodyComponents = false
   ) {
     this.canvas = canvas;
-    this.drawOptions = getDrawOptions();
-    this.combineDrawOptions(drawOptions);
+    this.createDrawOptions(drawOptions);
     this.measurements = measurements;
     this.measureComponentStartYOffset = drawNonBodyComponents
       ? this.measurements.getMeasureDimensions().padding.top
@@ -82,19 +82,10 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     }
   }
 
-  private combineDrawOptions(drawOptions?: DeepPartial<BeatCanvasDrawOptions>) {
-    if (drawOptions) {
-      const { note } = drawOptions;
-      if (note) {
-        if (note.noteBodyAspectRatio) {
-          this.drawOptions.note.noteBodyAspectRatio = note.noteBodyAspectRatio;
-        }
-        if (note.dotAnnotationAspectRatio) {
-          this.drawOptions.note.dotAnnotationAspectRatio =
-            note.dotAnnotationAspectRatio;
-        }
-      }
-    }
+  private createDrawOptions(drawOptions?: DeepPartial<BeatCanvasDrawOptions>) {
+    this.drawOptions = getDrawOptions();
+    mergePartial(this.drawOptions.note, drawOptions?.note);
+    mergePartial(this.drawOptions.measure, drawOptions?.measure);
   }
 
   protected iterateMeasureLines(

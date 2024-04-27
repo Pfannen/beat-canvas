@@ -3,7 +3,10 @@ import { Music } from "@/objects/music/readonly-music";
 import { MeasureManager } from "../measure-manager";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
-import { MeasureSectionToggle } from "@/types/music-rendering";
+import {
+  MeasureSectionToggle,
+  UnitConverters2D,
+} from "@/types/music-rendering";
 import { NoteAnnotation } from "@/types/music/note-annotations";
 import {
   Measure,
@@ -28,14 +31,16 @@ export class MeasureRenderer {
   private canvasManager: ICanvasGetter;
   private transformer: MeasureTransformer;
   private measureManager!: MeasureManager;
-  protected musicDimensions: MusicDimensionData;
+  private musicDimensions: MusicDimensionData;
   private measurements: Measurements;
+  private unitConverters!: UnitConverters2D;
   constructor(
     measures: Measure[],
     musicDimensions: MusicDimensionData,
     canvasManager: ICanvasGetter,
     measurements: Measurements,
-    sectionToggleList?: MeasureSectionToggle
+    sectionToggleList?: MeasureSectionToggle,
+    unitConverters?: UnitConverters2D
   ) {
     this.measures = measures;
     this.musicDimensions = musicDimensions;
@@ -48,6 +53,16 @@ export class MeasureRenderer {
       sectionToggleList
     );
     this.measurements = measurements;
+    this.initializeUnitConverters(unitConverters);
+  }
+
+  private initializeUnitConverters(unitConverters?: UnitConverters2D) {
+    if (!unitConverters) {
+      const unitConverter = (val: number) => val;
+      this.unitConverters = { x: unitConverter, y: unitConverter };
+    } else {
+      this.unitConverters = unitConverters;
+    }
   }
 
   private getMeasureDimensions(measureIndex: number) {

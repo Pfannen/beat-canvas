@@ -20,7 +20,7 @@ const MeasurePane: FunctionComponent<MeasurePaneProps> = ({
     <div
       className={concatClassNames(
         classes.pane,
-        areSelections && !isSelected && classes.not_selected
+        isSelected ? classes.selected : areSelections && classes.not_selected
       )}
       onClick={onPaneClick}
       style={

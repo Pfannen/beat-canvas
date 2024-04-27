@@ -25,13 +25,13 @@ export class PageDimensionParams {
   }
 
   static marginlessSheetMusic(
-    aspectRatio: number,
+    width: number,
+    height: number,
     linesPerPage: number,
     measuresPerLine: number
   ): MusicDimensionParams {
-    const pageDimensions = { width: aspectRatio * 100, height: 100 };
     return {
-      pageDimensions,
+      pageDimensions: { width, height },
       musicMargins: { top: 0, bottom: 0, left: 0, right: 0 },
       minHeaderSpace: 0,
       measuresPerLine,

@@ -10,27 +10,23 @@ import {
   MeasureNotifierArgs,
   MeasureRenderArgs,
 } from "@/types/music-rendering";
-import { ReactNotificationManager } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/notification-manager";
-import { getRelativeBeatCanvas } from "@/utils/music-rendering/react";
-import { BeatCanvasConstructor } from "@/types/music-rendering/canvas/beat-canvas";
-import { ReactDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas";
 import { toPercent } from "@/utils";
 import { ReactCanvasManager } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/manager";
 import { withNotifications } from "@/objects/music-rendering/beat-canvas/notification-wrapper/manager";
 
 type MeasureSelectCanvasProps = {
-  aspectRatio: number;
   measures: Measure[];
+  aspectRatio: number;
   onMeasureRendered: (args: MeasureRenderArgs) => void;
 };
 
 const MeasureSelectCanvas: FunctionComponent<MeasureSelectCanvasProps> = ({
-  aspectRatio,
   measures,
+  aspectRatio,
   onMeasureRendered,
 }) => {
   const dimensions = useMemo(
-    () => MusicLayout.getMarginlessSheetMusic(aspectRatio),
+    () => MusicLayout.getMarginlessSheetMusic(100, 100),
     []
   );
   const measurements = useMemo(
@@ -57,18 +53,14 @@ const MeasureSelectCanvas: FunctionComponent<MeasureSelectCanvasProps> = ({
     onMeasureRendered(renderArgs);
   };
 
-  const relativeBeatCanvas: BeatCanvasConstructor<ReactDrawingCanvas> = (
-    drawingCanvas,
-    measurements
-  ) => getRelativeBeatCanvas(drawingCanvas, aspectRatio, measurements);
-  const manager = new ReactCanvasManager(measurements, "%", relativeBeatCanvas);
+  const manager = new ReactCanvasManager(measurements, "%", aspectRatio, false);
   withNotifications(manager, onMeasureRender);
 
   return (
     <MusicCanvas
       measures={measures}
       measurements={measurements}
-      dimensions={MusicLayout.getMarginlessSheetMusic(aspectRatio)}
+      dimensions={dimensions}
       manager={manager}
     />
   );

@@ -1,4 +1,4 @@
-import { Coordinate } from "@/types";
+import { Coordinate, UnitConverter } from "@/types";
 import { MeasureRenderData } from "../music/render-data";
 import { TimeSignature } from "@/components/providers/music/types";
 import { IBeatCanvas } from "./canvas/beat-canvas";
@@ -54,3 +54,8 @@ export type MeasureRenderArgs = {
 };
 
 export type MeasureNotifier = (args: MeasureNotifierArgs) => void;
+
+export type UnitConverters2D = {
+  x: UnitConverter<number, number>;
+  y: UnitConverter<number, number>;
+};
