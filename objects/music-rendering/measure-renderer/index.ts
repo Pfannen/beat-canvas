@@ -3,10 +3,7 @@ import { Music } from "@/objects/music/readonly-music";
 import { MeasureManager } from "../measure-manager";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
-import {
-  MeasureSectionToggle,
-  UnitConverters2D,
-} from "@/types/music-rendering";
+import { MeasureSectionToggle, UnitConverters } from "@/types/music-rendering";
 import { NoteAnnotation } from "@/types/music/note-annotations";
 import {
   Measure,
@@ -34,14 +31,14 @@ export class MeasureRenderer {
   private measureManager!: MeasureManager;
   private musicDimensions: MusicDimensionData;
   private measurements: Measurements;
-  private unitConverters!: UnitConverters2D;
+  private unitConverters!: UnitConverters;
   constructor(
     measures: Measure[],
     musicDimensions: MusicDimensionData,
     canvasManager: ICanvasGetter,
     measurements: Measurements,
     sectionToggleList?: MeasureSectionToggle,
-    unitConverters?: UnitConverters2D,
+    unitConverters?: UnitConverters,
     measureTolerence?: Tolerence
   ) {
     this.measures = measures;
@@ -59,7 +56,7 @@ export class MeasureRenderer {
     this.initializeUnitConverters(unitConverters);
   }
 
-  private initializeUnitConverters(unitConverters?: UnitConverters2D) {
+  private initializeUnitConverters(unitConverters?: UnitConverters) {
     if (!unitConverters) {
       const unitConverter = (val: number) => val;
       this.unitConverters = { x: unitConverter, y: unitConverter };
@@ -79,13 +76,32 @@ export class MeasureRenderer {
     };
   }
 
-  private getMusicRenderData() {
+  private getMusicRenderData(
+    getMeasureData: (measureIndex: number) => {
+      timeSig: TimeSignature;
+      noteSpaceWidth: number;
+    }
+  ) {
     this.transformer.computeDisplayData([
       {
         attacher: "beam-data",
         context: {
-          measurements: this.measurements,
-          getMeasureDimensions: this.getMeasureDimensions.bind(this),
+          unitConverters: this.unitConverters,
+          getAbsolutePosition: (measureIndex, noteIndex) => {
+            const note = this.measures[measureIndex].notes[noteIndex];
+            const { timeSig, noteSpaceWidth } = getMeasureData(measureIndex);
+            const duration = getNoteDuration(note.type, timeSig.beatNote);
+            const x =
+              Measurements.getXFractionOffset(
+                note.x,
+                duration,
+                timeSig.beatsPerMeasure
+              ) * noteSpaceWidth;
+            const y =
+              this.measurements.getYFractionOffset(note.y) *
+              this.musicDimensions.measureDimensions.noteSpaceHeight;
+            return { x, y };
+          },
         },
       },
     ]);
@@ -166,7 +182,10 @@ export class MeasureRenderer {
   public render() {
     const measureDetails = this.generateMeasureAttributes();
     this.generateMeasureOutline((i) => measureDetails[i].sections);
-    const renderData = this.getMusicRenderData();
+    const renderData = this.getMusicRenderData((i) => ({
+      timeSig: measureDetails[i].attributes.timeSignature,
+      noteSpaceWidth: this.measureManager.getMeasureSection(i, "note")!.width,
+    }));
     const containerData = this.getContainerDimensionData();
     renderData.forEach((measure, measureIndex) => {
       const positionData = this.getContainerPositionData(measureIndex);
@@ -183,7 +202,7 @@ export class MeasureRenderer {
         measureIndex,
         pageNumber: measureData.pageNumber,
         sectionAttributes: measureDetails[measureIndex].attributes,
-      }); //Call this.drawMeasures so if a class extends this one, it can hook into the measure drawing (for overlays)
+      });
 
       const noteSection = this.measureManager.getMeasureSection(
         measureIndex,

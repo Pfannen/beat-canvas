@@ -52,6 +52,7 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
       measurements={measurements}
       sectionToggleList={{ note: true }}
       manager={new ReactCanvasManager(measurements, "%", aspectRatio, true)}
+      aspectRatio={aspectRatio}
     >
       <SegmentedMeasures
         measures={measures}

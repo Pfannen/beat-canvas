@@ -7,6 +7,7 @@ import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
 import { PageDimensionParams } from "@/objects/music-rendering/music-layout/page-dimension-params";
 import { DeepPartial, UnitConverter } from "@/types";
+import { UnitConverters } from "@/types/music-rendering";
 import { BeatCanvasDrawOptions } from "@/types/music-rendering/canvas/beat-canvas";
 import { CanvasManager } from "@/types/music-rendering/canvas/canvas-manager";
 
@@ -37,7 +38,14 @@ export const createXValueConverter = (
 export const createYValueConverter = (
   aspectRatio: number
 ): UnitConverter<number, number> => {
-  return (yValue: number) => aspectRatio / yValue;
+  return (yValue: number) => aspectRatio * yValue;
+};
+
+export const createUnitConverters = (aspectRatio: number): UnitConverters => {
+  return {
+    x: createXValueConverter(aspectRatio),
+    y: createYValueConverter(aspectRatio),
+  };
 };
 
 export const getRedundantConverter = (): UnitConverter<number, number> => {

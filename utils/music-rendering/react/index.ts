@@ -4,7 +4,7 @@ import { RelativeClickableBeatCanvas } from "@/objects/music-rendering/beat-canv
 import { ReactDrawingCanvas } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas";
 import { ReactCanvasManager } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/manager";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
-import { MeasureSectionToggle } from "@/types/music-rendering";
+import { MeasureSectionToggle, UnitConverters } from "@/types/music-rendering";
 import { BeatCanvasPropDelegates } from "@/types/music-rendering/canvas/beat-canvas/clickable-beat-canvas";
 import { CanvasManager } from "@/types/music-rendering/canvas/canvas-manager";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
@@ -43,18 +43,8 @@ export const createRelativeBeatCanvasManager = (
 };
 
 export const drawMeasures = (
-  measures: Measure[],
-  dimensions: MusicDimensionData,
-  measurements: Measurements,
-  manager: CanvasManager<any>,
-  sectionToggleList?: MeasureSectionToggle
+  ...args: ConstructorParameters<typeof MeasureRenderer>
 ) => {
-  const renderer = new MeasureRenderer(
-    measures,
-    dimensions,
-    manager,
-    measurements,
-    sectionToggleList
-  );
+  const renderer = new MeasureRenderer(...args);
   renderer.render();
 };

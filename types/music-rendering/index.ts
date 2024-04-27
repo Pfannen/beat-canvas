@@ -55,7 +55,7 @@ export type MeasureRenderArgs = {
 
 export type MeasureNotifier = (args: MeasureNotifierArgs) => void;
 
-export type UnitConverters2D = {
+export type UnitConverters = {
   x: UnitConverter<number, number>;
   y: UnitConverter<number, number>;
 };

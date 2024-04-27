@@ -57,6 +57,7 @@ const MeasureSelectCanvas: FunctionComponent<MeasureSelectCanvasProps> = ({
       measurements={measurements}
       dimensions={dimensions}
       manager={manager}
+      aspectRatio={aspectRatio}
     />
   );
 };
