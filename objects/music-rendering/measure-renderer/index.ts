@@ -24,6 +24,7 @@ import { InitialMeasureSectionArray } from "@/types/music-rendering/canvas/beat-
 import { formatInitialSections } from "../beat-canvas/drawers/measure-sections/initial-section-handlers";
 import { noteAttributeGenerator } from "@/utils/music/measures/traversal";
 import { ICanvasGetter } from "@/types/music-rendering/canvas/canvas-manager";
+import { Tolerence } from "@/types/music-rendering/measure-manager";
 
 export class MeasureRenderer {
   private measures: Measure[];
@@ -40,7 +41,8 @@ export class MeasureRenderer {
     canvasManager: ICanvasGetter,
     measurements: Measurements,
     sectionToggleList?: MeasureSectionToggle,
-    unitConverters?: UnitConverters2D
+    unitConverters?: UnitConverters2D,
+    measureTolerence?: Tolerence
   ) {
     this.measures = measures;
     this.musicDimensions = musicDimensions;
@@ -50,7 +52,8 @@ export class MeasureRenderer {
     this.transformer = new MeasureTransformer(this.music);
     this.measureManager = new MeasureManager(
       this.musicDimensions,
-      sectionToggleList
+      sectionToggleList,
+      measureTolerence
     );
     this.measurements = measurements;
     this.initializeUnitConverters(unitConverters);
@@ -172,7 +175,6 @@ export class MeasureRenderer {
       const beatCanvas = this.canvasManager.getCanvasForPage(
         measureData.pageNumber
       );
-
       beatCanvas.drawMeasure({
         topLeft: { ...measureData.start },
         sections: measureData.metadata!,
