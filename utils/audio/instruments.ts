@@ -1,17 +1,21 @@
 import { ToneInstrument } from '@/types/audio/instrument';
-import { InstrumentProps } from '@/types/music/note-annotations';
+import {
+	InstrumentAttributes,
+	InstrumentEnvelope,
+} from '@/types/music/note-annotations';
 import * as Tone from 'tone';
+import { deepyCopy } from '..';
 
 export const updateInstrument = (
 	instrument: ToneInstrument,
-	instrumentProps?: Partial<InstrumentProps>
+	targetEnvelope?: Partial<InstrumentEnvelope>
 ) => {
-	if (!instrumentProps) return;
+	if (!targetEnvelope) return;
 
-	//instrument.set(instrumentProps);
+	instrument.set({ envelope: targetEnvelope });
 
-	const { envelope } = instrument;
-	if (envelope) Object.assign(envelope, instrumentProps);
+	/* const { envelope } = instrument;
+	if (envelope) Object.assign(envelope, targetEnvelope); */
 
 	// TODO: Look into envelope and portamento on sampler and poly synth
 	/* const { attack, sustain, decay, release, portamento } = instrumentProps;
@@ -33,13 +37,22 @@ export const getInstrument = (name: string): ToneInstrument => {
 	return instrument;
 };
 
-export const getDefaultInstrumentProps = () => {
-	const defaultProps: InstrumentProps = {
+export const getDefaultInstrumentEnvelope = () => {
+	const envelope: InstrumentEnvelope = {
 		attack: 0.005, // 0.005
 		decay: 0.1, // 0.1
 		sustain: 0.3, // 0.3
 		release: 1, // 1
-		portamento: 0, // 0
 	};
-	return defaultProps;
+
+	return envelope;
+};
+
+export const getDefaultInstrumentAttributes = () => {
+	const attributes: InstrumentAttributes = {
+		envelope: getDefaultInstrumentEnvelope(),
+		velocity: 0.3,
+		portamento: 0,
+	};
+	return attributes;
 };

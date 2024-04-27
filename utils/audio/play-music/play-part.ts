@@ -1,20 +1,24 @@
 import { MusicPart } from '@/types/music';
 import {
-	getDefaultInstrumentProps,
+	getDefaultInstrumentAttributes,
 	getInstrument,
 	updateInstrument,
 } from '../instruments';
 import { ToneInstrument } from '@/types/audio/instrument';
-import { PersistentInstrumentAttributes } from '@/types/music/note-annotations';
+import { InstrumentAttributes } from '@/types/music/note-annotations';
 import { Transport } from 'tone/build/esm/core/clock/Transport';
 import { getSecondsPerBeat } from '@/utils/music';
 import { expandMeasures } from '@/utils/music/measures/expand-measures';
 import { initializeMeasureAttributes } from '@/utils/music/measures/measure-generator';
 import { enqueueNote } from './play-note';
-import { dynamicToVelocity } from '../volume';
+import { getApplicationDecibelRange, getEnqueueDecibelRange } from '../volume';
 import { noteAttributeGenerator } from '@/utils/music/measures/traversal';
 import { Measure } from '@/components/providers/music/types';
+import { applyDynamic, applyWedge } from './apply-measure-attributes';
+import { WedgeDynamicStore } from '@/types/audio/volume';
+import { getDecibelsForDynamic } from './dynamics';
 
+// TODO: Clean this method UP
 export const enqueuePart = (
 	part: MusicPart,
 	instrument: ToneInstrument,
@@ -27,22 +31,46 @@ export const enqueuePart = (
 	const { measures } = part;
 	const attributes = initializeMeasureAttributes(measures[0]);
 
-	const persistentAttr: PersistentInstrumentAttributes = {
-		instrumentProps: getDefaultInstrumentProps(),
-		velocity: 0.5,
-	};
-	updateInstrument(instrument, persistentAttr.instrumentProps);
+	const persistentAttr: InstrumentAttributes = getDefaultInstrumentAttributes();
+	updateInstrument(instrument, persistentAttr.envelope);
 
 	const baseSPB = getSecondsPerBeat(attributes.metronome.beatsPerMinute);
 	if (!expandedMeasures) expandedMeasures = expandMeasures(measures);
+
+	const decibelRange = getEnqueueDecibelRange();
+	const wedgeDynamicStore: WedgeDynamicStore = {
+		startDynamic: attributes.dynamic,
+	};
+
+	instrument.volume.value = getDecibelsForDynamic(
+		decibelRange,
+		attributes.dynamic
+	);
 
 	for (const {
 		currentAttributes,
 		newAttributes,
 		note,
 		measureStartX,
+		completedDurationAttributes,
 	} of noteAttributeGenerator(expandedMeasures)) {
-		persistentAttr.velocity = dynamicToVelocity(currentAttributes.dynamic);
+		if (completedDurationAttributes) {
+			const { wedge } = completedDurationAttributes;
+			if (wedge) {
+				applyWedge(
+					instrument,
+					transport,
+					wedge,
+					wedgeDynamicStore,
+					decibelRange
+				);
+			}
+		}
+
+		if (newAttributes) {
+			if (newAttributes.wedge?.start)
+				wedgeDynamicStore.startDynamic = currentAttributes.dynamic;
+		}
 
 		if (note) {
 			enqueueNote(

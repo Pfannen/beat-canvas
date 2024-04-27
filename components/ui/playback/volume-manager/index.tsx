@@ -22,7 +22,7 @@ const VolumeManager: FunctionComponent<VolumeManagerProps> = ({
 						onChange={(event) => {
 							modifyVolume(attributes.audioId, +event.target.value / 100);
 						}}
-						defaultValue={50}
+						defaultValue={attributes.volumePercentage * 100}
 						style={{ display: 'block' }}
 					/>
 				</div>

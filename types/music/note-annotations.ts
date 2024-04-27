@@ -15,16 +15,24 @@ export type SlurMXMLImport = 'start' | 'stop';
 
 export type Accent = 'strong' | 'weak';
 
-export type Dynamic = 'pp' | 'p' | 'mp' | 'mf' | 'fp' | 'f' | 'ff';
+export type Dynamic =
+	| 'ppp'
+	| 'pp'
+	| 'p'
+	| 'mp'
+	| 'mf'
+	| 'fp'
+	| 'f'
+	| 'ff'
+	| 'fff';
 
 export type Accidental = 'sharp' | 'flat' | 'natural';
 
-export type InstrumentProps = {
+export type InstrumentEnvelope = {
 	attack: number;
 	sustain: number;
 	decay: number;
 	release: number;
-	portamento: number;
 };
 
 export type NoteAnnotations = {
@@ -37,23 +45,25 @@ export type NoteAnnotations = {
 	dotted?: true;
 };
 
-export type PersistentInstrumentAttributes = {
-	instrumentProps: InstrumentProps;
+export type InstrumentAttributes = {
+	envelope: InstrumentEnvelope;
 	velocity: number;
+	portamento: number;
 };
 
-export type PartialPIA = {
-	instrumentProps: Partial<InstrumentProps>;
+export type PartialIA = {
+	envelope: Partial<InstrumentEnvelope>;
 	velocity?: number;
+	portamento?: number;
 };
 
 export type NoteEnqueueData = {
 	pitchOctave: PitchOctave;
 	duration: number;
 	persistentAttributes: {
-		cur: PersistentInstrumentAttributes;
-		applyToNote: PartialPIA;
-		persist: PartialPIA;
+		cur: InstrumentAttributes;
+		preNote: PartialIA;
+		postNote: PartialIA;
 	};
 };
 

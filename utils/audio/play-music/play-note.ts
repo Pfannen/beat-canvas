@@ -11,19 +11,23 @@ import { MeasureAttributes } from '@/types/music';
 import { Synth } from 'tone';
 import { Note } from '@/components/providers/music/types';
 import { ToneInstrument } from '@/types/audio/instrument';
-import { PersistentInstrumentAttributes } from '@/types/music/note-annotations';
+import { InstrumentAttributes } from '@/types/music/note-annotations';
 import { Transport } from 'tone/build/esm/core/clock/Transport';
 
 // method for getting complete note audio attributes
 const getCompleteNoteData = (
 	note: Note,
 	measureAttributes: MeasureAttributes,
-	persistentAttr: PersistentInstrumentAttributes
+	persistentAttr: InstrumentAttributes
 ) => {
 	const { y, type, annotations } = note;
 	const { timeSignature, keySignature, clef } = measureAttributes;
 
-	const noteDuration = getNoteDuration(type, timeSignature.beatNote, annotations?.dotted);
+	const noteDuration = getNoteDuration(
+		type,
+		timeSignature.beatNote,
+		annotations?.dotted
+	);
 	const pitchOctave = getNoteFromYPos(y, clef);
 
 	applyKeySignature(keySignature, pitchOctave);
@@ -44,14 +48,14 @@ export const enqueueNote = (
 	note: Note,
 	measureAttributes: MeasureAttributes,
 	instrument: ToneInstrument,
-	persistentAttr: PersistentInstrumentAttributes,
+	persistentAttr: InstrumentAttributes,
 	curX: number,
 	baseSPB: number,
 	transport: Transport
 ) => {
 	transport.schedule((time) => {
 		// Update the instrument to have the 'persist' instrument props so they are persisted
-		updateInstrument(instrument, persistentAttr.instrumentProps);
+		// updateInstrument(instrument, persistentAttr.envelope);
 
 		const noteData = getCompleteNoteData(
 			note,
@@ -62,14 +66,14 @@ export const enqueueNote = (
 
 		// Extract the persistent attributes so we can apply them to the note and update
 		// them with 'persist'
-		const { cur, applyToNote, persist } = noteData.persistentAttributes;
+		const { cur, preNote, postNote } = noteData.persistentAttributes;
 
 		let velocity =
-			applyToNote.velocity !== undefined ? applyToNote.velocity : cur.velocity;
+			preNote.velocity !== undefined ? preNote.velocity : cur.velocity;
 		// Clamp velocity between 0 and 1
 		velocity = Math.min(1, Math.max(0, velocity));
 
-		updateInstrument(instrument, applyToNote.instrumentProps);
+		updateInstrument(instrument, preNote.envelope);
 
 		instrument.triggerAttackRelease(
 			fullNote,
@@ -79,6 +83,7 @@ export const enqueueNote = (
 		);
 
 		// Write back persist to persistentAttr so they are reflected in future playNote calls
-		Object.assign(persistentAttr, persist);
+		Object.assign(persistentAttr, postNote);
+		updateInstrument(instrument, postNote.envelope);
 	}, (curX + note.x) * baseSPB);
 };

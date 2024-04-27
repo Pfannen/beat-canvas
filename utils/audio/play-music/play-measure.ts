@@ -2,9 +2,8 @@ import { Measure } from '@/components/providers/music/types';
 import { MeasureAttributes } from '@/types/music';
 import { enqueueNote } from './play-note';
 import { ToneInstrument } from '@/types/audio/instrument';
-import { PersistentInstrumentAttributes } from '@/types/music/note-annotations';
+import { InstrumentAttributes } from '@/types/music/note-annotations';
 import { MeasureAttributesRetriever } from '@/utils/music/measures/measure-attributes';
-import { dynamicToVelocity } from '../volume';
 import { Transport } from 'tone/build/esm/core/clock/Transport';
 import {
 	measureGenerator,
