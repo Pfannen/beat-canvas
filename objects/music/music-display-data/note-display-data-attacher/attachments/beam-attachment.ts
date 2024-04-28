@@ -149,10 +149,11 @@ const getNoteBeamData = (
     return { x, y, beamCount }; //Account for stemOffset later
   });
   const data = NoteBeamCalculator.getPositionData(coordinates, direction, 25);
-  data.forEach((position) => {
+  data.forEach((position, i) => {
     position.beams?.forEach((beam) => {
       beam.length = unitConverters.x(beam.length);
     });
   });
+
   return data;
 };

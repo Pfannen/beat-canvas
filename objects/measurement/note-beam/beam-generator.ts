@@ -31,29 +31,37 @@ export class BeamGenerator {
   }
 
   private commitBeams(noteIndex: number, beamCount = this.currentBeams.length) {
-    const { x, y } = this.notes[noteIndex];
+    const { x, y } = this.notes[noteIndex]; //The note receiving all of the current beams
     for (let i = 0; i < beamCount; i++) {
       let beamLength;
-      const startCoordinate = this.currentBeams.pop()!;
+      const startCoordinate = this.currentBeams.pop()!; //Where this current beam started
       if (startCoordinate.x === x && startCoordinate.y === y) {
-        if (this.notes[noteIndex - 1]) {
-          const { x, y } = this.notes[noteIndex - 1];
+        //If this beam started and stopped with this note (its the only one that needs the beam)
+        if (noteIndex === 0) {
+          const { x, y } = this.notes[1];
+          beamLength =
+            TrigHelpers.calculatePointHypotenuse(
+              startCoordinate,
+              { x, y },
+              this.beamAngle
+            ) / 2; //This is the start note, extend to the note to the right
+        } else {
+          const { x, y } = this.notes[noteIndex - 1]; //Get the previous note and extend halfway to it
           beamLength =
             TrigHelpers.calculatePointHypotenuse(
               { x, y },
               startCoordinate,
               this.beamAngle
             ) / 2;
-        } else {
-          beamLength = TrigHelpers.calculatePointHypotenuse(
-            startCoordinate,
-            { x, y },
-            this.beamAngle
-          );
         }
-
-        this.addBeamData(this.beamAngle, beamLength, beamCount - i, noteIndex);
+      } else {
+        beamLength = TrigHelpers.calculatePointHypotenuse(
+          startCoordinate,
+          { x, y },
+          this.beamAngle
+        ); //This is the start note, extend to the note to the right
       }
+      this.addBeamData(this.beamAngle, beamLength, beamCount - i, noteIndex);
     }
   }
 
