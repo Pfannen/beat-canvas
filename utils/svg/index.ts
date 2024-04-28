@@ -1,4 +1,4 @@
-import { ViewBox } from "@/types/svg";
+import { SVGMetadata, ViewBox } from "@/types/svg";
 
 const X_INDEX = 0;
 const Y_INDEX = 1;
@@ -48,4 +48,8 @@ export const calculateScaleToHeight = (viewBox: ViewBox, height = 1) => {
   const svgHeight = getSVGHeight(viewBox);
   const scale = height / svgHeight;
   return scale;
+};
+
+export const getSVGCenterOffsetY = (svg: SVGMetadata, height: number) => {
+  return height * -svg.centerFractionOffsetY;
 };

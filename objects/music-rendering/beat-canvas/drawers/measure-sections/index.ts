@@ -8,9 +8,13 @@ import {
   calculateScaleToHeight,
   calculateScaleToWidth,
   convertWidthScaleToHeightScale,
+  getSVGCenterOffsetY,
 } from "@/utils/svg";
 import { MeasureSection } from "@/types/music";
-import { getKeySignatureData } from "./key-signature/widths";
+import {
+  getHeightForAccidentalSVG,
+  getKeySignatureData,
+} from "./key-signature/widths";
 import {
   getClefWidth,
   getHeightForClefInfo,
@@ -42,10 +46,10 @@ const keySignatureSectionDrawer: MeasureSectionDrawer<"keySignature"> = ({
     positions.length,
     true,
     (x, i) => {
-      const widthScale = calculateScaleToWidth(svg.viewBox, symbolWidth);
-      const scale =
-        convertWidthScaleToHeightScale(svg.viewBox, widthScale) * 1.75;
-      const y = yPosToAbsolute(positions[i]);
+      const height = getHeightForAccidentalSVG(svg, componentHeights.space);
+      const scale = calculateScaleToHeight(svg.viewBox, height);
+      const centerYOffset = getSVGCenterOffsetY(svg, height);
+      const y = yPosToAbsolute(positions[i]) + centerYOffset;
       drawCanvas.drawSVG({
         paths: svg.paths,
         viewBox: svg.viewBox,
@@ -105,7 +109,7 @@ const clefSectionDrawer: MeasureSectionDrawer<"clef"> = ({
   const svg = getClefSVG(data);
   const height = getHeightForClefInfo(svg, bodyHeight);
   const scale = calculateScaleToHeight(svg.viewBox, height);
-  const centerYOffset = height * -svg.centerYOffset;
+  const centerYOffset = getSVGCenterOffsetY(svg, height);
   const x = getSectionCenterX(section);
   let y = yPosToAbsolute(svg.centerY);
   y += centerYOffset;

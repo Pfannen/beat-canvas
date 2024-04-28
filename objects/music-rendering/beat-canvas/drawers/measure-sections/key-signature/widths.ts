@@ -1,26 +1,37 @@
+import { getAccidentalSVG } from "@/SVG/measure/key-signature";
 import { Accidental } from "@/types/music";
-
-const accidentalFractions: { [K in Accidental]: number } = {
-  b: 1.2,
-  "#": 1.2,
-  n: 1.3,
-};
-
-const getAccidentalSpaceFraction = (accidental: Accidental) => {
-  return accidentalFractions[accidental];
-};
+import { AccidentalSVG } from "@/types/svg/music";
+import { getSVGAspectRatio } from "@/utils/svg";
 
 const getKeySignaturePositions = (keySignature: number) => [4, 7, 3, 6];
 
-export const getKeySignatureSymbol = (keySignature: number): Accidental => "n";
+export const getKeySignatureSymbol = (keySignature: number): Accidental => "#";
 
 //spaceHeight is the height of a space in the measure
 export const getAccidentalWidth = (
   accidental: Accidental,
   spaceHeight: number
 ) => {
-  const spaceFraction = getAccidentalSpaceFraction(accidental);
-  return spaceFraction * spaceHeight;
+  const svg = getAccidentalSVG(accidental);
+  return getWidthForAccidentalSVG(svg, spaceHeight);
+};
+
+export const getWidthForAccidentalSVG = (
+  accidental: AccidentalSVG,
+  spaceHeight: number
+) => {
+  const { viewBox } = accidental;
+  const height = getHeightForAccidentalSVG(accidental, spaceHeight);
+  const aspectRatio = getSVGAspectRatio(viewBox);
+  return aspectRatio * height;
+};
+
+export const getHeightForAccidentalSVG = (
+  accidental: AccidentalSVG,
+  spaceHeight: number
+) => {
+  const { fractionOfSpaceHeight } = accidental;
+  return fractionOfSpaceHeight * spaceHeight;
 };
 
 export const getKeySignatureWidth = (
