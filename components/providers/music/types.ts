@@ -7,15 +7,10 @@ import { NoteAnnotations } from "@/types/music/note-annotations";
 
 export type NoteType =
   | "whole"
-  | "dotted-half"
   | "half"
-  | "dotted-quarter"
   | "quarter"
-  | "dotted-eighth"
   | "eighth"
-  | "dotted-sixteenth"
   | "sixteenth"
-  | "dotted-thirtysecond"
   | "thirtysecond";
 
 export type Note = {

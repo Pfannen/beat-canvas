@@ -34,8 +34,8 @@ const drawHalfRest: RestDrawer = ({
 
 const drawSVGRest =
   (type: SVGRest): RestDrawer =>
-  ({ drawCanvas, restCenter, measureComponentHeights }) => {
-    const { paths, viewBox } = getRestSVGData(type);
+  ({ drawCanvas, restCenter, measureComponentHeights, isDotted }) => {
+    const { paths, viewBox } = getRestSVGData(type, isDotted);
     const height = calculateScaleToHeight(
       viewBox,
       measureComponentHeights.space * 3

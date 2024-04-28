@@ -22,7 +22,7 @@ const restSVGData: Partial<SVGRecord<SVGRest>> = {
   },
 };
 
-export const getRestSVGData = (type: SVGRest) => {
+export const getRestSVGData = (type: SVGRest, isDotted: boolean) => {
   return (
     restSVGData[type] || {
       paths: [
