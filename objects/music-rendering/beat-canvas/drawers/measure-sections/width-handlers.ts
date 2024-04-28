@@ -16,8 +16,8 @@ const sectionWidthHandlers: MeasureSectionWidthHandlers = {
   clef: ({ bodyHeight }, clef) => getClefWidth(clef, bodyHeight) * padding,
   timeSignature: ({ bodyHeight }) =>
     getTimeSignatureWidth(bodyHeight) * padding,
-  keySignature: (args, keySignature) =>
-    getKeySignatureWidth(keySignature, args.componentHeights.space) * 1.25,
+  keySignature: ({ componentHeights, clef }, keySignature) =>
+    getKeySignatureWidth(keySignature, clef, componentHeights.space) * 1.25,
   repeat: ({ bodyHeight }) => bodyHeight * repeatAspectRatio,
   note: () => 1,
   repeatEndings: function (

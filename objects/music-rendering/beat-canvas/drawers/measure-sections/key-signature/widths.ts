@@ -1,11 +1,11 @@
 import { getAccidentalSVG } from "@/SVG/measure/key-signature";
-import { Accidental } from "@/types/music";
+import { Accidental, Clef } from "@/types/music";
 import { AccidentalSVG } from "@/types/svg/music";
+import { getYPositionsForKeySignature } from "@/utils/music/key-signature";
 import { getSVGAspectRatio } from "@/utils/svg";
 
-const getKeySignaturePositions = (keySignature: number) => [4, 7, 3, 6];
-
-export const getKeySignatureSymbol = (keySignature: number): Accidental => "#";
+export const getKeySignatureSymbol = (keySignature: number): Accidental =>
+  keySignature < 0 ? "b" : "#";
 
 //spaceHeight is the height of a space in the measure
 export const getAccidentalWidth = (
@@ -36,9 +36,10 @@ export const getHeightForAccidentalSVG = (
 
 export const getKeySignatureWidth = (
   keySignature: number,
+  clef: Clef,
   spaceHeight: number
 ) => {
-  const positions = getKeySignaturePositions(keySignature);
+  const positions = getYPositionsForKeySignature(keySignature, clef);
   const symbol = getKeySignatureSymbol(keySignature);
   const symbolWidth = getAccidentalWidth(symbol, spaceHeight);
   return positions.length * symbolWidth;
@@ -46,9 +47,10 @@ export const getKeySignatureWidth = (
 
 export const getKeySignatureData = (
   keySignature: number,
+  clef: Clef,
   spaceHeight: number
 ) => {
-  const positions = getKeySignaturePositions(keySignature);
+  const positions = getYPositionsForKeySignature(keySignature, clef);
   const symbol = getKeySignatureSymbol(keySignature);
   const symbolWidth = getAccidentalWidth(symbol, spaceHeight);
   return { positions, symbolWidth, symbol };

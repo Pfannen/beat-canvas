@@ -109,14 +109,19 @@ export class MeasureRenderer {
   }
 
   private generateMeasureOutline(
-    getMeasureMetadata: (measureIndex: number) => InitialMeasureSectionArray
+    getMeasureMetadata: (measureIndex: number) => {
+      sections: InitialMeasureSectionArray;
+      attributes: StaticMeasureAttributes;
+    }
   ) {
     const { measureDimensions } = this.musicDimensions;
+
     this.measures.forEach((measure, i) => {
-      const sections = getMeasureMetadata(i);
-      const { required, optional } = formatInitialSections(sections, {
+      const data = getMeasureMetadata(i);
+      const { required, optional } = formatInitialSections(data.sections, {
         bodyHeight: this.measurements.getBodyHeight(),
         componentHeights: this.measurements.getComponentHeights(),
+        clef: data.attributes["clef"],
       });
       const noteSection = {
         key: "note",
@@ -190,7 +195,7 @@ export class MeasureRenderer {
 
   public render() {
     const measureDetails = this.generateMeasureAttributes();
-    this.generateMeasureOutline((i) => measureDetails[i].sections);
+    this.generateMeasureOutline((i) => measureDetails[i]);
     const renderData = this.getMusicRenderData((i) => ({
       timeSig: measureDetails[i].attributes.timeSignature,
       noteSpaceWidth: this.measureManager.getMeasureSection(i, "note")!.width,

@@ -34,9 +34,11 @@ const keySignatureSectionDrawer: MeasureSectionDrawer<"keySignature"> = ({
   componentHeights,
   section,
   yPosToAbsolute,
+  clef,
 }) => {
   const { symbol, symbolWidth, positions } = getKeySignatureData(
     data,
+    clef,
     componentHeights.space
   );
   const svg = getAccidentalSVG(symbol);

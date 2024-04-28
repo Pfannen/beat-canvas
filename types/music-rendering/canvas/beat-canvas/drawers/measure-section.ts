@@ -1,6 +1,6 @@
 import { IDrawingCanvas } from "../../drawing-canvas";
 import { UnitConverter } from "@/types";
-import { MeasureSection, MeasureSectionMetadata } from "@/types/music";
+import { Clef, MeasureSection, MeasureSectionMetadata } from "@/types/music";
 import { MeasureComponentValues } from "@/types/music-rendering";
 import { CoordinateSection } from "@/types/music-rendering/measure-manager/measure-outline";
 
@@ -11,6 +11,7 @@ export type MeasureSectionDrawerArgs<T extends MeasureSection> = {
   section: CoordinateSection<T>;
   data: MeasureSectionMetadata[T];
   yPosToAbsolute: UnitConverter<number, number>;
+  clef: Clef;
 };
 
 export type MeasureSectionDrawer<T extends MeasureSection> = (
@@ -24,6 +25,7 @@ export type MeasureSectionDrawers = {
 export type MeasureSectionWidthArgs = {
   bodyHeight: number;
   componentHeights: MeasureComponentValues;
+  clef: Clef;
 };
 
 export type MeasureSectionWidthHandlers = {

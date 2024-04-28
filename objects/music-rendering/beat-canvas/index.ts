@@ -321,6 +321,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
         yPosToAbsolute,
         data,
         section,
+        clef: sectionAttributes["clef"],
       };
       if (drawer) {
         drawer(args as never);
