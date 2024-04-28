@@ -11,7 +11,11 @@ import {
 } from "@/utils/svg";
 import { MeasureSection } from "@/types/music";
 import { getKeySignatureData } from "./key-signature/widths";
-import { getClefWidth } from "./clef/widths";
+import {
+  getClefWidth,
+  getHeightForClefInfo,
+  getWidthForClefInfo,
+} from "./clef/widths";
 import { CoordinateSection } from "@/types/music-rendering/measure-manager/measure-outline";
 import { getTimeSignatureSVGs } from "@/SVG/measure/time-signature";
 import { getAccidentalSVG } from "@/SVG/measure/key-signature";
@@ -99,12 +103,12 @@ const clefSectionDrawer: MeasureSectionDrawer<"clef"> = ({
   yPosToAbsolute,
 }) => {
   const svg = getClefSVG(data);
-  const width = getClefWidth(data, bodyHeight);
-  const scale = calculateScaleToWidth(svg.viewBox, width);
+  const height = getHeightForClefInfo(svg, bodyHeight);
+  const scale = calculateScaleToHeight(svg.viewBox, height);
+  const centerYOffset = height * -svg.centerYOffset;
   const x = getSectionCenterX(section);
   let y = yPosToAbsolute(svg.centerY);
-  const centerOffset = svg.centerYOffset * scale;
-  y += centerOffset;
+  y += centerYOffset;
   drawCanvas.drawSVG({
     paths: svg.paths,
     viewBox: svg.viewBox,
