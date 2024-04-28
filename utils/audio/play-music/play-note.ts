@@ -73,7 +73,7 @@ export const enqueueNote = (
 		// Clamp velocity between 0 and 1
 		velocity = Math.min(1, Math.max(0, velocity));
 
-		updateInstrument(instrument, preNote.envelope);
+		updateInstrument(instrument, preNote);
 
 		instrument.triggerAttackRelease(
 			fullNote,
@@ -84,6 +84,6 @@ export const enqueueNote = (
 
 		// Write back persist to persistentAttr so they are reflected in future playNote calls
 		Object.assign(persistentAttr, postNote);
-		updateInstrument(instrument, postNote.envelope);
+		updateInstrument(instrument, postNote);
 	}, (curX + note.x) * baseSPB);
 };

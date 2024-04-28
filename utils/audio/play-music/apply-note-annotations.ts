@@ -8,6 +8,13 @@ import {
 	NoteAnnotationApplierMap,
 } from '@/types/music/note-annotations';
 
+/* const envelope: InstrumentEnvelope = {
+	attack: 0.005, // 0.005
+	decay: 0.1, // 0.1
+	sustain: 0.3, // 0.3
+	release: 1, // 1
+}; */
+
 const staccatoApplier: NoteAnnotationApplier = (attr, annotations) => {
 	if (!annotations.staccato) return;
 
@@ -22,7 +29,7 @@ const slurApplier: NoteAnnotationApplier = (attr, annotations) => {
 
 	const { preNote, postNote } = attr.persistentAttributes;
 	if (slur.start !== undefined) {
-		postNote.envelope.decay = 0.0000001;
+		postNote.envelope.decay = 0.000000000000001;
 		postNote.envelope.attack = 0;
 	} else {
 		postNote.envelope.decay = 0.1;

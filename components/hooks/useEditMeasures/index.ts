@@ -16,7 +16,9 @@ export const useEditMeasures = (
 	endIndex: number,
 	allowStackedNotes = false
 ) => {
-	const { getMeasures, invokeMeasureModifier } = useMusic();
+	const {
+		measuresItems: { getMeasures, invokeMeasureModifier },
+	} = useMusic();
 	// Utilize the measure range hook for efficient attribute retrieval
 	const {
 		getAttributes,

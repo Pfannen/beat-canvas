@@ -32,7 +32,7 @@ export const enqueuePart = (
 	const attributes = initializeMeasureAttributes(measures[0]);
 
 	const persistentAttr: InstrumentAttributes = getDefaultInstrumentAttributes();
-	updateInstrument(instrument, persistentAttr.envelope);
+	updateInstrument(instrument, persistentAttr);
 
 	const baseSPB = getSecondsPerBeat(attributes.metronome.beatsPerMinute);
 	if (!expandedMeasures) expandedMeasures = expandMeasures(measures);

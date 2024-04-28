@@ -28,14 +28,16 @@ const ImportExportTestPage: FunctionComponent<
 		seekPercentage,
 	} = usePlayback();
 	const [testRanges, setTestRanges] = useState<[number, number]>();
-	const { musicScore, setNewMusicScore, replaceMeasures } = useMusic();
+	const {
+		scoreItems: { musicScore, replaceMusicScore },
+	} = useMusic();
 
 	return (
 		<>
 			<ImportExportPage
 				setScore={(score) => {
 					setScore(score);
-					setNewMusicScore(score);
+					replaceMusicScore(score);
 				}}
 				setImportedAudio={setImportedAudio}
 				musicScore={musicScore}
