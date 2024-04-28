@@ -35,10 +35,7 @@ export const toneBufferToAudioBuffer = (
 		numberOfChannels: buffer.numberOfChannels,
 	});
 	for (let i = 0; i < buffer.numberOfChannels; i++) {
-		audioBuffer.copyToChannel(
-			buffer.getChannelData(i).slice(start, end - 1),
-			i
-		);
+		audioBuffer.copyToChannel(buffer.getChannelData(i).slice(start, end), i);
 	}
 
 	return audioBuffer;
@@ -63,7 +60,6 @@ export const toneBuffersToAudioBuffer = async (
 		audioBuffers.push({ buffer: audioBuffer, volumePercentage });
 	}
 
-    maxSampleRate /= 2;
 	const offlineCtx = new OfflineAudioContext(
 		maxChannels,
 		maxLen,

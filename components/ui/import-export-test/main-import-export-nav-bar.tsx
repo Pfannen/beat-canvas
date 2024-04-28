@@ -1,20 +1,26 @@
-import { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, MutableRefObject, Ref, useEffect } from 'react';
 import classes from './MainImportExportNavBar.module.css';
 import { useMusic } from '@/components/providers/music';
 import ImportExportPage from '.';
 import { MusicScore } from '@/types/music';
 
 interface MainImportExportNavBarProps {
-	setImportedAudio: (audioFile: File) => void;
+	setImportedAudio?: (audioFile: File) => void;
+	setImportedAudioRef?: MutableRefObject<(file: File) => void>;
 	setScore?: (musicScore?: MusicScore) => void;
 }
 
 const MainImportExportNavBar: FunctionComponent<
 	MainImportExportNavBarProps
-> = ({ setImportedAudio, setScore }) => {
+> = ({ setImportedAudio = () => {}, setScore, setImportedAudioRef }) => {
 	const {
 		scoreItems: { replaceMusicScore, musicScore },
 	} = useMusic();
+
+	const setImportedAudioLocal = (file: File) => {
+		if (setImportedAudioRef) setImportedAudioRef.current(file);
+		else setImportedAudio(file);
+	};
 
 	return (
 		<ImportExportPage
@@ -22,7 +28,7 @@ const MainImportExportNavBar: FunctionComponent<
 				replaceMusicScore(s);
 				setScore && setScore(s);
 			}}
-			setImportedAudio={setImportedAudio}
+			setImportedAudio={setImportedAudioLocal}
 			musicScore={musicScore}
 		/>
 	);

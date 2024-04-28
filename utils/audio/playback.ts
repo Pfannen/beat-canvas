@@ -1,6 +1,6 @@
 import { VolumeManager } from './volume';
 import { MusicScore } from '@/types/music';
-import { Player, ToneAudioBuffer, context } from 'tone';
+import { BasicPlaybackState, Player, ToneAudioBuffer, context } from 'tone';
 import { enqueueMusicScore } from './play-music/play-music';
 import { deepyCopy, isOnClient, loadFile } from '..';
 import {
@@ -10,9 +10,11 @@ import {
 import { ToneBufferVolumePair } from '@/types/audio/volume';
 
 // TODO: Look into PlaybackManager following single responsibility principle
+// NOTE: Could probably make another sub class for handling imported audio and music score
 export class PlaybackManager extends VolumeManager {
 	private players: { [id in string]: Player } = {};
 	private maxDurationPlayer?: Player;
+	private playbackState: BasicPlaybackState | undefined;
 
 	readonly playerNodeId = 'Imported Audio';
 	musicScore?: MusicScore;
@@ -27,7 +29,7 @@ export class PlaybackManager extends VolumeManager {
 	getMaxDuration = () =>
 		this.maxDurationPlayer ? this.maxDurationPlayer.buffer.duration : 0;
 
-	getPlaybackState = () => this.maxDurationPlayer?.state;
+	getPlaybackState = () => this.playbackState;
 
 	private addAudioPlayer = (buffer: ToneAudioBuffer, id: string) => {
 		const player = new Player();
@@ -56,6 +58,7 @@ export class PlaybackManager extends VolumeManager {
 		}
 		if (this.maxDurationPlayer)
 			this.maxDurationPlayer.onstop = () => {
+				//NOTE: Calling 'seek' triggers onstop, so we need to check if it's actually stopped
 				if (this.maxDurationPlayer?.state === 'stopped') this.stop();
 			};
 	};
@@ -71,10 +74,12 @@ export class PlaybackManager extends VolumeManager {
 	};
 
 	setMusicScore = async (musicScore?: MusicScore) => {
+		if (this.musicScore === musicScore) return;
+
 		if (this.musicScore) {
 			this.musicScore.parts.forEach((part) => {
-				this.removeVolumeNode(part.attributes.instrument);
-				delete this.players[part.attributes.instrument];
+				this.removeVolumeNode(part.attributes.name);
+				delete this.players[part.attributes.name];
 			});
 		}
 
@@ -118,22 +123,28 @@ export class PlaybackManager extends VolumeManager {
 	private getCurrentPlayTime = () => (Date.now() - this.lastStartTime) / 1000;
 
 	play = () => {
+		if (this.getPlaybackState() === 'started') return;
+
 		for (const player of Object.values(this.players)) {
-			if (player.state === 'started') return;
+			if (player.state === 'started') continue;
 			player.start();
 			player.seek(this.secondsIntoPlayback);
 		}
 
 		this.lastStartTime = Date.now();
+		this.playbackState = 'started';
 	};
 
 	stop = () => {
+		if (this.getPlaybackState() === 'stopped') return;
+
 		for (const player of Object.values(this.players)) {
 			if (player.state === 'stopped') continue;
 			player.stop();
 		}
 
 		this.secondsIntoPlayback += this.getCurrentPlayTime();
+		this.playbackState = 'stopped';
 	};
 
 	seek = (offsetPercentage: number) => {

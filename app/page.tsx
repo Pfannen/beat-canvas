@@ -9,35 +9,21 @@ import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
 import PlaybackManager from '@/components/ui/playback/playback-manager';
 import VolumeManager from '@/components/ui/playback/volume-manager';
 import PlaybackVolumeManager from '@/components/ui/playback/playback-volume-manager';
+import MusicScorePlaybackVolumeManager from '@/components/ui/playback/music-score-playback-volume-manager';
+import { useRef, useState } from 'react';
 
 export default function Home() {
-	const {
-		setScore,
-		setImportedAudio,
-		playMusic,
-		stopMusic,
-		seekMusic,
-		playbackManager,
-		volumePairs,
-		playbackState,
-		seekPercentage,
-	} = usePlayback();
+	const setImportedAudioRef = useRef<(file: File) => void>(() => {});
+
+	const setImportedAudio = (del: (file: File) => void) => {
+		setImportedAudioRef.current = del;
+	};
 
 	return (
 		<MusicProvider>
-			<MainImportExportNavBar
-				setImportedAudio={setImportedAudio}
-				setScore={setScore}
-			/>
-			<PlaybackVolumeManager
-				volumePairs={volumePairs}
-				modifyVolume={playbackManager.modifyVolume}
-				onPlay={playMusic}
-				onStop={stopMusic}
-				onSeek={seekMusic}
-				playbackState={playbackState}
-				seekPercentage={seekPercentage}
-				title="Home page"
+			<MainImportExportNavBar setImportedAudioRef={setImportedAudioRef} />
+			<MusicScorePlaybackVolumeManager
+				setImportedAudioLifter={setImportedAudio}
 			/>
 			<Workspace />
 		</MusicProvider>
