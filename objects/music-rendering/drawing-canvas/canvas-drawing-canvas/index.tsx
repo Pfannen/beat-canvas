@@ -63,7 +63,7 @@ export class CanvasDrawingCanvas implements IDrawingCanvas {
     const drawAction: CanvasDrawAction = (ctx, height) => {
       const heightScale = options.scale || 1;
       const widthScale = getSVGAspectRatio(options.viewBox) * heightScale;
-      const path = new Path2D(options.path);
+      const path = new Path2D(); //options.path
       let { x, y } = centerToTopLeft(options.x, options.y, height, widthScale);
       y = this.height - y;
       ctx.scale(widthScale, heightScale);

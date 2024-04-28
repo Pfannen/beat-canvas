@@ -4,7 +4,6 @@ import {
   MeasureSectionDrawers,
 } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-section";
 import { iterateSection } from "@/utils/music-rendering/section-calculation";
-import { getAccidentalSVG } from "./key-signature/accidental-svgs";
 import {
   calculateScaleToHeight,
   calculateScaleToWidth,
@@ -12,10 +11,11 @@ import {
 } from "@/utils/svg";
 import { MeasureSection } from "@/types/music";
 import { getKeySignatureData } from "./key-signature/widths";
-import { getTimeSignatureSVGs } from "./time-signature/number-svgs";
-import { getClefSVG } from "./clef/clef-svgs";
 import { getClefWidth } from "./clef/widths";
 import { CoordinateSection } from "@/types/music-rendering/measure-manager/measure-outline";
+import { getTimeSignatureSVGs } from "@/SVG/measure/time-signature";
+import { getAccidentalSVG } from "@/SVG/measure/key-signature";
+import { getClefSVG } from "@/SVG/measure/clef";
 
 const getSectionCenterX = (section: CoordinateSection<any>) =>
   section.startX + section.width / 2;
@@ -43,7 +43,7 @@ const keySignatureSectionDrawer: MeasureSectionDrawer<"keySignature"> = ({
         convertWidthScaleToHeightScale(svg.viewBox, widthScale) * 1.75;
       const y = yPosToAbsolute(positions[i]);
       drawCanvas.drawSVG({
-        path: svg.path,
+        paths: svg.paths,
         viewBox: svg.viewBox,
         x,
         y,
@@ -73,7 +73,7 @@ const timeSignatureSectionDrawer: MeasureSectionDrawer<"timeSignature"> = ({
   const bpmScale = calculateScaleToHeight(beatsPerMeasure.viewBox, svgHeight);
   const bpmCenterY = centerY - svgHeight / 2;
   drawCanvas.drawSVG({
-    path: beatNote.path,
+    paths: beatNote.paths,
     viewBox: beatNote.viewBox,
     x,
     y: beatNoteCenterY,
@@ -82,7 +82,7 @@ const timeSignatureSectionDrawer: MeasureSectionDrawer<"timeSignature"> = ({
   });
 
   drawCanvas.drawSVG({
-    path: beatsPerMeasure.path,
+    paths: beatsPerMeasure.paths,
     viewBox: beatsPerMeasure.viewBox,
     x,
     y: bpmCenterY,
@@ -101,10 +101,12 @@ const clefSectionDrawer: MeasureSectionDrawer<"clef"> = ({
   const svg = getClefSVG(data);
   const width = getClefWidth(data, bodyHeight);
   const scale = calculateScaleToWidth(svg.viewBox, width);
-  const y = yPosToAbsolute(4);
   const x = getSectionCenterX(section);
+  let y = yPosToAbsolute(svg.centerY);
+  const centerOffset = svg.centerYOffset * scale;
+  y += centerOffset;
   drawCanvas.drawSVG({
-    path: svg.path,
+    paths: svg.paths,
     viewBox: svg.viewBox,
     x,
     y,

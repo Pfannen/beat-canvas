@@ -34,6 +34,8 @@ export type Clef =
   | "tenor"
   | "soprano";
 
+export type ClefShape = Extract<Clef, "treble" | "alto" | "bass">;
+
 // Stores whether this is the beginning of the wedge, and if so, what type
 export type Wedge =
   | {

@@ -146,7 +146,9 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
         style={style}
         className={className}
       >
-        <path d={options.path} />
+        {options.paths.map((path) => (
+          <path d={path} />
+        ))}
       </svg>
     );
     this.components.push(component);
