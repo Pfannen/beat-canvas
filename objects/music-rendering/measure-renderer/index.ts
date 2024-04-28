@@ -142,10 +142,19 @@ export class MeasureRenderer {
     }[] = [];
     for (const locObj of noteAttributeGenerator(this.measures)) {
       if (locObj.measureStart) {
-        const measureDetails = combineMeasureSectionObjects(
-          locObj.currentAttributes,
-          locObj.newAttributes
-        );
+        let measureDetails;
+        if (locObj.measureIndex === 0) {
+          measureDetails = combineMeasureSectionObjects(
+            locObj.currentAttributes,
+            locObj.currentAttributes
+          ); //I need to treat the attributes as "new" if it is the first measure
+        } else {
+          measureDetails = combineMeasureSectionObjects(
+            locObj.currentAttributes,
+            locObj.newAttributes
+          );
+        }
+
         measureSections.push(measureDetails);
       }
     }
@@ -291,20 +300,11 @@ class MeasureComponentHelper {
   }
 }
 
-const sections: InitialMeasureSectionArray = [
-  { key: "clef", data: "alto", displayByDefault: true },
-  { key: "keySignature", data: 0, displayByDefault: true },
-  {
-    key: "timeSignature",
-    data: { beatNote: 4, beatsPerMeasure: 4 },
-    displayByDefault: true,
-  },
-];
-
 const combineMeasureSectionObjects = (
   currentAttributes: MeasureAttributes,
   newAttributes?: Partial<MeasureAttributes>
 ) => {
+  console.log(newAttributes);
   const attributes = {} as StaticMeasureAttributes;
   const sections: InitialMeasureSectionArray = [];
   if (newAttributes) {

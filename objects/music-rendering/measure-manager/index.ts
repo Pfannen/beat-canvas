@@ -177,12 +177,15 @@ class MeasureSectionHelper {
 
   public getSortedSections(filterRequired: boolean) {
     const combinedSections: MeasureSectionArray<MeasureSection> = [];
-    this.iterateSections((section) => {
-      if (
-        this.isSectionToggled(section.key) &&
-        (!filterRequired || section.displayByDefault)
-      ) {
-        combinedSections.push(section);
+    this.iterateSections((section, isRequired) => {
+      if (this.isSectionToggled(section.key)) {
+        if (!filterRequired) {
+          if (isRequired || section.displayByDefault) {
+            combinedSections.push(section);
+          }
+        } else if (section.displayByDefault) {
+          combinedSections.push(section);
+        }
       }
     });
     combinedSections.sort((a, b) => {
