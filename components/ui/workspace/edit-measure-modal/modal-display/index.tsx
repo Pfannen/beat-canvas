@@ -28,6 +28,7 @@ const ModalDisplay: FunctionComponent<ModalDisplayProps> = ({
     executeAssigner,
     updateSelection,
     commitMeasures,
+    isYLevelSelected,
   } = useEditMeasures(start, end);
 
   useEffect(() => {
@@ -53,6 +54,7 @@ const ModalDisplay: FunctionComponent<ModalDisplayProps> = ({
           measures={editMeasures}
           aboveBelowCt={ABOVE_BELOW_CT}
           onPositionClick={onPositionClick}
+          isYPosSelected={isYLevelSelected}
           isSegmentSelected={isSegmentSelected}
         />
       </div>

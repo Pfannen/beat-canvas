@@ -1,4 +1,5 @@
 import { Coordinate } from "@/types";
+import { Tolerence } from "@/types/music-rendering/measure-manager";
 import {
   CoordinateSectionArray,
   IterateMeasuresArgs,

@@ -1,4 +1,6 @@
-export const fractionToPercent = (val: number) => numToUnit(val, '%');
+import { UnitMeasurement } from "@/types";
+
+export const fractionToPercent = (val: number) => numToUnit(val, "%");
 
 export const numToUnit = (val: number, unit: 'px' | '%' | 'deg') => {
 	if (unit === '%') {
@@ -6,6 +8,8 @@ export const numToUnit = (val: number, unit: 'px' | '%' | 'deg') => {
 	}
 	return val + unit;
 };
+
+export const appendUnit = (val: number, unit: UnitMeasurement) => val + unit;
 
 export const numIsUndefined = <T>(val?: number) =>
 	val === undefined ? false : true;
@@ -35,6 +39,15 @@ export const loadFile = async (
 
 export const deepyCopy = <T>(item: T): T => {
 	return JSON.parse(JSON.stringify(item));
+};
+
+export const mergePartial = <T extends Record<any, any>>(
+  objOne: T,
+  objTwo?: Partial<T>
+) => {
+  for (const key in objTwo) {
+    objOne[key] = objTwo[key]!;
+  }
 };
 
 export const indexIsValid = (index: number, length: number) => {

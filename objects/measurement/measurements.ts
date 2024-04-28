@@ -1,17 +1,31 @@
 import { MeasureComponentValues } from "@/types/music-rendering";
 import { MeasureComponents } from "./measure-components";
+import { MeasureDimensionData } from "@/types/music-rendering/music-layout";
 
 export class Measurements {
   private measureComponents: MeasureComponents;
   private componentFractionHeights: MeasureComponentValues;
+  private bodyCount: number;
+  private aboveBelowCount: number;
+  private measureDimensions: MeasureDimensionData;
+  private bodyHeight: number;
+  private bodyTopOffset: number;
   constructor(
     aboveBelowCount: number,
     bodyCt: number,
-    lineToSpaceRatio: number
+    lineToSpaceRatio: number,
+    measureDimensions: MeasureDimensionData
   ) {
     this.measureComponents = new MeasureComponents(aboveBelowCount, bodyCt);
     this.componentFractionHeights =
       this.getLedgerComponentFractions(lineToSpaceRatio);
+    this.bodyCount = bodyCt;
+    this.aboveBelowCount = aboveBelowCount;
+    this.measureDimensions = measureDimensions;
+    const { noteSpaceHeight, padding } = this.measureDimensions;
+    this.bodyHeight =
+      this.getBodyFraction() * this.measureDimensions.noteSpaceHeight;
+    this.bodyTopOffset = (noteSpaceHeight - this.bodyHeight) / 2 + padding.top;
   }
 
   private getLedgerComponentFractions(
@@ -43,6 +57,12 @@ export class Measurements {
     return space * spaceFraction + line * lineFraction;
   }
 
+  public getYOffset(yPos: number) {
+    return (
+      this.getYFractionOffset(yPos) * this.measureDimensions.noteSpaceHeight
+    );
+  }
+
   public static getXFractionOffset(
     xPos: number,
     noteLength: number,
@@ -54,6 +74,16 @@ export class Measurements {
 
   public getComponentFractions() {
     return this.componentFractionHeights;
+  }
+
+  public getComponentHeights(): MeasureComponentValues {
+    const line =
+      this.componentFractionHeights.line *
+      this.measureDimensions.noteSpaceHeight;
+    const space =
+      this.componentFractionHeights.space *
+      this.measureDimensions.noteSpaceHeight;
+    return { line, space };
   }
 
   public topComponentIsLine() {
@@ -68,26 +98,35 @@ export class Measurements {
     return this.measureComponents;
   }
 
-  public getMeasureDimensionData(noteHeight: number, bodyCount: number) {
-    const bodyFraction = this.getBodyFraction(bodyCount);
-    const bodyHeight = noteHeight * bodyFraction;
-    const bodyOffset = (noteHeight - bodyHeight) / 2;
-
-    return {
-      bodyHeight,
-      bodyOffset,
-    };
-  }
-
-  private getBodyFraction(bodyCount: number) {
+  public getBodyFraction() {
     const measureComponents = this.getMeasureComponents();
     const end = measureComponents.getYPosInfo(0);
-    const start = measureComponents.getYPosInfo(bodyCount);
+    const start = measureComponents.getYPosInfo(this.bodyCount);
     const bodyLineCount = start.line - end.line;
     const bodySpaceCount = start.space - end.space;
     const fractions = this.getComponentFractions();
     const bodyFraction =
       bodyLineCount * fractions.line + bodySpaceCount * fractions.space;
     return bodyFraction;
+  }
+
+  public getBodyCount() {
+    return this.bodyCount;
+  }
+
+  public getAboveBelowCount() {
+    return this.aboveBelowCount;
+  }
+
+  public getBodyHeight() {
+    return this.bodyHeight;
+  }
+
+  public getBodyTopOffset() {
+    return this.bodyTopOffset;
+  }
+
+  public getMeasureDimensions() {
+    return this.measureDimensions;
   }
 }

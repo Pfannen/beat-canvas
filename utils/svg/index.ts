@@ -35,6 +35,14 @@ export const calculateScaleToWidth = (viewBox: ViewBox, width = 1) => {
   return scale;
 };
 
+export const convertWidthScaleToHeightScale = (
+  viewBox: ViewBox,
+  scale: number
+) => {
+  const aspectRatio = getSVGAspectRatio(viewBox);
+  return scale * aspectRatio;
+};
+
 // Returns the scale factor to get the desired height
 export const calculateScaleToHeight = (viewBox: ViewBox, height = 1) => {
   const svgHeight = getSVGHeight(viewBox);

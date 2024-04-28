@@ -21,6 +21,7 @@ type MeasureSegmentsProps = {
   noteContainerHeight: number;
   isSegmentSelected: (xPos: number) => boolean;
   canSegmentSplit: (xPos: number) => boolean;
+  isYPosSelected: (x: number, y: number) => boolean;
 };
 
 const MeasureSegments: FunctionComponent<MeasureSegmentsProps> = ({
@@ -31,6 +32,7 @@ const MeasureSegments: FunctionComponent<MeasureSegmentsProps> = ({
   noteContainerHeight,
   isSegmentSelected,
   canSegmentSplit,
+  isYPosSelected,
 }) => {
   const getComponent =
     (noteIndices?: number[]) =>
@@ -44,6 +46,7 @@ const MeasureSegments: FunctionComponent<MeasureSegmentsProps> = ({
           onComponentClick={(yPos) => {
             onSegmentClick({ x: xPos, y: yPos }, noteIndices);
           }}
+          isYPosSelected={isYPosSelected.bind(null, xPos)}
           noteContainerHeight={noteContainerHeight}
           isSelected={isSegmentSelected(xPos)}
         />

@@ -1,6 +1,6 @@
 import { Coordinate, UnitConverter } from "@/types";
 import { KeySignatureDrawData } from "@/types/music-rendering/draw-data/measure";
-import { iterateSection } from "../segment-calculation";
+import { iterateSection } from "../section-calculation";
 
 export const getKeySignatureDrawData = (
   keySignature: number,

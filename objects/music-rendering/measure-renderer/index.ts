@@ -3,11 +3,7 @@ import { Music } from "@/objects/music/readonly-music";
 import { MeasureManager } from "../measure-manager";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
-import {
-  BeatCanvasDel,
-  MeasureComponentIterator,
-  MeasureSectionToggle,
-} from "@/types/music-rendering";
+import { MeasureSectionToggle, UnitConverters } from "@/types/music-rendering";
 import { NoteAnnotation } from "@/types/music/note-annotations";
 import {
   Measure,
@@ -15,75 +11,58 @@ import {
   TimeSignature,
 } from "@/components/providers/music/types";
 import { getNoteDuration } from "@/components/providers/music/utils";
+import { CoordinateSection } from "@/types/music-rendering/measure-manager/measure-outline";
 import {
-  CoordinateSection,
-  CoordinateSectionArray,
-} from "@/types/music-rendering/measure-manager/measure-outline";
-import { MeasureSection, MeasureSectionMetadata } from "@/types/music";
-import { getMeasureSectionHandler } from "./measure-section-handlers";
-import { MeasureSectionHandlerContext } from "@/types/music-rendering/draw-data/measure";
-import { MeasureData } from "@/types/music-rendering/canvas/beat-canvas";
+  MeasureAttributes,
+  StaticMeasureAttributes,
+  staticMeasureAttributesKeys,
+} from "@/types/music";
+import { InitialMeasureSectionArray } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-section";
+import { formatInitialSections } from "../beat-canvas/drawers/measure-sections/initial-section-handlers";
+import { noteAttributeGenerator } from "@/utils/music/measures/traversal";
+import { ICanvasGetter } from "@/types/music-rendering/canvas/canvas-manager";
+import { Tolerence } from "@/types/music-rendering/measure-manager";
 
 export class MeasureRenderer {
-  private bodyCt: number;
   private measures: Measure[];
   private music: Music;
-  private getBeatCanvasForPage: BeatCanvasDel;
+  private canvasManager: ICanvasGetter;
   private transformer: MeasureTransformer;
   private measureManager!: MeasureManager;
   private musicDimensions: MusicDimensionData;
   private measurements: Measurements;
-  private measureComponentIterator: MeasureComponentIterator;
-  private drawNonBodyComponents: boolean;
-  private measureBodyHeight: number;
-  private bodyOffset: number;
+  private unitConverters!: UnitConverters;
   constructor(
     measures: Measure[],
     musicDimensions: MusicDimensionData,
-    getBeatCanvasForPage: BeatCanvasDel,
+    canvasManager: ICanvasGetter,
     measurements: Measurements,
-    bodyCount: number,
-    drawNonBodyComponents = false,
-    sectionToggleList?: MeasureSectionToggle
+    sectionToggleList?: MeasureSectionToggle,
+    unitConverters?: UnitConverters,
+    measureTolerence?: Tolerence
   ) {
     this.measures = measures;
     this.musicDimensions = musicDimensions;
-    this.getBeatCanvasForPage = getBeatCanvasForPage;
+    this.canvasManager = canvasManager;
     this.music = new Music();
     this.music.setMeasures(measures);
     this.transformer = new MeasureTransformer(this.music);
     this.measureManager = new MeasureManager(
       this.musicDimensions,
-      sectionToggleList
+      sectionToggleList,
+      measureTolerence
     );
-    this.bodyCt = bodyCount;
     this.measurements = measurements;
-    this.drawNonBodyComponents = drawNonBodyComponents;
-
-    const measureComponents = this.measurements.getMeasureComponents();
-    if (drawNonBodyComponents) {
-      this.measureComponentIterator =
-        measureComponents.iterateMeasureComponents.bind(measureComponents);
-    } else {
-      this.measureComponentIterator =
-        measureComponents.iterateBodyComponents.bind(measureComponents);
-    }
-    const { padding } = this.musicDimensions.measureDimensions;
-    const { bodyHeight, bodyOffset } =
-      this.measurements.getMeasureDimensionData(
-        musicDimensions.measureDimensions.noteSpaceHeight,
-        this.bodyCt
-      );
-    this.bodyOffset = bodyOffset + padding.top;
-    this.measureBodyHeight = bodyHeight;
+    this.initializeUnitConverters(unitConverters);
   }
 
-  private getComponentStartOffset(drawNonBodyComponents: boolean) {
-    const { measureDimensions } = this.musicDimensions;
-    if (!drawNonBodyComponents) {
-      return this.bodyOffset;
+  private initializeUnitConverters(unitConverters?: UnitConverters) {
+    if (!unitConverters) {
+      const unitConverter = (val: number) => val;
+      this.unitConverters = { x: unitConverter, y: unitConverter };
+    } else {
+      this.unitConverters = unitConverters;
     }
-    return measureDimensions.padding.top;
   }
 
   private getMeasureDimensions(measureIndex: number) {
@@ -97,47 +76,89 @@ export class MeasureRenderer {
     };
   }
 
-  private getMusicRenderData() {
+  private getMusicRenderData(
+    getMeasureData: (measureIndex: number) => {
+      timeSig: TimeSignature;
+      noteSpaceWidth: number;
+    }
+  ) {
     this.transformer.computeDisplayData([
       {
         attacher: "beam-data",
         context: {
-          measurements: this.measurements,
-          getMeasureDimensions: this.getMeasureDimensions.bind(this),
+          unitConverters: this.unitConverters,
+          getAbsolutePosition: (measureIndex, noteIndex) => {
+            const note = this.measures[measureIndex].notes[noteIndex];
+            const { timeSig, noteSpaceWidth } = getMeasureData(measureIndex);
+            const duration = getNoteDuration(note.type, timeSig.beatNote);
+            const x =
+              Measurements.getXFractionOffset(
+                note.x,
+                duration,
+                timeSig.beatsPerMeasure
+              ) * noteSpaceWidth;
+            const y =
+              this.measurements.getYFractionOffset(note.y) *
+              this.musicDimensions.measureDimensions.noteSpaceHeight;
+            return { x, y };
+          },
         },
       },
     ]);
     return this.transformer.getMeasureRenderData();
   }
-  private generateMeasureOutline() {
-    this.measureManager;
+
+  private generateMeasureOutline(
+    getMeasureMetadata: (measureIndex: number) => InitialMeasureSectionArray
+  ) {
     const { measureDimensions } = this.musicDimensions;
     this.measures.forEach((measure, i) => {
+      const sections = getMeasureMetadata(i);
+      const { required, optional } = formatInitialSections(sections, {
+        bodyHeight: this.measurements.getBodyHeight(),
+        componentHeights: this.measurements.getComponentHeights(),
+      });
+      const noteSection = {
+        key: "note",
+        width: measureDimensions.width,
+        displayByDefault: true,
+      };
+      required.push(noteSection as any);
       this.measureManager.addMeasure(
         {
-          required: [
-            {
-              key: "note",
-              width: measureDimensions.width,
-              displayByDefault: true,
-            },
-            {
-              key: "clef",
-              width: 0,
-              displayByDefault: false,
-            },
-            {
-              key: "keySignature",
-              width: measureDimensions.width / 5,
-              displayByDefault: false,
-            },
-          ],
-          optional: [],
+          required,
+          optional,
         },
         i,
         i === this.measures.length - 1
       );
     });
+  }
+
+  private generateMeasureAttributes() {
+    const measureSections: {
+      sections: InitialMeasureSectionArray;
+      attributes: StaticMeasureAttributes;
+    }[] = [];
+    for (const locObj of noteAttributeGenerator(this.measures)) {
+      if (locObj.measureStart) {
+        let measureDetails;
+        if (locObj.measureIndex === 0) {
+          measureDetails = combineMeasureSectionObjects(
+            locObj.currentAttributes,
+            locObj.currentAttributes
+          ); //I need to treat the attributes as "new" if it is the first measure
+        } else {
+          measureDetails = combineMeasureSectionObjects(
+            locObj.currentAttributes,
+            locObj.newAttributes
+          );
+        }
+
+        measureSections.push(measureDetails);
+      }
+    }
+    return measureSections;
   }
 
   private getContainerPositionData(measureIndex: number) {
@@ -167,71 +188,36 @@ export class MeasureRenderer {
     return { measureComponentHeights, containerHeight: height, padding };
   }
 
-  private getMeasureDisplayData(
-    sections: CoordinateSectionArray<MeasureSection>,
-    sectionData: MeasureSectionMetadata,
-    bottomY: number,
-    height: number
-  ) {
-    const context: MeasureSectionHandlerContext = {
-      getYOffset: this.measurements.getYFractionOffset.bind(this.measurements),
-      noteSpaceBottomY: bottomY,
-      noteSpaceHeight: height,
-    };
-    const displayData: MeasureData["displayData"] = {};
-    sections.forEach((section) => {
-      const handler = getMeasureSectionHandler(section.key);
-      if (handler) {
-        const data = sectionData[section.key] as never;
-        const sectionDisplayData = handler(data, section, context);
-        displayData[section.key] = sectionDisplayData as any;
-      }
-    });
-    return displayData;
-  }
-
   public render() {
-    this.generateMeasureOutline();
-    const renderData = this.getMusicRenderData();
-    const measureLineOffsetY = this.getComponentStartOffset(
-      this.drawNonBodyComponents
-    );
+    const measureDetails = this.generateMeasureAttributes();
+    this.generateMeasureOutline((i) => measureDetails[i].sections);
+    const renderData = this.getMusicRenderData((i) => ({
+      timeSig: measureDetails[i].attributes.timeSignature,
+      noteSpaceWidth: this.measureManager.getMeasureSection(i, "note")!.width,
+    }));
     const containerData = this.getContainerDimensionData();
     renderData.forEach((measure, measureIndex) => {
       const positionData = this.getContainerPositionData(measureIndex);
-      const timeSig = this.music.getMeasureTimeSignature(measureIndex);
+      const timeSig = measureDetails[measureIndex].attributes.timeSignature;
       const { measureData } = positionData;
-      const beatCanvas = this.getBeatCanvasForPage(measureData.pageNumber);
-      const measureMetadata: MeasureSectionMetadata = {
-        keySignature: 0,
-        clef: "alto",
-        timeSignature: timeSig,
-        note: undefined,
-      };
+      const beatCanvas = this.canvasManager.getCanvasForPage(
+        measureData.pageNumber
+      );
+
       beatCanvas.drawMeasure({
         topLeft: { ...measureData.start },
-        width: measureData.width,
-        height: containerData.containerHeight,
-        componentStartY: measureData.start.y - measureLineOffsetY,
-        containerPadding: containerData.padding,
-        componentHeights: containerData.measureComponentHeights,
-        bodyHeight: this.measureBodyHeight,
-        bodyStartY: measureData.start.y - this.bodyOffset,
+        sections: measureData.metadata!,
+        totalWidth: measureData.width,
         measureIndex,
-        topComponentIsLine: this.measurements.topComponentIsLine(),
-        componentIterator: this.measureComponentIterator,
-        displayData: this.getMeasureDisplayData(
-          measureData.metadata!,
-          measureMetadata,
-          positionData.noteSpaceBottom.y,
-          positionData.noteSpaceHeight
-        ),
+        pageNumber: measureData.pageNumber,
+        sectionAttributes: measureDetails[measureIndex].attributes,
       });
 
       const noteSection = this.measureManager.getMeasureSection(
         measureIndex,
         "note"
       )!;
+
       const componentHelper = new MeasureComponentHelper(
         timeSig,
         noteSection,
@@ -264,6 +250,7 @@ export class MeasureRenderer {
             bodyHeight: containerData.measureComponentHeights.space,
             noteIndex,
             measureIndex,
+            pageNumber: measureData.pageNumber,
             annotations,
           });
           noteIndex++;
@@ -312,3 +299,30 @@ class MeasureComponentHelper {
     return { x: noteCenterX, y: centerY };
   }
 }
+
+const combineMeasureSectionObjects = (
+  currentAttributes: MeasureAttributes,
+  newAttributes?: Partial<MeasureAttributes>
+) => {
+  console.log(newAttributes);
+  const attributes = {} as StaticMeasureAttributes;
+  const sections: InitialMeasureSectionArray = [];
+  if (newAttributes) {
+    staticMeasureAttributesKeys.forEach((key) => {
+      const data = newAttributes[key] || currentAttributes[key];
+      if (data) {
+        sections.push({ key, displayByDefault: true, data });
+      } else {
+        sections.push({ key, displayByDefault: false, data });
+      }
+      attributes[key] = data as never;
+    });
+  } else {
+    staticMeasureAttributesKeys.forEach((key) => {
+      const data = currentAttributes[key];
+      data && sections.push({ key, displayByDefault: false, data });
+      attributes[key] = currentAttributes[key] as never;
+    });
+  }
+  return { sections, attributes };
+};

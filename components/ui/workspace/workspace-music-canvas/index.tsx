@@ -1,26 +1,33 @@
 'use client';
 
-import { useMusic } from '@/components/providers/music';
 import classes from './index.module.css';
 import { CSSProperties, FunctionComponent } from 'react';
 import MeasureSelectCanvas from '../../reusable/music-canvas/measure-select-canvas';
+import { Measure } from '@/components/providers/music/types';
+import {
+	MeasureNotifierArgs,
+	MeasureRenderArgs,
+} from '@/types/music-rendering';
+import MeasureSelectOverlay from './measure-select-overlay';
 
 type WorkspaceMusicCanvasProps = {
+	measures: Measure[];
 	aspectRatio: number;
-	onMeasureClick: (index: number) => void;
-	isMeasureSelected: (index: number) => boolean;
-	areMeasuresSelected: boolean;
+	onMeasureRendered: (args: MeasureNotifierArgs & { height: number }) => void;
+	onMeasureSelect: (measureIndex: number) => void;
+	isMeasureSelected: (measureIndex: number) => boolean;
+	areSelections: boolean;
 };
 
 const WorkspaceMusicCanvas: FunctionComponent<WorkspaceMusicCanvasProps> = ({
+	measures,
 	aspectRatio,
-	onMeasureClick,
+	onMeasureRendered,
+	onMeasureSelect,
 	isMeasureSelected,
-	areMeasuresSelected,
+	areSelections,
 }) => {
-	const {
-		measuresItems: { measures },
-	} = useMusic();
+	const positions: MeasureRenderArgs[] = [];
 	return (
 		<div
 			className={classes.canvas}
@@ -29,16 +36,13 @@ const WorkspaceMusicCanvas: FunctionComponent<WorkspaceMusicCanvasProps> = ({
 			<MeasureSelectCanvas
 				measures={measures}
 				aspectRatio={aspectRatio}
-				onMeasureClick={({ measureIndex }) => {
-					onMeasureClick(measureIndex);
-				}}
-				getMeasureClassName={({ measureIndex }) => {
-					return areMeasuresSelected
-						? isMeasureSelected(measureIndex)
-							? classes.selected
-							: classes.not_selected
-						: '';
-				}}
+				onMeasureRendered={(position) => positions.push(position)}
+			/>
+			<MeasureSelectOverlay
+				measurePositions={positions}
+				onMeasureSelect={onMeasureSelect}
+				isMeasureSelected={isMeasureSelected}
+				areSelections={areSelections}
 			/>
 		</div>
 	);

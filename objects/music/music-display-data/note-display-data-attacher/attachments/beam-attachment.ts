@@ -1,26 +1,21 @@
-import { DisplayDataAttacher } from "./types";
+import { DisplayDataAttacher, NotePositionDel } from "./types";
 import { NoteDirection } from "@/lib/notes/types";
-import { Measurements } from "@/objects/measurement/measurements";
 import { NoteBeamCalculator } from "@/objects/measurement/note-beam/note-beam-calculator";
 import { NoteDisplayData } from "@/types/music-rendering/draw-data/note";
 import { BeamableNoteData } from "@/types/measurement";
 import { getNoteBeamCount } from "@/utils/music";
 import { getDecimalPortion } from "@/utils";
+import { UnitConverters } from "@/types/music-rendering";
 
 export type AttachBeamDataContext = {
-  measurements: Measurements;
-  getMeasureDimensions: (measureIndex: number) => {
-    height: number;
-    width: number;
-  };
+  unitConverters: UnitConverters;
+  getAbsolutePosition: NotePositionDel;
 };
 
 export const attachBeamData =
   (context: AttachBeamDataContext): DisplayDataAttacher =>
   ({ music, noteDisplayData, measureIndex }) => {
-    const { height, width } = context.getMeasureDimensions(measureIndex);
     const subdivisionLength = music.getMeasureSubdivisionLength(measureIndex);
-    const { beatsPerMeasure } = music.getMeasureTimeSignature(measureIndex);
     const noteCount = music.getMeasureNoteCount(measureIndex);
     let currentDivision = 0; // The current subdivision of the measure the notes in beamStack are in (dont want to beam notes across "segments")
     let beamStack: BeamableNoteData[] = []; // The notes that should be beamed together
@@ -42,6 +37,7 @@ export const attachBeamData =
           currNote = {
             x: note.x,
             y: note.y,
+            noteIndex: i,
             beamCount,
             duration,
             stemOffset: noteDisplayData[i].stemOffset,
@@ -69,10 +65,9 @@ export const attachBeamData =
           noteDisplayData,
           startNoteIndex,
           beamStack,
-          context.measurements,
-          height,
-          width,
-          beatsPerMeasure
+          measureIndex,
+          context.getAbsolutePosition,
+          context.unitConverters
         );
         startNoteIndex = i;
         beamStack = currNote ? [currNote] : [];
@@ -82,10 +77,9 @@ export const attachBeamData =
       noteDisplayData,
       startNoteIndex,
       beamStack,
-      context.measurements,
-      height,
-      width,
-      beatsPerMeasure
+      measureIndex,
+      context.getAbsolutePosition,
+      context.unitConverters
     );
   };
 
@@ -93,10 +87,9 @@ const processBeamStack = (
   noteData: NoteDisplayData[],
   startNoteIndex: number,
   beamStack: BeamableNoteData[],
-  measurements: Measurements,
-  measureHeight: number,
-  measureWidth: number,
-  beatsPerMeasure: number
+  measureIndex: number,
+  getAbsolutePosition: NotePositionDel,
+  unitConverters: UnitConverters
 ) => {
   //If there is actually more than one note to beam
   if (beamStack.length > 1) {
@@ -108,10 +101,9 @@ const processBeamStack = (
     const beamData = getNoteBeamData(
       beamStack,
       direction,
-      measurements,
-      measureHeight,
-      measureWidth,
-      beatsPerMeasure
+      measureIndex,
+      getAbsolutePosition,
+      unitConverters
     );
     for (let i = 0; i < beamStack.length; i++) {
       const globalNoteIndex = i + startNoteIndex;
@@ -143,18 +135,25 @@ const noteStartEndDivisions = (
 const getNoteBeamData = (
   notes: BeamableNoteData[],
   direction: NoteDirection,
-  measurements: Measurements,
-  measureHeight: number,
-  measureWidth: number,
-  beatsPerMeasure: number
+  measureIndex: number,
+  getAbsolutePosition: NotePositionDel,
+  unitConverters: UnitConverters
 ) => {
-  const coordinates = notes.map(({ x, y, duration, stemOffset, beamCount }) => {
-    const xPos =
-      Measurements.getXFractionOffset(x, duration, beatsPerMeasure) *
-      measureWidth;
-    const yPos = measurements.getYFractionOffset(y) * measureHeight;
-
-    return { x: xPos, y: yPos + (stemOffset || 0), beamCount };
+  const coordinates = notes.map(({ noteIndex, stemOffset, beamCount }) => {
+    let { x, y } = getAbsolutePosition(measureIndex, noteIndex);
+    // const xPos =
+    //   Measurements.getXFractionOffset(x, duration, beatsPerMeasure) *
+    //   measureWidth;
+    // const yPos = measurements.getYFractionOffset(y) * measureHeight;
+    x = unitConverters.y(x);
+    return { x, y, beamCount }; //Account for stemOffset later
   });
-  return NoteBeamCalculator.getPositionData(coordinates, direction, 25);
+  const data = NoteBeamCalculator.getPositionData(coordinates, direction, 25);
+  data.forEach((position, i) => {
+    position.beams?.forEach((beam) => {
+      beam.length = unitConverters.x(beam.length);
+    });
+  });
+
+  return data;
 };

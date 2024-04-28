@@ -34,4 +34,7 @@ export const measureSectionOrder: Record<MeasureSection, number> = {
   timeSignature: 2,
   note: 3,
   repeat: 4,
+  repeatEndings: 5,
 };
+
+export type Tolerence = { width: number; height: number };

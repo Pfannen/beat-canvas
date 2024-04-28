@@ -1,7 +1,10 @@
-import { NoteType, TimeSignature } from "@/components/providers/music/types";
+import { NoteType } from "@/components/providers/music/types";
 import { Coordinate } from "@/types";
-import { MeasureAttributes } from "@/types/music";
-import { BlockDirection } from "../../pdf";
+import {
+  DynamicMeasureAttributes,
+  MeasureSection,
+  StaticMeasureAttributes,
+} from "@/types/music";
 import { NoteDirection } from "@/lib/notes/types";
 import {
   MeasureComponent,
@@ -10,7 +13,10 @@ import {
 } from "../..";
 import { NoteDisplayData } from "@/types/music-rendering/draw-data/note";
 import { NoteAnnotation } from "@/types/music/note-annotations";
-import { MeasureDisplayData } from "../../draw-data/measure";
+import { CoordinateSectionArray } from "../../measure-manager/measure-outline";
+import { IDrawingCanvas } from "../drawing-canvas";
+import { Measurements } from "@/objects/measurement/measurements";
+import { BeatCanvas } from "@/objects/music-rendering/beat-canvas";
 
 export type StemOptions = {
   bodyWidth: number;
@@ -29,17 +35,8 @@ export type BeamFlagOptions = {
 
 export type MeasureLinesOptions = Pick<
   MeasureDrawData,
-  | "topLeft"
-  | "componentHeights"
-  | "width"
-  // | "spaceCount"
-  // | "lineCount"
-  // | "topComponentIsLine"
-  // | "bodyEndPos"
-  // | "bodyStartPos"
-  | "measureIndex"
-> & { componentIterator: MeasureComponentIterator };
-
+  "measureIndex" | "totalWidth" | "topLeft"
+>;
 export type BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: number;
   noteBodyAngle: number;
@@ -64,6 +61,7 @@ export type NoteDrawData = {
   bodyCenter: Coordinate;
   bodyHeight: number;
   measureIndex: number;
+  pageNumber: number;
   noteIndex: number;
   annotations?: NoteAnnotation[];
 };
@@ -72,21 +70,15 @@ export type NoteData = NoteDrawData & { displayData: NoteDisplayData };
 
 export type MeasureDrawData = {
   topLeft: Coordinate;
-  width: number;
-  height: number;
-  containerPadding: BlockDirection<number>;
-  componentStartY: number;
-  bodyStartY: number;
-  bodyHeight: number;
-  componentHeights: MeasureComponentValues;
-  topComponentIsLine: boolean;
+  sections: CoordinateSectionArray<MeasureSection>;
+  totalWidth: number;
   measureIndex: number;
-  componentIterator: MeasureComponentIterator;
-  attributes?: Partial<MeasureAttributes>;
+  pageNumber: number;
 };
 
 export type MeasureData = MeasureDrawData & {
-  displayData?: Partial<MeasureDisplayData>;
+  sectionAttributes: StaticMeasureAttributes;
+  dynamicAttributes?: Partial<DynamicMeasureAttributes>;
 };
 
 export type RestOptions = {
@@ -101,13 +93,16 @@ export interface IBeatCanvas {
   drawRest(options: RestOptions): any;
 }
 
+export type BeatCanvasConstructor<T extends IDrawingCanvas> = (
+  drawingCanvas: T,
+  measurements: Measurements
+) => IBeatCanvas;
+
 /* **** */
 export type MeasureComponentContext = {
   width: number;
   height: number;
-  // isLine: boolean;
   corner: Coordinate;
-  // isBody: boolean;
 };
 
 export type MeasureComponentContextIterator = (
@@ -120,3 +115,5 @@ export type DirectionOffsets = {
   left: number;
   right: number;
 };
+
+export type BeatCanvasCreator = (drawingCanvas: IDrawingCanvas) => IBeatCanvas;

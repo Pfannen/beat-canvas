@@ -2,15 +2,6 @@ import { NoteDirection } from "@/lib/notes/types";
 import { Coordinate } from "@/types";
 import { NoteBeamDrawer } from "@/types/music-rendering/canvas/beat-canvas/drawers/note-beams";
 
-const calculateBeamOffset = (
-  beamHeight: number,
-  gap: number,
-  beamNumber: number
-) => {
-  const distance = beamHeight + gap;
-  return distance * beamNumber;
-};
-
 export const beamDrawer: NoteBeamDrawer = ({
   drawCanvas,
   noteDirection,
@@ -24,7 +15,8 @@ export const beamDrawer: NoteBeamDrawer = ({
       beamHeight,
       noteDirection,
       beam.angle,
-      beam.number
+      beam.number,
+      beamData.index
     );
     const y = adjustYValue(
       endOfStem.y,
@@ -42,6 +34,15 @@ export const beamDrawer: NoteBeamDrawer = ({
   });
 };
 
+const calculateBeamOffset = (
+  beamHeight: number,
+  gap: number,
+  beamNumber: number
+) => {
+  const distance = beamHeight + gap;
+  return distance * beamNumber;
+};
+
 const adjustYValue = (
   y: number,
   dir: NoteDirection,
@@ -57,10 +58,11 @@ const adjustBeamData = (
   height: number,
   direction: NoteDirection,
   angle: number,
-  beamNumber: number
+  beamNumber: number,
+  noteIndex: number
 ) => {
   angle *= -1;
-  if (beamNumber !== 0) {
+  if (noteIndex !== 0) {
     angle += 180;
     if (direction === "up") {
       height = -height;

@@ -9,6 +9,7 @@ import { BODY_CT } from "@/objects/measurement/constants";
 import MusicCanvas from "@/components/ui/reusable/music-canvas";
 import { PositionData } from "@/types/ui/music-modal";
 import { Coordinate } from "@/types";
+import { ReactCanvasManager } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/manager";
 
 const lineToSpaceRatio = 1.5;
 
@@ -17,6 +18,7 @@ type ModalMeasureDisplayProps = {
   aboveBelowCt: number;
   aspectRatio: number;
   onPositionClick: (position: Coordinate, positionData: PositionData) => void;
+  isYPosSelected: (measureIndex: number, xPos: number, yPos: number) => boolean;
   isSegmentSelected: (measureIndex: number, xPos: number) => boolean;
 };
 
@@ -26,24 +28,31 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
   aspectRatio,
   onPositionClick,
   isSegmentSelected,
+  isYPosSelected,
 }) => {
   const dimensions = useMemo(
-    () => MusicLayout.getMarginlessSheetMusic(aspectRatio, 1, measures.length),
+    () => MusicLayout.getMarginlessSheetMusic(100, 100, 1, measures.length),
     [measures.length]
   );
   const measurements = useMemo(
-    () => new Measurements(aboveBelowCt, BODY_CT, lineToSpaceRatio),
+    () =>
+      new Measurements(
+        aboveBelowCt,
+        BODY_CT,
+        lineToSpaceRatio,
+        dimensions.measureDimensions
+      ),
     []
   );
   const measureComponents = measurements.getMeasureComponents();
   return (
     <MusicCanvas
       measures={measures}
-      aspectRatio={aspectRatio}
       dimensions={dimensions}
       measurements={measurements}
       sectionToggleList={{ note: true }}
-      drawAboveBelow
+      manager={new ReactCanvasManager(measurements, "%", aspectRatio, true)}
+      aspectRatio={aspectRatio}
     >
       <SegmentedMeasures
         measures={measures}
@@ -52,6 +61,7 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
         componentIterator={measureComponents.iterateMeasureComponents.bind(
           measureComponents
         )}
+        isYPosSelected={isYPosSelected}
         noteOffset={dimensions.measureDimensions.noteYOffset}
         noteHeight={dimensions.measureDimensions.noteSpaceHeight}
         isSegmentSelected={isSegmentSelected}

@@ -149,13 +149,21 @@ export const getNoteAtX = (notes: Note[], x: number) => {
 	return note;
 };
 
+// NOTE: Includes dotted durations as well
 const quarterDurationToNoteType: { [key in number]: NoteType } = {
+	6: 'whole',
 	4: 'whole',
+	3: 'half',
 	2: 'half',
+	1.5: 'quarter',
 	1: 'quarter',
+	0.75: 'eighth',
 	0.5: 'eighth',
+	0.375: 'sixteenth',
 	0.25: 'sixteenth',
+	0.1875: 'thirtysecond',
 	0.125: 'thirtysecond',
+	0.09375: 'sixteenth',
 	0.0625: 'sixtyfourth',
 };
 

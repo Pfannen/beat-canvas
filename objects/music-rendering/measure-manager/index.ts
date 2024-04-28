@@ -7,33 +7,36 @@ import {
   MeasureOutlineSection,
   MeasureSectionArray,
   MeasureSections,
+  Tolerence,
   measureSectionOrder,
 } from "@/types/music-rendering/measure-manager";
 import { MeasureSectionToggle } from "@/types/music-rendering";
 
 export class MeasureManager {
-  protected dimensionData: MusicDimensionData;
-  protected measureOutline: MeasureOutline<MeasureSection>;
+  private dimensionData: MusicDimensionData;
+  private measureOutline: MeasureOutline<MeasureSection>;
   private widthOnLine: number;
   private startCoordinate: Coordinate;
   private sectionToggleList?: MeasureSectionToggle;
-  protected pxTolerence = 1;
+  private tolerence: Tolerence;
   constructor(
     dimensionData: MusicDimensionData,
-    sectionToggleList?: MeasureSectionToggle
+    sectionToggleList?: MeasureSectionToggle,
+    tolerence?: Tolerence
   ) {
     this.dimensionData = dimensionData;
     this.widthOnLine = this.getFirstLineWidth();
     this.sectionToggleList = sectionToggleList;
     this.startCoordinate = this.dimensionData.pageDimensions.firstMeasureStart;
     this.measureOutline = new MeasureOutline(this.startCoordinate);
+    this.tolerence = tolerence || { width: 1, height: 1 };
   }
 
   private isRoomOnLine(width: number) {
     return MeasureManager.isWithinTolerence(
       width,
       this.widthOnLine,
-      this.pxTolerence
+      this.tolerence.width
     );
   }
 
@@ -86,7 +89,14 @@ export class MeasureManager {
     const newLineXStart = pageDimensions.musicMargins.left;
     let nextLineYStart = currentY - measureDimensions.height;
     const nextLineYEnd = nextLineYStart - measureDimensions.height;
-    if (nextLineYEnd < Math.floor(pageYEnd)) {
+    if (
+      nextLineYEnd < pageYEnd &&
+      !MeasureManager.isWithinTolerence(
+        nextLineYEnd,
+        pageYEnd,
+        this.tolerence.height
+      )
+    ) {
       nextLineYStart = pageDimensions.height - pageDimensions.musicMargins.top;
       this.measureOutline.addPage(newLineXStart, nextLineYStart);
     }
@@ -167,12 +177,15 @@ class MeasureSectionHelper {
 
   public getSortedSections(filterRequired: boolean) {
     const combinedSections: MeasureSectionArray<MeasureSection> = [];
-    this.iterateSections((section) => {
-      if (
-        this.isSectionToggled(section.key) &&
-        (!filterRequired || section.displayByDefault)
-      ) {
-        combinedSections.push(section);
+    this.iterateSections((section, isRequired) => {
+      if (this.isSectionToggled(section.key)) {
+        if (!filterRequired) {
+          if (isRequired || section.displayByDefault) {
+            combinedSections.push(section);
+          }
+        } else if (section.displayByDefault) {
+          combinedSections.push(section);
+        }
       }
     });
     combinedSections.sort((a, b) => {

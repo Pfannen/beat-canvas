@@ -19,6 +19,7 @@ export type SegmentPaneProps = {
   onSplit: () => void;
   onJoin: () => void;
   onCollapse: () => void;
+  isYPosSelected: (yPos: number) => boolean;
 };
 
 const SegmentPane: FunctionComponent<SegmentPaneProps> = ({
@@ -31,6 +32,7 @@ const SegmentPane: FunctionComponent<SegmentPaneProps> = ({
   onSplit,
   onJoin,
   onCollapse,
+  isYPosSelected,
 }) => {
   const components: ReactNode[] = [];
   componentIterator((component) => {
@@ -41,7 +43,7 @@ const SegmentPane: FunctionComponent<SegmentPaneProps> = ({
       <MeasureComponent
         height={fractionToPercent(height)}
         onClick={onComponentClick.bind(null, component.yPos)}
-        isSelected={false}
+        isSelected={isYPosSelected(component.yPos)}
       />
     );
   });

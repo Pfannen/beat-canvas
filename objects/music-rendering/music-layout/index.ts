@@ -67,13 +67,15 @@ export class MusicLayout {
   }
 
   static getMarginlessSheetMusic(
-    aspectRatio: number,
+    width: number,
+    height: number,
     linesPerPage = 7,
     measuresPerLine = 3
   ) {
     return this.getDimensions(
       PageDimensionParams.marginlessSheetMusic(
-        aspectRatio,
+        width,
+        height,
         linesPerPage,
         measuresPerLine
       )

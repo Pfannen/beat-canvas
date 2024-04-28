@@ -97,6 +97,7 @@ export const noteAttributeGenerator = function* (
 	measures: Measure[],
 	initialAttributes?: MeasureAttributes
 ) {
+	if (!measures || !measures.length) return;
 	const attr = initialAttributes || initializeMeasureAttributes(measures[0]);
 	const durStore: TBCDurationAttributeInfo = {};
 	let curSeconds = 0;

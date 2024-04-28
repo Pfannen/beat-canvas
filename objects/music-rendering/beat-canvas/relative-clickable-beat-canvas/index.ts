@@ -7,8 +7,6 @@ import {
 } from "@/types/music-rendering/canvas/beat-canvas";
 
 export class RelativeClickableBeatCanvas extends ClickableBeatCanvas {
-  // private xValueConverter: UnitConverter<number, number>;
-
   constructor(
     private xValueConverter: UnitConverter<number, number>,
     ...args: ConstructorParameters<typeof ClickableBeatCanvas>
@@ -32,7 +30,7 @@ export class RelativeClickableBeatCanvas extends ClickableBeatCanvas {
 
   drawMeasure(options: MeasureData): void {
     options.topLeft.x = this.xValueConverter(options.topLeft.x);
-    options.width = this.xValueConverter(options.width);
+    options.totalWidth = this.xValueConverter(options.totalWidth);
     super.drawMeasure(options);
   }
 
