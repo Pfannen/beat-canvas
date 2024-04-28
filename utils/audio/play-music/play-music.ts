@@ -44,7 +44,7 @@ export const enqueueMusicScore = async (score: MusicScore) => {
 	return buffers;
 };
 
-export const ohWhatANight: Measure[] = [
+/* export const ohWhatANight: Measure[] = [
 	{
 		staticAttributes: {
 			timeSignature: {
@@ -112,9 +112,9 @@ export const ohWhatANight: Measure[] = [
 			{ x: 3.5, y: 3, type: 'eighth' },
 		],
 	},
-];
+]; */
 
-export const ohWhatANightScore: MusicScore = {
+/* export const ohWhatANightScore: MusicScore = {
 	title: 'Oh What a Night!',
 	parts: [
 		{
@@ -126,44 +126,4 @@ export const ohWhatANightScore: MusicScore = {
 			measures: ohWhatANight,
 		},
 	],
-};
-
-/* // TODO: Look into multiple parts not each specifying metronome
-export const playMusicScore = (
-	score: MusicScore,
-	playParams: PlayParams = {}
-) => {
-	const { title, parts } = score;
-	const { getInstrumentNode, onPlay } = playParams;
-	console.log('Now playing: ' + title);
-	console.log(score);
-
-	const instruments: ToneInstrumentSpecifier[] = [];
-	const musicStart = now() + 0.15;
-
-	Transport.start();
-	if (onPlay)
-		Transport.scheduleOnce((time) => {
-			if (onPlay) onPlay();
-			console.log({ time, musicStart });
-		}, 0.15);
-
-	for (const part of parts) {
-		const { attributes } = part;
-		let instrument: ToneInstrument;
-
-		if (getInstrumentNode) {
-			instrument =
-				getInstrumentNode(attributes.instrument) ||
-				getInstrument(attributes.instrument).toDestination();
-		} else {
-			instrument = getInstrument(attributes.instrument).toDestination();
-		}
-
-		playPart(part, instrument, musicStart);
-
-		instruments.push({ id: part.attributes.id, instrument });
-	}
-
-	return instruments;
 }; */

@@ -4,29 +4,36 @@ import {
 	NoteAnnotations,
 	NoteEnqueueData,
 	NoteAnnotationApplier,
-	PersistentInstrumentAttributes,
+	InstrumentAttributes,
 	NoteAnnotationApplierMap,
 } from '@/types/music/note-annotations';
+
+/* const envelope: InstrumentEnvelope = {
+	attack: 0.005, // 0.005
+	decay: 0.1, // 0.1
+	sustain: 0.3, // 0.3
+	release: 1, // 1
+}; */
 
 const staccatoApplier: NoteAnnotationApplier = (attr, annotations) => {
 	if (!annotations.staccato) return;
 
 	attr.duration /= 2;
-	const { applyToNote } = attr.persistentAttributes;
-	applyToNote.instrumentProps.release = 0.5;
+	const { preNote } = attr.persistentAttributes;
+	preNote.envelope.release = 0.5;
 };
 
 const slurApplier: NoteAnnotationApplier = (attr, annotations) => {
 	const { slur } = annotations;
 	if (!slur) return;
 
-	const { applyToNote, persist } = attr.persistentAttributes;
+	const { preNote, postNote } = attr.persistentAttributes;
 	if (slur.start !== undefined) {
-		persist.instrumentProps.decay = 0.0000001;
-		persist.instrumentProps.attack = 0;
+		postNote.envelope.decay = 0.000000000000001;
+		postNote.envelope.attack = 0;
 	} else {
-		persist.instrumentProps.decay = 0.1;
-		persist.instrumentProps.attack = 0.005;
+		postNote.envelope.decay = 0.1;
+		postNote.envelope.attack = 0.005;
 	}
 };
 
@@ -48,21 +55,21 @@ const accentApplier: NoteAnnotationApplier = (attr, annotations) => {
 	let newVelocity = Math.max(1, curVelocity * 1.1);
 	if (accent === 'strong') newVelocity = Math.max(1, curVelocity * 1.25);
 
-	pA.applyToNote.velocity = newVelocity;
+	pA.preNote.velocity = newVelocity;
 };
 
 const dynamicApplier: NoteAnnotationApplier = (attr, annotations) => {
 	const { dynamic } = annotations;
 	if (!dynamic) return;
 
-	const { applyToNote, persist } = attr.persistentAttributes;
+	const { preNote, postNote } = attr.persistentAttributes;
 	let newVelocity = 0.2;
 	if (dynamic[0] === 'm') newVelocity = 0.5;
 	else newVelocity = 0.8;
 
 	console.log('dynamic change ' + dynamic);
-	applyToNote.velocity = newVelocity;
-	persist.velocity = newVelocity;
+	preNote.velocity = newVelocity;
+	postNote.velocity = newVelocity;
 };
 
 // Right now, we specify dotted in the type, which is used to already compute duration
@@ -100,15 +107,15 @@ export const applierMap: NoteAnnotationApplierMap = {
 export const constructNoteAttributes = (
 	pitchOctave: PitchOctave,
 	duration: number,
-	curPersistent: PersistentInstrumentAttributes
+	curPersistent: InstrumentAttributes
 ) => {
 	const nA: NoteEnqueueData = {
 		pitchOctave,
 		duration,
 		persistentAttributes: {
 			cur: curPersistent,
-			applyToNote: { instrumentProps: {} },
-			persist: { instrumentProps: {} },
+			preNote: { envelope: {} },
+			postNote: { envelope: {} },
 		},
 	};
 	return nA;

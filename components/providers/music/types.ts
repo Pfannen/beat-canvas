@@ -5,13 +5,22 @@ import {
 } from "@/types/music";
 import { NoteAnnotations } from "@/types/music/note-annotations";
 
+/* export type NoteType =
+  | "whole"
+  | "half"
+  | "quarter"
+  | "eighth"
+  | "sixteenth"
+  | "dotted-thirtysecond"
+  | "thirtysecond"; */
 export type NoteType =
   | "whole"
   | "half"
   | "quarter"
   | "eighth"
   | "sixteenth"
-  | "thirtysecond";
+  | "thirtysecond"
+  | "sixtyfourth";
 
 export type Note = {
   x: number; //Should be measure independent

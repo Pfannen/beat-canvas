@@ -1,6 +1,6 @@
-import { SelectionData } from '../../../../types/modify-score/assigner';
+import { SelectionData } from '../../../../types/modify-score/assigner/metadata';
 import { checkMetadata, createSelection } from '../../helpers';
-import { getAttributeSelectionMetadata } from '../../../../utils/music/modify-score/assigner';
+import { getAttributeSelectionMetadata } from '../../../../utils/music/modify-score/metadata-helpers/attributes';
 import assert, { equal } from 'assert';
 import { getMeasureAttributeKeys } from '../../../../utils/music';
 import { MeasureAttributes } from '@/types/music';

@@ -54,6 +54,7 @@ const updateSlurDurationInfo: DurationAttributeInfoUpdater<'slur'> = (
 						measureEndIndex: measureIndex,
 						xEnd: x,
 						secondsEnd: seconds,
+						endNoteYPos: note.y,
 					});
 					// And we want to filter the current entry out of all the entries
 					return false;
@@ -71,6 +72,7 @@ const updateSlurDurationInfo: DurationAttributeInfoUpdater<'slur'> = (
 				measureStartIndex: measureIndex,
 				xStart: x,
 				secondsStart: seconds,
+				startNoteYPos: note.y,
 				slurId: slur.start,
 			});
 		}

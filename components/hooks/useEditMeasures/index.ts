@@ -1,34 +1,40 @@
-import { useMusic } from "@/components/providers/music";
-import { AssignerExecuter } from "@/types/modify-score/assigner";
-import { getPartialMeasureAttributes } from "@/utils/music/measures/measure-attributes";
-import { useSelections } from "../useMultipleSelections";
-import { ScorePositionID } from "@/types/modify-score";
-import { SelectionData } from "@/types/modify-score/assigner/metadata";
-import useMeasureRange from "../useMeasureRange";
-import { useEffect } from "react";
+import { useMusic } from '@/components/providers/music';
+import { AssignerExecuter } from '@/types/modify-score/assigner';
+import { getPartialMeasureAttributes } from '@/utils/music/measures/measure-attributes';
+import { useSelections } from '../useMultipleSelections';
+import { ScorePositionID } from '@/types/modify-score';
+import { SelectionData } from '@/types/modify-score/assigner/metadata';
+import useMeasureRange from '../useMeasureRange';
+import { useEffect } from 'react';
+import {
+	stacklessDottedValidator,
+	stacklessNotePlacementValidator,
+} from '@/utils/music/note-placement';
 
 export const useEditMeasures = (
   startIndex: number,
   endIndex: number,
   allowStackedNotes = false
 ) => {
-  const { getMeasures, invokeMeasureModifier } = useMusic();
-  // Utilize the measure range hook for efficient attribute retrieval
-  const {
-    getAttributes,
-    getRangedMeasures,
-    setRangedMeasures,
-    getRangedMeasureAtIndex,
-  } = useMeasureRange(getMeasures, startIndex, endIndex);
-  // Utilize the selections hook for efficient selection look up and modification
-  const {
-    selections,
-    updateSelection: update,
-    clearSelections,
-    hasSelection,
-    mapSelections,
-    getSelection,
-  } = useSelections<ScorePositionID, SelectionData>();
+	const {
+		measuresItems: { getMeasures, invokeMeasureModifier },
+	} = useMusic();
+	// Utilize the measure range hook for efficient attribute retrieval
+	const {
+		getAttributes,
+		getRangedMeasures,
+		setRangedMeasures,
+		getRangedMeasureAtIndex,
+	} = useMeasureRange(getMeasures, startIndex, endIndex);
+	// Utilize the selections hook for efficient selection look up and modification
+	const {
+		selections,
+		updateSelection: update,
+		clearSelections,
+		hasSelection,
+		mapSelections,
+		getSelection,
+	} = useSelections<ScorePositionID, SelectionData>();
 
   // Executes an assigner function with the measures being edited and the current selections
   // NOTE: Once an assigner function is executed, we need to re update all selections if we don't
@@ -74,17 +80,18 @@ export const useEditMeasures = (
     if (attributes === null) return;
     const measure = getRangedMeasureAtIndex(measureIndex);
 
-    // Create the new selection
-    const newSelection: SelectionData = {
-      measureIndex,
-      measureNotes: measure.notes,
-      xStart,
-      xEnd,
-      y,
-      rollingAttributes: attributes,
-      nonRollingAttributes: getPartialMeasureAttributes(measure, xStart),
-      noteIndex,
-    };
+		// Create the new selection
+		const newSelection: SelectionData = {
+			measureIndex,
+			measureNotes: measure.notes,
+			xStart,
+			xEnd,
+			y,
+			rollingAttributes: attributes,
+			nonRollingAttributes: getPartialMeasureAttributes(measure, xStart),
+			noteIndex,
+			dottedValidator: stacklessDottedValidator,
+		};
 
     // If the selection had a note, include it in the selection details
     const { notes } = measure;

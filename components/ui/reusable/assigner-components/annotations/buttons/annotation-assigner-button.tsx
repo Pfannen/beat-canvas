@@ -3,10 +3,8 @@ import classes from './AnnotationAssignerButton.module.css';
 import { IAnnotationAssignerComponent } from '@/types/modify-score/assigner';
 import { NoteAnnotations } from '@/types/music/note-annotations';
 import ModifyMusicAssigner from '../../style/modify-music-assigner-button';
-import {
-	defaultAnnotationValues,
-	getAssignValue,
-} from '@/utils/music/modify-score/assigner';
+import { getAssignValue } from '@/utils/music/modify-score/metadata-helpers';
+import { defaultAnnotationValues } from '@/utils/music/modify-score/metadata-helpers/annotations';
 
 const defaults = defaultAnnotationValues;
 

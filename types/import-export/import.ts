@@ -1,4 +1,4 @@
-import { Note } from '@/components/providers/music/types';
+import { Note, NoteType } from '@/components/providers/music/types';
 import {
 	DynamicMeasureAttributes,
 	MeasureAttributesMXML,
@@ -19,6 +19,7 @@ export type NoteImportDetails = {
 	// The note's duration as-is from the duration element
 	// Nullable because there's sometimes notes don't have a duration element for some reason
 	duration?: number;
+	type?: NoteType;
 	// The note's annotations, if any
 	annotations: NoteAnnotations;
 	tbcAnnotations: ToBeCompletedAnnotations;
@@ -120,5 +121,15 @@ export type MeasureAttributesImportHelperMap = {
 export type WedgeTypeMXML = 'crescendo' | 'diminuendo' | 'stop' | 'continue';
 
 export type RepeatDirectionMXML = 'forward' | 'backward';
+
+export type NoteTypeMXML =
+	| 'whole'
+	| 'half'
+	| 'quarter'
+	| 'eighth'
+	| '16th'
+	| '32nd'
+	| '64th'
+	| '128th';
 
 // #endregion

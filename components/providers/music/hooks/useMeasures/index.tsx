@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { Measure } from '../../types';
 import { MeasureFetcher, MeasureModifier } from './utils';
-import { MusicPartAttributes, MusicScore } from '@/types/music';
 import { deepyCopy } from '@/utils';
 
 const useMeasures = (initialMeasures?: Measure[]) => {
 	const [measures, setMeasures] = useState<Measure[]>(initialMeasures || []);
-	const [musicScore, setMusicScore] = useState<MusicScore>();
 
 	const invokeMeasureModifier = (del: ReturnType<MeasureModifier<any>>) => {
 		setMeasures((prevState) => {
@@ -41,39 +39,19 @@ const useMeasures = (initialMeasures?: Measure[]) => {
 		return slicedMeasures;
 	};
 
-	const getPartAttributes = () => {
-		const parts: MusicPartAttributes[] = [];
-
-		if (!musicScore) return parts;
-		musicScore.parts.forEach((part) => parts.push(part.attributes));
-
-		return parts;
-	};
-
-	const setNewMusicScore = (score: MusicScore) => {
-		setMusicScore(score);
-		setMeasures(score.parts[0].measures);
-	};
-
 	return {
 		measures,
-		musicScore,
 		replaceMeasures,
 		invokeMeasureModifier,
 		getMeasures,
-		getPartAttributes,
-		setNewMusicScore,
 	};
 };
 
 useMeasures.initialState = {
 	measures: [],
-	musicScore: { title: 'n/a', parts: [] },
 	invokeMeasureModifier: () => {},
 	getMeasures: () => [],
 	replaceMeasures: () => {},
-	getPartAttributes: () => [],
-	setNewMusicScore: () => {},
 };
 
 export default useMeasures;

@@ -40,7 +40,9 @@ export const useSelections = <K, V>() => {
 	};
 
 	// Gets all the selections
-	const getSelections = () => deepyCopy(selections);
+	// Can't have methods on objects if they're deep copied
+	//const getSelections = () => deepyCopy(selections);
+	const getSelections = () => selections;
 
 	// Returns whether or not the key has a selection
 	const hasSelection = (key: K) => !!getSelection(key);

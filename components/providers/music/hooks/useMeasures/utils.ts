@@ -70,7 +70,11 @@ const isValidPlacement = (
 	timeSignature: TimeSignature,
 	noteIndex?: number
 ) => {
-	const noteDuration = getNoteDuration(note.type, timeSignature.beatNote);
+	const noteDuration = getNoteDuration(
+		note.type,
+		timeSignature.beatNote,
+		note.annotations?.dotted
+	);
 	if (measure.notes.length === 0) {
 		return note.x + noteDuration <= timeSignature.beatNote;
 	}
@@ -81,7 +85,12 @@ const isValidPlacement = (
 	const foundNote = notes[noteIndex];
 	const prevNote = notes[noteIndex - 1];
 	const lowerBound = prevNote
-		? prevNote.x + getNoteDuration(prevNote.type, timeSignature.beatNote)
+		? prevNote.x +
+		  getNoteDuration(
+				prevNote.type,
+				timeSignature.beatNote,
+				note.annotations?.dotted
+		  )
 		: 0;
 	const upperBound = foundNote ? foundNote.x : timeSignature.beatsPerMeasure;
 	return lowerBound <= note.x && note.x + noteDuration <= upperBound;

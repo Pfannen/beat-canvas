@@ -1,5 +1,6 @@
-import { Param, Player, ToneAudioBuffer, ToneAudioNode, Volume } from 'tone';
+import { Player, ToneAudioBuffer, Volume } from 'tone';
 import { ToneInstrument } from './instrument';
+import { Dynamic } from '../music/note-annotations';
 
 export type VolumeNode = Volume | Player | ToneInstrument;
 
@@ -35,4 +36,13 @@ export type ToneBufferVolumePair = {
 export type AudioBufferVolumePair = {
 	buffer: AudioBuffer;
 	volumePercentage: number;
+};
+
+export type DecibelRange = {
+	min: number;
+	max: number;
+};
+
+export type WedgeDynamicStore = {
+	startDynamic: Dynamic;
 };

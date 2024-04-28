@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react';
 import AssignerButtonSet from '../style/assigner-button-set';
 import dropdownClasses from '../style/assigner-dropdowns.module.css';
 import { NoteAnnotationAssigner } from '@/types/modify-score';
-import { curriedModifyNoteAnnotation } from '@/utils/music/modify-score/music-hook-helpers';
+import { curriedModifyNoteAnnotation } from '@/utils/music/modify-score/curried-assigners';
 import { AssignerLifter } from '@/types/modify-score/assigner';
 import { NoteAnnotations } from '@/types/music/note-annotations';
 import { SelectionMetadata } from '@/types/modify-score/assigner/metadata';

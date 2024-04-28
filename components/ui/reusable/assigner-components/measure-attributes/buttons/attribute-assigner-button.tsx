@@ -2,11 +2,9 @@ import { FunctionComponent } from 'react';
 import classes from './AttributeAssignerButton.module.css';
 import { IAttributeAssignerComponent } from '@/types/modify-score/assigner';
 import { MeasureAttributes } from '@/types/music';
-import {
-	defaultAttributeValues,
-	getAssignValue,
-} from '@/utils/music/modify-score/assigner';
+import { getAssignValue } from '@/utils/music/modify-score/metadata-helpers';
 import ModifyMusicAssigner from '../../style/modify-music-assigner-button';
+import { defaultAttributeValues } from '@/utils/music/modify-score/metadata-helpers/attributes';
 
 const defaults = defaultAttributeValues;
 interface AttributeAssignerButtonProps<K extends keyof MeasureAttributes>

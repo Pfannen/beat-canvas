@@ -4,9 +4,14 @@ import {
 	TimeSignature,
 } from '@/components/providers/music/types';
 import { getNoteDuration } from '../../components/providers/music/utils'; // Jest doesn't like '@'
-import { NotePlacementValidator, NotePlacer } from '@/types/modify-score';
+import {
+	DottedValidator,
+	NotePlacementValidator,
+	NotePlacer,
+} from '@/types/modify-score';
 import { rightHandSplits } from '.';
 import { findPositionIndex } from '../../components/providers/music/hooks/useMeasures/utils'; // Jest doesn't like '@'
+import { indexIsValid } from '..';
 
 // NOTE: This method should really only be used when it's known the x-value is valid
 // in terms of not cutting off any prior notes (also, it doesn't look ahead so notes
@@ -18,7 +23,7 @@ export const isValidXOffsetForNoteType = (
 	tS: TimeSignature,
 	isDotted?: true
 ) => {
-	let noteDuration = getNoteDuration(noteType, tS.beatNote);
+	let noteDuration = getNoteDuration(noteType, tS.beatNote, isDotted);
 	// Get the x remainder (the decimal portion of x) for easy lookup
 	const xRemainder = x - Math.floor(x);
 	// If the remainder is present in the lookup table and the duration it's mapped to
@@ -42,14 +47,15 @@ export const stacklessNotePlacementValidator: NotePlacementValidator = (
 	notes,
 	x,
 	noteType,
-	tS
+	tS,
+	isDotted?: true
 ) => {
 	// Check if the x is a valid offset for the given note type
 	// NOTE: This checks if the note would extend past the measure too
 	if (!isValidXOffsetForNoteType(x, noteType, tS)) return -1;
 
 	const positionIdx = findPositionIndex(x, notes);
-	const noteDur = getNoteDuration(noteType, tS.beatNote);
+	const noteDur = getNoteDuration(noteType, tS.beatNote, isDotted);
 
 	// Check if note exists at the position index, and check if the current note would overlap it
 	// This will be the note that comes after the given note if it gets inserted
@@ -62,12 +68,31 @@ export const stacklessNotePlacementValidator: NotePlacementValidator = (
 	// This will be the note that comes right before the given note if it gets inserted
 	if (positionIdx > 0) {
 		const preNote = notes[positionIdx - 1];
-		const preNoteDur = getNoteDuration(preNote.type, tS.beatNote);
+		const preNoteDur = getNoteDuration(preNote.type, tS.beatNote, isDotted);
 		if (preNoteDur + preNote.x > x) return -1;
 	}
 
 	// The note is able to be placed at the given x
 	return positionIdx;
+};
+
+export const stacklessDottedValidator: DottedValidator = (
+	notes,
+	noteIndex,
+	tS
+) => {
+	if (!indexIsValid(noteIndex, notes.length)) return false;
+
+	const note = notes[noteIndex];
+	if (note.annotations?.dotted) return false;
+
+	const dottedDur = getNoteDuration(note.type, tS.beatNote, true);
+	if (indexIsValid(noteIndex + 1, notes.length)) {
+		const nextNote = notes[noteIndex + 1];
+		if (nextNote.x < note.x + dottedDur) return false;
+	}
+
+	return note.x + dottedDur <= tS.beatsPerMeasure;
 };
 
 export const placeNote: NotePlacer = (note, notes, validator, tS) => {

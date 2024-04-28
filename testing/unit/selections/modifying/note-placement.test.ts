@@ -1,4 +1,4 @@
-import { curriedPlaceNote } from '../../../../utils/music/modify-score/music-hook-helpers';
+import { curriedPlaceNote } from '../../../../utils/music/modify-score/curried-assigners';
 import { Note } from '../../../../components/providers/music/types';
 import { NotePlacementValidator } from '../../../../types/modify-score';
 import { stacklessNotePlacementValidator } from '../../../../utils/music/note-placement';

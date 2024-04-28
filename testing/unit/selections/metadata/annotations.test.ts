@@ -6,7 +6,7 @@ import { Note } from '../../../../components/providers/music/types';
 import { NoteAnnotations } from '../../../../types/music/note-annotations';
 import { MeasureAttributes } from '../../../../types/music';
 import assert, { equal } from 'assert';
-import { getAnnotationSelectionMetadata } from '../../../../utils/music/modify-score/assigner';
+import { getAnnotationSelectionMetadata } from '../../../../utils/music/modify-score/metadata-helpers/annotations';
 import { getNoteAnnotationKeys } from '../../../../utils/music';
 import { checkMetadata, createSelection } from '../../helpers';
 

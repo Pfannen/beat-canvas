@@ -1,4 +1,4 @@
-import { Note } from '@/components/providers/music/types';
+import { Note, TimeSignature } from '@/components/providers/music/types';
 import { getNoteDuration } from '@/components/providers/music/utils';
 import {
 	AnnotationPEA,
@@ -9,8 +9,15 @@ import {
 } from '@/types/import-export/export-mxml';
 import { Clef } from '@/types/music';
 import { NoteAnnotations } from '@/types/music/note-annotations';
-import { getNoteFromYPos } from '@/utils/music';
-import { appendElements, assignToParent, createXMLElement } from './utils';
+import { durationToNoteType, getNoteFromYPos } from '@/utils/music';
+import {
+	appendElement,
+	appendElements,
+	assignToParent,
+	createXMLElement,
+} from './utils';
+import { minimalSegmentGenerator } from '@/utils/segments/segment-gen-1';
+import { convertToMXMLNoteType } from '../helpers/xml-helpers';
 
 const pitchEC = (note: Note, clef: Clef) => {
 	const pitchEl = createXMLElement('pitch');
@@ -33,10 +40,14 @@ export const noteEC = (note: Note, beatNote: number, clef: Clef) => {
 	const pitchEl = pitchEC(note, clef);
 
 	const durationEl = createXMLElement('duration');
-	durationEl.textContent = getNoteDuration(note.type, beatNote).toString();
+	durationEl.textContent = getNoteDuration(
+		note.type,
+		beatNote,
+		note.annotations?.dotted
+	).toString();
 
 	const typeEl = createXMLElement('type');
-	typeEl.textContent = note.type;
+	typeEl.textContent = convertToMXMLNoteType(note.type);
 
 	noteEl.appendChild(pitchEl);
 	noteEl.appendChild(durationEl);
@@ -161,4 +172,50 @@ const annotationsPEAMap: AnnotationsPEAMap = {
 	dynamic: assignToNotationsParent,
 	slur: assignToNotationsParent,
 	staccato: assignToArticulationsParent,
+};
+
+export const restsEC = (
+	lastNoteX: number,
+	curX: number,
+	timeSignature: TimeSignature
+) => {
+	const { beatNote, beatsPerMeasure } = timeSignature;
+	if (curX > beatsPerMeasure || curX <= lastNoteX || lastNoteX < 0) return [];
+	const restsData = minimalSegmentGenerator(lastNoteX, curX);
+
+	const restEls: Element[] = [];
+
+	restsData.forEach(({ count, segmentBeat }) => {
+		const noteEl = createXMLElement('note');
+		const restEl = createXMLElement('rest');
+		const durationEl = createXMLElement('duration');
+		const typeEl = createXMLElement('type');
+
+		durationEl.textContent = segmentBeat.toString();
+		typeEl.textContent = convertToMXMLNoteType(
+			durationToNoteType(segmentBeat, beatNote)
+		);
+
+		appendElements(noteEl, [restEl, durationEl, typeEl]);
+		restEls.push(noteEl);
+		for (let i = 1; i < count; i++) {
+			restEls.push(noteEl.cloneNode(true) as Element);
+		}
+	});
+
+	return restEls;
+
+	/* return restsData.map(({ count, segmentBeat }) => {
+		const noteEl = createXMLElement('note');
+		const restEl = createXMLElement('rest');
+		const durationEl = createXMLElement('duration');
+		const typeEl = createXMLElement('type');
+
+		//const duration = count * segmentBeat;
+		durationEl.textContent = segmentBeat.toString();
+		typeEl.textContent = durationToNoteType(segmentBeat, beatNote);
+
+		appendElements(noteEl, [restEl, durationEl, typeEl]);
+		return noteEl;
+	}); */
 };

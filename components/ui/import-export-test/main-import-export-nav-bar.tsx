@@ -12,12 +12,14 @@ interface MainImportExportNavBarProps {
 const MainImportExportNavBar: FunctionComponent<
 	MainImportExportNavBarProps
 > = ({ setImportedAudio, setScore }) => {
-	const { setNewMusicScore, musicScore } = useMusic();
+	const {
+		scoreItems: { replaceMusicScore, musicScore },
+	} = useMusic();
 
 	return (
 		<ImportExportPage
 			setScore={(s) => {
-				setNewMusicScore(s);
+				replaceMusicScore(s);
 				setScore && setScore(s);
 			}}
 			setImportedAudio={setImportedAudio}

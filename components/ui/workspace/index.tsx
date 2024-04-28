@@ -11,7 +11,7 @@ type WorkspaceProps = {};
 
 const Workspace: FunctionComponent<WorkspaceProps> = () => {
   const ws = useWorkSpace();
-  const { measures } = useMusic();
+  const { measuresItems: { measures } } = useMusic();
 
   const buttons: ControlButton[] = [
     {

@@ -1,7 +1,6 @@
 import { FunctionComponent } from 'react';
 import classes from './VolumeManager.module.css';
-import { useMusic } from '@/components/providers/music';
-import { IVolumeValueModifer, VolumePair } from '@/types/audio/volume';
+import { VolumePair } from '@/types/audio/volume';
 import PlaybackSlider from '../styles/playback-slider';
 
 export interface VolumeManagerProps {
@@ -22,7 +21,7 @@ const VolumeManager: FunctionComponent<VolumeManagerProps> = ({
 						onChange={(event) => {
 							modifyVolume(attributes.audioId, +event.target.value / 100);
 						}}
-						defaultValue={50}
+						defaultValue={attributes.volumePercentage * 100}
 						style={{ display: 'block' }}
 					/>
 				</div>

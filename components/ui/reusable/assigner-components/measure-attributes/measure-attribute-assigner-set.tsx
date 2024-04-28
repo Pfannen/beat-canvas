@@ -4,7 +4,7 @@ import { MeasureAttributeAssigner } from '@/types/modify-score';
 import { Dynamic } from '@/types/music/note-annotations';
 import { AssignerLifter } from '@/types/modify-score/assigner';
 import { SelectionMetadata } from '@/types/modify-score/assigner/metadata';
-import { curriedModifyMeasureAttribute } from '@/utils/music/modify-score/music-hook-helpers';
+import { curriedModifyMeasureAttribute } from '@/utils/music/modify-score/curried-assigners';
 import TimeSignatureAssigner from './time-signature-assigner';
 import MetronomeAssigner from './metronome-assigner';
 import { MeasureAttributes } from '@/types/music';
