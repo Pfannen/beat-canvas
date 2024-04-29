@@ -10,6 +10,7 @@ import AnnotationAssignerButton from './buttons/annotation-assigner-button';
 import AccentSVG from '@/components/ui/svg/annotations/accent-svg';
 import DottedSVG from '@/components/ui/svg/annotations/dotted-svg';
 import SlurAssignerButton from './buttons/slur-assigner-button';
+import StaccatoSVG from '@/components/ui/svg/annotations/staccato-svg';
 
 interface AnnotationsAssignerSetProps {
 	liftExecuter?: AssignerLifter;
@@ -46,17 +47,17 @@ const AnnotationsAssignerSet: FunctionComponent<
 				>
 					<DottedSVG />
 				</AnnotationAssignerButton>
-				<SlurAssignerButton
-					assigner={annotationAssigner}
-					metadataEntry={annotationMetadata?.slur}
-				/>
 				<AnnotationAssignerButton<'staccato'>
 					tKey="staccato"
 					assigner={annotationAssigner}
 					metadataEntry={annotationMetadata?.staccato}
 				>
-					<p>St</p>
+					<StaccatoSVG />
 				</AnnotationAssignerButton>
+				<SlurAssignerButton
+					assigner={annotationAssigner}
+					metadataEntry={annotationMetadata?.slur}
+				/>
 			</AssignerButtonSet>
 			<div className={dropdownClasses.dropdown}></div>
 		</div>

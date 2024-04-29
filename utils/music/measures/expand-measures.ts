@@ -1,5 +1,10 @@
 import { Measure } from '@/components/providers/music/types';
 import { MeasureAttributes, RepeatEndings } from '@/types/music';
+import {
+	initializeMeasureAttributes,
+	measureAttributeGenerator,
+	updateMeasureAttributes,
+} from './measure-generator';
 
 type EndingState = {
 	// Both indices are inclusive
@@ -109,9 +114,12 @@ const forwardRepeatEncountered = (
 };
 
 export const expandMeasures = (measures: Measure[]) => {
+	if (!measures.length) return [];
+
 	const expandedMeasures: Measure[] = [];
 	for (let i = 0; i < measures.length; i++) {
-		const { staticAttributes: sA } = measures[i];
+		const measure = measures[i];
+		const { staticAttributes: sA, temporalAttributes: tA } = measure;
 		if (sA && sA.repeat && sA.repeat.forward) {
 			i = forwardRepeatEncountered(measures, i, expandedMeasures);
 		} else {
@@ -121,75 +129,3 @@ export const expandMeasures = (measures: Measure[]) => {
 
 	return expandedMeasures;
 };
-
-/* type RepeatState = {
-	forward: [number, number];
-	endings: {
-		[ending in number]: [number, number];
-	};
-	repeatCount: number;
-};
-
-const applyRepeat = (
-	measures: Measure[],
-	expandedMeasures: Measure[],
-	repeatState: RepeatState
-) => {
-	if (repeatState.repeatCount === -1) return;
-	const { forward, endings, repeatCount } = repeatState;
-	for (let i = 1; i <= repeatCount; i++) {
-		console.log(`Measures ${forward[0]} - ${forward[1] - 1} repeated`);
-		expandedMeasures.push(...measures.slice(forward[0], forward[1]));
-		if (i + 1 in endings) {
-			const [beg, end] = endings[i];
-			expandedMeasures.push(...measures.slice(beg, end + 1));
-		}
-	}
-}; */
-
-/* export const expandMeasures = (measures: Measure[]) => {
-	// If we encounter an ending -> set end always
-	// If we encounter a backward repeat -> set end if not set and expand measures
-
-	const expandedMeasures: Measure[] = [];
-	let repeatState: RepeatState | undefined;
-
-	for (let i = 0; i < measures.length; i++) {
-		const measure = measures[i];
-		expandedMeasures.push(measure);
-
-		const { staticAttributes } = measure;
-		if (staticAttributes) {
-			const { repeat, repeatEndings } = staticAttributes;
-
-			if (repeat) {
-				if (repeat.forward)
-					repeatState = {
-						forward: [i, i],
-						repeatCount: -1,
-						endings: {},
-					};
-				else if (repeatState) {
-					repeatState.repeatCount = repeat.repeatCount;
-				}
-			}
-
-			if (repeatEndings && repeatState) {
-				for (const endingNumber in repeatEndings) {
-					repeatState.endings[endingNumber] = [i, repeatEndings[endingNumber]];
-				}
-			}
-		}
-
-		if (repeatState) {
-			if (!Object.keys(repeatState.endings).length) repeatState.forward[1]++;
-
-			if (repeatState.repeatCount > 0) {
-				applyRepeat(measures, expandedMeasures, repeatState);
-				repeatState = undefined;
-			}
-		}
-	}
-
-	return expandedMeasures;
-}; */

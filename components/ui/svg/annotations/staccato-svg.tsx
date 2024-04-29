@@ -1,15 +1,15 @@
 import { FunctionComponent, SVGProps } from 'react';
-import classes from './DottedSVG.module.css';
+import classes from './StaccatoSVG.module.css';
 
-interface DottedSVGProps extends SVGProps<SVGSVGElement> {}
+interface StaccatoSVGProps extends SVGProps<SVGSVGElement> {}
 
-const DottedSVG: FunctionComponent<DottedSVGProps> = ({ ...props }) => {
+const StaccatoSVG: FunctionComponent<StaccatoSVGProps> = (props) => {
 	return (
 		<svg
 			id="Layer_1"
 			data-name="Layer 1"
 			xmlns="http://www.w3.org/2000/svg"
-			viewBox="0 0 11.32 23.59"
+			viewBox="0 0 8.21 28.5"
 		>
 			<path
 				fill="#f4f9fa"
@@ -19,10 +19,10 @@ const DottedSVG: FunctionComponent<DottedSVGProps> = ({ ...props }) => {
 			<path
 				fill="#f4f9fa"
 				strokeWidth="0px"
-				d="M10.38,23.04c.52,0,.94-.42.94-.94s-.42-.94-.94-.94-.94.42-.94.94.42.94.94.94Z"
+				d="M3.92,28.5c.52,0,.94-.42.94-.94s-.42-.94-.94-.94-.94.42-.94.94.42.94.94.94Z"
 			/>
 		</svg>
 	);
 };
 
-export default DottedSVG;
+export default StaccatoSVG;

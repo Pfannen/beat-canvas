@@ -15,7 +15,8 @@
 .pane_button {
   opacity: 1;
   position: absolute;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   cursor: pointer;
   color: var(--text-primary);
 }

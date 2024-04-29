@@ -6,16 +6,18 @@ import PlaybackSlider from '../styles/playback-slider';
 export interface VolumeManagerProps {
 	modifyVolume: (audioId: string, volumePct: number) => void;
 	volumePairs: VolumePair[];
+	volumeItemClassName?: string;
 }
 
 const VolumeManager: FunctionComponent<VolumeManagerProps> = ({
 	modifyVolume,
 	volumePairs,
+	volumeItemClassName = '',
 }) => {
 	return (
 		<>
 			{volumePairs.map((attributes) => (
-				<div key={attributes.audioId}>
+				<div key={attributes.audioId} className={volumeItemClassName}>
 					<p>{attributes.audioId}</p>
 					<PlaybackSlider
 						onChange={(event) => {

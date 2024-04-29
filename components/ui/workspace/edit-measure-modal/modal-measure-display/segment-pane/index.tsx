@@ -61,11 +61,11 @@ const SegmentPane: FunctionComponent<SegmentPaneProps> = ({
 				onClick={onSplit}
 				className={concatClassNames(classes.pane_button, classes.split)}
 			>
-				split
+				Split
 			</SegmentButton>
 			{components}
 			<SegmentButton onClick={onJoin} className={classes.pane_button}>
-				join
+				Join
 			</SegmentButton>
 		</div>
 	);
