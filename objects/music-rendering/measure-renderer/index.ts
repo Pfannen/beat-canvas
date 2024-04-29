@@ -17,7 +17,7 @@ import {
   StaticMeasureAttributes,
   staticMeasureAttributesKeys,
 } from "@/types/music";
-import { InitialMeasureSectionArray } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-section";
+import { InitialMeasureSectionArray } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure/measure-section";
 import { formatInitialSections } from "../beat-canvas/drawers/measure-sections/initial-section-handlers";
 import { noteAttributeGenerator } from "@/utils/music/measures/traversal";
 import { ICanvasGetter } from "@/types/music-rendering/canvas/canvas-manager";

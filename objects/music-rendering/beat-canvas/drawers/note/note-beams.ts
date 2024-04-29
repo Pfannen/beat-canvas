@@ -1,6 +1,6 @@
 import { NoteDirection } from "@/lib/notes/types";
 import { Coordinate } from "@/types";
-import { NoteBeamDrawer } from "@/types/music-rendering/canvas/beat-canvas/drawers/note-beams";
+import { NoteBeamDrawer } from "@/types/music-rendering/canvas/beat-canvas/drawers/note/note-beams";
 
 export const beamDrawer: NoteBeamDrawer = ({
   drawCanvas,

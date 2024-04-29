@@ -1,5 +1,5 @@
 import { NoteType } from "@/components/providers/music/types";
-import { IDrawingCanvas } from "../../drawing-canvas";
+import { IDrawingCanvas } from "../../../drawing-canvas";
 import { NoteDirection } from "@/lib/notes/types";
 import { Coordinate } from "@/types";
 

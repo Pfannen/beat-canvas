@@ -2,7 +2,7 @@ import { DirectionOffsets } from "@/types/music-rendering/canvas/beat-canvas";
 import {
   NoteAnnotationDrawer,
   NoteAnnotationDrawers,
-} from "@/types/music-rendering/canvas/beat-canvas/drawers/note-annotations";
+} from "@/types/music-rendering/canvas/beat-canvas/drawers/note/note-annotations";
 
 export const createOffsetsObject = (
   bodyHeight: number,

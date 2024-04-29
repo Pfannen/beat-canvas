@@ -1,4 +1,4 @@
-import { IDrawingCanvas } from "../../drawing-canvas";
+import { IDrawingCanvas } from "../../../drawing-canvas";
 import { NoteDirection } from "@/lib/notes/types";
 import { Coordinate } from "@/types";
 import { NoteBeamInfo } from "@/types/music-rendering/draw-data/note";

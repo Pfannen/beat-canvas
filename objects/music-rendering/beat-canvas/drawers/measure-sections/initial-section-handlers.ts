@@ -2,7 +2,7 @@ import { MeasureSection } from "@/types/music";
 import {
   InitialMeasureSectionArray,
   MeasureSectionWidthArgs,
-} from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-section";
+} from "@/types/music-rendering/canvas/beat-canvas/drawers/measure/measure-section";
 import {
   MeasureOutlineSection,
   OptionalMeasureSection,

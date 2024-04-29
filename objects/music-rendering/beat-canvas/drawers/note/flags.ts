@@ -1,4 +1,4 @@
-import { FlagDrawer } from "@/types/music-rendering/canvas/beat-canvas/drawers/note-flags";
+import { FlagDrawer } from "@/types/music-rendering/canvas/beat-canvas/drawers/note/note-flags";
 import { calculateScaleToHeight } from "@/utils/svg";
 import { NoteType } from "@/components/providers/music/types";
 import { getFlagSVG } from "@/SVG/note/flag";

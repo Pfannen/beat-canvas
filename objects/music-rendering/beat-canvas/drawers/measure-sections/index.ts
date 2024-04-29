@@ -2,7 +2,7 @@ import {
   MeasureSectionDrawer,
   MeasureSectionDrawerArgs,
   MeasureSectionDrawers,
-} from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-section";
+} from "@/types/music-rendering/canvas/beat-canvas/drawers/measure/measure-section";
 import { iterateSection } from "@/utils/music-rendering/section-calculation";
 import {
   calculateScaleToHeight,

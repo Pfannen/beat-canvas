@@ -1,6 +1,6 @@
 import { NoteAnnotation } from "@/types/music/note-annotations";
-import { BeatCanvasNoteDrawOptions, DirectionOffsets, NoteData } from "..";
-import { IDrawingCanvas } from "../../drawing-canvas";
+import { BeatCanvasNoteDrawOptions, DirectionOffsets, NoteData } from "../..";
+import { IDrawingCanvas } from "../../../drawing-canvas";
 
 export type NoteAnnotationDrawerArgs = {
   drawCanvas: IDrawingCanvas;

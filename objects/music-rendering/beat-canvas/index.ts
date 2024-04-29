@@ -17,17 +17,18 @@ import { NoteDirection } from "@/lib/notes/types";
 import {
   annotationDrawers,
   createOffsetsObject,
-} from "./drawers/note-annotations";
-import { NoteAnnotationDrawerArgs } from "@/types/music-rendering/canvas/beat-canvas/drawers/note-annotations";
-import { getRestDrawer } from "./drawers/measure-rests";
-import { getFlagDrawer } from "./drawers/note-flags";
-import { beamDrawer } from "./drawers/note-beams";
+} from "./drawers/note/note-annotations";
+import { NoteAnnotationDrawerArgs } from "@/types/music-rendering/canvas/beat-canvas/drawers/note/note-annotations";
+import { getFlagDrawer } from "./drawers/note/flags";
+import { beamDrawer } from "./drawers/note/note-beams";
 import { Measurements } from "@/objects/measurement/measurements";
 import { CoordinateSectionArray } from "@/types/music-rendering/measure-manager/measure-outline";
 import { MeasureSection, StaticMeasureAttributes } from "@/types/music";
 import { getMeasureSectionDrawer } from "./drawers/measure-sections";
-import { MeasureSectionDrawerArgs } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-section";
+import { MeasureSectionDrawerArgs } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure/measure-section";
 import { mergePartial } from "@/utils";
+import { getNoteBodyDrawer } from "./drawers/note/note-body";
+import { getRestDrawer } from "./drawers/measure/measure-rests";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
@@ -251,7 +252,16 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
   }
 
   drawNote(options: NoteData) {
-    this.drawNoteBody(options);
+    const { note } = this.drawOptions;
+    const bodyDrawer = getNoteBodyDrawer(options.type);
+    bodyDrawer({
+      drawCanvas: this.canvas,
+      center: options.bodyCenter,
+      aspectRatio: note.noteBodyAspectRatio,
+      bodyHeight: options.bodyHeight,
+      bodyAngle: note.noteBodyAngle,
+    });
+
     const endOfStem = this.drawNoteStem(options);
     // this.drawBeamData(options, endOfStem);
     this.drawNoteAnnotations(options);
@@ -286,18 +296,6 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
       options.sections as any,
       options.sectionAttributes
     );
-
-    // if (options.displayData) {
-    //   const { displayData } = options;
-    //   if (displayData.keySignature) {
-    //     keySignatureDrawer({
-    //       drawCanvas: this.canvas,
-    //       symbol: displayData.keySignature.symbol,
-    //       positions: displayData.keySignature.positions,
-    //       symbolHeight: this.measurements.getComponentHeights().space * 2.5,
-    //     });
-    //   }
-    // }
   }
 
   private yPosToAbsolute(measureBottomY: number, yPos: number) {

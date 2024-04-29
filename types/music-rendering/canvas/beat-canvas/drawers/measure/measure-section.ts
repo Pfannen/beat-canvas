@@ -1,4 +1,4 @@
-import { IDrawingCanvas } from "../../drawing-canvas";
+import { IDrawingCanvas } from "../../../drawing-canvas";
 import { UnitConverter } from "@/types";
 import { Clef, MeasureSection, MeasureSectionMetadata } from "@/types/music";
 import { MeasureComponentValues } from "@/types/music-rendering";

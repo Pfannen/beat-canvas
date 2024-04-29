@@ -1,7 +1,7 @@
 import {
   MeasureSectionWidthArgs,
   MeasureSectionWidthHandlers,
-} from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-section";
+} from "@/types/music-rendering/canvas/beat-canvas/drawers/measure/measure-section";
 import { getKeySignatureWidth } from "./key-signature/widths";
 import { MeasureSection, RepeatEndings } from "@/types/music";
 import { getClefWidth } from "./clef/widths";

@@ -1,4 +1,4 @@
-import { SVGRest } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure-rests";
+import { SVGRest } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure/measure-rests";
 import { SVGRecord } from "@/types/svg";
 
 const restSVGData: SVGRecord<SVGRest> = {
