@@ -15,7 +15,11 @@ export const usePlayback = (initialPBM?: PlaybackManager) => {
 		playbackManager.current.getOffsetPercentage
 	);
 
-	const [volumePairs, setVolumePairs] = useState<VolumePair[]>([]);
+	// Master volume will always exist
+	const [volumePairs, setVolumePairs] = useState<VolumePair[]>([
+		{ volumePercentage: 1, audioId: 'Master' },
+	]);
+
 	const [playbackState, setPlaybackState] = useState<
 		BasicPlaybackState | undefined
 	>(playbackManager.current.getPlaybackState);
@@ -76,7 +80,12 @@ export const usePlayback = (initialPBM?: PlaybackManager) => {
 			if (curState !== state) return curState;
 			else return state;
 		}); */
-		if (curState !== playbackState) setPlaybackState(curState);
+		if (curState !== playbackState) {
+			if (curState === 'stopped' && pollValue === 1) {
+				seekMusic(0);
+			}
+			setPlaybackState(curState);
+		}
 	}, [pollValue, playbackState]);
 
 	useEffect(adjustPolling, [

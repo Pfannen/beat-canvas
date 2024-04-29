@@ -10,6 +10,10 @@
 	margin-inline: auto;
 }
 
+.playback_manager :disabled {
+	opacity: 0.5;
+}
+
 .slider_container {
 	width: 75%;
 }

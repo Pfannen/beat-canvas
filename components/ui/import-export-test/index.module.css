@@ -5,7 +5,7 @@
 
 .imports {
 	width: 100%;
-	max-width: 1500px;
+	max-width: var(--body-max-width, 1500px);
 	margin-inline: auto;
 	display: flex;
 	justify-content: space-between;

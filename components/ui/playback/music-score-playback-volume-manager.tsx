@@ -1,5 +1,5 @@
 import { FunctionComponent, useEffect } from 'react';
-import classes from './MusicScorePlaybackVolumeManager.module.css';
+import classes from './music-score-playback-volume-manager.module.css';
 import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
 import { useMusic } from '@/components/providers/music';
 import PlaybackVolumeManager from './playback-volume-manager';

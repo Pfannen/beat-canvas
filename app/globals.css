@@ -45,6 +45,7 @@ a {
 	--input-border-radius: 4px;
 	--button-border-radius: 6px;
 	--button-padding: 8px 12px;
+	--body-max-width: 1360px;
 
 	background-color: var(--surface-primary);
 	font-family: 'Fira Sans', sans-serif;

@@ -1,5 +1,5 @@
 import { FunctionComponent, useState } from 'react';
-import classes from './PlaybackVolumeManager.module.css';
+import classes from './playback-volume-manager.module.css';
 import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
 import PlaybackManagerComponent, {
 	PlaybackManagerProps,
@@ -25,8 +25,7 @@ const PlaybackVolumeManager: FunctionComponent<PlaybackVolumeManagerProps> = ({
 	stopPlaybackOnButtonSeek,
 }) => {
 	return (
-		<div>
-			<VolumeManager volumePairs={volumePairs} modifyVolume={modifyVolume} />
+		<>
 			<PlaybackManagerComponent
 				title={title}
 				onPlay={onPlay}
@@ -37,7 +36,8 @@ const PlaybackVolumeManager: FunctionComponent<PlaybackVolumeManagerProps> = ({
 				disableUserSliding={disableUserSliding}
 				stopPlaybackOnButtonSeek={stopPlaybackOnButtonSeek}
 			/>
-		</div>
+			<VolumeManager volumePairs={volumePairs} modifyVolume={modifyVolume} />
+		</>
 	);
 };
 
