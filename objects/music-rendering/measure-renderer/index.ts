@@ -209,15 +209,6 @@ export class MeasureRenderer {
         measureData.pageNumber
       );
 
-      beatCanvas.drawMeasure({
-        topLeft: { ...measureData.start },
-        sections: measureData.metadata!,
-        totalWidth: measureData.width,
-        measureIndex,
-        pageNumber: measureData.pageNumber,
-        sectionAttributes: measureDetails[measureIndex].attributes,
-      });
-
       const noteSection = this.measureManager.getMeasureSection(
         measureIndex,
         "note"
@@ -269,6 +260,14 @@ export class MeasureRenderer {
           });
         }
       });
+      beatCanvas.drawMeasure({
+        topLeft: { ...measureData.start },
+        sections: measureData.metadata!,
+        totalWidth: measureData.width,
+        measureIndex,
+        pageNumber: measureData.pageNumber,
+        sectionAttributes: measureDetails[measureIndex].attributes,
+      });
     });
   }
 }
@@ -313,13 +312,18 @@ const combineMeasureSectionObjects = (
   const sections: InitialMeasureSectionArray = [];
   if (newAttributes) {
     staticMeasureAttributesKeys.forEach((key) => {
-      const data = newAttributes[key] || currentAttributes[key];
-      if (data) {
-        sections.push({ key, displayByDefault: true, data });
-      } else {
-        sections.push({ key, displayByDefault: false, data });
+      const newData = newAttributes[key];
+      if (newData) {
+        sections.push({ key, displayByDefault: true, data: newData });
+        attributes[key] = newData as never;
+      } else if (currentAttributes[key]) {
+        sections.push({
+          key,
+          displayByDefault: false,
+          data: currentAttributes[key],
+        });
+        attributes[key] = currentAttributes[key] as never;
       }
-      attributes[key] = data as never;
     });
   } else {
     staticMeasureAttributesKeys.forEach((key) => {

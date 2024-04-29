@@ -1,6 +1,6 @@
 import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
 import { getSVGCenter } from "@/utils/svg";
-import { PDFPage, degrees, rgb } from "pdf-lib";
+import { Color, PDFPage, degrees, rgb } from "pdf-lib";
 
 type PDFLibGenerator<T extends keyof IDrawingCanvas> = (
   page: PDFPage
@@ -36,12 +36,14 @@ export class PDFLibDrawingCanvas {
       const { x, y } = options.center;
       const width = options.diameter * options.aspectRatio;
       const rotation = options.drawOptions?.degreeRotation;
+      const color = getColor(options.drawOptions?.color);
       page.drawEllipse({
         x,
         y,
         xScale: width / 2,
         yScale: options.diameter / 2,
         rotate: rotation ? degrees(-rotation) : undefined,
+        color,
       });
     };
   };
@@ -74,4 +76,14 @@ const centerToTopLeft = (x: number, y: number, scale: number) => {
   x -= scale / 2;
   y += scale / 2;
   return { x, y };
+};
+
+const colorMap: Record<string, Color> = {
+  black: rgb(0, 0, 0),
+  white: rgb(1, 1, 1),
+};
+
+const getColor = (color?: string) => {
+  if (!color) return colorMap["black"];
+  return colorMap[color] || colorMap["black"];
 };
