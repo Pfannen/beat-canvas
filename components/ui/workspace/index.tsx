@@ -1,17 +1,24 @@
 "use client";
 
-import { FunctionComponent } from "react";
-import useWorkSpace from "./hooks/useWorkspace";
-import ControlButtons, { ControlButton } from "./control-buttons";
-import WorkspaceMusicCanvas from "./workspace-music-canvas";
+import { CSSProperties, FunctionComponent } from "react";
+import classes from "./index.module.css";
+import useWorkSpace from "../../hooks/workspace/useWorkspace";
+import ControlButtons from "./control-buttons";
 import EditMeasureModal from "./edit-measure-modal";
 import { useMusic } from "@/components/providers/music";
+import { ControlButton } from "@/types/workspace";
+import { MemoizedMeasureSelectedCanvas } from "../reusable/music-canvas/measure-select-canvas";
+import useOverlayPositions from "@/components/hooks/workspace/useOverlayPositions";
+import MeasureSelectOverlay from "./workspace-music-canvas/measure-select-overlay";
+
+const aspectRatio = 0.75;
 
 type WorkspaceProps = {};
 
 const Workspace: FunctionComponent<WorkspaceProps> = () => {
+  const { overlayPositions, onMeasureRendered } = useOverlayPositions(100);
   const ws = useWorkSpace();
-  const { measuresItems: { measures } } = useMusic();
+  const { measuresItems } = useMusic();
 
   const buttons: ControlButton[] = [
     {
@@ -48,14 +55,22 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
   return (
     <>
       <ControlButtons buttons={buttons} />
-      <WorkspaceMusicCanvas
-        aspectRatio={0.75}
-        measures={measures}
-        onMeasureRendered={console.log}
-        isMeasureSelected={ws.isMeasureSelected}
-        onMeasureSelect={ws.onMeasureClick}
-        areSelections={ws.isSelectedMeasures()}
-      />
+      <div
+        className={classes.music_canvas}
+        style={{ "--aspect-ratio": aspectRatio } as CSSProperties}
+      >
+        <MemoizedMeasureSelectedCanvas
+          measures={measuresItems.measures}
+          aspectRatio={aspectRatio}
+          onMeasureRendered={onMeasureRendered}
+        />
+        <MeasureSelectOverlay
+          overlayPositions={overlayPositions}
+          onMeasureSelect={ws.onMeasureClick}
+          isMeasureSelected={ws.isMeasureSelected}
+          areSelections={ws.isSelectedMeasures()}
+        />
+      </div>
       <EditMeasureModal
         showModal={modalShouldOpen}
         onClose={ws.mode.clear}

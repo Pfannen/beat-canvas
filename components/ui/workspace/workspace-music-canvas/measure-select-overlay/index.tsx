@@ -1,23 +1,23 @@
-import { MeasureRenderArgs } from "@/types/music-rendering";
 import { FunctionComponent } from "react";
 import MeasurePane from "./measure-pane";
+import { MeasureOverlay } from "@/types/workspace";
 
 type MeasureSelectOverlayProps = {
-  measurePositions: MeasureRenderArgs[];
+  overlayPositions: MeasureOverlay[];
   areSelections: boolean;
   onMeasureSelect: (measureIndex: number) => void;
   isMeasureSelected: (measureIndex: number) => boolean;
 };
 
 const MeasureSelectOverlay: FunctionComponent<MeasureSelectOverlayProps> = ({
-  measurePositions,
+  overlayPositions,
   areSelections,
   onMeasureSelect,
   isMeasureSelected,
 }) => {
   return (
     <>
-      {measurePositions.map((pos) => {
+      {overlayPositions.map((pos) => {
         return (
           <MeasurePane
             position={pos}

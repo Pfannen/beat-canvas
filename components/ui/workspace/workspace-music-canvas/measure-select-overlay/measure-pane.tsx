@@ -1,11 +1,10 @@
-import { MeasureRenderArgs } from "@/types/music-rendering";
 import classes from "./measure-pane.module.css";
 import { CSSProperties, FunctionComponent } from "react";
 import { concatClassNames } from "@/utils/css";
-import { appendUnit } from "@/utils";
+import { CSSPosition } from "@/types";
 
 type MeasurePaneProps = {
-  position: MeasureRenderArgs;
+  position: CSSPosition;
   isSelected: boolean;
   areSelections: boolean;
   onPaneClick: () => void;
@@ -17,8 +16,6 @@ const MeasurePane: FunctionComponent<MeasurePaneProps> = ({
   areSelections,
   onPaneClick,
 }) => {
-  const topOffset = (position.pageNumber - 1) * 100;
-  const top = 100 - position.topLeft.y + topOffset;
   return (
     <div
       className={concatClassNames(
@@ -28,10 +25,10 @@ const MeasurePane: FunctionComponent<MeasurePaneProps> = ({
       onClick={onPaneClick}
       style={
         {
-          "--top": appendUnit(top, position.unit),
-          "--left": appendUnit(position.topLeft.x, position.unit),
-          "--width": appendUnit(position.width, position.unit),
-          "--height": appendUnit(position.height, position.unit),
+          "--top": position.top,
+          "--left": position.left,
+          "--width": position.width,
+          "--height": position.height,
         } as CSSProperties
       }
     />

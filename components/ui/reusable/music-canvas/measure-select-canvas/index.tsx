@@ -16,6 +16,7 @@ import {
 } from "@/types/music-rendering";
 import { ReactCanvasManager } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/manager";
 import { withNotifications } from "@/objects/music-rendering/beat-canvas/notification-wrapper/manager";
+import React from "react";
 
 type MeasureSelectCanvasProps = {
   measures: Measure[];
@@ -67,3 +68,8 @@ const MeasureSelectCanvas: FunctionComponent<MeasureSelectCanvasProps> = ({
 };
 
 export default MeasureSelectCanvas;
+
+export const MemoizedMeasureSelectedCanvas = React.memo(
+  MeasureSelectCanvas,
+  (prevProps, nextProps) => prevProps.measures === nextProps.measures
+);

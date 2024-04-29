@@ -1,12 +1,7 @@
 import classes from "./index.module.css";
-import { FunctionComponent, ReactNode } from "react";
+import { FunctionComponent } from "react";
 import ControlBtn from "./control-button";
-import { ComponentProps } from "@/types/polymorphic";
-
-export type ControlButton = {
-  label: ReactNode;
-  buttonProps: ComponentProps<"button">;
-};
+import { ControlButton } from "@/types/workspace";
 
 type ControlButtonsProps = {
   buttons: ControlButton[];
