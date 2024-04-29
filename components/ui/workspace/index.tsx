@@ -9,7 +9,7 @@ import { useMusic } from "@/components/providers/music";
 import { ControlButton } from "@/types/workspace";
 import { MemoizedMeasureSelectedCanvas } from "../reusable/music-canvas/measure-select-canvas";
 import useOverlayPositions from "@/components/hooks/workspace/useOverlayPositions";
-import MeasureSelectOverlay from "./workspace-music-canvas/measure-select-overlay";
+import MeasureSelectOverlay from "./measure-select-overlay";
 
 const aspectRatio = 0.75;
 
