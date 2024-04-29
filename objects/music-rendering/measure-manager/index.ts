@@ -8,9 +8,9 @@ import {
   MeasureSectionArray,
   MeasureSections,
   Tolerence,
-  measureSectionOrder,
 } from "@/types/music-rendering/measure-manager";
 import { MeasureSectionToggle } from "@/types/music-rendering";
+import { getMeasureSectionOrder } from "@/utils/music-rendering/measure-section";
 
 export class MeasureManager {
   private dimensionData: MusicDimensionData;
@@ -47,7 +47,6 @@ export class MeasureManager {
   ) {
     const sectionHelper = new MeasureSectionHelper(
       sections,
-      measureSectionOrder,
       this.sectionToggleList
     );
     const { width, firstMeasureWidth } = sectionHelper.getWidths();
@@ -138,7 +137,6 @@ export class MeasureManager {
 class MeasureSectionHelper {
   constructor(
     private sections: MeasureSections,
-    private sectionSortMap: Record<MeasureSection, number>,
     private sectionToggleList?: MeasureSectionToggle
   ) {}
 
@@ -183,7 +181,7 @@ class MeasureSectionHelper {
       }
     });
     combinedSections.sort((a, b) => {
-      return this.sectionSortMap[a.key] - this.sectionSortMap[b.key];
+      return getMeasureSectionOrder(a.key) - getMeasureSectionOrder(b.key);
     });
     return combinedSections;
   }

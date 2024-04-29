@@ -6,7 +6,7 @@ import { getKeySignatureWidth } from "./key-signature/widths";
 import { MeasureSection, RepeatEndings } from "@/types/music";
 import { getClefWidth } from "./clef/widths";
 
-const repeatAspectRatio = 0.25;
+const repeatAspectRatio = 0.4;
 
 const padding = 1.25;
 
@@ -18,13 +18,14 @@ const sectionWidthHandlers: MeasureSectionWidthHandlers = {
     getTimeSignatureWidth(bodyHeight) * padding,
   keySignature: ({ componentHeights, clef }, keySignature) =>
     getKeySignatureWidth(keySignature, clef, componentHeights.space) * 1.25,
-  repeat: ({ bodyHeight }) => bodyHeight * repeatAspectRatio,
+  forwardRepeat: ({ bodyHeight }) => bodyHeight * repeatAspectRatio,
+  backwardRepeat: ({ bodyHeight }) => bodyHeight * repeatAspectRatio,
   note: () => 1,
   repeatEndings: function (
     args: MeasureSectionWidthArgs,
     data: RepeatEndings | undefined
   ): number {
-    return 1;
+    return 0;
   },
 };
 

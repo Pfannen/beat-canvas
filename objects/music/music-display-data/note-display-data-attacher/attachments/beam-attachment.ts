@@ -141,10 +141,7 @@ const getNoteBeamData = (
 ) => {
   const coordinates = notes.map(({ noteIndex, stemOffset, beamCount }) => {
     let { x, y } = getAbsolutePosition(measureIndex, noteIndex);
-    // const xPos =
-    //   Measurements.getXFractionOffset(x, duration, beatsPerMeasure) *
-    //   measureWidth;
-    // const yPos = measurements.getYFractionOffset(y) * measureHeight;
+    direction === "up" ? (y += stemOffset) : (y -= stemOffset);
     x = unitConverters.y(x);
     return { x, y, beamCount }; //Account for stemOffset later
   });

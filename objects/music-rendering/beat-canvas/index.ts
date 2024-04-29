@@ -30,6 +30,7 @@ import { mergePartial } from "@/utils";
 import { getNoteBodyDrawer } from "./drawers/note/note-body";
 import { getRestDrawer } from "./drawers/measure/measure-rests";
 import { getNoteStemDrawer, noteStemDrawer } from "./drawers/note/note-stem";
+import { nonBodyDrawer } from "./drawers/note/non-body";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
@@ -179,7 +180,18 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
         direction: options.displayData.noteDirection,
       });
       const { displayData } = options;
-
+      if (displayData.nonBodyData) {
+        const { nonBodyData } = displayData;
+        nonBodyDrawer({
+          drawCanvas: this.canvas,
+          isOnLine: nonBodyData.isOnLine,
+          lineCount: nonBodyData.numLines,
+          measureHeights: this.measurements.getComponentHeights(),
+          width: this.getNoteBodyWidth(options.bodyHeight) * 1.5,
+          bodyCenter: options.bodyCenter,
+          direction: options.displayData.noteDirection,
+        });
+      }
       if (!displayData.beamInfo) {
         const flagDrawer = getFlagDrawer(options.type);
         if (flagDrawer) {
@@ -255,10 +267,9 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
       bodyAngle: note.noteBodyAngle,
     });
 
-    const endOfStem = this.drawNoteStem(options);
+    this.drawNoteStem(options);
     // this.drawBeamData(options, endOfStem);
     this.drawNoteAnnotations(options);
-    return endOfStem;
   }
 
   drawMeasure(options: MeasureData): void {

@@ -1,11 +1,11 @@
 import { FunctionComponent, ReactNode } from "react";
 import { Measure } from "@/components/providers/music/types";
-import { drawMeasures } from "@/utils/music-rendering/react";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
 import { MeasureSectionToggle } from "@/types/music-rendering";
 import { ReactCanvasManager } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/manager";
 import { createUnitConverters } from "@/utils/music-rendering";
+import { drawMeasures } from "@/types/music-rendering/react";
 
 type MusicCanvasProps = {
   measures: Measure[];

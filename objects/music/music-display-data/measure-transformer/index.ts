@@ -9,6 +9,7 @@ import { DisplayDataAttacher } from "../note-display-data-attacher/attachments/t
 import { MusicIterator, MusicIteratorCallback } from "../music-iterator";
 import { MeasureRenderData } from "@/types/music/render-data";
 import { NoteDisplayData } from "@/types/music-rendering/draw-data/note";
+import { Measurements } from "@/objects/measurement/measurements";
 
 type AttacherData<T extends Attacher> = {
   attacher: T;
@@ -17,11 +18,13 @@ type AttacherData<T extends Attacher> = {
 
 export class MeasureTransformer {
   private music: Music;
+  private measurements: Measurements;
   private noteDisplayData?: NoteDisplayData[][];
   private measureRenderData?: MeasureRenderData[];
 
-  constructor(music: Music) {
+  constructor(music: Music, measurements: Measurements) {
     this.music = music;
+    this.measurements = measurements;
   }
 
   private createMeasureRenderData() {
@@ -32,16 +35,13 @@ export class MeasureTransformer {
     this.iterateMeasureDisplayData(cb);
   }
 
-  //TODO: Take optional indicies
   public computeDisplayData<T extends Attacher>(attachers?: AttacherData<T>[]) {
     if (!this.noteDisplayData) {
       this.noteDisplayData = NoteDisplayDataAttcher.initialize(this.music);
     }
     const attacherDels = attachers?.map(({ attacher, context }) => {
       let del = getAttacher(attacher) as any;
-      if (context) {
-        del = del(context);
-      }
+      del = context ? del(context) : del();
       return del as DisplayDataAttacher;
     });
 
@@ -49,6 +49,7 @@ export class MeasureTransformer {
       NoteDisplayDataAttcher.attach(
         this.music,
         this.noteDisplayData!,
+        this.measurements,
         attacherDels
       );
     }
