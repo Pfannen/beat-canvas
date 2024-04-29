@@ -89,14 +89,8 @@ export class MeasureManager {
     const newLineXStart = pageDimensions.musicMargins.left;
     let nextLineYStart = currentY - measureDimensions.height;
     const nextLineYEnd = nextLineYStart - measureDimensions.height;
-    if (
-      nextLineYEnd < pageYEnd &&
-      !MeasureManager.isWithinTolerence(
-        nextLineYEnd,
-        pageYEnd,
-        this.tolerence.height
-      )
-    ) {
+
+    if (nextLineYEnd < pageYEnd && nextLineYEnd < -this.tolerence.height) {
       nextLineYStart = pageDimensions.height - pageDimensions.musicMargins.top;
       this.measureOutline.addPage(newLineXStart, nextLineYStart);
     }

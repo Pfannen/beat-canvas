@@ -1,6 +1,7 @@
-import { drawPDF, pdfToUrl } from "@/objects/music-rendering/pdf";
+import { drawPDF } from "@/objects/music-rendering/pdf";
 import classes from "./index.module.css";
 import { FunctionComponent } from "react";
+import { pdfToUrl } from "@/utils/import-export/export-pdf";
 
 type PDFProps = {};
 

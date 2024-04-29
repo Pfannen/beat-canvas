@@ -1,25 +1,7 @@
-import { PageSizes } from "pdf-lib";
-import { MeasureRenderer } from "../measure-renderer";
-import { Music } from "@/objects/music/readonly-music";
 import { Measure, Note } from "@/components/providers/music/types";
-import { PDFLibCanvasManager } from "../drawing-canvas/pdf-lib-drawing-canvas/manager";
-import { PageDimensionParams } from "../music-layout/page-dimension-params";
-import { MusicLayout } from "../music-layout";
-import { Measurements } from "@/objects/measurement/measurements";
-import { ABOVE_BELOW_CT, BODY_CT } from "@/objects/measurement/constants";
+import { createPDFFromMeasures } from "@/utils/import-export/export-pdf";
 
 export const drawPDF = async () => {
-  const pageParams = PageDimensionParams.genericSheetMusic(3);
-  const dimensions = MusicLayout.getDimensions(pageParams);
-  const measurements = new Measurements(
-    ABOVE_BELOW_CT,
-    BODY_CT,
-    3,
-    dimensions.measureDimensions
-  );
-  const pdfLibManager = new PDFLibCanvasManager(PageSizes.A4, measurements);
-  await pdfLibManager.initializeCanvas();
-  const music = new Music();
   const measures: Measure[] = [];
   measures.push({ notes: test2 });
   measures.push({ notes: increasingDown });
@@ -36,41 +18,7 @@ export const drawPDF = async () => {
   measures.push({ notes: increasingDown });
   measures.push({ notes: test });
 
-  music.setMeasures(measures);
-  const renderer = new MeasureRenderer(
-    measures,
-    dimensions,
-    pdfLibManager,
-    measurements
-  );
-  renderer.render();
-
-  return await pdfLibManager.getPDF()!.save();
-
-  // const pdfDoc = await PDFDocument.create();
-  // const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  // pdfDoc.addPage([400, 400]);
-  // const page = pdfDoc.getPage(0);
-  // page.drawCircle({
-  //   x: 200,
-  //   y: 200,
-  //   size: 5,
-  // });
-  // page.drawText("This is test text", {
-  //   x: 200,
-  //   y: 200,
-  //   size: 24,
-  //   font: helveticaFont,
-  // });
-
-  // return pdfDoc.save();
-};
-
-export const pdfToUrl = (pdf: Uint8Array) => {
-  const pdfArray: number[] = [];
-  pdf.forEach((byte) => pdfArray.push(byte));
-  const base64 = btoa(String.fromCharCode(...pdfArray));
-  return `data:application/pdf;base64,${base64}`;
+  return createPDFFromMeasures(measures);
 };
 
 const increasingDown: Note[] = [
