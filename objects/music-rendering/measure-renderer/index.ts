@@ -46,7 +46,7 @@ export class MeasureRenderer {
     this.canvasManager = canvasManager;
     this.music = new Music();
     this.music.setMeasures(measures);
-    this.transformer = new MeasureTransformer(this.music);
+    this.transformer = new MeasureTransformer(this.music, measurements);
     this.measureManager = new MeasureManager(
       this.musicDimensions,
       sectionToggleList,
@@ -83,6 +83,7 @@ export class MeasureRenderer {
     }
   ) {
     this.transformer.computeDisplayData([
+      { attacher: "non-body", context: undefined },
       {
         attacher: "beam-data",
         context: {

@@ -1,11 +1,13 @@
 import { NoteDisplayData } from "@/types/music-rendering/draw-data/note";
 import { ReadonlyMusic } from "../../readonly-music";
 import { DisplayDataAttacher } from "./attachments/types";
+import { Measurements } from "@/objects/measurement/measurements";
 
 export class NoteDisplayDataAttcher {
   static attach(
     music: ReadonlyMusic,
     noteDisplayMeasures: NoteDisplayData[][],
+    measurements: Measurements,
     attachments: DisplayDataAttacher[]
   ) {
     const measureCount = music.getMeasureCount();
@@ -15,6 +17,7 @@ export class NoteDisplayDataAttcher {
           music,
           measureIndex: i,
           noteDisplayData: noteDisplayMeasures[i],
+          measurements,
         });
       });
     }
@@ -29,6 +32,7 @@ export class NoteDisplayDataAttcher {
     for (let i = 0; i < noteCount; i++) {
       renderData[i] = {
         noteDirection: music.getNoteDirection(measureIndex, i),
+        stemOffset: 0,
       };
     }
     return renderData;

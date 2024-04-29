@@ -8,5 +8,5 @@ export type BeamableNoteData = {
   noteIndex: number;
   duration: number;
   beamCount: number;
-  stemOffset?: number;
+  stemOffset: number;
 };

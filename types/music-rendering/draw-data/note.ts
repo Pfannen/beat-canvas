@@ -7,13 +7,13 @@ export type NoteBeamInfo = { index: number; beams?: BeamData[] }; //Index is whe
 
 export type NoteAttachmentData = {
   beamInfo: NoteBeamInfo;
-  nonBodyData: { numLines: number; isOnLine: boolean; isAboveBody: boolean }; // If this is undefined the note is a body component (where this information doesn't apply)
+  nonBodyData: { numLines: number; isOnLine: boolean }; // If this is undefined the note is a body component (where this information doesn't apply)
 }; //Data that isn't defined by the user (such as a stacatto) but rather defined by musical notation
 
 export type NoteDrawData = {} & NoteAnnotations;
 
 export type NoteDisplayData = {
-  stemOffset?: number;
+  stemOffset: number;
   noteDirection: NoteDirection;
 } & Partial<NoteAttachmentData>;
 

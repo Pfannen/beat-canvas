@@ -1,4 +1,5 @@
 import { attachBeamData } from "./beam-attachment";
+import { attachNonBodyData } from "./non-body-attachment";
 import { DisplayDataAttachmentContext } from "./types";
 
 export type Attacher = keyof typeof attachments;
@@ -11,7 +12,7 @@ export type AttacherArgs<T extends Attacher> = Parameters<
 
 export const attachments = {
   "beam-data": attachBeamData,
-  tester: (obj: DisplayDataAttachmentContext) => {},
+  "non-body": attachNonBodyData,
 };
 
 export const getAttacher = (attacher: Attacher) => attachments[attacher];

@@ -57,6 +57,19 @@ export class MeasureComponents {
     return { ...componentCounts, isOnLine };
   }
 
+  public getNonBodyComponentCounts(
+    yPos: number
+  ): MeasureComponentValues | undefined {
+    if (this.isBodyComponent(yPos)) return;
+    let count;
+    if (yPos < 0) {
+      count = Math.abs(yPos);
+    } else {
+      count = yPos - this.bodyCt;
+    }
+    return { line: Math.floor(count / 2), space: Math.ceil(count / 2) };
+  }
+
   public isBodyComponent(yPos: number) {
     return -1 < yPos && yPos < this.bodyCt;
   }
@@ -101,12 +114,4 @@ export class MeasureComponents {
       cb
     );
   };
-
-  // *[Symbol.iterator]():IterableIterator<MeasureComponent> {
-  //   let isLine = this.bottomComponentIsLine;
-  //   for(let yPos = 21; yPos > 0 - 1; yPos--){
-  //     yield ({isLine, isBody: true, yPos})
-  //     isLine = !isLine;
-  //   }
-  // }
 }
