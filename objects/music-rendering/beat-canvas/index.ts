@@ -33,7 +33,7 @@ const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
   noteBodyAngle: -15,
   stemHeightBodyFraction: 3,
-  stemWidthBodyFraction: 0.15,
+  stemWidthBodyFraction: 0.075,
   flagHeightBodyFraction: 0.5,
   annotationDistanceBodyFraction: 0.5,
   dotAnnotationAspectRatio: 1,

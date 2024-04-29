@@ -1,7 +1,11 @@
 "use client";
 
 import { Measure } from "@/components/providers/music/types";
-import { ABOVE_BELOW_CT, BODY_CT } from "@/objects/measurement/constants";
+import {
+  ABOVE_BELOW_CT,
+  BODY_CT,
+  LINE_TO_SPACE_R,
+} from "@/objects/measurement/constants";
 import { Measurements } from "@/objects/measurement/measurements";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
@@ -17,7 +21,7 @@ export const renderMeasures = (measures: Measure[], manager: CanvasManager) => {
   const measurements = new Measurements(
     ABOVE_BELOW_CT,
     BODY_CT,
-    3,
+    LINE_TO_SPACE_R,
     dimensions.measureDimensions
   );
   const renderer = new MeasureRenderer(

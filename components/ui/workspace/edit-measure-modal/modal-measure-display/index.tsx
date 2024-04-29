@@ -5,13 +5,13 @@ import { FunctionComponent, useMemo } from "react";
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
 import SegmentedMeasures from "./segmented-measures";
 import { Measurements } from "@/objects/measurement/measurements";
-import { BODY_CT } from "@/objects/measurement/constants";
+import { BODY_CT, LINE_TO_SPACE_R } from "@/objects/measurement/constants";
 import MusicCanvas from "@/components/ui/reusable/music-canvas";
 import { PositionData } from "@/types/ui/music-modal";
 import { Coordinate } from "@/types";
 import { ReactCanvasManager } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/manager";
 
-const lineToSpaceRatio = 1.5;
+const lineToSpaceRatio = LINE_TO_SPACE_R / 2;
 
 type ModalMeasureDisplayProps = {
   measures: Measure[];

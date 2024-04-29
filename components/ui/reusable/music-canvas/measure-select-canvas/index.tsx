@@ -5,7 +5,11 @@ import { Measure } from "@/components/providers/music/types";
 import MusicCanvas from "..";
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
-import { ABOVE_BELOW_CT, BODY_CT } from "@/objects/measurement/constants";
+import {
+  ABOVE_BELOW_CT,
+  BODY_CT,
+  LINE_TO_SPACE_R,
+} from "@/objects/measurement/constants";
 import {
   MeasureNotifierArgs,
   MeasureRenderArgs,
@@ -33,7 +37,7 @@ const MeasureSelectCanvas: FunctionComponent<MeasureSelectCanvasProps> = ({
       new Measurements(
         ABOVE_BELOW_CT,
         BODY_CT,
-        3,
+        LINE_TO_SPACE_R,
         dimensions.measureDimensions
       ),
     []
