@@ -4,8 +4,10 @@
   height: var(--height);
   outline: 1px solid var(--color);
   border-radius: 12px;
-  background-color: orange;
-  opacity: 0.175;
+  border: 2px solid #999999;
+  /* background-color: orange; */
+  background-color: #cccccc48;
+  /* opacity: 0.175; */
   cursor: pointer;
   position: relative;
 }
@@ -13,7 +15,9 @@
 .pane_button {
   opacity: 1;
   position: absolute;
+  left: 0;
   cursor: pointer;
+  color: var(--text-primary);
 }
 
 .split {
@@ -21,6 +25,8 @@
 }
 
 .selected {
-  border: 1px solid goldenrod;
-  opacity: 0.25;
+  /* border: 1px solid goldenrod;
+  background-color: orange;
+  opacity: 0.25; */
+  background-color: #cccccc7a;
 }

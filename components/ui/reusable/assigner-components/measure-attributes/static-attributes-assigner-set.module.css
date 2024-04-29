@@ -1,0 +1,11 @@
+.static_container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+/* .static_container > * {
+    margin-right: 16px;
+    margin-top: 16px;
+} */

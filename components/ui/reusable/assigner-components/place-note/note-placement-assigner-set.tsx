@@ -36,7 +36,7 @@ const NotePlacementAssignerSet: FunctionComponent<
 
 	return (
 		<div className={classes.notes_container}>
-			<AssignerButtonSet title="Note Placement">
+			<AssignerButtonSet title="Notes">
 				<NotePlacementAssigner
 					assigner={assigner}
 					noteType="whole"

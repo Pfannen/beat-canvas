@@ -13,6 +13,7 @@ import KeySignatureAssigner from './key-signature-assigner';
 import AssignerButtonSet from '../style/assigner-button-set';
 import AttributeAssignerButton from './buttons/attribute-assigner-button';
 import RepeatAssigner from './repeat-assigner';
+import AssignerSetTitle from '../style/assigner-set-title';
 
 // Purely for testing purposes
 const dynamics: Dynamic[] = ['p', 'pp', 'mp', 'mf', 'fp', 'f', 'ff'];
@@ -35,12 +36,13 @@ const MeasureAttributeAssignerSet: FunctionComponent<
 
 	return (
 		<div className={classes.measure_container}>
+			<AssignerSetTitle title="Dynamic Measure Attributes" />
 			<div className={classes.dropdowns}>
 				<DynamicAssignerDropdown
 					metadataEntry={attributeMetadata?.dynamic}
 					assigner={assigner}
 				/>
-				<KeySignatureAssigner
+				{/* <KeySignatureAssigner
 					assigner={assigner}
 					metadataEntry={attributeMetadata?.keySignature}
 				/>
@@ -51,7 +53,7 @@ const MeasureAttributeAssignerSet: FunctionComponent<
 				<MetronomeAssigner
 					assigner={assigner}
 					metadataEntry={attributeMetadata?.metronome}
-				/>
+				/> */}
 				<RepeatAssigner
 					assigner={assigner}
 					metadataEntry={attributeMetadata?.repeat}
