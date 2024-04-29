@@ -19,7 +19,7 @@ import {
   createOffsetsObject,
 } from "./drawers/note/note-annotations";
 import { NoteAnnotationDrawerArgs } from "@/types/music-rendering/canvas/beat-canvas/drawers/note/note-annotations";
-import { getFlagDrawer } from "./drawers/note/flags";
+import { getFlagDrawer } from "./drawers/note/note-flag";
 import { beamDrawer } from "./drawers/note/note-beams";
 import { Measurements } from "@/objects/measurement/measurements";
 import { CoordinateSectionArray } from "@/types/music-rendering/measure-manager/measure-outline";
@@ -29,6 +29,7 @@ import { MeasureSectionDrawerArgs } from "@/types/music-rendering/canvas/beat-ca
 import { mergePartial } from "@/utils";
 import { getNoteBodyDrawer } from "./drawers/note/note-body";
 import { getRestDrawer } from "./drawers/measure/measure-rests";
+import { getNoteStemDrawer, noteStemDrawer } from "./drawers/note/note-stem";
 
 const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
   noteBodyAspectRatio: 1.5,
@@ -155,62 +156,54 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     const bodyWidth = this.getNoteBodyWidth(options.bodyHeight);
     const stemHeight =
       options.bodyHeight * this.drawOptions.note.stemHeightBodyFraction;
-    const offsetHeight = Math.abs(displayData.stemOffset || 0);
-
-    const widthRadius = bodyWidth / 2;
-    const { x, y } = options.bodyCenter;
-    let height = -(stemHeight + offsetHeight);
-    const start = { x: x - widthRadius, y };
-    let width = this.getStemWidth(bodyWidth);
-    if (displayData.noteDirection === "up") {
-      start.x = x + widthRadius;
-      height *= -1;
-      width *= -1;
-    }
+    const offsetHeight = displayData.stemOffset || 0;
 
     return {
-      start,
-      end: { x: start.x, y: y + height },
-      width,
-      height,
+      bodyWidth,
+      width: this.getStemWidth(bodyWidth),
+      height: stemHeight + offsetHeight,
       originalHeight: stemHeight,
     };
   }
 
   protected drawNoteStem(options: NoteData) {
-    const stemData = this.getStemData(options);
-    this.canvas.drawRectangle({
-      corner: stemData.start,
-      width: stemData.width,
-      height: stemData.height,
-    });
-    const { displayData } = options;
+    const stemDrawer = getNoteStemDrawer(options.type); //If type === whole, no stem
+    if (stemDrawer) {
+      const stemData = this.getStemData(options);
+      const endOfStem = noteStemDrawer({
+        drawCanvas: this.canvas,
+        stemHeight: stemData.height,
+        stemWidth: stemData.width,
+        bodyWidth: this.getNoteBodyWidth(options.bodyHeight),
+        bodyCenter: options.bodyCenter,
+        direction: options.displayData.noteDirection,
+      });
+      const { displayData } = options;
 
-    if (!displayData.beamInfo) {
-      const flagDrawer = getFlagDrawer(options.type);
-      if (flagDrawer) {
-        flagDrawer({
+      if (!displayData.beamInfo) {
+        const flagDrawer = getFlagDrawer(options.type);
+        if (flagDrawer) {
+          flagDrawer({
+            drawCanvas: this.canvas,
+            endOfStem,
+            noteDirection: displayData.noteDirection,
+            stemHeight: stemData.originalHeight,
+            stemWidth: Math.abs(stemData.width),
+          });
+        }
+      } else {
+        const beamHeight =
+          options.bodyHeight * this.drawOptions.note.flagHeightBodyFraction;
+        beamDrawer({
           drawCanvas: this.canvas,
-          endOfStem: stemData.end,
+          endOfStem,
           noteDirection: displayData.noteDirection,
-          stemHeight: stemData.originalHeight,
-          stemWidth: Math.abs(stemData.width),
+          beamData: displayData.beamInfo,
+          beamHeight,
+          beamGap: beamHeight,
         });
       }
-    } else {
-      const beamHeight =
-        options.bodyHeight * this.drawOptions.note.flagHeightBodyFraction;
-      beamDrawer({
-        drawCanvas: this.canvas,
-        endOfStem: stemData.end,
-        noteDirection: displayData.noteDirection,
-        beamData: displayData.beamInfo,
-        beamHeight,
-        beamGap: beamHeight,
-      });
     }
-
-    return stemData.end;
   }
 
   protected drawBeamData(options: NoteData, endOfStem: Coordinate) {
