@@ -309,7 +309,6 @@ const combineMeasureSectionObjects = (
   currentAttributes: MeasureAttributes,
   newAttributes?: Partial<MeasureAttributes>
 ) => {
-  console.log(newAttributes);
   const attributes = {} as StaticMeasureAttributes;
   const sections: InitialMeasureSectionArray = [];
   if (newAttributes) {

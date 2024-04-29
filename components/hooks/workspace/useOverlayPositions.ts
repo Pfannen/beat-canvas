@@ -18,7 +18,6 @@ const useOverlayPositions = (pageHeight: number) => {
       height: appendUnit(measure.height, measure.unit),
       measureIndex: measure.measureIndex,
     };
-    console.log("Render");
     setOverlayPositions((currentPositions) => {
       if (measure.measureIndex === 0) {
         return [position];
