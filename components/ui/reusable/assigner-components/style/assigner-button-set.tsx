@@ -1,6 +1,7 @@
 import { FunctionComponent, ReactNode } from 'react';
 import classes from './assigner-button-set.module.css';
 import LayoutList from '../../layout/list';
+import AssignerSetTitle from './assigner-set-title';
 
 interface AssignerButtonSetProps {
 	title?: string;
@@ -13,7 +14,7 @@ const AssignerButtonSet: FunctionComponent<AssignerButtonSetProps> = ({
 }) => {
 	return (
 		<div className={classes.set}>
-			{title && <h3 className={classes.title}>{title}</h3>}
+			{title && <AssignerSetTitle title={title} />}
 			<LayoutList
 				className={classes.buttons}
 				layoutProps={{

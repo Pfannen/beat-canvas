@@ -6,11 +6,16 @@ import FullSeekSVG from '../../svg/full-seek-svg';
 interface SeekButtonProps {
 	onClick?: () => void;
 	right?: boolean;
+	disabled?: boolean;
 }
 
-const SeekButton: FunctionComponent<SeekButtonProps> = ({ onClick, right }) => {
+const SeekButton: FunctionComponent<SeekButtonProps> = ({
+	onClick,
+	right,
+	disabled = false,
+}) => {
 	return (
-		<PlaybackButton onClick={onClick}>
+		<PlaybackButton onClick={onClick} disabled={disabled}>
 			<FullSeekSVG right={right} />
 		</PlaybackButton>
 	);

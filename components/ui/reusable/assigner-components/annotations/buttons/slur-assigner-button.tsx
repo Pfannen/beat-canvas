@@ -7,6 +7,7 @@ import {
 	Slur,
 } from '@/types/music/note-annotations';
 import ModifyMusicAssigner from '../../style/modify-music-assigner-button';
+import SlurSVG from '@/components/ui/svg/annotations/slur-svg';
 
 interface SlurAssignerButtonProps
 	extends IKnownGenericAssignerComponent<NoteAnnotations, 'slur'> {}
@@ -29,7 +30,7 @@ const SlurAssignerButton: FunctionComponent<SlurAssignerButtonProps> = ({
 			disabled={!metadataEntry}
 			add={!!assignValue}
 		>
-			<p>Sl</p>
+			<SlurSVG />
 		</ModifyMusicAssigner>
 	);
 };

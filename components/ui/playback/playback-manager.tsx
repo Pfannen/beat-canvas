@@ -4,6 +4,7 @@ import SeekSlider from './buttons/seek-slider';
 import SeekButton from './buttons/seek-button';
 import PlayStopSwapper from './buttons/play-stop-button-swapper';
 import { BasicPlaybackState } from 'tone';
+import { concatClassNames } from '@/utils/css';
 
 export interface PlaybackManagerProps {
 	title?: string;
@@ -26,6 +27,8 @@ const PlaybackManager: FunctionComponent<PlaybackManagerProps> = ({
 	disableUserSliding,
 	stopPlaybackOnButtonSeek = true,
 }) => {
+	const disabled = !playbackState;
+
 	return (
 		<div className={classes.playback_manager}>
 			<h2 className={classes.title}>{title || 'Playback Manager'}</h2>
@@ -35,6 +38,7 @@ const PlaybackManager: FunctionComponent<PlaybackManagerProps> = ({
 						onSeek(0);
 						stopPlaybackOnButtonSeek && onStop();
 					}}
+					disabled={disabled}
 				/>
 				<PlayStopSwapper
 					onClick={(play) => (play ? onPlay() : onStop())}
@@ -46,13 +50,14 @@ const PlaybackManager: FunctionComponent<PlaybackManagerProps> = ({
 						stopPlaybackOnButtonSeek && onStop();
 					}}
 					right
+					disabled={disabled}
 				/>
 			</div>
 			<div className={classes.slider_container}>
 				<SeekSlider
 					onSeek={onSeek}
 					seekPercentage={seekPercentage}
-					disableUserSliding={disableUserSliding}
+					disableUserSliding={disableUserSliding || disabled}
 				/>
 			</div>
 		</div>

@@ -1,10 +1,6 @@
-.measures {
-  width: 90%;
-  height: 10vh;
-  margin-inline: auto;
-  margin-block: 1rem;
-}
-
-.modifiable_measure {
-  height: 30%;
+.main_container {
+	max-width: var(--body-max-width);
+	margin-inline: auto;
+	padding-inline: 16px;
+	padding-block-start: 16px;
 }

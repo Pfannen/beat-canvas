@@ -1,15 +1,14 @@
-import { FunctionComponent } from 'react';
+import { ButtonHTMLAttributes, FunctionComponent } from 'react';
 import classes from './StopButton.module.css';
 import PlaybackButton from '../styles/playback-button';
 import StopButtonSVG from '../../svg/stop-button-svg';
 
-interface StopButtonProps {
-	onClick?: () => void;
-}
+interface StopButtonProps
+	extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {}
 
-const StopButton: FunctionComponent<StopButtonProps> = ({ onClick }) => {
+const StopButton: FunctionComponent<StopButtonProps> = (props) => {
 	return (
-		<PlaybackButton onClick={onClick}>
+		<PlaybackButton {...props}>
 			<StopButtonSVG />
 		</PlaybackButton>
 	);

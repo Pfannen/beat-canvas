@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
 *,
 *::before,
 *::after {
@@ -6,6 +8,7 @@
 
 * {
 	margin: 0;
+	/* font-family: 'Inter', sans-serif; */
 	font: inherit; /*Forces you to declare what heading levels look like*/
 }
 
@@ -36,6 +39,16 @@ a {
 :root {
 	--text-primary: #3d434f;
 	--surface-primary: #f4f9fa;
+	--surface-secondary: #3d434f;
+	--button-background-primary: #f4f9fa;
+	--large-font-size: 32px;
+	--input-border-radius: 4px;
+	--button-border-radius: 6px;
+	--button-padding: 8px 12px;
+	--body-max-width: 1360px;
+
+	background-color: var(--surface-primary);
+	font-family: 'Fira Sans', sans-serif;
 }
 
 .center {
