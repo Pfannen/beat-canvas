@@ -1,16 +1,17 @@
 import { FunctionComponent } from "react";
 import classes from "./ExportScoreDropdown.module.css";
-import TaskbarDropdown from "./taskbar-dropdown";
-import JSONBracesSVG from "../../svg/json-braces";
+import TaskbarDropdown from "../taskbar-dropdown";
+import JSONBracesSVG from "../../../svg/json-braces";
 import {
   exportAudioBuffer,
   exportJSONScore,
   exportMusicXMLScore,
 } from "@/utils/import-export";
 import { MusicScore } from "@/types/music";
-import XMLBracesSVG from "../../svg/xml-braces";
-import ExportIconSVG from "../../svg/export-icon-svg";
-import MP3SVG from "../../svg/mp3";
+import XMLBracesSVG from "../../../svg/xml-braces";
+import ExportIconSVG from "../../../svg/export-icon-svg";
+import MP3SVG from "../../../svg/mp3";
+import ExportPDFButton from "./pdf-button";
 
 export interface ExportScoreDropdownProps {
   musicScore?: MusicScore;
@@ -54,10 +55,7 @@ const ExportScoreDropdown: FunctionComponent<ExportScoreDropdownProps> = ({
         Mp3
         <MP3SVG />
       </button>
-      <button onClick={() => console.log("Export pdf")}>
-        PDF
-        <MP3SVG />
-      </button>
+      <ExportPDFButton measures={musicScore?.parts[0].measures} />
     </TaskbarDropdown>
   );
 };
