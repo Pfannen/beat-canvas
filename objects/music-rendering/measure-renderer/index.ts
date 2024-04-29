@@ -22,6 +22,7 @@ import { formatInitialSections } from "../beat-canvas/drawers/measure-sections/i
 import { noteAttributeGenerator } from "@/utils/music/measures/traversal";
 import { ICanvasGetter } from "@/types/music-rendering/canvas/canvas-manager";
 import { Tolerence } from "@/types/music-rendering/measure-manager";
+import { getMeasureSectionData } from "@/utils/music-rendering/measure-section";
 
 export class MeasureRenderer {
   private measures: Measure[];
@@ -315,22 +316,35 @@ const combineMeasureSectionObjects = (
     staticMeasureAttributesKeys.forEach((key) => {
       const newData = newAttributes[key];
       if (newData) {
-        sections.push({ key, displayByDefault: true, data: newData });
-        attributes[key] = newData as never;
-      } else if (currentAttributes[key]) {
+        const section = getMeasureSectionData(key, newData);
         sections.push({
-          key,
-          displayByDefault: false,
-          data: currentAttributes[key],
+          key: section.key,
+          displayByDefault: true,
+          data: section.data,
         });
-        attributes[key] = currentAttributes[key] as never;
+        attributes[key] = section.data as never;
+      } else if (currentAttributes[key]) {
+        const section = getMeasureSectionData(key, currentAttributes[key]);
+        sections.push({
+          key: section.key,
+          displayByDefault: false,
+          data: section.data,
+        });
+        attributes[key] = section.data as never;
       }
     });
   } else {
     staticMeasureAttributesKeys.forEach((key) => {
       const data = currentAttributes[key];
-      data && sections.push({ key, displayByDefault: false, data });
-      attributes[key] = currentAttributes[key] as never;
+      if (data) {
+        const section = getMeasureSectionData(key, currentAttributes[key]);
+        sections.push({
+          key: section.key,
+          displayByDefault: false,
+          data: section.data,
+        });
+        attributes[key] = section.data as never;
+      }
     });
   }
   return { sections, attributes };

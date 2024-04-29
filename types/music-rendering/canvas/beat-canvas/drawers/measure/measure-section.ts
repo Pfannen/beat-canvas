@@ -35,11 +35,14 @@ export type MeasureSectionWidthHandlers = {
   ) => number;
 };
 
-export type InitialMeasureSection<T extends MeasureSection> = {
-  key: MeasureSection;
-  displayByDefault: boolean;
+export type MeasureSectionInfo<T extends MeasureSection> = {
+  key: T;
   data: MeasureSectionMetadata[T];
 };
+
+export type InitialMeasureSection<T extends MeasureSection> = {
+  displayByDefault: boolean;
+} & MeasureSectionInfo<T>;
 
 export type InitialMeasureSectionArray =
   InitialMeasureSection<MeasureSection>[];

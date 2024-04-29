@@ -109,6 +109,8 @@ export type StaticMeasureAttributes = {
   repeatEndings?: RepeatEndings;
 };
 
+export type StaticMeasureAttribute = keyof StaticMeasureAttributes;
+
 export type DynamicMeasureAttributes = {
   metronome: Metronome;
   dynamic: Dynamic;
@@ -146,8 +148,12 @@ export type MeasureWidthCallback = (measureIndex: number) => number;
 export type TemporalMeasureAttributesMXML = TemporalMeasureAttributes &
   MeasureAttributesMXML;
 
-export type MeasureSectionMetadata = StaticMeasureAttributes & {
+type FilteredMeasureAttributes = Omit<StaticMeasureAttributes, "repeat">;
+
+export type MeasureSectionMetadata = FilteredMeasureAttributes & {
   note: undefined;
+  forwardRepeat: undefined;
+  backwardRepeat: number;
 };
 
 export type MeasureSection = keyof MeasureSectionMetadata;
