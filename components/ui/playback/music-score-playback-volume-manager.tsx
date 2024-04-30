@@ -4,6 +4,7 @@ import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
 import { useMusic } from '@/components/providers/music';
 import PlaybackManager from './playback-manager';
 import MusicScoreVolumeManager from './volume-manager/music-score-volume-manager';
+import { useSecondsToMeasureIndex } from '@/components/hooks/usePlayback/useSecondsToMeasureIndex';
 
 interface MusicScorePlaybackVolumeManagerProps {
 	setImportedAudioLifter?: (setImportedAudioDel: () => void) => void;
@@ -25,13 +26,22 @@ const MusicScorePlaybackVolumeManager: FunctionComponent<
 	} = usePlayback();
 	const {
 		scoreItems: { musicScore },
+		measuresItems: { measures },
 	} = useMusic();
 
 	useEffect(() => {
 		console.log('Music score changed!');
 	}, [musicScore]);
 
-	if (setImportedAudioLifter) setImportedAudioLifter(setImportedAudio);
+	// Currently spams the delegate during playback
+	useEffect(() => {
+		if (setImportedAudioLifter) setImportedAudioLifter(setImportedAudio);
+	}, [setImportedAudioLifter, setImportedAudio]);
+
+	const { measureIdx } = useSecondsToMeasureIndex(
+		seekPercentage * playbackManager.getMaxDuration(),
+		measures
+	);
 
 	return (
 		<div className={classes.managers_container}>
