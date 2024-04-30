@@ -1,15 +1,24 @@
 import {
   EllipseDrawOptions,
   IDrawingCanvas,
+  PDFFonts,
   RectangleDrawOptions,
   SVGDrawOptions,
   TextDrawOptions,
 } from "@/types/music-rendering/canvas/drawing-canvas";
 import { getSVGCenter, getSVGTopLeft } from "@/utils/svg";
-import { Color, PDFPage, degrees, rgb } from "pdf-lib";
+import { Color, PDFFont, PDFPage, degrees, rgb } from "pdf-lib";
 
 export class PDFLibDrawingCanvas implements IDrawingCanvas {
-  constructor(private page: PDFPage) {}
+  constructor(private page: PDFPage, private fonts?: PDFFonts) {
+    if (!fonts) {
+      this.drawText = () => {
+        throw Error(
+          "PDFLibDrawingCanvas: Can't Draw text without provided fonts"
+        );
+      };
+    }
+  }
   public drawRectangle(options: RectangleDrawOptions): void {
     const { x, y } = options.corner;
     const rotation = options.drawOptions?.degreeRotation;
@@ -61,9 +70,40 @@ export class PDFLibDrawingCanvas implements IDrawingCanvas {
     });
   }
   drawText(options: TextDrawOptions): void {
-    throw new Error("Method not implemented.");
+    const fontRef = this.fonts![options.fontFamily];
+    let { x, y } = options;
+    if (options.center) {
+      const coordinates = centerFont(
+        x,
+        y,
+        options.text,
+        fontRef,
+        options.fontSize
+      );
+      x = coordinates.x;
+      y = coordinates.y;
+    }
+    this.page.drawText(options.text, {
+      font: fontRef,
+      size: options.fontSize,
+      x,
+      y,
+    });
   }
 }
+
+//x and y are center coordinates. Create bottom left coordinates
+const centerFont = (
+  x: number,
+  y: number,
+  text: string,
+  font: PDFFont,
+  size: number
+) => {
+  const width = font.widthOfTextAtSize(text, size);
+  const height = font.heightAtSize(size);
+  return { x: x - width / 2, y: y - height / 2 };
+};
 
 const centerToTopLeft = (x: number, y: number, scale: number) => {
   x -= scale / 2;

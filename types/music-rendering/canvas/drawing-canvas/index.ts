@@ -1,5 +1,6 @@
 import { Coordinate } from "@/types";
 import { SVGData } from "@/types/svg";
+import { PDFFont } from "pdf-lib";
 
 export type DrawOptions<T> = {
   color: string;
@@ -64,3 +65,5 @@ export interface IDrawingCanvas {
   drawSVG(options: SVGDrawOptions): void;
   drawText(options: TextDrawOptions): void;
 }
+
+export type PDFFonts = Record<DrawingCanvasFontFamily, PDFFont>;
