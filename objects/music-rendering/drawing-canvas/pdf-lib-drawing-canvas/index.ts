@@ -7,7 +7,8 @@ import {
   TextDrawOptions,
 } from "@/types/music-rendering/canvas/drawing-canvas";
 import { getSVGCenter, getSVGTopLeft } from "@/utils/svg";
-import { Color, PDFFont, PDFPage, degrees, rgb } from "pdf-lib";
+import { Color, PDFPage, degrees, rgb } from "pdf-lib";
+import { getPositionFunction } from "./utils";
 
 export class PDFLibDrawingCanvas implements IDrawingCanvas {
   constructor(private page: PDFPage, private fonts?: PDFFonts) {
@@ -72,14 +73,15 @@ export class PDFLibDrawingCanvas implements IDrawingCanvas {
   drawText(options: TextDrawOptions): void {
     const fontRef = this.fonts![options.fontFamily];
     let { x, y } = options;
-    if (options.center) {
-      const coordinates = centerFont(
+    if (options.position) {
+      const positionFunction = getPositionFunction(options.position);
+      const coordinates = positionFunction({
         x,
         y,
-        options.text,
-        fontRef,
-        options.fontSize
-      );
+        text: options.text,
+        font: fontRef,
+        size: options.fontSize,
+      });
       x = coordinates.x;
       y = coordinates.y;
     }
@@ -91,19 +93,6 @@ export class PDFLibDrawingCanvas implements IDrawingCanvas {
     });
   }
 }
-
-//x and y are center coordinates. Create bottom left coordinates
-const centerFont = (
-  x: number,
-  y: number,
-  text: string,
-  font: PDFFont,
-  size: number
-) => {
-  const width = font.widthOfTextAtSize(text, size);
-  const height = font.heightAtSize(size);
-  return { x: x - width / 2, y: y - height / 2 };
-};
 
 const centerToTopLeft = (x: number, y: number, scale: number) => {
   x -= scale / 2;

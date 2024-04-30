@@ -48,12 +48,15 @@ export type SVGDrawOptions<T = {}> = OptionsWithDrawOptions<SVGOptions, T>;
 
 export type DrawingCanvasFontFamily = "Times New Roman";
 
+export type DrawingCanvasTextPosition = "center" | "topCenter";
+
 export type TextOptions = {
   x: number;
   y: number;
   text: string;
   fontSize: number;
   fontFamily: DrawingCanvasFontFamily;
+  position?: DrawingCanvasTextPosition;
   center?: boolean;
 };
 
