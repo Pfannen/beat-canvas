@@ -7,6 +7,7 @@ export type PartLocationInfo = {
 	// The cumuluative x position that the measure started on
 	measureStartX: number;
 	curX: number;
+	curSeconds: number;
 	measureIndex: number;
 	// The x position of the last yielded note of the current measure
 	lastNoteXEnd: number;
@@ -73,7 +74,8 @@ type RequiredLocationPropertyKeys =
 	| 'measureStartX'
 	| 'curX'
 	| 'measureIndex'
-	| 'lastNoteXEnd';
+	| 'lastNoteXEnd'
+	| 'curSeconds';
 
 export type RequiredLocationProperties = {
 	[key in RequiredLocationPropertyKeys]: PartLocationInfo[key];

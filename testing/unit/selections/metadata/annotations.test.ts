@@ -1,5 +1,5 @@
 import {
-	SelectionData,
+	SegmentSelectionData,
 	SelectionMetadata,
 } from '../../../../types/modify-score/assigner/metadata';
 import { Note } from '../../../../components/providers/music/types';
@@ -14,7 +14,7 @@ test('Metadata is returned with every annotation mapping to a value', () => {
 	const a: NoteAnnotations = {
 		accent: 'strong',
 	};
-	const selections: SelectionData[] = [createSelection({ annotations: a })];
+	const selections: SegmentSelectionData[] = [createSelection({ annotations: a })];
 
 	const metadata = getAnnotationSelectionMetadata(selections);
 
@@ -26,7 +26,7 @@ test('All notes have the same 1 annotation', () => {
 	const a: NoteAnnotations = {
 		accent: 'strong',
 	};
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ annotations: a }),
 		createSelection({ annotations: a }),
 		createSelection({ annotations: a }),
@@ -43,7 +43,7 @@ test('All notes have the same 2 annotations', () => {
 		accent: 'strong',
 		dotted: true,
 	};
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ annotations: a }),
 		createSelection({ annotations: a }),
 		createSelection({ annotations: a }),
@@ -60,7 +60,7 @@ test('All notes have same annotations not applied', () => {
 		accent: 'strong',
 		dotted: true,
 	};
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ annotations: a }),
 		createSelection({ annotations: a }),
 		createSelection({ annotations: a }),
@@ -73,7 +73,7 @@ test('All notes have same annotations not applied', () => {
 });
 
 test('All notes have different annotations', () => {
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ annotations: { accent: 'weak' } }),
 		createSelection({ annotations: { dotted: true } }),
 		createSelection({ annotations: { accidental: 'flat' } }),
@@ -96,7 +96,7 @@ test('Not all selections are notes, but all notes have same 1 annotation', () =>
 	const a: NoteAnnotations = {
 		accent: 'strong',
 	};
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ annotations: a }),
 		createSelection(),
 		createSelection({ annotations: a }),
@@ -110,7 +110,7 @@ test('Not all selections are notes, but all notes have same 1 annotation', () =>
 });
 
 test('No selections are notes', () => {
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection(),
 		createSelection(),
 		createSelection(),

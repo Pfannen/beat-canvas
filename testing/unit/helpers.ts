@@ -1,6 +1,6 @@
 import { Note, NoteType } from '@/components/providers/music/types';
 import {
-	SelectionData,
+	SegmentSelectionData,
 	SelectionMetadata,
 } from '@/types/modify-score/assigner/metadata';
 import { MeasureAttributes } from '@/types/music';
@@ -20,11 +20,15 @@ export const createNote = (annotations?: NoteAnnotations) => {
 
 type CreateParams = {
 	annotations: NoteAnnotations;
-} & SelectionData;
+} & SegmentSelectionData;
 
 export const createSelection = (params: Partial<CreateParams> = {}) => {
-	const { annotations, rollingAttributes, nonRollingAttributes } = params;
-	const selection: SelectionData = {
+	const {
+		annotations,
+		rollingAttributes,
+		attributesAtX: nonRollingAttributes,
+	} = params;
+	const selection: SegmentSelectionData = {
 		measureIndex: params.measureIndex || 0,
 		measureNotes: params.measureNotes || [],
 		xStart: params.xStart || 0,
@@ -32,7 +36,7 @@ export const createSelection = (params: Partial<CreateParams> = {}) => {
 		y: params.y || 0,
 		// Don't care to populate if it's present
 		rollingAttributes: rollingAttributes || ({} as MeasureAttributes),
-		nonRollingAttributes: nonRollingAttributes || {},
+		attributesAtX: nonRollingAttributes || {},
 	};
 
 	if (annotations) selection.note = createNote(annotations);

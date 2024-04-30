@@ -39,6 +39,11 @@ export const getMeasureSecondsArray = (
 		const { staticAttributes, temporalAttributes } = measures[i];
 		// Update the static attributes - required for possible new time signature
 		updateMeasureAttributes(attributes, staticAttributes);
+		// Update the temporal attributes - required for possible new metronome
+		updateMeasureAttributes(
+			attributes,
+			temporalAttributes?.length ? temporalAttributes[0].attributes : undefined
+		);
 
 		// Calculate the amount of time spent in the current measure
 		curTime += getTimeInMeasure(attributes.metronome, attributes.timeSignature);

@@ -3,20 +3,20 @@ import {
 	CountMap,
 	DefaultAssignerValueMap,
 	MetadataUpdater,
-	SelectionData,
+	SegmentSelectionData,
 	SelectionMetadata,
 } from '@/types/modify-score/assigner/metadata';
 import { MeasureAttributes } from '@/types/music';
 import { updateAllSelectionsHave, updateMetadataStructures } from '.';
 import { getMeasureAttributeKeys } from '../..';
 
-export const getAttributeSelectionMetadata = (selections: SelectionData[]) => {
+export const getAttributeSelectionMetadata = (selections: SegmentSelectionData[]) => {
 	if (selections.length === 0) return null;
 
 	const metadata: SelectionMetadata<Partial<MeasureAttributes>> = {};
 	const countMap: CountMap<MeasureAttributes> = {};
 
-	selections.forEach(({ nonRollingAttributes }) => {
+	selections.forEach(({ attributesAtX: nonRollingAttributes }) => {
 		updateMetadataStructures(metadata, countMap, nonRollingAttributes);
 	});
 
@@ -33,7 +33,7 @@ export const getAttributeSelectionMetadata = (selections: SelectionData[]) => {
 export const updateAttributeSelectionMetadata: MetadataUpdater<
 	Partial<MeasureAttributes>
 > = (metadata, countMap, selectionData) => {
-	const { nonRollingAttributes } = selectionData;
+	const { attributesAtX: nonRollingAttributes } = selectionData;
 	updateMetadataStructures(metadata, countMap, nonRollingAttributes);
 };
 

@@ -3,7 +3,7 @@ import { MeasureAttributes } from '@/types/music';
 import {
 	AnnotationSelectionMetadata,
 	CountMap,
-	SelectionData,
+	SegmentSelectionData,
 	SelectionMetadata,
 	MetadataEntryUpdaterMap,
 	SelectionMetadataEntry,
@@ -111,8 +111,8 @@ export const updateAllSelectionsHave = <T extends {}>(
 	});
 };
 
-export const getAssignerStructures = (
-	selections: SelectionData[],
+export const getSegmentAssignerStructures = (
+	selections: SegmentSelectionData[],
 	notePlacementValidator: NotePlacementValidator
 ) => {
 	if (!selections.length)

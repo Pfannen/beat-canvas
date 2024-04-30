@@ -14,7 +14,12 @@ import { enqueueNote } from './play-note';
 import { getApplicationDecibelRange, getEnqueueDecibelRange } from '../volume';
 import { noteAttributeGenerator } from '@/utils/music/measures/traversal';
 import { Measure } from '@/components/providers/music/types';
-import { applyDynamic, applyWedge } from './apply-measure-attributes';
+import {
+	AttributeApplyingInfo,
+	applyDynamic,
+	applyMeasureAttributes,
+	applyWedge,
+} from './apply-measure-attributes';
 import { WedgeDynamicStore } from '@/types/audio/volume';
 import { getDecibelsForDynamic } from './dynamics';
 
@@ -34,7 +39,7 @@ export const enqueuePart = (
 	const persistentAttr: InstrumentAttributes = getDefaultInstrumentAttributes();
 	updateInstrument(instrument, persistentAttr);
 
-	const baseSPB = getSecondsPerBeat(attributes.metronome.beatsPerMinute);
+	let baseSPB = getSecondsPerBeat(attributes.metronome.beatsPerMinute);
 	if (!expandedMeasures) expandedMeasures = expandMeasures(measures);
 
 	const decibelRange = getEnqueueDecibelRange();
@@ -54,28 +59,29 @@ export const enqueuePart = (
 		measureStartX,
 		completedDurationAttributes,
 		measureStart,
+		curSeconds,
+		curX,
 	} of noteAttributeGenerator(expandedMeasures, undefined, true)) {
-		if (measureStart) {
-			console.log({ currentAttributes });
+		// For now, only care about getting the new metronome at the beginning of a measure
+		// Our current timing function does this
+		// Also need to be careful with 'curSeconds' - this accounts for met changes mid measure that we don't factor in to the timing function yet
+		if (curX === 0) {
+			baseSPB = getSecondsPerBeat(currentAttributes.metronome.beatsPerMinute);
 		}
 
-		if (completedDurationAttributes) {
-			const { wedge } = completedDurationAttributes;
-			if (wedge) {
-				applyWedge(
-					instrument,
-					transport,
-					wedge,
-					wedgeDynamicStore,
-					decibelRange
-				);
-			}
-		}
-
-		if (newAttributes) {
-			if (newAttributes.wedge?.start)
-				wedgeDynamicStore.startDynamic = currentAttributes.dynamic;
-		}
+		// NOTE: Can make this a lot better
+		const attrApplyingInfo: AttributeApplyingInfo = {
+			instrument,
+			transport,
+			curSeconds,
+			decibelRange,
+			newAttributes,
+			completedWedge: completedDurationAttributes?.wedge && {
+				durInfo: completedDurationAttributes.wedge,
+				dynStore: wedgeDynamicStore,
+			},
+		};
+		applyMeasureAttributes(attrApplyingInfo);
 
 		if (note) {
 			enqueueNote(
@@ -83,7 +89,7 @@ export const enqueuePart = (
 				currentAttributes,
 				instrument,
 				persistentAttr,
-				measureStartX,
+				curSeconds,
 				baseSPB,
 				transport
 			);

@@ -6,13 +6,13 @@ import {
 	MetadataEntryUpdater,
 	MetadataEntryUpdaterMap,
 	MetadataUpdater,
-	SelectionData,
+	SegmentSelectionData,
 } from '@/types/modify-score/assigner/metadata';
 import { NoteAnnotations } from '@/types/music/note-annotations';
 import { updateAllSelectionsHave, updateMetadataStructures } from '.';
 import { getNoteAnnotationKeys } from '../..';
 
-export const getAnnotationSelectionMetadata = (selections: SelectionData[]) => {
+export const getAnnotationSelectionMetadata = (selections: SegmentSelectionData[]) => {
 	if (selections.length === 0) return null;
 
 	// Store selection metadata

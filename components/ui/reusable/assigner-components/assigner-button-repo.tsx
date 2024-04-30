@@ -8,17 +8,17 @@ import {
 	NotePlacementValidator,
 } from '@/types/modify-score';
 import {
-	SelectionData,
+	SegmentSelectionData,
 	SelectionMetadata,
 } from '@/types/modify-score/assigner/metadata';
-import { getAssignerStructures } from '@/utils/music/modify-score/metadata-helpers';
+import { getSegmentAssignerStructures } from '@/utils/music/modify-score/metadata-helpers';
 import { MeasureAttributes } from '@/types/music';
 import { curriedModifyMeasureAttribute } from '@/utils/music/modify-score/curried-assigners';
 import StaticAttributesAssignerSet from './measure-attributes/sets/static-attributes-assigner-set';
 import DynamicAttributeAssignerSet from './measure-attributes/sets/dynamic-attributes-assigner-set';
 
 interface AssignerButtonRepoProps {
-	selections: SelectionData[];
+	selections: SegmentSelectionData[];
 	notePlacementValidator: NotePlacementValidator;
 	liftExecutor: AssignerLifter;
 }
@@ -29,7 +29,7 @@ const AssignerButtonRepo: FunctionComponent<AssignerButtonRepoProps> = ({
 	liftExecutor,
 }) => {
 	const { annotationMetadata, attributeMetadata, validPlacementTypes } =
-		getAssignerStructures(selections, notePlacementValidator);
+		getSegmentAssignerStructures(selections, notePlacementValidator);
 
 	const assigner: MeasureAttributeAssigner = (attribute, value) => {
 		console.log({ attribute, value });

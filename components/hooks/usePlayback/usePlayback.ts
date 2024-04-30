@@ -46,10 +46,10 @@ export const usePlayback = (initialPBM?: MusicPlaybackManager) => {
 	};
 
 	const setScore = async (score?: MusicScore) => {
-		await playbackManager.current.setMusicScore(score);
+		const audioUpdated = await playbackManager.current.setMusicScore(score);
+		if (audioUpdated) seekMusic(0);
 		updateVolumePairs();
 		updatePlaybackState();
-		seekMusic(0);
 	};
 
 	//TODO: have status for importing bad audio file

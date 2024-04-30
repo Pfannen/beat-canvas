@@ -43,16 +43,17 @@ const getCompleteNoteData = (
 };
 
 // method for queueing a note onto a transport
-
+// must use curSeconds instead of the current x offset from the beginning because of metronome changes
 export const enqueueNote = (
 	note: Note,
 	measureAttributes: MeasureAttributes,
 	instrument: ToneInstrument,
 	persistentAttr: InstrumentAttributes,
-	curX: number,
+	curSeconds: number,
 	baseSPB: number,
 	transport: Transport
 ) => {
+	let secondsForNote = 0;
 	transport.schedule((time) => {
 		// Update the instrument to have the 'persist' instrument props so they are persisted
 		// updateInstrument(instrument, persistentAttr.envelope);
@@ -75,9 +76,10 @@ export const enqueueNote = (
 
 		updateInstrument(instrument, preNote);
 
+		secondsForNote = noteData.duration * baseSPB;
 		instrument.triggerAttackRelease(
 			fullNote,
-			noteData.duration * baseSPB,
+			secondsForNote,
 			undefined,
 			velocity
 		);
@@ -85,5 +87,5 @@ export const enqueueNote = (
 		// Write back persist to persistentAttr so they are reflected in future playNote calls
 		Object.assign(persistentAttr, postNote);
 		updateInstrument(instrument, postNote);
-	}, (curX + note.x) * baseSPB);
+	}, curSeconds + secondsForNote);
 };

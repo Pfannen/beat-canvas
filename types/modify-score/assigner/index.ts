@@ -3,7 +3,7 @@ import { GenericAssigner } from '..';
 import { Measure, NoteType } from '@/components/providers/music/types';
 import { ReactNode } from 'react';
 import { MeasureAttributes } from '@/types/music';
-import { SelectionData, SelectionMetadata } from './metadata';
+import { SegmentSelectionData, SelectionMetadata } from './metadata';
 
 export interface IMusicAssignerComponent {
 	disabled?: boolean;
@@ -52,7 +52,7 @@ export type AssignerCurrier<T, K extends keyof T> = (
 // outside entities only needing to give it the measures and selection data.
 export type CurriedAssigner = (
 	measures: Measure[],
-	selectionData: SelectionData[]
+	selectionData: SegmentSelectionData[]
 ) => boolean;
 
 // An object that points from keys of the given type to a function

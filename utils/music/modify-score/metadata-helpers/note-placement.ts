@@ -1,11 +1,11 @@
 import { ValidNotePlacements } from '@/types/modify-score/assigner';
 import { getNoteTypes } from '../..';
 import { NotePlacementValidator } from '@/types/modify-score';
-import { SelectionData } from '@/types/modify-score/assigner/metadata';
+import { SegmentSelectionData } from '@/types/modify-score/assigner/metadata';
 import { NoteType } from '@/components/providers/music/types';
 
 export const getValidNotePlacementTypes = (
-	selections: SelectionData[],
+	selections: SegmentSelectionData[],
 	placementValidator: NotePlacementValidator,
 	isDotted?: true
 ): ValidNotePlacements => {
@@ -67,7 +67,7 @@ const noteTypes = getNoteTypes();
 export const getLargestValidNoteType = (
 	startNoteTypeIdx: number,
 	placementValidator: NotePlacementValidator,
-	selectionData: SelectionData
+	selectionData: SegmentSelectionData
 ) => {
 	if (startNoteTypeIdx >= noteTypes.length) return noteTypes.length;
 

@@ -30,7 +30,7 @@ export class MusicPlaybackManager extends PlaybackManager {
 	setMusicScore = async (musicScore?: MusicScore) => {
 		if (this.musicScore === musicScore) {
 			console.log('They equal');
-			return;
+			return false;
 		}
 
 		if (this.musicScore) {
@@ -41,6 +41,8 @@ export class MusicPlaybackManager extends PlaybackManager {
 
 		this.musicScore = musicScore;
 		if (this.musicScore) await this.loadAudioBuffers();
+
+		return true;
 	};
 
 	setImportedAudio = async (audioFile?: File) => {

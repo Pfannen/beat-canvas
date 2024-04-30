@@ -130,6 +130,7 @@ export const noteAttributeGenerator = function* (
 				curX: 0,
 				measureIndex: i,
 				lastNoteXEnd,
+				curSeconds,
 			},
 			{
 				newAttributes: staticAttributes,
@@ -169,6 +170,7 @@ export const noteAttributeGenerator = function* (
 					curX: nextX,
 					measureIndex: i,
 					lastNoteXEnd,
+					curSeconds,
 				},
 				optionals,
 				deepCopy
@@ -202,6 +204,7 @@ export const noteAttributeGenerator = function* (
 				curX: attr.timeSignature.beatsPerMeasure,
 				measureIndex: i,
 				lastNoteXEnd,
+				curSeconds,
 			},
 			{ measureEnd: true },
 			deepCopy

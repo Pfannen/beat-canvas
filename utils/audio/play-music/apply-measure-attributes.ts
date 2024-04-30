@@ -19,10 +19,12 @@ export type WedgeApplicationInfo = {
 };
 
 export type AttributeApplyingInfo = {
-	completedWedge?: WedgeDurationInfo;
+	instrument: ToneInstrument;
+	transport: Transport;
+	curSeconds: number;
 	decibelRange: DecibelRange;
 	newAttributes?: Partial<MeasureAttributes>;
-	curSeconds: number;
+	completedWedge?: { durInfo: WedgeDurationInfo; dynStore: WedgeDynamicStore };
 };
 
 export const applyWedge = (
@@ -55,4 +57,36 @@ export const applyDynamic = (
 	transport.schedule(() => {
 		instrument.volume.value = targetDecibels;
 	}, seconds);
+};
+
+// NOTE: Bad OCP, but difficult when attributes require vastly different things unless you make multiple maps
+export const applyMeasureAttributes = (info: AttributeApplyingInfo) => {
+	const {
+		instrument,
+		transport,
+		decibelRange,
+		newAttributes,
+		completedWedge,
+		curSeconds,
+	} = info;
+
+	if (newAttributes) {
+		if (newAttributes.dynamic)
+			applyDynamic(
+				instrument,
+				transport,
+				curSeconds,
+				newAttributes.dynamic,
+				decibelRange
+			);
+	}
+	if (completedWedge) {
+		applyWedge(
+			instrument,
+			transport,
+			completedWedge.durInfo,
+			completedWedge.dynStore,
+			decibelRange
+		);
+	}
 };
