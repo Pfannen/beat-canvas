@@ -67,17 +67,6 @@ export class MeasureRenderer {
     }
   }
 
-  private getMeasureDimensions(measureIndex: number) {
-    const noteSection = this.measureManager.getMeasureSection(
-      measureIndex,
-      "note"
-    )!;
-    return {
-      height: this.musicDimensions.measureDimensions.noteSpaceHeight,
-      width: noteSection.width,
-    };
-  }
-
   private getMusicRenderData(
     getMeasureData: (measureIndex: number) => {
       timeSig: TimeSignature;
@@ -323,7 +312,7 @@ const combineMeasureSectionObjects = (
           displayByDefault: true,
           data: section.data,
         });
-        attributes[section.key] = section.data as never;
+        attributes[section.key as never] = section.data as never;
       } else if (currentAttributes[key]) {
         const section = getMeasureSectionData(key, currentAttributes[key]);
         sections.push({
@@ -331,7 +320,7 @@ const combineMeasureSectionObjects = (
           displayByDefault: false,
           data: section.data,
         });
-        attributes[section.key] = section.data as never;
+        attributes[section.key as never] = section.data as never;
       }
     });
   } else {
@@ -344,7 +333,7 @@ const combineMeasureSectionObjects = (
           displayByDefault: false,
           data: section.data,
         });
-        attributes[section.key] = section.data as never;
+        attributes[section.key as never] = section.data as never;
       }
     });
   }

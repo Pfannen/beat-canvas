@@ -10,7 +10,10 @@ import {
   NoteAnnotation,
   NoteAnnotations,
 } from "@/types/music/note-annotations";
-import { beamableSubdivisionLength } from "@/utils/music";
+import {
+  beamableSubdivisionLength,
+  restSubdivisionLength,
+} from "@/utils/music";
 
 export interface ReadonlyMusic {
   getMeasureCount(): number;
@@ -31,6 +34,7 @@ export interface ReadonlyMusic {
   getNoteDuration(measureIndex: number, noteIndex: number): number;
   getNoteDirection(measureIndex: number, noteIndex: number): NoteDirection;
   getMeasureSubdivisionLength(measureIndex: number): number;
+  getRestSubdivisionLength(measureIndex: number): number;
 }
 
 export class Music implements ReadonlyMusic {
@@ -139,6 +143,10 @@ export class Music implements ReadonlyMusic {
     return beamableSubdivisionLength(
       this.getMeasureTimeSignature(measureIndex)
     );
+  }
+
+  getRestSubdivisionLength(measureIndex: number): number {
+    return restSubdivisionLength(this.getMeasureTimeSignature(measureIndex));
   }
 
   getNoteDirection(measureIndex: number, noteIndex: number): NoteDirection {

@@ -271,17 +271,20 @@ export const isBeamable = (type: NoteType) =>
   noteTypeToQuarterNoteDuration[type] < 1; // Anything less than a quarter note is "beamable"
 
 export const beamableSubdivisionLength = (timeSignature: TimeSignature) => {
-  if (timeSignature.beatNote === 4) {
-    if (timeSignature.beatsPerMeasure % 4 === 0) {
-      // 4/4 time notes can be beamed from beats [1-3) (end of beat 2) and beats [3-4) (end of beat 4)
-      return 1;
-    }
-  } else if (timeSignature.beatNote === 8) {
+  if (timeSignature.beatNote === 8) {
     if (timeSignature.beatsPerMeasure !== 3) {
       return 3;
     }
   }
   return 1;
+};
+
+export const restSubdivisionLength = (timeSignature: TimeSignature) => {
+  if (timeSignature.beatNote === 4 && timeSignature.beatsPerMeasure % 4 === 0) {
+    // 4/4 time notes can be beamed from beats [1-3) (end of beat 2) and beats [3-4) (end of beat 4)
+    return 2;
+  }
+  return beamableSubdivisionLength(timeSignature);
 };
 
 export const serializeTimeSignature = (timeSignature: TimeSignature) =>

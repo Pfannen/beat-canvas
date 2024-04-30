@@ -15,7 +15,7 @@ export type MusicIteratorCallback = (
 
 type MusicCallbacks = {
   getMeasureTimeSignature: (measureIndex: number) => TimeSignature;
-  getMeasureSubdivisionLength: (measureIndex: number) => number;
+  getRestSubdivisionLength: (measureIndex: number) => number;
   getNoteDuration: (measureIndex: number, noteIndex: number) => number;
 };
 
@@ -32,7 +32,7 @@ export class MusicIterator {
     for (let i = startIndex; i < endIndex; i++) {
       const measure = measures[i];
       const timeSignature = callbacks.getMeasureTimeSignature(i);
-      const subdivisionLength = callbacks.getMeasureSubdivisionLength(i);
+      const subdivisionLength = callbacks.getRestSubdivisionLength(i);
       let restStart = 0;
       const components: MeasureComponent[] = [];
       measure.notes.forEach((note, j) => {
