@@ -1,16 +1,10 @@
-import {
-	IVolumeValueModifer,
-	MusicVolumePairMap,
-	VolumePair,
-} from '@/types/audio/volume';
+import { MusicVolumePairMap } from '@/types/audio/volume';
 import { MusicScore } from '@/types/music';
 /* import { PlaybackManager as BeatCanvasPlaybackManager } from '@/utils/audio/playback'; */
 import { useEffect, useRef, useState } from 'react';
 import { BasicPlaybackState } from 'tone';
 import { usePolling } from '../usePolling';
 import { MusicPlaybackManager } from '@/utils/audio/music-playback';
-import { getMeasureMapping } from '@/utils/music/measures/expand-measures';
-import { getIndexEndTimes } from '@/utils/music/time/measures';
 
 export const usePlayback = (initialPBM?: MusicPlaybackManager) => {
 	const playbackManager = useRef<MusicPlaybackManager>(
@@ -23,9 +17,6 @@ export const usePlayback = (initialPBM?: MusicPlaybackManager) => {
 	);
 
 	// Master volume will always exist
-	/* const [volumePairs, setVolumePairs] = useState<VolumePair[]>([
-		{ volumePercentage: 1, audioId: 'Master' },
-	]); */
 	const [musicVolumePairMap, setMusicVolumePairMap] =
 		useState<MusicVolumePairMap>({
 			master: [{ audioId: 'Master Volume', volumePercentage: 1 }],
@@ -58,6 +49,7 @@ export const usePlayback = (initialPBM?: MusicPlaybackManager) => {
 		await playbackManager.current.setMusicScore(score);
 		updateVolumePairs();
 		updatePlaybackState();
+		seekMusic(0);
 	};
 
 	//TODO: have status for importing bad audio file

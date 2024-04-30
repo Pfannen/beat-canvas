@@ -77,6 +77,8 @@ export type AllSelectionsHaveUpdater<T> = (
 	validSelections: number
 ) => void;
 
+export type EqualityDelegate<T> = (item1?: T, item2?: T) => boolean;
+
 /* export type MetadataEntryUpdater2<T, K extends keyof T> = (
 	item: T[K],
 	metadataEntry: SelectionMetadata<T>[K],

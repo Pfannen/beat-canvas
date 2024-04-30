@@ -19,6 +19,7 @@ export class MusicPlaybackManager extends PlaybackManager {
 	protected loadAudioBuffers = async () => {
 		if (!this.musicScore) return;
 
+		console.log({ enqueueingScore: this.musicScore.parts[0].measures });
 		const enqueuedBuffers = await enqueueMusicScore(this.musicScore);
 
 		for (const { name, buffer } of enqueuedBuffers) {
@@ -27,7 +28,10 @@ export class MusicPlaybackManager extends PlaybackManager {
 	};
 
 	setMusicScore = async (musicScore?: MusicScore) => {
-		if (this.musicScore === musicScore) return;
+		if (this.musicScore === musicScore) {
+			console.log('They equal');
+			return;
+		}
 
 		if (this.musicScore) {
 			this.musicScore.parts.forEach((part) => {

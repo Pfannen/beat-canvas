@@ -40,7 +40,7 @@ export const getYPositionsForKeySignature = (
 	keySignature: number,
 	clef: Clef
 ) => {
-	const i = getOrderingIndex(keySignature);
+	let i = getOrderingIndex(keySignature);
 	// If i is 0 or null just return any empty array (correct return value for i = 0)
 	if (!i) return [];
 
@@ -61,6 +61,7 @@ export const getYPositionsForKeySignature = (
 		// 13 % 7 = 6 + 7 = 13 % 7 = 6
 		yPos = ((yPos % 7) + 7) % 7;
 		positions.push(yPos);
+		i--;
 	}
 
 	return positions;

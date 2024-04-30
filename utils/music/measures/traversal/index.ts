@@ -6,10 +6,14 @@ import {
 	RequiredLocationProperties,
 	TBCDurationAttributeInfo,
 } from '@/types/music/measure-traversal';
-import { initializeMeasureAttributes } from '../measure-generator';
+import {
+	initializeMeasureAttributes,
+	updateMeasureAttributes,
+} from '../measure-generator';
 import { getSecondsBetweenXs } from '../../time';
 import { updateDurationStore } from './helpers';
 import { getNoteDuration } from '@/components/providers/music/utils';
+import { deepyCopy } from '@/utils';
 
 const getLastNoteXEnd = (
 	curLastNoteXEnd: number,
@@ -29,7 +33,8 @@ const createLocObj = (
 	durStore: TBCDurationAttributeInfo,
 	curSeconds: number,
 	required: RequiredLocationProperties,
-	optionals?: OptionalLocationProperties
+	optionals?: OptionalLocationProperties,
+	deepCopy?: boolean
 ) => {
 	const locInfo: PartLocationInfo = {
 		...required,
@@ -46,7 +51,7 @@ const createLocObj = (
 
 	if (optionals) Object.assign(locInfo, optionals);
 
-	return locInfo;
+	return deepCopy ? deepyCopy(locInfo) : locInfo;
 };
 
 // Returns information about the next location given the current state of the notes and temporal attributes
@@ -95,10 +100,13 @@ const getOptionalsInfo = (
 
 export const noteAttributeGenerator = function* (
 	measures: Measure[],
-	initialAttributes?: MeasureAttributes
+	initialAttributes?: MeasureAttributes,
+	deepCopy = false
 ) {
 	if (!measures || !measures.length) return;
-	const attr = initialAttributes || initializeMeasureAttributes(measures[0]);
+	const attr = initialAttributes
+		? deepyCopy(initialAttributes)
+		: initializeMeasureAttributes(measures[0]);
 	const durStore: TBCDurationAttributeInfo = {};
 	let curSeconds = 0;
 	let measureStartX = 0;
@@ -111,6 +119,7 @@ export const noteAttributeGenerator = function* (
 		const { staticAttributes, temporalAttributes, notes } = measure;
 		const tA = temporalAttributes || [];
 
+		updateMeasureAttributes(attr, staticAttributes);
 		// Yield a loc obj for the beginning of the measure
 		yield createLocObj(
 			durStore,
@@ -125,7 +134,8 @@ export const noteAttributeGenerator = function* (
 			{
 				newAttributes: staticAttributes,
 				measureStart: true,
-			}
+			},
+			deepCopy
 		);
 
 		let aIdx = 0;
@@ -149,6 +159,7 @@ export const noteAttributeGenerator = function* (
 				attr.timeSignature
 			);
 
+			updateMeasureAttributes(attr, optionals.newAttributes);
 			yield createLocObj(
 				durStore,
 				curSeconds,
@@ -159,7 +170,8 @@ export const noteAttributeGenerator = function* (
 					measureIndex: i,
 					lastNoteXEnd,
 				},
-				optionals
+				optionals,
+				deepCopy
 			);
 			lastX = nextX;
 			lastNoteXEnd = getLastNoteXEnd(
@@ -191,7 +203,8 @@ export const noteAttributeGenerator = function* (
 				measureIndex: i,
 				lastNoteXEnd,
 			},
-			{ measureEnd: true }
+			{ measureEnd: true },
+			deepCopy
 		);
 
 		measureStartX += attr.timeSignature.beatsPerMeasure;

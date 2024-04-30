@@ -53,7 +53,12 @@ export const enqueuePart = (
 		note,
 		measureStartX,
 		completedDurationAttributes,
-	} of noteAttributeGenerator(expandedMeasures)) {
+		measureStart,
+	} of noteAttributeGenerator(expandedMeasures, undefined, true)) {
+		if (measureStart) {
+			console.log({ currentAttributes });
+		}
+
 		if (completedDurationAttributes) {
 			const { wedge } = completedDurationAttributes;
 			if (wedge) {

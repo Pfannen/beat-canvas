@@ -26,6 +26,7 @@ const useMusicPart = (musicPart: MusicPart) => {
 	useEffect(() => {
 		if (part.measures !== measuresHook.measures) {
 			part.measures = measuresHook.measures;
+			setPart({ ...part });
 		}
 	}, [measuresHook.measures, part]);
 

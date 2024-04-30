@@ -8,7 +8,7 @@ export const usePolling = <T>(msPollingRate: number, valueGetter: () => T) => {
 		if (intervalIdRef.current !== null) return;
 
 		intervalIdRef.current = setInterval(() => {
-			console.log('polling...');
+			/* console.log('polling...'); */
 			const value = valueGetter();
 			setPollValue(value);
 		}, msPollingRate);

@@ -7,6 +7,7 @@ import {
 	SelectionMetadata,
 	MetadataEntryUpdaterMap,
 	SelectionMetadataEntry,
+	EqualityDelegate,
 } from '@/types/modify-score/assigner/metadata';
 import {
 	annotationAllSelectionsHaveUpdater,
@@ -29,7 +30,8 @@ import { NoteType } from '@/components/providers/music/types';
 // metadataEntry: The metadata for the K
 export const getAssignValue = <T, K extends keyof T>(
 	currentValue: T[K],
-	metadataEntry?: SelectionMetadataEntry<T, K>
+	metadataEntry?: SelectionMetadataEntry<T, K>,
+	equalDel?: EqualityDelegate<T[K]>
 ) => {
 	let assignValue: T[K] | undefined;
 	// If there's no entry, it doesn't matter what assignValue is (the querying thing shouldn't be able to be assigned)
@@ -42,8 +44,9 @@ export const getAssignValue = <T, K extends keyof T>(
 		// if currentValue is equal to the value in the metadata - if it is, undefined
 		// (i.e. the querying thing should be removed) should be assigned, else the current value should be assigned
 		else {
-			const currentValueIsAllSelected =
-				JSON.stringify(currentValue) === JSON.stringify(value);
+			const currentValueIsAllSelected = equalDel
+				? equalDel(currentValue, value)
+				: JSON.stringify(currentValue) === JSON.stringify(value);
 			if (currentValueIsAllSelected) assignValue = undefined;
 			else assignValue = currentValue;
 		}

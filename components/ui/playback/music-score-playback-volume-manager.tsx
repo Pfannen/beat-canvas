@@ -31,17 +31,17 @@ const MusicScorePlaybackVolumeManager: FunctionComponent<
 
 	useEffect(() => {
 		console.log('Music score changed!');
+		seekMusic(0);
 	}, [musicScore]);
 
 	// Currently spams the delegate during playback
-	useEffect(() => {
-		if (setImportedAudioLifter) setImportedAudioLifter(setImportedAudio);
-	}, [setImportedAudioLifter, setImportedAudio]);
+	if (setImportedAudioLifter) setImportedAudioLifter(setImportedAudio);
 
 	const { measureIdx } = useSecondsToMeasureIndex(
 		seekPercentage * playbackManager.getMaxDuration(),
 		measures
 	);
+	// console.log({ measureIdx });
 
 	return (
 		<div className={classes.managers_container}>
