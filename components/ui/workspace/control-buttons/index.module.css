@@ -1,6 +1,13 @@
 .buttons {
   display: flex;
-  gap: 1rem;
-  justify-content: space-around;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
   margin-block: 1rem;
+  /* font-weight: bold; */
+}
+
+.buttons > p {
+  color: var(--text-primary);
 }

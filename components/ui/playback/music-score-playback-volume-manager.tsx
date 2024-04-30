@@ -2,7 +2,8 @@ import { FunctionComponent, useEffect } from 'react';
 import classes from './music-score-playback-volume-manager.module.css';
 import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
 import { useMusic } from '@/components/providers/music';
-import PlaybackVolumeManager from './playback-volume-manager';
+import PlaybackManager from './playback-manager';
+import MusicScoreVolumeManager from './volume-manager/music-score-volume-manager';
 
 interface MusicScorePlaybackVolumeManagerProps {
 	setImportedAudioLifter?: (setImportedAudioDel: () => void) => void;
@@ -18,7 +19,7 @@ const MusicScorePlaybackVolumeManager: FunctionComponent<
 		stopMusic,
 		seekMusic,
 		playbackManager,
-		volumePairs,
+		musicVolumePairMap,
 		playbackState,
 		seekPercentage,
 	} = usePlayback();
@@ -33,19 +34,23 @@ const MusicScorePlaybackVolumeManager: FunctionComponent<
 	if (setImportedAudioLifter) setImportedAudioLifter(setImportedAudio);
 
 	return (
-		<PlaybackVolumeManager
-			volumePairs={volumePairs}
-			modifyVolume={playbackManager.modifyVolume}
-			onPlay={async () => {
-				await setScore(musicScore);
-				playMusic();
-			}}
-			onStop={stopMusic}
-			onSeek={seekMusic}
-			playbackState={playbackState}
-			seekPercentage={seekPercentage}
-			title={musicScore.title}
-		/>
+		<div className={classes.managers_container}>
+			<PlaybackManager
+				onPlay={async () => {
+					await setScore(musicScore);
+					playMusic();
+				}}
+				onStop={stopMusic}
+				onSeek={seekMusic}
+				playbackState={playbackState}
+				seekPercentage={seekPercentage}
+				title={musicScore.title}
+			/>
+			<MusicScoreVolumeManager
+				modifyVolume={playbackManager.modifyVolume}
+				musicVolumePairs={musicVolumePairMap}
+			/>
+		</div>
 	);
 };
 

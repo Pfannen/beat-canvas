@@ -1,13 +1,18 @@
-import { IVolumeValueModifer, VolumePair } from '@/types/audio/volume';
+import {
+	IVolumeValueModifer,
+	MusicVolumePairMap,
+	VolumePair,
+} from '@/types/audio/volume';
 import { MusicScore } from '@/types/music';
-import { PlaybackManager } from '@/utils/audio/playback';
+/* import { PlaybackManager as BeatCanvasPlaybackManager } from '@/utils/audio/playback'; */
 import { useEffect, useRef, useState } from 'react';
 import { BasicPlaybackState } from 'tone';
 import { usePolling } from '../usePolling';
+import { MusicPlaybackManager } from '@/utils/audio/music-playback';
 
-export const usePlayback = (initialPBM?: PlaybackManager) => {
-	const playbackManager = useRef<PlaybackManager>(
-		initialPBM || new PlaybackManager()
+export const usePlayback = (initialPBM?: MusicPlaybackManager) => {
+	const playbackManager = useRef<MusicPlaybackManager>(
+		initialPBM || new MusicPlaybackManager()
 	);
 
 	const { pollValue, startPolling, stopPolling, updatePollValue } = usePolling(
@@ -16,9 +21,15 @@ export const usePlayback = (initialPBM?: PlaybackManager) => {
 	);
 
 	// Master volume will always exist
-	const [volumePairs, setVolumePairs] = useState<VolumePair[]>([
+	/* const [volumePairs, setVolumePairs] = useState<VolumePair[]>([
 		{ volumePercentage: 1, audioId: 'Master' },
-	]);
+	]); */
+	const [musicVolumePairMap, setMusicVolumePairMap] =
+		useState<MusicVolumePairMap>({
+			master: [{ audioId: 'Master Volume', volumePercentage: 1 }],
+			imported: [],
+			score: [],
+		});
 
 	const [playbackState, setPlaybackState] = useState<
 		BasicPlaybackState | undefined
@@ -29,8 +40,8 @@ export const usePlayback = (initialPBM?: PlaybackManager) => {
 	};
 
 	const updateVolumePairs = () => {
-		const newVolumePairs = playbackManager.current.getVolumePairs();
-		setVolumePairs(newVolumePairs);
+		const newPairMap = playbackManager.current.getMusicVolumePairs();
+		setMusicVolumePairMap(newPairMap);
 	};
 
 	const adjustPolling = () => {
@@ -96,7 +107,7 @@ export const usePlayback = (initialPBM?: PlaybackManager) => {
 	]);
 
 	return {
-		volumePairs,
+		musicVolumePairMap,
 		playbackState,
 		playbackManager: playbackManager.current,
 		seekPercentage: pollValue,

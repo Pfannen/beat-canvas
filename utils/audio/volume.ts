@@ -2,6 +2,7 @@ import {
 	DecibelRange,
 	IVolumeNodeModifier,
 	IVolumeValueModifer,
+	VolumeIdToPercentageMap,
 	VolumeManagerParams,
 	VolumeNode,
 	VolumeNodeMap,
@@ -16,12 +17,19 @@ import {
 	isOnClient,
 } from '..';
 
+export const createVolumePair = (audioId: string, volumePercentage: number) => {
+	return {
+		audioId,
+		volumePercentage,
+	} as VolumePair;
+};
+
 export class VolumeManager implements IVolumeNodeModifier, IVolumeValueModifer {
 	// Min max decibels set in the constructor
 	private decibelRange: DecibelRange;
 	defaultVolumePct = 0.5;
 
-	masterVolumeId = 'Master';
+	masterVolumeId = 'Master Volume';
 
 	private volumeMap: VolumeNodeMap = {};
 	private masterVolume?: Volume;
@@ -79,10 +87,21 @@ export class VolumeManager implements IVolumeNodeModifier, IVolumeValueModifer {
 			const node = this.volumeMap[key];
 			const volumePercentage = this.decibelsToPercentage(node.volume.value);
 			console.log({ volumePercentage });
-			return { audioId: key, volumePercentage: volumePercentage };
+			return createVolumePair(key, volumePercentage);
 		});
 
 		return volumePairs;
+	};
+
+	getVolumeIdToPercentageMap = () => {
+		const volumePairsMap: VolumeIdToPercentageMap = {};
+		Object.keys(this.volumeMap).forEach((key) => {
+			const node = this.volumeMap[key];
+			const volumePercentage = this.decibelsToPercentage(node.volume.value);
+			volumePairsMap[key] = volumePercentage;
+		});
+
+		return volumePairsMap;
 	};
 }
 

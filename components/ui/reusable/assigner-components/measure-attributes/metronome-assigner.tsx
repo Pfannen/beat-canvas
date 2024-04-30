@@ -74,7 +74,7 @@ const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
 					max={maxBPM}
 					disabled={!metadataEntry}
 				/>{' '}
-				<AssignerDropdownField
+				{/* <AssignerDropdownField
 					onChange={(e) =>
 						setBeatNote(nameNoteTypesWithElement[e.target.selectedIndex])
 					}
@@ -82,7 +82,7 @@ const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
 					disabled={!metadataEntry}
 				>
 					{nameNoteTypesWithElement}
-				</AssignerDropdownField>
+				</AssignerDropdownField> */}
 			</div>
 			<ModifyMusicAssigner
 				onClick={() =>
@@ -104,12 +104,13 @@ const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
 				>
 					<p>{bpm}</p>{' '}
 					<div
-						style={{
+						/* style={{
 							maxWidth: '20px',
 							maxHeight: '20px',
-						}}
+						}} */
 					>
-						{beatNote.el}
+						{/* {beatNote.el} */}
+						bpm
 					</div>
 				</div>
 			</ModifyMusicAssigner>

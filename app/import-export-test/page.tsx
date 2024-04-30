@@ -1,15 +1,13 @@
 'use client';
 
 import ImportExportPage from '@/components/ui/import-export-test';
-import { FunctionComponent, useEffect, useRef, useState } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { useMusic } from '@/components/providers/music';
-import VolumeManager from '@/components/ui/playback/volume-manager';
 import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
 import LoopPlaybackManager from '@/components/ui/playback/loop-playback/loop-playback-manager';
 import PlaybackVolumeManager from '@/components/ui/playback/playback-volume-manager';
-import { MusicScore } from '@/types/music';
-import { PlaybackManager } from '@/utils/audio/playback';
 import { getMeasuresStartAndEndTime } from '@/utils/music/time/measures';
+import { VolumePair } from '@/types/audio/volume';
 
 type ImportExportTestPageProps = {};
 
@@ -23,7 +21,7 @@ const ImportExportTestPage: FunctionComponent<
 		stopMusic,
 		seekMusic,
 		playbackManager,
-		volumePairs,
+		musicVolumePairMap,
 		playbackState,
 		seekPercentage,
 	} = usePlayback();
@@ -43,8 +41,9 @@ const ImportExportTestPage: FunctionComponent<
 				musicScore={musicScore}
 				getAudioBuffer={playbackManager.getMergedAudioBufffer}
 			/>
+			{/* Temp component */}
 			<PlaybackVolumeManager
-				volumePairs={volumePairs}
+				volumePairs={playbackManager.getVolumePairs()}
 				modifyVolume={playbackManager.modifyVolume}
 				onPlay={playMusic}
 				onStop={stopMusic}

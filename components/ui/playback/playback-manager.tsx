@@ -31,7 +31,7 @@ const PlaybackManager: FunctionComponent<PlaybackManagerProps> = ({
 
 	return (
 		<div className={classes.playback_manager}>
-			<h2 className={classes.title}>{title || 'Playback Manager'}</h2>
+			<h1 className={classes.title}>{title || 'Playback Manager'}</h1>
 			<div className={classes.playback_buttons}>
 				<SeekButton
 					onClick={() => {

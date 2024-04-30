@@ -28,6 +28,16 @@ export type VolumePair = {
 	volumePercentage: number;
 };
 
+export type VolumeIdToPercentageMap = {
+	[audioId in string]: number;
+};
+
+export type VolumePairMap<T extends string = string> = {
+	[key in T]: VolumePair[];
+};
+
+export type MusicVolumePairMap = VolumePairMap<'master' | 'imported' | 'score'>;
+
 export type ToneBufferVolumePair = {
 	buffer: ToneAudioBuffer;
 	volumePercentage: number;

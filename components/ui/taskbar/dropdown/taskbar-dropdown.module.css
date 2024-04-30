@@ -5,13 +5,16 @@
 	border-radius: var(--button-border-radius, 6px);
 	/* border-bottom-right-radius: 0px;
 	border-bottom-left-radius: 0px; */
-	padding-inline: 12px;
-	background-color: white;
+	background-color: var(--surface-primary);
 }
 
 .header {
-	padding-block: 8px;
-	padding-inline: 12px;
+	padding: var(--button-padding);
+	color: var(--text-primary);
+}
+
+.header * {
+	color: var(--text-primary);
 }
 
 .selections {
@@ -26,7 +29,7 @@
 	border-top-left-radius: 0px;
 	border-top: 1px solid black;
 	padding-inline: 12px;
-	background-color: white;
+	background-color: var(--surface-primary);
 	top: -6px;
 }
 

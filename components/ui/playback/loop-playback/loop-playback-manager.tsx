@@ -1,13 +1,14 @@
 import { FunctionComponent, useEffect, useRef, useState } from 'react';
 import classes from './RangedPlaybackManager.module.css';
-import { PlaybackManager } from '@/utils/audio/playback';
+import { MusicPlaybackManager } from '@/utils/audio/music-playback';
+/* import { PlaybackManager as MusicPlaybackManager } from '@/utils/audio/playback'; */
 import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
 import PlaybackManagerComponent from '../playback-manager';
 import PlaybackVolumeManager from '../playback-volume-manager';
 import useLoopPlayback from '@/components/hooks/usePlayback/useLoopPlayback';
 
 interface LoopPlaybackManagerProps {
-	sourcePlaybackManager: PlaybackManager;
+	sourcePlaybackManager: MusicPlaybackManager;
 	start: number;
 	end: number;
 }
@@ -25,7 +26,7 @@ const LoopPlaybackManager: FunctionComponent<LoopPlaybackManagerProps> = ({
 	start,
 	end,
 }) => {
-	const [rangedPBM, _] = useState<PlaybackManager>(() =>
+	const [rangedPBM, _] = useState<MusicPlaybackManager>(() =>
 		sourcePlaybackManager.copy([start, end])
 	);
 

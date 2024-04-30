@@ -1,8 +1,5 @@
 import { FunctionComponent, useRef } from 'react';
-import classes from './ImportAudioDropdown.module.css';
 import TaskbarDropdown from './taskbar-dropdown';
-import JSONBracesSVG from '../../svg/json-braces';
-import { PlaybackManager } from '@/utils/audio/playback';
 import MP3SVG from '../../svg/mp3';
 import MusicFolderSVG from '../../svg/music-folder-svg';
 

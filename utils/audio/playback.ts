@@ -1,8 +1,5 @@
 import { VolumeManager } from './volume';
-import { MusicScore } from '@/types/music';
-import { BasicPlaybackState, Player, ToneAudioBuffer, context } from 'tone';
-import { enqueueMusicScore } from './play-music/play-music';
-import { deepyCopy, isOnClient, loadFile } from '..';
+import { BasicPlaybackState, Player, ToneAudioBuffer } from 'tone';
 import {
 	toneBuffersToAudioBuffer,
 	toneBufferToAudioBuffer,
@@ -16,12 +13,8 @@ export class PlaybackManager extends VolumeManager {
 	private maxDurationPlayer?: Player;
 	private playbackState: BasicPlaybackState | undefined;
 
-	readonly playerNodeId = 'Imported Audio';
-	musicScore?: MusicScore;
-
-	constructor(musicScore?: MusicScore) {
+	constructor() {
 		super();
-		this.musicScore = musicScore;
 	}
 
 	// Gets the duration of the longest player of the playback manager - equivalent
@@ -31,7 +24,7 @@ export class PlaybackManager extends VolumeManager {
 
 	getPlaybackState = () => this.playbackState;
 
-	private addAudioPlayer = (buffer: ToneAudioBuffer, id: string) => {
+	protected addAudioPlayer = (buffer: ToneAudioBuffer, id: string) => {
 		const player = new Player();
 		player.buffer = buffer;
 		this.players[id] = player;
@@ -39,7 +32,7 @@ export class PlaybackManager extends VolumeManager {
 		this.updateAudioDuration();
 	};
 
-	private removeAudioPlayer = (id: string) => {
+	protected removeAudioPlayer = (id: string) => {
 		delete this.players[id];
 		this.removeVolumeNode(id);
 		this.updateAudioDuration();
@@ -63,7 +56,7 @@ export class PlaybackManager extends VolumeManager {
 			};
 	};
 
-	private loadAudioBuffers = async () => {
+	/* protected loadAudioBuffers = async () => {
 		if (!this.musicScore) return;
 
 		const enqueuedBuffers = await enqueueMusicScore(this.musicScore);
@@ -71,9 +64,9 @@ export class PlaybackManager extends VolumeManager {
 		for (const { name, buffer } of enqueuedBuffers) {
 			this.addAudioPlayer(buffer, name);
 		}
-	};
+	}; */
 
-	setMusicScore = async (musicScore?: MusicScore) => {
+	/* setMusicScore = async (musicScore?: MusicScore) => {
 		if (this.musicScore === musicScore) return;
 
 		if (this.musicScore) {
@@ -111,7 +104,7 @@ export class PlaybackManager extends VolumeManager {
 		player.buffer = toneAudioBuffer;
 		this.updateAudioDuration();
 		return true;
-	};
+	}; */
 
 	// The time the play button was last clicked
 	private lastStartTime = Date.now();
@@ -186,11 +179,12 @@ export class PlaybackManager extends VolumeManager {
 		return Math.max(0, Math.min(percentage, 1));
 	};
 
-	copy = (playbackSection?: [number, number]) => {
+	protected copyToManager = (
+		newManager: PlaybackManager,
+		playbackSection?: [number, number]
+	) => {
 		const start = playbackSection ? playbackSection[0] : 0;
 		const end = playbackSection ? playbackSection[1] : this.getMaxDuration();
-
-		const newManager = new PlaybackManager(this.musicScore);
 
 		for (const id in this.players) {
 			const player = this.players[id];
@@ -210,6 +204,15 @@ export class PlaybackManager extends VolumeManager {
 			const newToneBuffer = new ToneAudioBuffer().set(newBuffer);
 			newManager.addAudioPlayer(newToneBuffer, id);
 		}
+	};
+
+	copy = (playbackSection?: [number, number]) => {
+		/* const start = playbackSection ? playbackSection[0] : 0;
+		const end = playbackSection ? playbackSection[1] : this.getMaxDuration();
+		
+		const newManager = new PlaybackManager(this.musicScore); */
+		const newManager = new PlaybackManager();
+		this.copyToManager(newManager, playbackSection);
 
 		console.log({ newManager });
 
