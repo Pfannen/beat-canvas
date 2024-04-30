@@ -2,16 +2,18 @@ import classes from "./index.module.css";
 import { CSSProperties, FunctionComponent, useEffect } from "react";
 import { Selection } from "@/components/hooks/useSelection";
 import ModalMeasureDispay from "../modal-measure-display";
-import { ABOVE_BELOW_CT } from "@/constants/music-dimensions";
+import { ABOVE_BELOW_CT, LINE_TO_SPACE_R } from "@/constants/music-dimensions";
 import { PositionData } from "@/types/ui/music-modal";
 import { Coordinate } from "@/types";
 import AssignerButtonRepo from "@/components/ui/reusable/assigner-components/assigner-button-repo";
 import { stacklessNotePlacementValidator } from "@/utils/music/note-placement";
 import { useEditMeasures } from "@/components/hooks/useEditMeasures";
-import TaskbarButton from "@/components/ui/taskbar/buttons/taskbar-button";
 import WhiteBgButton from "@/components/ui/reusable/buttons/white-bg-button";
 
-const aspectRatio = 4;
+const aspectRatio = 2.5;
+const width = 1000;
+const unit = "px";
+const lineToSpaceRatio = 0.5;
 
 type ModalDisplayProps = {
   liftCommitMeasures: (fn: Function) => void;
@@ -55,11 +57,16 @@ const ModalDisplay: FunctionComponent<ModalDisplayProps> = ({
       </div>
       <div
         className={classes.measures}
-        style={{ "--aspect-ratio": aspectRatio } as CSSProperties}
+        style={
+          { "--aspect-ratio": aspectRatio, "--width": width } as CSSProperties
+        }
       >
         <ModalMeasureDispay
           aspectRatio={aspectRatio}
           measures={editMeasures}
+          height={width / aspectRatio}
+          unit={unit}
+          lineToSpaceRatio={lineToSpaceRatio}
           aboveBelowCt={ABOVE_BELOW_CT}
           onPositionClick={onPositionClick}
           isYPosSelected={isYLevelSelected}

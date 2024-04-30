@@ -18,7 +18,7 @@ type MeasureSegmentsProps = {
   onSegmentClick: (location: Coordinate, noteIndices?: number[]) => void;
   componentIterator: MeasureComponentIterator;
   componentFractions: MeasureComponentValues;
-  noteContainerHeight: number;
+  noteContainerHeight: string;
   isSegmentSelected: (xPos: number) => boolean;
   canSegmentSplit: (xPos: number) => boolean;
   isYPosSelected: (x: number, y: number) => boolean;

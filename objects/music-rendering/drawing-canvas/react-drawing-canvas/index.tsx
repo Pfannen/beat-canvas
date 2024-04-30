@@ -37,7 +37,7 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     defaultColor = "black"
   ) {
     if (options) {
-      style.addOpacity(options.opacity === undefined ? 1 : 0);
+      style.addOpacity(options.opacity === undefined ? 1 : options.opacity);
       if (options.degreeRotation) style.addRotation(options.degreeRotation);
       if (options.cursor) style.addCursor(options.cursor);
     }

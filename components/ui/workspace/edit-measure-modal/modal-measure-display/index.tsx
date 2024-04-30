@@ -8,16 +8,17 @@ import { Measurements } from "@/objects/measurement/measurements";
 import { BODY_CT, LINE_TO_SPACE_R } from "@/constants/music-dimensions";
 import MusicCanvas from "@/components/ui/reusable/music-canvas";
 import { PositionData } from "@/types/ui/music-modal";
-import { Coordinate } from "@/types";
+import { Coordinate, UnitMeasurement } from "@/types";
 import { ReactCanvasManager } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/manager";
 import { createUnitConverters } from "@/utils/music-rendering";
-
-const lineToSpaceRatio = LINE_TO_SPACE_R / 2;
 
 type ModalMeasureDisplayProps = {
   measures: Measure[];
   aboveBelowCt: number;
+  height: number;
   aspectRatio: number;
+  unit: UnitMeasurement;
+  lineToSpaceRatio: number;
   onPositionClick: (position: Coordinate, positionData: PositionData) => void;
   isYPosSelected: (measureIndex: number, xPos: number, yPos: number) => boolean;
   isSegmentSelected: (measureIndex: number, xPos: number) => boolean;
@@ -26,13 +27,22 @@ type ModalMeasureDisplayProps = {
 const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
   measures,
   aboveBelowCt,
+  height,
   aspectRatio,
+  unit,
+  lineToSpaceRatio,
   onPositionClick,
   isSegmentSelected,
   isYPosSelected,
 }) => {
   const dimensions = useMemo(
-    () => MusicLayout.getMarginlessSheetMusic(100, 100, 1, measures.length),
+    () =>
+      MusicLayout.getMarginlessSheetMusic(
+        height * aspectRatio,
+        height,
+        1,
+        measures.length
+      ),
     [measures.length]
   );
   const measurements = useMemo(
@@ -52,9 +62,9 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
       dimensions={dimensions}
       measurements={measurements}
       sectionToggleList={{ note: true }}
-      manager={new ReactCanvasManager(measurements, "%", aspectRatio, true)}
-      unit="%"
-      unitConverters={createUnitConverters(aspectRatio)}
+      manager={new ReactCanvasManager(measurements, unit, aspectRatio, true)}
+      unit={unit}
+      unitConverters={undefined} //If relative, maybe?
     >
       <SegmentedMeasures
         measures={measures}
@@ -64,8 +74,8 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
           measureComponents
         )}
         isYPosSelected={isYPosSelected}
-        noteOffset={dimensions.measureDimensions.noteYOffset}
-        noteHeight={dimensions.measureDimensions.noteSpaceHeight}
+        noteOffset={dimensions.measureDimensions.noteYOffset + unit}
+        noteHeight={dimensions.measureDimensions.noteSpaceHeight + unit}
         isSegmentSelected={isSegmentSelected}
       />
     </MusicCanvas>

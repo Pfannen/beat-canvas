@@ -16,8 +16,8 @@ type SegmentedMeasuresProps = {
   componentIterator: MeasureComponentIterator;
   isYPosSelected: (measureIndex: number, xPos: number, yPos: number) => boolean;
   componentFractions: MeasureComponentValues;
-  noteHeight: number;
-  noteOffset: number;
+  noteHeight: string;
+  noteOffset: string;
 };
 
 const SegmentedMeasures: FunctionComponent<SegmentedMeasuresProps> = ({
@@ -40,7 +40,7 @@ const SegmentedMeasures: FunctionComponent<SegmentedMeasuresProps> = ({
       {measures.map((measure, i) => (
         <div
           className={classes.measure}
-          style={{ "--offset": noteOffset + "%" } as CSSProperties}
+          style={{ "--offset": noteOffset } as CSSProperties}
         >
           <MeasureSegments
             onSegmentClick={getSegmentClickDel(i)}

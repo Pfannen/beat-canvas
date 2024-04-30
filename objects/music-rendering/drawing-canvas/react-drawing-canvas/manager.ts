@@ -24,6 +24,10 @@ export class ReactCanvasManager extends CanvasManager<ReactDrawingCanvas> {
       this.getBeatCanvasConstructor = () => (c, m) => {
         return new BeatCanvas(c, m, drawOptions, drawNonBodyComponents);
       };
+    } else if (drawNonBodyComponents) {
+      this.getBeatCanvasConstructor = () => (c, m) => {
+        return new BeatCanvas(c, m, undefined, drawNonBodyComponents);
+      };
     }
   }
 

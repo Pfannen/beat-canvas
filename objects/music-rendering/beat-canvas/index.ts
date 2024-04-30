@@ -107,16 +107,16 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
 
   protected drawMeasureLines(options: MeasureLinesOptions) {
     const iteratorDel: MeasureComponentContextIterator = (context) => {
-      let color = "black";
+      let opacity = 1;
       if (!context.isBody) {
-        color = "lightgray";
+        opacity = 0.05;
       }
       if (context.isLine) {
         this.canvas.drawRectangle({
           corner: context.corner,
           width: context.width,
           height: -context.height,
-          drawOptions: { color },
+          drawOptions: { opacity },
         });
       }
     };
