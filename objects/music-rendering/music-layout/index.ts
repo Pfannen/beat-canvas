@@ -3,6 +3,10 @@ import {
   MusicDimensionParams,
 } from "@/types/music-rendering/music-layout";
 import { PageDimensionParams } from "./page-dimension-params";
+import {
+  LINES_PER_PAGE,
+  MEASURES_PER_LINE,
+} from "@/constants/music-dimensions";
 
 export class MusicLayout {
   static getDimensions(params: MusicDimensionParams): MusicDimensionData {
@@ -68,14 +72,16 @@ export class MusicLayout {
   }
 
   static getGenericSheetMusicDimensions() {
-    return this.getDimensions(PageDimensionParams.genericSheetMusic());
+    return this.getDimensions(
+      PageDimensionParams.genericSheetMusic(MEASURES_PER_LINE, LINES_PER_PAGE)
+    );
   }
 
   static getMarginlessSheetMusic(
     width: number,
     height: number,
-    linesPerPage = 7,
-    measuresPerLine = 3
+    linesPerPage = LINES_PER_PAGE,
+    measuresPerLine = MEASURES_PER_LINE
   ) {
     return this.getDimensions(
       PageDimensionParams.marginlessSheetMusic(

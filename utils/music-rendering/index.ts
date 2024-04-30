@@ -4,8 +4,10 @@ import { Measure } from "@/components/providers/music/types";
 import {
   ABOVE_BELOW_CT,
   BODY_CT,
+  LINES_PER_PAGE,
   LINE_TO_SPACE_R,
-} from "@/objects/measurement/constants";
+  MEASURES_PER_LINE,
+} from "@/constants/music-dimensions";
 import { Measurements } from "@/objects/measurement/measurements";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
@@ -16,7 +18,10 @@ import { BeatCanvasDrawOptions } from "@/types/music-rendering/canvas/beat-canva
 import { CanvasManager } from "@/types/music-rendering/canvas/canvas-manager";
 
 export const renderMeasures = (measures: Measure[], manager: CanvasManager) => {
-  const pageParams = PageDimensionParams.genericSheetMusic();
+  const pageParams = PageDimensionParams.genericSheetMusic(
+    MEASURES_PER_LINE,
+    LINES_PER_PAGE
+  );
   const dimensions = MusicLayout.getDimensions(pageParams);
   const measurements = new Measurements(
     ABOVE_BELOW_CT,

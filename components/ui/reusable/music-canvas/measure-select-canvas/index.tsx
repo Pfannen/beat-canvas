@@ -9,7 +9,7 @@ import {
   ABOVE_BELOW_CT,
   BODY_CT,
   LINE_TO_SPACE_R,
-} from "@/objects/measurement/constants";
+} from "@/constants/music-dimensions";
 import {
   MeasureNotifierArgs,
   MeasureRenderArgs,

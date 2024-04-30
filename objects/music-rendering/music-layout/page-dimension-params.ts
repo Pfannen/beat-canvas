@@ -4,8 +4,8 @@ import { PageSizes } from "pdf-lib";
 
 export class PageDimensionParams {
   static genericSheetMusic(
-    measuresPerLine = 2,
-    linesPerPage = 7
+    measuresPerLine: number,
+    linesPerPage: number
   ): MusicDimensionParams {
     const pageSize = PageSizes.A4;
     const pageDimensions = { width: pageSize[0], height: pageSize[1] };

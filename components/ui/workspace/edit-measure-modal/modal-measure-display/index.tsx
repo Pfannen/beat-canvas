@@ -5,7 +5,7 @@ import { FunctionComponent, useMemo } from "react";
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
 import SegmentedMeasures from "./segmented-measures";
 import { Measurements } from "@/objects/measurement/measurements";
-import { BODY_CT, LINE_TO_SPACE_R } from "@/objects/measurement/constants";
+import { BODY_CT, LINE_TO_SPACE_R } from "@/constants/music-dimensions";
 import MusicCanvas from "@/components/ui/reusable/music-canvas";
 import { PositionData } from "@/types/ui/music-modal";
 import { Coordinate } from "@/types";

@@ -5,8 +5,10 @@ import { Measure } from "@/components/providers/music/types";
 import {
   ABOVE_BELOW_CT,
   BODY_CT,
+  LINES_PER_PAGE,
   LINE_TO_SPACE_R,
-} from "@/objects/measurement/constants";
+  MEASURES_PER_LINE,
+} from "@/constants/music-dimensions";
 import { Measurements } from "@/objects/measurement/measurements";
 import { PDFLibCanvasManager } from "@/objects/music-rendering/drawing-canvas/pdf-lib-drawing-canvas/manager";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
@@ -22,7 +24,10 @@ export const pdfToUrl = (pdf: Uint8Array) => {
 };
 
 export const createPDFFromMeasures = async (measures: Measure[]) => {
-  const pageParams = PageDimensionParams.genericSheetMusic(3);
+  const pageParams = PageDimensionParams.genericSheetMusic(
+    MEASURES_PER_LINE,
+    LINES_PER_PAGE
+  );
   const dimensions = MusicLayout.getDimensions(pageParams);
   const measurements = new Measurements(
     ABOVE_BELOW_CT,
