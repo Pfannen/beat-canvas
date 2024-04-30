@@ -212,6 +212,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
           beamData: displayData.beamInfo,
           beamHeight,
           beamGap: beamHeight,
+          stemWidth: stemData.width,
         });
       }
     }

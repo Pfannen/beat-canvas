@@ -7,6 +7,7 @@ export type NoteBeamDrawerArgs = {
   drawCanvas: IDrawingCanvas;
   beamData: NoteBeamInfo;
   endOfStem: Coordinate;
+  stemWidth: number;
   noteDirection: NoteDirection;
   beamHeight: number;
   beamGap: number;

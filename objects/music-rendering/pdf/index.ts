@@ -22,10 +22,10 @@ export const drawPDF = async () => {
 };
 
 const increasingDown: Note[] = [
-  { x: 0, y: -2, type: "sixteenth" },
-  { x: 0.25, y: -1, type: "sixteenth" },
-  { x: 0.5, y: 4, type: "sixteenth" },
-  { x: 0.75, y: 6, type: "eighth" },
+  { x: 0, y: -8, type: "eighth" },
+  { x: 0.5, y: 0, type: "eighth" },
+  // { x: 0.5, y: 12, type: "sixteenth" },
+  // { x: 0.75, y: 13, type: "eighth" },
 ];
 
 const increasingUp: Note[] = [
@@ -43,10 +43,10 @@ const decreasingDown: Note[] = [
 ];
 
 const decreasingUp: Note[] = [
-  { x: 0, y: 3, type: "sixteenth" },
-  { x: 0.25, y: 2, type: "sixteenth" },
+  { x: 0, y: 10, type: "sixteenth" },
+  { x: 0.25, y: 1, type: "sixteenth" },
   { x: 0.5, y: -1, type: "sixteenth" },
-  { x: 0.75, y: -4, type: "sixteenth" },
+  { x: 0.75, y: -2, type: "sixteenth" },
 ];
 
 const constantUp: Note[] = [

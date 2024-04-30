@@ -1,5 +1,5 @@
 import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
-import { getSVGCenter } from "@/utils/svg";
+import { getSVGCenter, getSVGTopLeft } from "@/utils/svg";
 import { Color, PDFPage, degrees, rgb } from "pdf-lib";
 
 type PDFLibGenerator<T extends keyof IDrawingCanvas> = (
@@ -58,6 +58,10 @@ export class PDFLibDrawingCanvas {
         const svgCenter = getSVGCenter(options.viewBox, scale);
         x = centerX - svgCenter.x;
         y = centerY + svgCenter.y;
+      } else {
+        const topLeft = getSVGTopLeft(options.viewBox, scale);
+        x -= topLeft.x;
+        y += topLeft.y;
       }
       options.paths.forEach((path) => {
         page.drawSvgPath(path, {

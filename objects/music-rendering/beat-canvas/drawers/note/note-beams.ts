@@ -1,35 +1,54 @@
 import { NoteDirection } from "@/lib/notes/types";
 import { Coordinate } from "@/types";
 import { NoteBeamDrawer } from "@/types/music-rendering/canvas/beat-canvas/drawers/note/note-beams";
+import { SVGData } from "@/types/svg";
+import { getSVGHeight, getSVGWidth } from "@/utils/svg";
+import { createRotatedRectangleSVG } from "@/utils/svg/path";
 
 export const beamDrawer: NoteBeamDrawer = ({
   drawCanvas,
   noteDirection,
   beamData,
   endOfStem,
+  stemWidth,
   beamHeight,
   beamGap,
 }) => {
   beamData.beams?.forEach((beam) => {
-    const { angle, height } = adjustBeamData(
-      beamHeight,
-      noteDirection,
-      beam.angle,
-      beam.number,
-      beamData.index
-    );
     const y = adjustYValue(
       endOfStem.y,
       noteDirection,
       beamHeight,
       beamGap,
-      beam.number
+      beam.number,
+      beam.angle
     );
-    drawCanvas.drawRectangle({
-      corner: { x: endOfStem.x, y },
-      height: height,
-      width: beam.length,
-      drawOptions: { degreeRotation: angle },
+    const startPoint = { x: endOfStem.x, y };
+    const beamSVG = createRotatedRectangleSVG(
+      startPoint,
+      beam.length,
+      beamHeight,
+      beam.angle
+    );
+    let adjustedStart = adjustDrawPoint(
+      noteDirection,
+      stemWidth,
+      startPoint,
+      beam.angle,
+      beamHeight,
+      beamData.index
+    );
+    adjustedStart = adjustDrawPointSVG(
+      adjustedStart,
+      beam.angle,
+      beamSVG,
+      beamData.index
+    );
+    drawCanvas.drawSVG({
+      x: adjustedStart.x,
+      y: adjustedStart.y,
+      paths: beamSVG.paths,
+      viewBox: beamSVG.viewBox,
     });
   });
 };
@@ -48,36 +67,59 @@ const adjustYValue = (
   dir: NoteDirection,
   beamHeight: number,
   beamGap: number,
-  beamNumber: number
+  beamNumber: number,
+  beamAngle: number
 ) => {
+  if (dir === "up") {
+    let offset;
+    if (beamAngle <= 0) {
+      offset = calculateBeamOffset(beamHeight, beamGap * 2, beamNumber); //For whatever reason
+    } else {
+      offset = calculateBeamOffset(beamHeight, beamGap, beamNumber);
+    }
+    return y - offset;
+  }
   const offset = calculateBeamOffset(beamHeight, beamGap, beamNumber);
-  return dir === "up" ? y - offset : y + offset;
+  return y + offset;
 };
 
-const adjustBeamData = (
-  height: number,
-  direction: NoteDirection,
+const adjustDrawPoint = (
+  noteDirection: NoteDirection,
+  stemWidth: number,
+  start: Coordinate,
   angle: number,
-  beamNumber: number,
+  beamHeght: number,
   noteIndex: number
 ) => {
-  angle *= -1;
-  if (noteIndex !== 0) {
-    angle += 180;
-    if (direction === "up") {
-      height = -height;
-    }
-  } else {
-    if (direction === "down") {
-      height = -height;
+  const tolerenceHeight = beamHeght * 0.95;
+  if (noteIndex === 0) {
+    if (noteDirection === "up") {
+      if (angle > 0) return { x: start.x, y: start.y - tolerenceHeight };
+    } else if (noteDirection === "down") {
+      let x = (start.x += stemWidth);
+      if (angle <= 0) return { x, y: (start.y += tolerenceHeight) };
+      return { x, y: start.y };
     }
   }
-  return { height, angle };
+  return start;
 };
 
-const adjustStartPos = (
-  direction: NoteDirection,
-  angle: number,
+const adjustDrawPointSVG = (
   start: Coordinate,
-  beamNumber: number
-) => {};
+  angle: number,
+  svg: SVGData,
+  noteIndex: number
+) => {
+  const svgHeight = getSVGHeight(svg.viewBox);
+  if (noteIndex !== 0) {
+    const svgWidth = getSVGWidth(svg.viewBox);
+    if (angle > 0) {
+      return { x: start.x - svgWidth, y: start.y };
+    }
+    return { x: start.x - svgWidth, y: start.y + svgHeight };
+  }
+  if (angle > 0) {
+    return { x: start.x, y: start.y + svgHeight };
+  }
+  return start;
+};

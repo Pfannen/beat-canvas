@@ -1,7 +1,11 @@
 import { NoteDirection } from "@/lib/notes/types";
 import { NoteAnnotations } from "../../music/note-annotations";
 
-export type BeamData = { angle: number; length: number; number: number };
+export type BeamData = {
+  angle: number;
+  length: number;
+  number: number;
+};
 
 export type NoteBeamInfo = { index: number; beams?: BeamData[] }; //Index is where the note belongs in the group of beams. An index of 0 means its the first note in the group
 

@@ -60,4 +60,18 @@ export class TrigHelpers {
     }
     return { length, angle };
   }
+
+  static calculateEndpoint(
+    point: Coordinate,
+    angleDegrees: number,
+    width: number
+  ) {
+    const radians = this.degreesToRadians(angleDegrees);
+    // Calculate endpoint coordinates
+    const endX = point.x + width * Math.cos(radians);
+    const endY = point.y + width * Math.sin(radians);
+
+    // Return the endpoint coordinates as an object
+    return { x: endX, y: endY };
+  }
 }

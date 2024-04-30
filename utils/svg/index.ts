@@ -29,6 +29,12 @@ export const getSVGCenter = (viewBox: ViewBox, scale = 1) => {
   return { x: centerX, y: centerY };
 };
 
+export const getSVGTopLeft = (viewBox: ViewBox, scale: number) => {
+  const x = getSVGX(viewBox) * scale;
+  const y = getSVGY(viewBox) * scale;
+  return { x, y };
+};
+
 export const calculateScaleToWidth = (viewBox: ViewBox, width = 1) => {
   const svgWidth = getSVGWidth(viewBox);
   const scale = width / svgWidth;
