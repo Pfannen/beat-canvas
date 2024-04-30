@@ -4,19 +4,19 @@ import { createPDFFromMeasures } from "@/utils/import-export/export-pdf";
 export const drawPDF = async () => {
   const measures: Measure[] = [];
   measures.push({ notes: test2 });
-  measures.push({ notes: increasingDown });
-  measures.push({ notes: increasingUp });
-  measures.push({ notes: decreasingDown });
-  measures.push({ notes: decreasingUp });
-  measures.push({ notes: constantUp });
-  measures.push({ notes: constantDown });
-  measures.push({ notes: nonOrderedUp });
-  measures.push({ notes: nonOrderedDown });
-  measures.push({ notes: [] });
-  measures.push({ notes: test });
-  measures.push({ notes: test });
-  measures.push({ notes: increasingDown });
-  measures.push({ notes: test });
+  // measures.push({ notes: increasingDown });
+  // measures.push({ notes: increasingUp });
+  // measures.push({ notes: decreasingDown });
+  // measures.push({ notes: decreasingUp });
+  // measures.push({ notes: constantUp });
+  // measures.push({ notes: constantDown });
+  // measures.push({ notes: nonOrderedUp });
+  // measures.push({ notes: nonOrderedDown });
+  // measures.push({ notes: [] });
+  // measures.push({ notes: test });
+  // measures.push({ notes: test });
+  // measures.push({ notes: increasingDown });
+  // measures.push({ notes: test });
 
   return createPDFFromMeasures(measures);
 };
@@ -85,8 +85,8 @@ const test: Note[] = [
 ];
 
 const test2: Note[] = [
-  { x: 0, y: -2, type: "sixteenth" },
-  { x: 0.5, y: -1, type: "eighth" },
-  { x: 1, y: 4, type: "eighth" },
-  { x: 2, y: 6, type: "sixteenth" },
+  { x: 0, y: -8, type: "eighth" },
+  { x: 0.75, y: -7, type: "eighth" },
+  // { x: 2, y: -6, type: "eighth" },
+  // { x: 3, y: -5, type: "eighth" },
 ];
