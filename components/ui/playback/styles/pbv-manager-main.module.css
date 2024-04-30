@@ -1,5 +1,5 @@
 .managers_container {
-    border-bottom: 1px solid var(--line-color);
+	border-bottom: 1px solid var(--line-color);
 }
 
 .managers_container > * {

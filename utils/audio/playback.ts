@@ -190,7 +190,7 @@ export class PlaybackManager extends VolumeManager {
 			const player = this.players[id];
 			let curEnd = end;
 			if (curEnd > player.buffer.duration) curEnd = player.buffer.duration - 1;
-			let curStart = start < end ? start : 0;
+			let curStart = start <= end ? start : 0;
 
 			const newBuffer = toneBufferToAudioBuffer(player.buffer, [
 				curStart,

@@ -6,12 +6,9 @@ import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
 import PlaybackManagerComponent from '../playback-manager';
 import PlaybackVolumeManager from '../playback-volume-manager';
 import useLoopPlayback from '@/components/hooks/usePlayback/useLoopPlayback';
-
-interface LoopPlaybackManagerProps {
-	sourcePlaybackManager: MusicPlaybackManager;
-	start: number;
-	end: number;
-}
+import PBVManagerMain from '../styles/pbv-manager-main';
+import { useMusic } from '@/components/providers/music';
+import { getMeasuresStartAndEndTime } from '@/utils/music/time/measures';
 
 const DEFAULT_LOOP_COUNT = 4;
 const MAX_LOOP_COUNT = 10;
@@ -21,14 +18,32 @@ const getValidLoopCountValue = (attemptedLoopCount: number) => {
 	return Math.min(MAX_LOOP_COUNT, Math.max(MIN_LOOP_COUNT, attemptedLoopCount));
 };
 
+export interface LoopPlaybackManagerProps {
+	sourcePlaybackManager: MusicPlaybackManager;
+	start: number;
+	end: number;
+	stopLooping?: () => void;
+}
+
 const LoopPlaybackManager: FunctionComponent<LoopPlaybackManagerProps> = ({
 	sourcePlaybackManager,
 	start,
 	end,
 }) => {
-	const [rangedPBM, _] = useState<MusicPlaybackManager>(() =>
-		sourcePlaybackManager.copy([start, end])
-	);
+	// Use useMusic so we can get the measures start and end reference (can take in measures later if needed)
+	const {
+		measuresItems: { measures },
+	} = useMusic();
+
+	// Store the ranged pbm in state using set state
+	// (so we can initialize it once and have it be present before anything else gets executed)
+	const [rangedPBM, _] = useState<MusicPlaybackManager>(() => {
+		const [startSeconds, endSeconds] = getMeasuresStartAndEndTime(measures, {
+			durationStartIndex: start,
+			durationEndIndex: end,
+		});
+		return sourcePlaybackManager.copy([startSeconds, endSeconds]);
+	});
 
 	const { loopProps, playbackProps } = useLoopPlayback(rangedPBM, {
 		loopCount: DEFAULT_LOOP_COUNT,
@@ -42,8 +57,8 @@ const LoopPlaybackManager: FunctionComponent<LoopPlaybackManagerProps> = ({
 
 	return (
 		<div>
-			<PlaybackVolumeManager
-				volumePairs={playbackProps.volumePairs}
+			<PBVManagerMain
+				musicVolumePairs={playbackProps.musicVolumePairMap}
 				modifyVolume={playbackProps.playbackManager.modifyVolume}
 				title="Ranged Measures"
 				onPlay={loopProps.startLooping}

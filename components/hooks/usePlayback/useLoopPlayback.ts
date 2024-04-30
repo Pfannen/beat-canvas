@@ -15,7 +15,7 @@ const useLoopPlayback = (
 	options: LoopPlaybackOptions = {}
 ) => {
 	const {
-		volumePairs,
+		musicVolumePairMap,
 		playbackState,
 		seekPercentage,
 		playMusic,
@@ -95,7 +95,7 @@ const useLoopPlayback = (
 			loopCount,
 		},
 		playbackProps: {
-			volumePairs,
+			musicVolumePairMap,
 			playbackState,
 			seekPercentage,
 			playbackManager,

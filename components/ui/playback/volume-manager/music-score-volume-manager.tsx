@@ -3,7 +3,7 @@ import classes from './music-score-volume-manager.module.css';
 import VolumeManager, { VolumeManagerProps } from '.';
 import { MusicVolumePairMap } from '@/types/audio/volume';
 
-interface MusicScoreVolumeManagerProps {
+export interface MusicScoreVolumeManagerProps {
 	musicVolumePairs: MusicVolumePairMap;
 	modifyVolume: (audioId: string, volumePct: number) => void;
 }

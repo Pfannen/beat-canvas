@@ -3,18 +3,7 @@ import ReactModal from 'react-modal';
 import { FunctionComponent, useRef } from 'react';
 import { Selection } from '@/components/hooks/useSelection';
 import ModalDisplay from './modal-display';
-
-const modalStyles: ReactModal.Styles = {
-	content: {
-		padding: 0,
-		maxWidth: 1225,
-		marginInline: 'auto',
-		backgroundColor: 'var(--surface-primary)',
-		height: 'fit-content',
-		marginBlock: 'auto',
-		border: 'none',
-	},
-};
+import { reactModalStyles } from '@/utils/css';
 
 type EditMeasureModalProps = {
 	showModal: boolean;
@@ -40,7 +29,7 @@ const EditMeasureModal: FunctionComponent<EditMeasureModalProps> = ({
 			isOpen={showModal}
 			onRequestClose={onCloseModal}
 			shouldCloseOnOverlayClick={true}
-			style={modalStyles}
+			style={reactModalStyles}
 			overlayClassName={classes.modal_overlay}
 		>
 			{showModal && (
