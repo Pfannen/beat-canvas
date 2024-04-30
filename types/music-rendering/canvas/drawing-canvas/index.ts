@@ -45,8 +45,22 @@ export type SVGOptions = {
 
 export type SVGDrawOptions<T = {}> = OptionsWithDrawOptions<SVGOptions, T>;
 
+export type DrawingCanvasFontFamily = "Times New Roman";
+
+export type TextOptions = {
+  x: number;
+  y: number;
+  text: string;
+  fontSize: number;
+  fontFamily: DrawingCanvasFontFamily;
+  center?: boolean;
+};
+
+export type TextDrawOptions<T = {}> = OptionsWithDrawOptions<TextOptions, T>;
+
 export interface IDrawingCanvas {
   drawRectangle(options: RectangleDrawOptions): void;
   drawEllipse(options: EllipseDrawOptions): void;
   drawSVG(options: SVGDrawOptions): void;
+  drawText(options: TextDrawOptions): void;
 }

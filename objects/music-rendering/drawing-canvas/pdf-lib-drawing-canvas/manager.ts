@@ -13,7 +13,7 @@ export class PDFLibCanvasManager extends CanvasManager {
   createDrawingCanvas(): IDrawingCanvas {
     this.checkPDFDoc();
     const newPage = this.pdfDoc!.addPage(this.pageSize);
-    return PDFLibDrawingCanvas.getDrawingCanvas(newPage);
+    return new PDFLibDrawingCanvas(newPage);
   }
 
   private checkPDFDoc() {
