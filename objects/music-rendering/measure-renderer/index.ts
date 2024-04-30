@@ -14,6 +14,7 @@ import { getNoteDuration } from "@/components/providers/music/utils";
 import { CoordinateSection } from "@/types/music-rendering/measure-manager/measure-outline";
 import {
   MeasureAttributes,
+  MeasureSectionMetadata,
   StaticMeasureAttributes,
   staticMeasureAttributesKeys,
 } from "@/types/music";
@@ -145,7 +146,7 @@ export class MeasureRenderer {
   private generateMeasureAttributes() {
     const measureSections: {
       sections: InitialMeasureSectionArray;
-      attributes: StaticMeasureAttributes;
+      attributes: MeasureSectionMetadata;
     }[] = [];
     for (const locObj of noteAttributeGenerator(this.measures)) {
       if (locObj.measureStart) {
@@ -310,7 +311,7 @@ const combineMeasureSectionObjects = (
   currentAttributes: MeasureAttributes,
   newAttributes?: Partial<MeasureAttributes>
 ) => {
-  const attributes = {} as StaticMeasureAttributes;
+  const attributes = {} as MeasureSectionMetadata;
   const sections: InitialMeasureSectionArray = [];
   if (newAttributes) {
     staticMeasureAttributesKeys.forEach((key) => {
@@ -322,7 +323,7 @@ const combineMeasureSectionObjects = (
           displayByDefault: true,
           data: section.data,
         });
-        attributes[key] = section.data as never;
+        attributes[section.key] = section.data as never;
       } else if (currentAttributes[key]) {
         const section = getMeasureSectionData(key, currentAttributes[key]);
         sections.push({
@@ -330,7 +331,7 @@ const combineMeasureSectionObjects = (
           displayByDefault: false,
           data: section.data,
         });
-        attributes[key] = section.data as never;
+        attributes[section.key] = section.data as never;
       }
     });
   } else {
@@ -343,7 +344,7 @@ const combineMeasureSectionObjects = (
           displayByDefault: false,
           data: section.data,
         });
-        attributes[key] = section.data as never;
+        attributes[section.key] = section.data as never;
       }
     });
   }

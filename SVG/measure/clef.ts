@@ -63,7 +63,7 @@ const celfInfo: Record<Clef, ClefInfo> = {
 };
 
 export const getClefSVG = (clef: Clef): ClefInfoSVG => {
-  const info = celfInfo["bass"];
+  const info = celfInfo[clef];
   const svg = clefShapeSVG[info.shape];
   return {
     centerY: info.centerY,

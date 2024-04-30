@@ -23,7 +23,7 @@ import { getFlagDrawer } from "./drawers/note/note-flag";
 import { beamDrawer } from "./drawers/note/note-beams";
 import { Measurements } from "@/objects/measurement/measurements";
 import { CoordinateSectionArray } from "@/types/music-rendering/measure-manager/measure-outline";
-import { MeasureSection, StaticMeasureAttributes } from "@/types/music";
+import { MeasureSection, MeasureSectionMetadata } from "@/types/music";
 import { getMeasureSectionDrawer } from "./drawers/measure-sections";
 import { MeasureSectionDrawerArgs } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure/measure-section";
 import { mergePartial } from "@/utils";
@@ -32,26 +32,25 @@ import { getRestDrawer } from "./drawers/measure/measure-rests";
 import { getNoteStemDrawer, noteStemDrawer } from "./drawers/note/note-stem";
 import { nonBodyDrawer } from "./drawers/note/non-body";
 
-const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
-  noteBodyAspectRatio: 1.5,
-  noteBodyAngle: -15,
-  stemHeightBodyFraction: 3,
-  stemWidthBodyFraction: 0.075,
-  flagHeightBodyFraction: 0.5,
-  annotationDistanceBodyFraction: 0.5,
-  dotAnnotationAspectRatio: 1,
-};
-
-const tempMeasureDrawOptions: BeatCanvasMeasureDrawOptions = {
-  endBarWidthLineFraction: 1.25,
-};
-
-const tempDrawOptions = {
-  note: tempNoteDrawOptions,
-  measure: tempMeasureDrawOptions,
-};
-
 const getDrawOptions = () => {
+  const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
+    noteBodyAspectRatio: 1.5,
+    noteBodyAngle: -15,
+    stemHeightBodyFraction: 3,
+    stemWidthBodyFraction: 0.075,
+    flagHeightBodyFraction: 0.5,
+    annotationDistanceBodyFraction: 0.5,
+    dotAnnotationAspectRatio: 1,
+  };
+
+  const tempMeasureDrawOptions: BeatCanvasMeasureDrawOptions = {
+    endBarWidthLineFraction: 1.25,
+  };
+
+  const tempDrawOptions = {
+    note: tempNoteDrawOptions,
+    measure: tempMeasureDrawOptions,
+  };
   return tempDrawOptions;
 };
 
@@ -309,7 +308,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
   protected drawMeasureSections(
     measureBottomY: number,
     sections: CoordinateSectionArray<Exclude<MeasureSection, "note">>,
-    sectionAttributes: StaticMeasureAttributes
+    sectionAttributes: MeasureSectionMetadata
   ) {
     const yPosToAbsolute = this.yPosToAbsolute.bind(this, measureBottomY);
 

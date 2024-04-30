@@ -11,12 +11,14 @@ import { MemoizedMeasureSelectedCanvas } from "../reusable/music-canvas/measure-
 import useOverlayPositions from "@/components/hooks/workspace/useOverlayPositions";
 import MeasureSelectOverlay from "./measure-select-overlay";
 
+const height = 900;
+const unit = "px";
 const aspectRatio = 0.75;
 
 type WorkspaceProps = {};
 
 const Workspace: FunctionComponent<WorkspaceProps> = () => {
-  const { overlayPositions, onMeasureRendered } = useOverlayPositions(100);
+  const { overlayPositions, onMeasureRendered } = useOverlayPositions(height);
   const ws = useWorkSpace();
   const { measuresItems } = useMusic();
 
@@ -60,7 +62,9 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
         style={{ "--aspect-ratio": aspectRatio } as CSSProperties}
       >
         <MemoizedMeasureSelectedCanvas
+          height={height}
           measures={measuresItems.measures}
+          unit={unit}
           aspectRatio={aspectRatio}
           onMeasureRendered={onMeasureRendered}
         />

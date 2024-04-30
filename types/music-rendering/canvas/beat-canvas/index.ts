@@ -3,6 +3,7 @@ import { Coordinate } from "@/types";
 import {
   DynamicMeasureAttributes,
   MeasureSection,
+  MeasureSectionMetadata,
   StaticMeasureAttributes,
 } from "@/types/music";
 import { NoteDirection } from "@/lib/notes/types";
@@ -77,7 +78,7 @@ export type MeasureDrawData = {
 };
 
 export type MeasureData = MeasureDrawData & {
-  sectionAttributes: StaticMeasureAttributes;
+  sectionAttributes: Omit<MeasureSectionMetadata, "notes">;
   dynamicAttributes?: Partial<DynamicMeasureAttributes>;
 };
 

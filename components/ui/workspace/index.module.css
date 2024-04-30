@@ -11,9 +11,10 @@
 
 .music_canvas {
   margin-inline: auto;
-  height: 100vh;
+  /* height: 100vh; */
+  height: 900px;
   aspect-ratio: var(--aspect-ratio);
-  max-height: 950px;
+  /* max-height: 950px; */
   position: relative;
 }
 

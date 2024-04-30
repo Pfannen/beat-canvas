@@ -10,6 +10,7 @@ import MusicCanvas from "@/components/ui/reusable/music-canvas";
 import { PositionData } from "@/types/ui/music-modal";
 import { Coordinate } from "@/types";
 import { ReactCanvasManager } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/manager";
+import { createUnitConverters } from "@/utils/music-rendering";
 
 const lineToSpaceRatio = LINE_TO_SPACE_R / 2;
 
@@ -52,7 +53,8 @@ const ModalMeasureDisplay: FunctionComponent<ModalMeasureDisplayProps> = ({
       measurements={measurements}
       sectionToggleList={{ note: true }}
       manager={new ReactCanvasManager(measurements, "%", aspectRatio, true)}
-      aspectRatio={aspectRatio}
+      unit="%"
+      unitConverters={createUnitConverters(aspectRatio)}
     >
       <SegmentedMeasures
         measures={measures}

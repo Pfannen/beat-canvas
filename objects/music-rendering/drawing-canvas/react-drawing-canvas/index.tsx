@@ -100,6 +100,7 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
       diameter,
       this.unit
     );
+
     styleCreator.center();
     ReactDrawingCanvas.attachDrawOptions(drawOptions, styleCreator);
     styleCreator.addBorderRadius("50%");

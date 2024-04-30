@@ -2,19 +2,21 @@ import { FunctionComponent, ReactNode } from "react";
 import { Measure } from "@/components/providers/music/types";
 import { MusicDimensionData } from "@/types/music-rendering/music-layout";
 import { Measurements } from "@/objects/measurement/measurements";
-import { MeasureSectionToggle } from "@/types/music-rendering";
+import { MeasureSectionToggle, UnitConverters } from "@/types/music-rendering";
 import { ReactCanvasManager } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/manager";
-import { createUnitConverters } from "@/utils/music-rendering";
 import { drawMeasures } from "@/types/music-rendering/react";
+import { UnitMeasurement } from "@/types";
+import { appendUnit } from "@/utils";
 
 type MusicCanvasProps = {
   measures: Measure[];
   dimensions: MusicDimensionData;
   measurements: Measurements;
   manager: ReactCanvasManager;
-  aspectRatio: number;
+  unit: UnitMeasurement;
   sectionToggleList?: MeasureSectionToggle;
   children?: ReactNode;
+  unitConverters?: UnitConverters;
 };
 
 const MusicCanvas: FunctionComponent<MusicCanvasProps> = ({
@@ -22,9 +24,10 @@ const MusicCanvas: FunctionComponent<MusicCanvasProps> = ({
   dimensions,
   measurements,
   manager,
-  aspectRatio,
+  unit,
   sectionToggleList,
   children,
+  unitConverters,
 }) => {
   drawMeasures(
     measures,
@@ -32,11 +35,15 @@ const MusicCanvas: FunctionComponent<MusicCanvasProps> = ({
     manager,
     measurements,
     sectionToggleList,
-    createUnitConverters(aspectRatio)
+    unitConverters
   );
 
   return manager.getPages({
-    style: { position: "relative", width: "100%", height: "100%" },
+    style: {
+      position: "relative",
+      width: appendUnit(dimensions.pageDimensions.width, unit),
+      height: appendUnit(dimensions.pageDimensions.height, unit),
+    },
     children,
   });
 };

@@ -60,6 +60,7 @@ export const getRelativeCanvasDrawOptions = (
   aspectRatio: number
 ): DeepPartial<BeatCanvasDrawOptions> => {
   const xConverter = createXValueConverter(aspectRatio);
+  console.log("here");
   return {
     note: {
       noteBodyAspectRatio: xConverter(1.5),

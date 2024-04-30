@@ -17,20 +17,26 @@ import {
 import { ReactCanvasManager } from "@/objects/music-rendering/drawing-canvas/react-drawing-canvas/manager";
 import { withNotifications } from "@/objects/music-rendering/beat-canvas/notification-wrapper/manager";
 import React from "react";
+import { UnitMeasurement } from "@/types";
+import { createUnitConverters } from "@/utils/music-rendering";
 
 type MeasureSelectCanvasProps = {
   measures: Measure[];
+  height: number;
   aspectRatio: number;
+  unit: UnitMeasurement;
   onMeasureRendered: (args: MeasureRenderArgs) => void;
 };
 
 const MeasureSelectCanvas: FunctionComponent<MeasureSelectCanvasProps> = ({
   measures,
+  height,
   aspectRatio,
+  unit,
   onMeasureRendered,
 }) => {
   const dimensions = useMemo(
-    () => MusicLayout.getMarginlessSheetMusic(100, 100),
+    () => MusicLayout.getMarginlessSheetMusic(height * aspectRatio, height),
     []
   );
   const measurements = useMemo(
@@ -43,18 +49,24 @@ const MeasureSelectCanvas: FunctionComponent<MeasureSelectCanvasProps> = ({
       ),
     []
   );
-
   const onMeasureRender = (args: MeasureNotifierArgs) => {
     const renderArgs: MeasureRenderArgs = {
       ...args,
       height: dimensions.measureDimensions.height,
-      unit: "%",
+      unit,
     };
     onMeasureRendered(renderArgs);
   };
 
-  const manager = new ReactCanvasManager(measurements, "%", aspectRatio, false);
+  const manager = new ReactCanvasManager(
+    measurements,
+    unit,
+    aspectRatio,
+    false
+  );
   withNotifications(manager, onMeasureRender);
+  const unitConverts =
+    unit === "%" ? createUnitConverters(aspectRatio) : undefined;
 
   return (
     <MusicCanvas
@@ -62,7 +74,8 @@ const MeasureSelectCanvas: FunctionComponent<MeasureSelectCanvasProps> = ({
       measurements={measurements}
       dimensions={dimensions}
       manager={manager}
-      aspectRatio={aspectRatio}
+      unitConverters={unitConverts}
+      unit={unit}
     />
   );
 };
