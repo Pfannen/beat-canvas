@@ -13,6 +13,7 @@ import { NoteAnnotation } from "@/types/music/note-annotations";
 import { CoordinateSectionArray } from "../../measure-manager/measure-outline";
 import { IDrawingCanvas } from "../drawing-canvas";
 import { Measurements } from "@/objects/measurement/measurements";
+import { BlockDirection } from "../../pdf";
 
 export type StemOptions = {
   bodyWidth: number;
@@ -71,6 +72,7 @@ export type MeasureDrawData = {
   measureIndex: number;
   pageNumber: number;
   noteStartX: number;
+  paddingValues: BlockDirection<number>;
 };
 
 export type DynamicAttributeData = RecordEntryArray<DynamicMeasureAttributes>;

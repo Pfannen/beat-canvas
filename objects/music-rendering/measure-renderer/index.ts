@@ -15,7 +15,6 @@ import { CoordinateSection } from "@/types/music-rendering/measure-manager/measu
 import {
   DynamicMeasureAttribute,
   MeasureAttributes,
-  MeasureSectionMetadata,
   StaticMeasureAttribute,
   StaticMeasureAttributes,
 } from "@/types/music";
@@ -268,6 +267,7 @@ export class MeasureRenderer {
         noteStartX: noteSection.startX,
         sectionAttributes: measureDetails.sections[measureIndex].attributes,
         dynamicAttributes: measureDetails.dynamicAttributes[measureIndex],
+        paddingValues: this.musicDimensions.measureDimensions.padding,
       });
     });
   }

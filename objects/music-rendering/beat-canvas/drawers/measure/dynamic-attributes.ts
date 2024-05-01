@@ -21,9 +21,9 @@ const paddingFraction = 0.15;
 
 const drawDynamic: DynamicAttributeDel<"dynamic"> =
   (dynamic) =>
-  ({ drawCanvas, measureYValues, bodyHeight, noteStartX }) => {
+  ({ drawCanvas, measureYValues, paddingValues, noteStartX }) => {
     const text = getDynamicSonataString(dynamic);
-    const padding = bodyHeight * paddingFraction;
+    const padding = paddingValues.bottom * (1 - paddingFraction);
     const y = measureYValues.bottom - padding;
     drawCanvas.drawText({
       text,

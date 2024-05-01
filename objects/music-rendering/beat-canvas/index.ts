@@ -32,8 +32,8 @@ import { getNoteBodyDrawer } from "./drawers/note/note-body";
 import { getRestDrawer } from "./drawers/measure/measure-rests";
 import { getNoteStemDrawer, noteStemDrawer } from "./drawers/note/note-stem";
 import { nonBodyDrawer } from "./drawers/note/non-body";
-import { DynamicAttributeDrawerArgs } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure/dynamic-attributes";
 import { getDynamicAttributeDrawer } from "./drawers/measure/dynamic-attributes";
+import { BlockDirection } from "@/types/music-rendering/pdf";
 
 const getDrawOptions = () => {
   const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
@@ -309,6 +309,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     this.drawDynamicAttributes(
       measureBottomY,
       options.noteStartX,
+      options.paddingValues,
       options.dynamicAttributes
     );
   }
@@ -320,6 +321,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
   protected drawDynamicAttributes(
     measureBottomY: number,
     noteStartX: number,
+    paddingValues: BlockDirection<number>,
     dynamicAttributes?: DynamicAttributeData
   ) {
     if (dynamicAttributes) {
@@ -336,6 +338,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
         },
         bodyHeight: this.measurements.getBodyHeight(),
         noteStartX,
+        paddingValues,
       };
       dynamicAttributes.forEach(({ key, value }) => {
         const drawer = getDynamicAttributeDrawer(key, value);

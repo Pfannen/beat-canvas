@@ -7,6 +7,7 @@ import {
 
 export type DynamicAttributeDrawerArgs = {
   measureYValues: BlockDirection<number>;
+  paddingValues: BlockDirection<number>;
   bodyHeight: number;
   noteStartX: number;
 };
