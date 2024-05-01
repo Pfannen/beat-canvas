@@ -30,18 +30,25 @@ export type AnnotationSelectionMetadata = SelectionMetadata<NoteAnnotations>;
 
 export type AttributeSelectionMetadata = SelectionMetadata<MeasureAttributes>;
 
+export type ScoreSelectionType = 'segment' | 'measure';
+
 // NOTE: Work-in-progress
-export type SelectionData = {
+export type SegmentSelectionData = {
 	measureIndex: number;
 	measureNotes: Note[];
 	rollingAttributes: MeasureAttributes;
-	nonRollingAttributes: Partial<MeasureAttributes>;
+	attributesAtX: Partial<MeasureAttributes>;
 	xStart: number;
 	xEnd: number;
 	y: number;
 	dottedValidator: DottedValidator;
 	noteIndex?: number;
 	note?: Note;
+};
+
+export type MeasureSelectionData = {
+	measureIndex: number;
+	changedMeasureAttributes: Partial<MeasureAttributes>;
 };
 
 // Maps a key to the number of times it's present
@@ -53,7 +60,7 @@ export type CountMap<T> = {
 export type MetadataUpdater<T> = (
 	metadata: SelectionMetadata<T>,
 	countMap: CountMap<T>,
-	selectionData: SelectionData
+	selectionData: SegmentSelectionData
 ) => void;
 
 // Function used to update a metadata entry
@@ -76,6 +83,8 @@ export type AllSelectionsHaveUpdater<T> = (
 	countMap: CountMap<T>,
 	validSelections: number
 ) => void;
+
+export type EqualityDelegate<T> = (item1?: T, item2?: T) => boolean;
 
 /* export type MetadataEntryUpdater2<T, K extends keyof T> = (
 	item: T[K],

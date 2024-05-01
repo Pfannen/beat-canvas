@@ -1,4 +1,4 @@
-import { SelectionData } from '../../../../types/modify-score/assigner/metadata';
+import { SegmentSelectionData } from '../../../../types/modify-score/assigner/metadata';
 import {
 	createNote,
 	createSelection,
@@ -25,7 +25,7 @@ test('4/4: x: 0', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes, xStart: 0 }),
 	];
 
@@ -41,7 +41,7 @@ test('4/4: x: 0, x: 1', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes, xStart: 0 }),
 		createSelection({ rollingAttributes, xStart: 1 }),
 	];
@@ -58,7 +58,7 @@ test('4/4: x: 3', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes, xStart: 3 }),
 	];
 
@@ -74,7 +74,7 @@ test('4/4: x: 2, x: 3.5', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes, xStart: 2 }),
 		createSelection({ rollingAttributes, xStart: 3.5 }),
 	];
@@ -91,7 +91,7 @@ test('4/4: x: 0.25', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes, xStart: 0.25 }),
 	];
 
@@ -107,7 +107,7 @@ test('4/4: x: 0, x: 3, x: 2.5, x: 3.5, x: 0.75', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes, xStart: 0 }),
 		createSelection({ rollingAttributes, xStart: 3 }),
 		createSelection({ rollingAttributes, xStart: 2.5 }),
@@ -131,7 +131,7 @@ test('3/4: x: 0', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes, xStart: 0 }),
 	];
 
@@ -157,7 +157,7 @@ test('4/4 ; 3/4: x: 0 ; x: 0', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes: rA1, xStart: 0 }),
 		createSelection({ rollingAttributes: rA2, xStart: 0 }),
 	];
@@ -180,7 +180,7 @@ test('4/4 ; 3/4: x: 1 ; x: 0', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes: rA1, xStart: 1 }),
 		createSelection({ rollingAttributes: rA2, xStart: 0 }),
 	];
@@ -203,7 +203,7 @@ test('4/4 ; 3/4: x: 2 ; x: 1', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes: rA1, xStart: 2 }),
 		createSelection({ rollingAttributes: rA2, xStart: 2 }),
 	];
@@ -230,7 +230,7 @@ test('4/4 ; 3/8: x: 0 ; x: 0', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes: rA1, xStart: 0 }),
 		createSelection({ rollingAttributes: rA2, xStart: 0 }),
 	];
@@ -253,7 +253,7 @@ test('4/4 ; 3/8: x: 0 ; x: 2', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes: rA1, xStart: 0 }),
 		createSelection({ rollingAttributes: rA2, xStart: 2 }),
 	];
@@ -276,7 +276,7 @@ test('4/4 ; 3/8: x: 0.25 ; x: 0', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes: rA1, xStart: 0.25 }),
 		createSelection({ rollingAttributes: rA2, xStart: 0 }),
 	];
@@ -303,7 +303,7 @@ test('2/2 ; 4/4: x: 0 ; x: 0', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes: rA1, xStart: 0 }),
 		createSelection({ rollingAttributes: rA2, xStart: 0 }),
 	];
@@ -326,7 +326,7 @@ test('2/2 ; 4/4: x: 0.5 ; x: 0', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes: rA1, xStart: 0.5 }),
 		createSelection({ rollingAttributes: rA2, xStart: 0 }),
 	];
@@ -349,7 +349,7 @@ test('2/2 ; 4/4: x: 0 ; x: 2', () => {
 		},
 	} as MeasureAttributes;
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes: rA1, xStart: 0 }),
 		createSelection({ rollingAttributes: rA2, xStart: 2 }),
 	];
@@ -374,7 +374,7 @@ test('4/4: [{ x: 0, t: quarter }], x: 1', () => {
 
 	const measureNotes: Note[] = [{ x: 0, y: 0, type: 'quarter' }];
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes, xStart: 1, measureNotes }),
 	];
 
@@ -392,7 +392,7 @@ test('4/4: [{ x: 0.5, t: eighth }], x: 0', () => {
 
 	const measureNotes: Note[] = [{ x: 0.5, y: 0, type: 'eighth' }];
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes, xStart: 0, measureNotes }),
 	];
 
@@ -413,7 +413,7 @@ test('4/4: [{ x: 0, t: half }, { x: 2.25, t: sixteenth }], x: 3, 3.5, 2', () => 
 		{ x: 2.25, y: 0, type: 'sixteenth' },
 	];
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes, xStart: 3, measureNotes }),
 		createSelection({ rollingAttributes, xStart: 3.5, measureNotes }),
 		createSelection({ rollingAttributes, xStart: 2, measureNotes }),
@@ -440,7 +440,7 @@ test('4/4 ; 3/8: [{ x: 0.5, t: eighth }] ; [{ x: 0.5, t: sixteenth }], x: 2, 1, 
 	const mN1: Note[] = [{ x: 0.5, y: 0, type: 'eighth' }];
 	const mN2: Note[] = [{ x: 0.5, y: 0, type: 'sixteenth' }];
 
-	const selections: SelectionData[] = [
+	const selections: SegmentSelectionData[] = [
 		createSelection({ rollingAttributes: rA1, xStart: 2, measureNotes: mN1 }),
 		createSelection({ rollingAttributes: rA1, xStart: 1, measureNotes: mN1 }),
 		createSelection({ rollingAttributes: rA1, xStart: 0, measureNotes: mN1 }),

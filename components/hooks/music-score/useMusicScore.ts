@@ -57,6 +57,16 @@ const useMusicScore = (init?: MusicScore) => {
 		setMusicScore(musicScore);
 	};
 
+	useEffect(() => {
+		setMusicScore((score) => {
+			const idx = score.parts.findIndex(
+				(part) => part.attributes.id === selectedPartId
+			);
+			if (idx !== -1) score.parts[idx] = partItems.part;
+			return { ...score };
+		});
+	}, [partItems.part]);
+
 	return {
 		scoreItems: {
 			musicScore,

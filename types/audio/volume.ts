@@ -1,4 +1,4 @@
-import { Player, ToneAudioBuffer, Volume } from 'tone';
+import { BasicPlaybackState, Player, ToneAudioBuffer, Volume } from 'tone';
 import { ToneInstrument } from './instrument';
 import { Dynamic } from '../music/note-annotations';
 
@@ -28,6 +28,16 @@ export type VolumePair = {
 	volumePercentage: number;
 };
 
+export type VolumeIdToPercentageMap = {
+	[audioId in string]: number;
+};
+
+export type VolumePairMap<T extends string = string> = {
+	[key in T]: VolumePair[];
+};
+
+export type MusicVolumePairMap = VolumePairMap<'master' | 'imported' | 'score'>;
+
 export type ToneBufferVolumePair = {
 	buffer: ToneAudioBuffer;
 	volumePercentage: number;
@@ -46,3 +56,9 @@ export type DecibelRange = {
 export type WedgeDynamicStore = {
 	startDynamic: Dynamic;
 };
+
+export type MusicPlaybackState =
+	| undefined
+	| BasicPlaybackState
+	| 'requires enqueue'
+	| 'enqueueing';

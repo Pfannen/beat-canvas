@@ -18,14 +18,14 @@ const VolumeManager: FunctionComponent<VolumeManagerProps> = ({
 		<>
 			{volumePairs.map((attributes) => (
 				<div key={attributes.audioId} className={volumeItemClassName}>
-					<p>{attributes.audioId}</p>
 					<PlaybackSlider
 						onChange={(event) => {
 							modifyVolume(attributes.audioId, +event.target.value / 100);
 						}}
 						defaultValue={attributes.volumePercentage * 100}
-						style={{ display: 'block' }}
+						/* style={{ display: 'block' }} */
 					/>
+					<p>{attributes.audioId}</p>
 				</div>
 			))}
 		</>

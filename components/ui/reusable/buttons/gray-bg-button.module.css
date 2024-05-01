@@ -1,0 +1,11 @@
+.gray_bg_button {
+	border-radius: var(--button-border-radius);
+	background-color: var(--surface-secondary);
+    padding: var(--button-padding);
+	color: var(--surface-primary);
+}
+
+.gray_bg_button:disabled {
+	background-color: var(--button-disabled-secondary);
+	cursor: default;
+}

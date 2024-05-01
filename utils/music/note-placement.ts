@@ -12,6 +12,7 @@ import {
 import { rightHandSplits } from '.';
 import { findPositionIndex } from '../../components/providers/music/hooks/useMeasures/utils'; // Jest doesn't like '@'
 import { indexIsValid } from '..';
+import { removeSlur } from './modify-score/note';
 
 // NOTE: This method should really only be used when it's known the x-value is valid
 // in terms of not cutting off any prior notes (also, it doesn't look ahead so notes
@@ -104,11 +105,39 @@ export const placeNote: NotePlacer = (note, notes, validator, tS) => {
 	return true;
 };
 
+const attemptRemoveSlur = (notes: Note[], noteIdx: number) => {
+	const note = notes[noteIdx];
+	if (!note.annotations?.slur) return true;
+
+	const { slur } = note.annotations;
+	// If this note starts a slur, go forward and attempt to remove it
+	if (slur.start) {
+		for (let i = noteIdx; i < notes.length; i++) {
+			if (removeSlur(note, notes[i])) break;
+		}
+	}
+	// If this note ends a slur(s), go backwards and attempt to remove it
+	if (slur.stop) {
+		for (let i = noteIdx; i >= 0; i--) {
+			if (removeSlur(note, notes[i])) break;
+		}
+	}
+
+	// The slur(s) were removed if there is no slur property remaining
+	return !note.annotations?.slur;
+};
+
 // TODO: Make function work with stacked notes (the reason for adding optional y-value)
 export const removeNote = (notes: Note[], x: number, y?: number) => {
 	const xIdx = findPositionIndex(x, notes);
 	if (xIdx >= notes.length || notes[xIdx].x !== x) return false;
 
+	if (!attemptRemoveSlur(notes, xIdx)) {
+		console.log(
+			'There was an issue removing the slur(s) on note ' + { note: notes[xIdx] }
+		);
+		console.log('Were there slurs that were cross-measured?');
+	}
 	notes.splice(xIdx, 1);
 	return true;
 };

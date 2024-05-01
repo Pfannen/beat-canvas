@@ -1,12 +1,8 @@
-import { FunctionComponent, useState } from 'react';
-import classes from './playback-volume-manager.module.css';
-import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
+import { FunctionComponent } from 'react';
 import PlaybackManagerComponent, {
 	PlaybackManagerProps,
 } from './playback-manager';
 import VolumeManager, { VolumeManagerProps } from './volume-manager';
-import { PlaybackManager } from '@/utils/audio/playback';
-import { MusicScore } from '@/types/music';
 
 interface PlaybackVolumeManagerProps
 	extends VolumeManagerProps,

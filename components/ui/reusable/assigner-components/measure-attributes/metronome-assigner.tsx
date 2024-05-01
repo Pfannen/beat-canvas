@@ -1,4 +1,4 @@
-import { FunctionComponent, useRef, useState } from 'react';
+import { FunctionComponent, useEffect, useRef, useState } from 'react';
 import classes from './MetronomeAssigner.module.css';
 import AssignerInputLayout from '../style/assigner-input-layout';
 import AssignerInputField from '../style/assigner-input-field';
@@ -15,7 +15,8 @@ import {
 	IKnownGenericAssignerComponent,
 } from '@/types/modify-score/assigner';
 import { getAssignValue } from '@/utils/music/modify-score/metadata-helpers';
-import { MeasureAttributes } from '@/types/music';
+import { MeasureAttributes, Metronome } from '@/types/music';
+import { metronomesAreEqual } from '@/utils/music/is-equal-helpers';
 
 const nameNoteTypesWithElement: AssignerDropdownItemDisplay[] = [
 	{ value: '1', displayValue: 'whole', el: <WholeNoteSVG /> },
@@ -36,15 +37,22 @@ const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
 	metadataEntry,
 }) => {
 	const inputRef = useRef<HTMLInputElement>(null);
-	const [bpm, setBPM] = useState(defaultBPM);
+	const [bpm, setBPM] = useState(
+		metadataEntry?.value?.beatsPerMinute || defaultBPM
+	);
 	const [beatNote, setBeatNote] = useState<AssignerDropdownItemDisplay>(
 		nameNoteTypesWithElement[2]
 	);
 
+	// Need an equality checker for metronomes
 	const assignValue = getAssignValue<MeasureAttributes, 'metronome'>(
-		{ beatsPerMinute: defaultBPM, beatNote: 4 },
-		metadataEntry
+		{ beatNote: 4, beatsPerMinute: bpm },
+		metadataEntry,
+		metronomesAreEqual
 	);
+	/* useEffect(() => {
+		setBPM(metadataEntry?.value?.beatsPerMinute || bpm);
+	}, [metadataEntry]); */
 
 	return (
 		<AssignerInputLayout>
@@ -53,7 +61,7 @@ const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
 				<AssignerInputField
 					type="number"
 					id="beats-per-minute"
-					defaultValue={defaultBPM}
+					defaultValue={bpm}
 					onChange={(e) => {
 						let num = parseInt(e.target.value);
 						if (isNaN(num)) return;
@@ -74,7 +82,7 @@ const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
 					max={maxBPM}
 					disabled={!metadataEntry}
 				/>{' '}
-				<AssignerDropdownField
+				{/* <AssignerDropdownField
 					onChange={(e) =>
 						setBeatNote(nameNoteTypesWithElement[e.target.selectedIndex])
 					}
@@ -82,7 +90,7 @@ const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
 					disabled={!metadataEntry}
 				>
 					{nameNoteTypesWithElement}
-				</AssignerDropdownField>
+				</AssignerDropdownField> */}
 			</div>
 			<ModifyMusicAssigner
 				onClick={() =>
@@ -104,12 +112,13 @@ const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
 				>
 					<p>{bpm}</p>{' '}
 					<div
-						style={{
+					/* style={{
 							maxWidth: '20px',
 							maxHeight: '20px',
-						}}
+						}} */
 					>
-						{beatNote.el}
+						{/* {beatNote.el} */}
+						bpm
 					</div>
 				</div>
 			</ModifyMusicAssigner>

@@ -55,8 +55,10 @@ export type NotePlacer = (
 ) => boolean;
 
 // Identifies a position in a score
-export type ScorePositionID = {
+export type ScoreSegmentID = {
 	measureIndex: number;
 	x: number;
 	y?: number;
 };
+
+export type ScoreMeasureID = number;

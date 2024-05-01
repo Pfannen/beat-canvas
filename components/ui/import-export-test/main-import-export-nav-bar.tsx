@@ -8,11 +8,17 @@ interface MainImportExportNavBarProps {
 	setImportedAudio?: (audioFile: File) => void;
 	setImportedAudioRef?: MutableRefObject<(file: File) => void>;
 	setScore?: (musicScore?: MusicScore) => void;
+	getAudioBuffer?: () => Promise<AudioBuffer | null>;
 }
 
 const MainImportExportNavBar: FunctionComponent<
 	MainImportExportNavBarProps
-> = ({ setImportedAudio = () => {}, setScore, setImportedAudioRef }) => {
+> = ({
+	setImportedAudio = () => {},
+	setScore,
+	setImportedAudioRef,
+	getAudioBuffer,
+}) => {
 	const {
 		scoreItems: { replaceMusicScore, musicScore },
 	} = useMusic();
@@ -30,6 +36,7 @@ const MainImportExportNavBar: FunctionComponent<
 			}}
 			setImportedAudio={setImportedAudioLocal}
 			musicScore={musicScore}
+			getAudioBuffer={getAudioBuffer}
 		/>
 	);
 };

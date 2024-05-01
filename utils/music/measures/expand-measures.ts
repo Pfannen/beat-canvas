@@ -1,10 +1,15 @@
 import { Measure } from '@/components/providers/music/types';
-import { MeasureAttributes, RepeatEndings } from '@/types/music';
+import {
+	MeasureAttributes,
+	RepeatEndings,
+	StaticMeasureAttributes,
+} from '@/types/music';
 import {
 	initializeMeasureAttributes,
 	measureAttributeGenerator,
 	updateMeasureAttributes,
 } from './measure-generator';
+import { MeasureMapping } from '@/types/music/expand-measures';
 
 type EndingState = {
 	// Both indices are inclusive
@@ -72,8 +77,7 @@ const updateEndingsState = (
 
 const forwardRepeatEncountered = (
 	measures: Measure[],
-	forwardRepeatIndex: number,
-	expandedMeasures: Measure[]
+	forwardRepeatIndex: number
 ) => {
 	const tbcRepeatState: TBCRepeatState = {
 		endings: {},
@@ -107,10 +111,64 @@ const forwardRepeatEncountered = (
 		backwardRepeatIndex: i,
 		repeatCount,
 	};
-	applyRepeatState(repeatState, measures, expandedMeasures);
+	return repeatState;
 
 	// Return the index of the backward repeat encountered
-	return i;
+	/* return i; */
+};
+
+const hasForwardRepeat = (
+	staticAttributes?: Partial<StaticMeasureAttributes>
+) => {
+	return (
+		staticAttributes &&
+		staticAttributes.repeat &&
+		staticAttributes.repeat.forward
+	);
+};
+
+// cummulativeMeasureIdx: The next index of the expanded measures
+// measureMapping: A mapping of cummulativeMeasureIdx to its true idx
+// repeatState: Repeat information necessary to update the measure mapping
+const updateMeasureMapping = (
+	cummulativeMeasureIdx: number,
+	measureMapping: MeasureMapping,
+	repeatState: RepeatState
+) => {
+	const {
+		forwardRepeatIndex,
+		commonMeasureEnd,
+		endings,
+		backwardRepeatIndex,
+		repeatCount,
+	} = repeatState;
+
+	// 0 end, 0 start, 1 measure that's common
+	const commonMeasureCount = commonMeasureEnd - forwardRepeatIndex + 1;
+
+	// Add 1 to repeatCount because we always play the repeated measures at least once
+	for (let i = 0; i < repeatCount + 1; i++) {
+		// Go through all the common measures of a repeat
+		for (let j = 0; j < commonMeasureCount; j++) {
+			// measureNum gets incremented after each iteration, so mapping[j + measureNum] isn't needed
+			// Add j to forwardRepeatIndex as those measures are common to all repeated measures
+			measureMapping[cummulativeMeasureIdx] = forwardRepeatIndex + j;
+			cummulativeMeasureIdx++;
+		}
+
+		// On the first (0th) pass through, we play the first ending, and so on
+		if (i + 1 in endings) {
+			const [start, end] = endings[i + 1];
+			const endingMeasureCount = end - start + 1;
+			for (let j = 0; j < endingMeasureCount; j++) {
+				// Similar to adding j to forwardRepeatIndex, but endings start at the first value in the length-2 array
+				measureMapping[cummulativeMeasureIdx] = start + j;
+				cummulativeMeasureIdx++;
+			}
+		}
+	}
+
+	return cummulativeMeasureIdx;
 };
 
 export const expandMeasures = (measures: Measure[]) => {
@@ -119,13 +177,38 @@ export const expandMeasures = (measures: Measure[]) => {
 	const expandedMeasures: Measure[] = [];
 	for (let i = 0; i < measures.length; i++) {
 		const measure = measures[i];
-		const { staticAttributes: sA, temporalAttributes: tA } = measure;
-		if (sA && sA.repeat && sA.repeat.forward) {
-			i = forwardRepeatEncountered(measures, i, expandedMeasures);
+		if (hasForwardRepeat(measure.staticAttributes)) {
+			/* i = forwardRepeatEncountered(measures, i, expandedMeasures); */
+			const repeatState = forwardRepeatEncountered(measures, i);
+			applyRepeatState(repeatState, measures, expandedMeasures);
+			i = repeatState.backwardRepeatIndex;
 		} else {
 			expandedMeasures.push(measures[i]);
 		}
 	}
 
 	return expandedMeasures;
+};
+
+export const getMeasureMapping = (measures: Measure[]) => {
+	let cummulativeMeasureIdx = 0;
+	const measureMapping: MeasureMapping = {};
+
+	for (let i = 0; i < measures.length; i++) {
+		const measure = measures[i];
+		if (hasForwardRepeat(measure.staticAttributes)) {
+			const repeatState = forwardRepeatEncountered(measures, i);
+			cummulativeMeasureIdx = updateMeasureMapping(
+				cummulativeMeasureIdx,
+				measureMapping,
+				repeatState
+			);
+			i = repeatState.backwardRepeatIndex;
+		} else {
+			measureMapping[cummulativeMeasureIdx] = i;
+			cummulativeMeasureIdx++;
+		}
+	}
+
+	return measureMapping;
 };

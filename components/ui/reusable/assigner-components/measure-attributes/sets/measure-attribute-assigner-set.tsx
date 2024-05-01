@@ -5,17 +5,10 @@ import { Dynamic } from '@/types/music/note-annotations';
 import { AssignerLifter } from '@/types/modify-score/assigner';
 import { SelectionMetadata } from '@/types/modify-score/assigner/metadata';
 import { curriedModifyMeasureAttribute } from '@/utils/music/modify-score/curried-assigners';
-import TimeSignatureAssigner from './time-signature-assigner';
-import MetronomeAssigner from './metronome-assigner';
 import { MeasureAttributes } from '@/types/music';
-import DynamicAssignerDropdown from './dynamic-assigner';
-import KeySignatureAssigner from './key-signature-assigner';
-import AssignerButtonSet from '../style/assigner-button-set';
-import AttributeAssignerButton from './buttons/attribute-assigner-button';
-import RepeatAssigner from './repeat-assigner';
-import AssignerSetTitle from '../style/assigner-set-title';
-import WedgeSVG from '@/components/ui/svg/annotations/wedge-svg';
-import AssignerDropdown from '../assigner-dropdown';
+import AssignerSetTitle from '../../style/assigner-set-title';
+import DynamicAssignerDropdown from '../dynamic-assigner';
+import RepeatAssigner from '../repeat-assigner';
 
 // Purely for testing purposes
 const dynamics: Dynamic[] = ['p', 'pp', 'mp', 'mf', 'fp', 'f', 'ff'];
@@ -60,7 +53,7 @@ const MeasureAttributeAssignerSet: FunctionComponent<
 					assigner={assigner}
 					metadataEntry={attributeMetadata?.repeat}
 				/>
-				<AssignerDropdown<MeasureAttributes, 'wedge'>
+				{/* <AssignerDropdown<MeasureAttributes, 'wedge'>
 					assigner={assigner}
 					label="Wedge"
 					tKey="wedge"
@@ -78,7 +71,7 @@ const MeasureAttributeAssignerSet: FunctionComponent<
 							value: { crescendo: false, start: true },
 						},
 					]}
-				</AssignerDropdown>
+				</AssignerDropdown> */}
 			</div>
 		</div>
 	);

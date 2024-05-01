@@ -48,6 +48,7 @@ const AssignerDropdown = <T, K extends keyof T>({
 				id={label}
 				onChange={onOptionSelected}
 				disabled={disabled}
+				defaultValue={JSON.stringify(selectedItem.value)}
 			>
 				{children}
 			</AssignerDropdownField>

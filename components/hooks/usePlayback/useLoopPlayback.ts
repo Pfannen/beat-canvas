@@ -1,6 +1,6 @@
-import { PlaybackManager } from '@/utils/audio/playback';
 import { usePlayback } from './usePlayback';
 import { useEffect, useRef, useState } from 'react';
+import { MusicPlaybackManager } from '@/utils/audio/music-playback';
 
 export type LoopPlaybackOptions = {
 	loopCount?: number;
@@ -11,11 +11,11 @@ const defaultLoopCount = 4;
 const defaultTBL = 2000;
 
 const useLoopPlayback = (
-	playbackManager: PlaybackManager,
+	playbackManager: MusicPlaybackManager,
 	options: LoopPlaybackOptions = {}
 ) => {
 	const {
-		volumePairs,
+		musicVolumePairMap,
 		playbackState,
 		seekPercentage,
 		playMusic,
@@ -95,7 +95,7 @@ const useLoopPlayback = (
 			loopCount,
 		},
 		playbackProps: {
-			volumePairs,
+			musicVolumePairMap,
 			playbackState,
 			seekPercentage,
 			playbackManager,

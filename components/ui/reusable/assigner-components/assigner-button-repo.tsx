@@ -2,23 +2,23 @@ import { FunctionComponent } from 'react';
 import LayoutList from '../layout/list';
 import AnnotationsAssignerSet from './annotations/annotations-assigner-set';
 import NotePlacementAssignerSet from './place-note/note-placement-assigner-set';
-import MeasureAttributeAssignerSet from './measure-attributes/measure-attribute-assigner-set';
 import { AssignerLifter } from '@/types/modify-score/assigner';
 import {
 	MeasureAttributeAssigner,
 	NotePlacementValidator,
 } from '@/types/modify-score';
 import {
-	SelectionData,
+	SegmentSelectionData,
 	SelectionMetadata,
 } from '@/types/modify-score/assigner/metadata';
-import { getAssignerStructures } from '@/utils/music/modify-score/metadata-helpers';
+import { getSegmentAssignerStructures } from '@/utils/music/modify-score/metadata-helpers';
 import { MeasureAttributes } from '@/types/music';
-import StaticAttributesAssignerSet from './measure-attributes/static-attributes-assigner-set';
 import { curriedModifyMeasureAttribute } from '@/utils/music/modify-score/curried-assigners';
+import StaticAttributesAssignerSet from './measure-attributes/sets/static-attributes-assigner-set';
+import DynamicAttributeAssignerSet from './measure-attributes/sets/dynamic-attributes-assigner-set';
 
 interface AssignerButtonRepoProps {
-	selections: SelectionData[];
+	selections: SegmentSelectionData[];
 	notePlacementValidator: NotePlacementValidator;
 	liftExecutor: AssignerLifter;
 }
@@ -29,7 +29,7 @@ const AssignerButtonRepo: FunctionComponent<AssignerButtonRepoProps> = ({
 	liftExecutor,
 }) => {
 	const { annotationMetadata, attributeMetadata, validPlacementTypes } =
-		getAssignerStructures(selections, notePlacementValidator);
+		getSegmentAssignerStructures(selections, notePlacementValidator);
 
 	const assigner: MeasureAttributeAssigner = (attribute, value) => {
 		console.log({ attribute, value });
@@ -45,6 +45,7 @@ const AssignerButtonRepo: FunctionComponent<AssignerButtonRepoProps> = ({
 				layoutProps={{
 					'--list-item-width': 'minmax(200px, 1fr)',
 					'--list-padding': '0',
+					'--auto': 'auto-fit',
 				}}
 			>
 				<NotePlacementAssignerSet
@@ -56,13 +57,13 @@ const AssignerButtonRepo: FunctionComponent<AssignerButtonRepoProps> = ({
 					liftExecuter={liftExecutor}
 					annotationMetadata={annotationMetadata || undefined}
 				/>
-				<MeasureAttributeAssignerSet
+				{/* <MeasureAttributeAssignerSet
 					liftExecuter={liftExecutor}
 					attributeMetadata={
 						(attributeMetadata as SelectionMetadata<MeasureAttributes>) ||
 						undefined
 					}
-				/>
+				/> */}
 			</LayoutList>
 			<StaticAttributesAssignerSet
 				attributeMetadata={
@@ -70,6 +71,12 @@ const AssignerButtonRepo: FunctionComponent<AssignerButtonRepoProps> = ({
 				}
 				assigner={assigner}
 			/>
+			{/* <DynamicAttributeAssignerSet
+				attributeMetadata={
+					attributeMetadata as SelectionMetadata<MeasureAttributes>
+				}
+				assigner={assigner}
+			/> */}
 		</>
 	);
 };

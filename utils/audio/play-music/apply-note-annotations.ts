@@ -51,11 +51,10 @@ const accentApplier: NoteAnnotationApplier = (attr, annotations) => {
 	if (!accent) return;
 
 	const { persistentAttributes: pA } = attr;
-	const curVelocity = pA.cur.velocity;
-	let newVelocity = Math.max(1, curVelocity * 1.1);
-	if (accent === 'strong') newVelocity = Math.max(1, curVelocity * 1.25);
+	if (accent === 'strong') pA.preNote.velocity = 0.7;
+	else pA.preNote.velocity = 0.5;
 
-	pA.preNote.velocity = newVelocity;
+	pA.postNote.velocity = pA.cur.velocity;
 };
 
 const dynamicApplier: NoteAnnotationApplier = (attr, annotations) => {

@@ -1,0 +1,18 @@
+.volume_manager_container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pair_container {
+    display: flex;
+    gap: 32px;
+}
+
+.volume_pair > * {
+	display: inline;
+}
+
+.volume_pair input {
+    margin-right: 16px;
+}

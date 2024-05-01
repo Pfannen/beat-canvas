@@ -1,13 +1,14 @@
-import { IVolumeValueModifer, VolumePair } from '@/types/audio/volume';
+import { MusicPlaybackState, MusicVolumePairMap } from '@/types/audio/volume';
 import { MusicScore } from '@/types/music';
-import { PlaybackManager } from '@/utils/audio/playback';
+/* import { PlaybackManager as BeatCanvasPlaybackManager } from '@/utils/audio/playback'; */
 import { useEffect, useRef, useState } from 'react';
 import { BasicPlaybackState } from 'tone';
 import { usePolling } from '../usePolling';
+import { MusicPlaybackManager } from '@/utils/audio/music-playback';
 
-export const usePlayback = (initialPBM?: PlaybackManager) => {
-	const playbackManager = useRef<PlaybackManager>(
-		initialPBM || new PlaybackManager()
+export const usePlayback = (initialPBM?: MusicPlaybackManager) => {
+	const playbackManager = useRef<MusicPlaybackManager>(
+		initialPBM || new MusicPlaybackManager()
 	);
 
 	const { pollValue, startPolling, stopPolling, updatePollValue } = usePolling(
@@ -16,21 +17,24 @@ export const usePlayback = (initialPBM?: PlaybackManager) => {
 	);
 
 	// Master volume will always exist
-	const [volumePairs, setVolumePairs] = useState<VolumePair[]>([
-		{ volumePercentage: 1, audioId: 'Master' },
-	]);
+	const [musicVolumePairMap, setMusicVolumePairMap] =
+		useState<MusicVolumePairMap>({
+			master: [{ audioId: 'Master Volume', volumePercentage: 1 }],
+			imported: [],
+			score: [],
+		});
 
-	const [playbackState, setPlaybackState] = useState<
-		BasicPlaybackState | undefined
-	>(playbackManager.current.getPlaybackState);
+	const [playbackState, setPlaybackState] = useState<MusicPlaybackState>(
+		playbackManager.current.getMusicPlaybackState
+	);
 
 	const updatePlaybackState = () => {
-		setPlaybackState(playbackManager.current.getPlaybackState());
+		setPlaybackState(playbackManager.current.getMusicPlaybackState());
 	};
 
 	const updateVolumePairs = () => {
-		const newVolumePairs = playbackManager.current.getVolumePairs();
-		setVolumePairs(newVolumePairs);
+		const newPairMap = playbackManager.current.getMusicVolumePairs();
+		setMusicVolumePairMap(newPairMap);
 	};
 
 	const adjustPolling = () => {
@@ -41,9 +45,17 @@ export const usePlayback = (initialPBM?: PlaybackManager) => {
 		}
 	};
 
+	// Use this method if you want to enqueue the music score right away
 	const setScore = async (score?: MusicScore) => {
-		await playbackManager.current.setMusicScore(score);
+		const audioUpdated = await playbackManager.current.setMusicScore(score);
+		if (audioUpdated) seekMusic(0);
 		updateVolumePairs();
+		updatePlaybackState();
+	};
+
+	// Use this method if you want to defer enqueueing the music score
+	const newScoreEncountered = (score?: MusicScore) => {
+		playbackManager.current.newMusicScore(score);
 		updatePlaybackState();
 	};
 
@@ -54,8 +66,15 @@ export const usePlayback = (initialPBM?: PlaybackManager) => {
 		updatePlaybackState();
 	};
 
-	const playMusic = () => {
-		playbackManager.current.play();
+	// Play the music - only need to update the volume pairs if we need to enqueue, else the pairs should be the same
+	const playMusic = async () => {
+		if (
+			playbackManager.current.getMusicPlaybackState() === 'requires enqueue'
+		) {
+			await playbackManager.current.enqueueLoadedScore();
+			updateVolumePairs();
+		}
+		await playbackManager.current.play();
 		updatePlaybackState();
 	};
 
@@ -75,11 +94,7 @@ export const usePlayback = (initialPBM?: PlaybackManager) => {
 	useEffect(updateVolumePairs, []);
 
 	useEffect(() => {
-		const curState = playbackManager.current.getPlaybackState();
-		/* setPlaybackState((state) => {
-			if (curState !== state) return curState;
-			else return state;
-		}); */
+		const curState = playbackManager.current.getMusicPlaybackState();
 		if (curState !== playbackState) {
 			if (curState === 'stopped' && pollValue === 1) {
 				seekMusic(0);
@@ -96,11 +111,12 @@ export const usePlayback = (initialPBM?: PlaybackManager) => {
 	]);
 
 	return {
-		volumePairs,
+		musicVolumePairMap,
 		playbackState,
 		playbackManager: playbackManager.current,
 		seekPercentage: pollValue,
 		setScore,
+		newScoreEncountered,
 		setImportedAudio,
 		playMusic,
 		stopMusic,

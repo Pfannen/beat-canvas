@@ -5,7 +5,7 @@ import {
 
 import { Selection } from "@/components/hooks/useSelection";
 
-export type MeasureMode = "duplicate" | "modify";
+export type MeasureMode = "duplicate" | "modify" | "loop";
 
 export type ModeRegistry = { [mode in MeasureMode]?: ModeDelegate };
 

@@ -4,3 +4,7 @@
 	padding-inline: 16px;
 	padding-block-start: 16px;
 }
+
+.main_container > * {
+	margin-bottom: var(--body-item-gap);
+}

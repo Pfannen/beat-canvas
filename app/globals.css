@@ -10,6 +10,15 @@
 	margin: 0;
 	/* font-family: 'Inter', sans-serif; */
 	font: inherit; /*Forces you to declare what heading levels look like*/
+	/* font-weight: bold; */
+}
+
+/* Default header font sizes */
+h1 {
+	font-size: 1.5rem;
+}
+h2 {
+	font-size: 1.125rem;
 }
 
 img,
@@ -40,12 +49,18 @@ a {
 	--text-primary: #3d434f;
 	--surface-primary: #f4f9fa;
 	--surface-secondary: #3d434f;
+
 	--button-background-primary: #f4f9fa;
-	--large-font-size: 32px;
-	--input-border-radius: 4px;
 	--button-border-radius: 6px;
 	--button-padding: 8px 12px;
+	--button-disabled-secondary: #989ea4;
+
+	--large-font-size: 32px;
+	--input-border-radius: 4px;
 	--body-max-width: 1360px;
+	--body-item-gap: 40px;
+
+	--line-color: #ced3dd;
 
 	background-color: var(--surface-primary);
 	font-family: 'Fira Sans', sans-serif;

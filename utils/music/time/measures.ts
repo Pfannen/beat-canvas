@@ -7,6 +7,9 @@ import {
 import { MeasureAttributes, Metronome } from '@/types/music';
 import { getQuarterNoteDuration } from '..';
 import { getQuarterNotesPerMeasure, getSecondsPerQuarterNote } from '.';
+import { indexIsValid } from '@/utils';
+import { IndexEndTime } from '@/types/music/expand-measures';
+import { expandMeasures, getMeasureMapping } from '../measures/expand-measures';
 
 // Returns the amount of time spent in a measure
 const getTimeInMeasure = (
@@ -20,11 +23,49 @@ const getTimeInMeasure = (
 	return quarterNotesPerMeasure * secondsPerQuarterNote;
 };
 
+export const getMeasureSecondsArray = (
+	measures: Measure[],
+	measureZeroAttributes?: MeasureAttributes
+) => {
+	// Set optional parameters if they're not present
+	const attributes =
+		measureZeroAttributes || initializeMeasureAttributes(measures[0]);
+
+	const times: number[] = [0];
+	// Store the current time in seconds
+	let curTime = 0;
+	// Go through all measures up to and including the end measure
+	for (let i = 0; i < measures.length; i++) {
+		const { staticAttributes, temporalAttributes } = measures[i];
+		// Update the static attributes - required for possible new time signature
+		updateMeasureAttributes(attributes, staticAttributes);
+		// Update the temporal attributes - required for possible new metronome
+		updateMeasureAttributes(
+			attributes,
+			temporalAttributes?.length ? temporalAttributes[0].attributes : undefined
+		);
+
+		// Calculate the amount of time spent in the current measure
+		curTime += getTimeInMeasure(attributes.metronome, attributes.timeSignature);
+		times.push(curTime);
+
+		// Go through the temporal attributes - required for possible new metronome
+		// (will need to change later to address metronome change mid-measure)
+		iterateAndUpdateTemporal(attributes, temporalAttributes);
+	}
+
+	return times;
+};
+
 export type MeasureDurationOptionParams = {
 	durationStartIndex?: number;
 	durationEndIndex?: number;
 	measureZeroAttributes?: MeasureAttributes;
 };
+
+// The durationStartIndex is the measureIdx you want the start time of
+// The durationEndIndex is the measureIdx you want the end time of
+// They can equal one another if you want the start and end time of the same measure (to loop a single measure, for example)
 export const getMeasuresStartAndEndTime = (
 	measures: Measure[],
 	options: MeasureDurationOptionParams = {}
@@ -40,33 +81,47 @@ export const getMeasuresStartAndEndTime = (
 
 	// If the indices are bad, return
 	if (
-		durationStartIndex >= measures.length ||
-		durationEndIndex >= measures.length
+		!indexIsValid(durationStartIndex, measures.length) ||
+		!indexIsValid(durationEndIndex, measures.length) ||
+		durationStartIndex > durationEndIndex
 	)
 		return [0, 0];
 
-	// Store the start and end durations as a 2-element array
-	let durations = [0, 0] as [number, number];
-	// Store the current time in seconds
-	let curTime = 0;
-	// Go through all measures up to and including the end measure
-	for (let i = 0; i <= durationEndIndex; i++) {
-		// If the current measure is the start measure, log the time
-		if (i === durationStartIndex) durations[0] = curTime;
+	// Store the start and end times of the target indices
+	// Add 1 to the end index because the end time of it is the start time of the next index
+	// It's guaranteed the returned array will have the length of the measures + 1
+	const measureSeconds = getMeasureSecondsArray(measures, attributes);
+	const durations: [number, number] = [
+		measureSeconds[durationStartIndex],
+		measureSeconds[durationEndIndex + 1],
+	];
 
-		const { staticAttributes, temporalAttributes } = measures[i];
-		// Update the static attributes - required for possible new time signature
-		updateMeasureAttributes(attributes, staticAttributes);
+	return durations;
+};
 
-		// Calculate the amount of time spent in the current measure
-		curTime += getTimeInMeasure(attributes.metronome, attributes.timeSignature);
+// Returns an array in increasing order of end time that stores
+// an end time to the true measure index it belongs to
+export const getIndexEndTimes = (
+	nonExpandedMeasures: Measure[],
+	measureZeroAttributes?: MeasureAttributes
+) => {
+	const expandedMeasures = expandMeasures(nonExpandedMeasures);
+	// Get the array of seconds
+	const measureSeconds = getMeasureSecondsArray(
+		expandedMeasures,
+		measureZeroAttributes
+	);
+	// Get the mapping of cummulative measure idx to true measure idx
+	const measureMapping = getMeasureMapping(nonExpandedMeasures);
 
-		// Go through the temporal attributes - required for possible new metronome
-		// (will need to change later to address metronome change mid-measure)
-		iterateAndUpdateTemporal(attributes, temporalAttributes);
+	const indexToEndTimes: IndexEndTime[] = [];
+	let cummulativeMeasureIdx = 0;
+	while (cummulativeMeasureIdx in measureMapping) {
+		const trueMeasureIdx = measureMapping[cummulativeMeasureIdx];
+		const measureEndTime = measureSeconds[cummulativeMeasureIdx + 1];
+		indexToEndTimes.push({ index: trueMeasureIdx, seconds: measureEndTime });
+		cummulativeMeasureIdx++;
 	}
 
-	// After the loop, the current time represents the end time of the end measure
-	durations[1] = curTime;
-	return durations;
+	return indexToEndTimes;
 };
