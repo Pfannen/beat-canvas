@@ -46,9 +46,9 @@ export type SVGOptions = {
 
 export type SVGDrawOptions<T = {}> = OptionsWithDrawOptions<SVGOptions, T>;
 
-export type DrawingCanvasFontFamily = "Times New Roman";
+export type DrawingCanvasFontFamily = "Times New Roman" | "Sonata";
 
-export type DrawingCanvasTextPosition = "center" | "topCenter";
+export type DrawingCanvasTextPosition = "center" | "topCenter" | "bottomCenter";
 
 export type TextOptions = {
   x: number;
@@ -57,7 +57,6 @@ export type TextOptions = {
   fontSize: number;
   fontFamily: DrawingCanvasFontFamily;
   position?: DrawingCanvasTextPosition;
-  center?: boolean;
 };
 
 export type TextDrawOptions<T = {}> = OptionsWithDrawOptions<TextOptions, T>;

@@ -77,9 +77,18 @@ export type MeasureDrawData = {
   pageNumber: number;
 };
 
+export type DynamicAttribute<T extends keyof DynamicMeasureAttributes> = {
+  attribute: keyof T;
+  value: DynamicMeasureAttributes[T];
+};
+
+export type DynamicAttributeArray = DynamicAttribute<
+  keyof DynamicMeasureAttributes
+>[];
+
 export type MeasureData = MeasureDrawData & {
   sectionAttributes: Omit<MeasureSectionMetadata, "notes">;
-  dynamicAttributes?: Partial<DynamicMeasureAttributes>;
+  dynamicAttributes?: DynamicAttributeArray;
 };
 
 export type RestOptions = {

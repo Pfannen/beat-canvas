@@ -1,4 +1,4 @@
-import { PDFDocument, PDFFont, StandardFonts } from "pdf-lib";
+import { PDFDocument, PDFFont } from "pdf-lib";
 import { PDFLibDrawingCanvas } from ".";
 import { CanvasManager } from "@/types/music-rendering/canvas/manager/canvas-manager";
 import { Measurements } from "@/objects/measurement/measurements";
@@ -10,6 +10,7 @@ import {
 import { IScoreDrawerGetter } from "@/types/music-rendering/canvas/manager/score-manager";
 import { IScoreDrawer } from "@/types/music-rendering/canvas/score-drawer";
 import { ScoreDrawer } from "../../score-drawer";
+import { pdfLibFontFamilies } from "@/utils/fonts/score-drawer";
 
 export class PDFLibCanvasManager extends CanvasManager {
   protected pdfDoc?: PDFDocument;
@@ -34,7 +35,9 @@ export class PDFLibCanvasManager extends CanvasManager {
     if (!fonts) return;
     const promises = fonts.map((font) => {
       const pdfLibFont = pdfLibFontFamilies[font];
-      return this.pdfDoc!.embedFont(pdfLibFont);
+      if (!pdfLibFont.isLocation) {
+        return this.pdfDoc!.embedFont(pdfLibFont.font);
+      }
     });
     return Promise.all(promises);
   }
@@ -71,7 +74,3 @@ export class PDFLibScoreDrawererManager
     return new ScoreDrawer(drawingCanvas, beatCanvas);
   }
 }
-
-const pdfLibFontFamilies: Record<DrawingCanvasFontFamily, StandardFonts> = {
-  "Times New Roman": StandardFonts.TimesRoman,
-};

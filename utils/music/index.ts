@@ -203,6 +203,10 @@ export const durationToNoteType = (duration: number, beatNote: number) => {
   }
 };
 
+export const beatNoteToNoteType = (beatNote: number) => {
+  return durationToNoteType(1, beatNote);
+};
+
 export const getQuarterNoteDurationFromNoteType = (noteType: NoteType) => {
   if (noteType in noteTypeToQuarterNoteDuration) {
     return noteTypeToQuarterNoteDuration[noteType];
