@@ -1,7 +1,12 @@
-import { DynamicMeasureAttributes } from "@/types/music";
+import {
+  DynamicMeasureAttribute,
+  DynamicMeasureAttributes,
+  Wedge,
+} from "@/types/music";
 import {
   DynamicAttributeDel,
   DynamicAttributeDelegates,
+  DynamicAttributeDrawer,
 } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure/dynamic-attributes";
 import {
   getDynamicSonataString,
@@ -50,11 +55,12 @@ const drawMetronome: DynamicAttributeDel<"metronome"> =
 const dynamicAttributeDelegates: DynamicAttributeDelegates = {
   metronome: drawMetronome,
   dynamic: drawDynamic,
+  wedge: function (data: Wedge | undefined): DynamicAttributeDrawer {
+    return () => {};
+  },
 };
 
-export const getDynamicAttributeDrawer = <
-  T extends keyof DynamicMeasureAttributes
->(
+export const getDynamicAttributeDrawer = <T extends DynamicMeasureAttribute>(
   attribute: T,
   data: DynamicMeasureAttributes[T]
 ) => {

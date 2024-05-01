@@ -6,6 +6,7 @@ import {
 } from "@/components/providers/music/types";
 import {
   Clef,
+  MeasureAttribute,
   MeasureAttributes,
   PitchOctave,
   dynamicMeasureAttributesKeys,
@@ -301,3 +302,11 @@ const noteToBeamCount: Partial<{ [K in NoteType]: number }> = {
 };
 
 export const getNoteBeamCount = (type: NoteType) => noteToBeamCount[type] || 0;
+
+export const isStaticMeasureAttribute = (key: any) => {
+  return staticMeasureAttributesKeys.has(key);
+};
+
+export const isDynamicMeasureAttribute = (key: any) => {
+  return dynamicMeasureAttributesKeys.has(key);
+};

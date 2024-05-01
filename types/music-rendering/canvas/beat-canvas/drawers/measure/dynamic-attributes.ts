@@ -1,6 +1,9 @@
 import { BlockDirection } from "@/types/music-rendering/pdf";
 import { Drawer } from "..";
-import { DynamicMeasureAttributes } from "@/types/music";
+import {
+  DynamicMeasureAttribute,
+  DynamicMeasureAttributes,
+} from "@/types/music";
 
 export type DynamicAttributeArgs = {
   measureYValues: BlockDirection<number>;
@@ -10,10 +13,10 @@ export type DynamicAttributeArgs = {
 
 export type DynamicAttributeDrawer = Drawer<DynamicAttributeArgs>;
 
-export type DynamicAttributeDel<T extends keyof DynamicMeasureAttributes> = (
+export type DynamicAttributeDel<T extends DynamicMeasureAttribute> = (
   data: DynamicMeasureAttributes[T]
 ) => DynamicAttributeDrawer;
 
 export type DynamicAttributeDelegates = {
-  [K in keyof DynamicMeasureAttributes]: DynamicAttributeDel<K>;
+  [K in DynamicMeasureAttribute]: DynamicAttributeDel<K>;
 };

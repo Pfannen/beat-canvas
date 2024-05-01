@@ -15,6 +15,7 @@ import { CoordinateSection } from "@/types/music-rendering/measure-manager/measu
 import {
   MeasureAttributes,
   MeasureSectionMetadata,
+  StaticMeasureAttribute,
   StaticMeasureAttributes,
   staticMeasureAttributesKeys,
 } from "@/types/music";
@@ -24,6 +25,11 @@ import { noteAttributeGenerator } from "@/utils/music/measures/traversal";
 import { ICanvasGetter } from "@/types/music-rendering/canvas/manager/canvas-manager";
 import { Tolerence } from "@/types/music-rendering/measure-manager";
 import { getMeasureSectionData } from "@/utils/music-rendering/measure-section";
+import { StaticAttributeParser } from "./parsers/static-parser";
+import {
+  isDynamicMeasureAttribute,
+  isStaticMeasureAttribute,
+} from "@/utils/music";
 
 export class MeasureRenderer {
   private measures: Measure[];
@@ -300,42 +306,15 @@ const combineMeasureSectionObjects = (
   currentAttributes: MeasureAttributes,
   newAttributes?: Partial<MeasureAttributes>
 ) => {
-  const attributes = {} as MeasureSectionMetadata;
-  const sections: InitialMeasureSectionArray = [];
-  if (newAttributes) {
-    staticMeasureAttributesKeys.forEach((key) => {
-      const newData = newAttributes[key];
-      if (newData) {
-        const section = getMeasureSectionData(key, newData);
-        sections.push({
-          key: section.key,
-          displayByDefault: true,
-          data: section.data,
-        });
-        attributes[section.key as never] = section.data as never;
-      } else if (currentAttributes[key]) {
-        const section = getMeasureSectionData(key, currentAttributes[key]);
-        sections.push({
-          key: section.key,
-          displayByDefault: false,
-          data: section.data,
-        });
-        attributes[section.key as never] = section.data as never;
-      }
-    });
-  } else {
-    staticMeasureAttributesKeys.forEach((key) => {
-      const data = currentAttributes[key];
-      if (data) {
-        const section = getMeasureSectionData(key, currentAttributes[key]);
-        sections.push({
-          key: section.key,
-          displayByDefault: false,
-          data: section.data,
-        });
-        attributes[section.key as never] = section.data as never;
-      }
-    });
+  const staticParser = new StaticAttributeParser(
+    currentAttributes,
+    newAttributes
+  );
+  for (const key in newAttributes) {
+    if (isStaticMeasureAttribute(key)) {
+      staticParser.parse(key as StaticMeasureAttribute);
+    } else if (isDynamicMeasureAttribute(key)) {
+    }
   }
-  return { sections, attributes };
+  return staticParser.get();
 };
