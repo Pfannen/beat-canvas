@@ -1,0 +1,12 @@
+.loop_settings {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.loop_input_container input {
+    width: 6ch;
+    border-radius: var(--input-border-radius);
+    border: 1px solid black;
+}

@@ -23,7 +23,7 @@ const PBVManagerMain: FunctionComponent<PBVManagerMainProps> = ({
 	musicVolumePairs,
 }) => {
 	return (
-		<div className={classes.managers_container}>
+		<>
 			<PlaybackManager
 				title={title}
 				onPlay={onPlay}
@@ -38,7 +38,7 @@ const PBVManagerMain: FunctionComponent<PBVManagerMainProps> = ({
 				modifyVolume={modifyVolume}
 				musicVolumePairs={musicVolumePairs}
 			/>
-		</div>
+		</>
 	);
 };
 

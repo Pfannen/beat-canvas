@@ -1,4 +1,4 @@
-import { MusicVolumePairMap } from '@/types/audio/volume';
+import { MusicPlaybackState, MusicVolumePairMap } from '@/types/audio/volume';
 import { MusicScore } from '@/types/music';
 /* import { PlaybackManager as BeatCanvasPlaybackManager } from '@/utils/audio/playback'; */
 import { useEffect, useRef, useState } from 'react';
@@ -24,12 +24,12 @@ export const usePlayback = (initialPBM?: MusicPlaybackManager) => {
 			score: [],
 		});
 
-	const [playbackState, setPlaybackState] = useState<
-		BasicPlaybackState | undefined
-	>(playbackManager.current.getPlaybackState);
+	const [playbackState, setPlaybackState] = useState<MusicPlaybackState>(
+		playbackManager.current.getMusicPlaybackState
+	);
 
 	const updatePlaybackState = () => {
-		setPlaybackState(playbackManager.current.getPlaybackState());
+		setPlaybackState(playbackManager.current.getMusicPlaybackState());
 	};
 
 	const updateVolumePairs = () => {
@@ -45,10 +45,17 @@ export const usePlayback = (initialPBM?: MusicPlaybackManager) => {
 		}
 	};
 
+	// Use this method if you want to enqueue the music score right away
 	const setScore = async (score?: MusicScore) => {
 		const audioUpdated = await playbackManager.current.setMusicScore(score);
 		if (audioUpdated) seekMusic(0);
 		updateVolumePairs();
+		updatePlaybackState();
+	};
+
+	// Use this method if you want to defer enqueueing the music score
+	const newScoreEncountered = (score?: MusicScore) => {
+		playbackManager.current.newMusicScore(score);
 		updatePlaybackState();
 	};
 
@@ -59,8 +66,15 @@ export const usePlayback = (initialPBM?: MusicPlaybackManager) => {
 		updatePlaybackState();
 	};
 
-	const playMusic = () => {
-		playbackManager.current.play();
+	// Play the music - only need to update the volume pairs if we need to enqueue, else the pairs should be the same
+	const playMusic = async () => {
+		if (
+			playbackManager.current.getMusicPlaybackState() === 'requires enqueue'
+		) {
+			await playbackManager.current.enqueueLoadedScore();
+			updateVolumePairs();
+		}
+		await playbackManager.current.play();
 		updatePlaybackState();
 	};
 
@@ -80,11 +94,7 @@ export const usePlayback = (initialPBM?: MusicPlaybackManager) => {
 	useEffect(updateVolumePairs, []);
 
 	useEffect(() => {
-		const curState = playbackManager.current.getPlaybackState();
-		/* setPlaybackState((state) => {
-			if (curState !== state) return curState;
-			else return state;
-		}); */
+		const curState = playbackManager.current.getMusicPlaybackState();
 		if (curState !== playbackState) {
 			if (curState === 'stopped' && pollValue === 1) {
 				seekMusic(0);
@@ -106,6 +116,7 @@ export const usePlayback = (initialPBM?: MusicPlaybackManager) => {
 		playbackManager: playbackManager.current,
 		seekPercentage: pollValue,
 		setScore,
+		newScoreEncountered,
 		setImportedAudio,
 		playMusic,
 		stopMusic,

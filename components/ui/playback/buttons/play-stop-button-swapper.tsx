@@ -3,10 +3,11 @@ import classes from './PlayStopSwapper.module.css';
 import { BasicPlaybackState } from 'tone';
 import StopButton from './stop-button';
 import PlayButton from './play-button';
+import { MusicPlaybackState } from '@/types/audio/volume';
 
 interface PlayStopSwapperProps {
 	onClick?: (play: boolean) => void;
-	playbackState?: BasicPlaybackState;
+	playbackState?: MusicPlaybackState;
 }
 
 const PlayStopSwapper: FunctionComponent<PlayStopSwapperProps> = ({

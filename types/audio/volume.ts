@@ -1,4 +1,4 @@
-import { Player, ToneAudioBuffer, Volume } from 'tone';
+import { BasicPlaybackState, Player, ToneAudioBuffer, Volume } from 'tone';
 import { ToneInstrument } from './instrument';
 import { Dynamic } from '../music/note-annotations';
 
@@ -56,3 +56,9 @@ export type DecibelRange = {
 export type WedgeDynamicStore = {
 	startDynamic: Dynamic;
 };
+
+export type MusicPlaybackState =
+	| undefined
+	| BasicPlaybackState
+	| 'requires enqueue'
+	| 'enqueueing';

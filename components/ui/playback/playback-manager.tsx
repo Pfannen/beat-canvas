@@ -5,6 +5,7 @@ import SeekButton from './buttons/seek-button';
 import PlayStopSwapper from './buttons/play-stop-button-swapper';
 import { BasicPlaybackState } from 'tone';
 import { concatClassNames } from '@/utils/css';
+import { MusicPlaybackState } from '@/types/audio/volume';
 
 export interface PlaybackManagerProps {
 	title?: string;
@@ -12,7 +13,7 @@ export interface PlaybackManagerProps {
 	onStop: () => void;
 	onSeek: (seekPercent: number) => void;
 	seekPercentage?: number;
-	playbackState?: BasicPlaybackState;
+	playbackState?: MusicPlaybackState;
 	disableUserSliding?: boolean;
 	stopPlaybackOnButtonSeek?: boolean;
 }
@@ -27,7 +28,10 @@ const PlaybackManager: FunctionComponent<PlaybackManagerProps> = ({
 	disableUserSliding,
 	stopPlaybackOnButtonSeek = true,
 }) => {
-	const disabled = !playbackState;
+	const disabled =
+		!playbackState ||
+		playbackState === 'requires enqueue' ||
+		playbackState === 'enqueueing';
 
 	return (
 		<div className={classes.playback_manager}>

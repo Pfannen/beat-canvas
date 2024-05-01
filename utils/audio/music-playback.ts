@@ -2,13 +2,14 @@ import { MusicScore } from '@/types/music';
 import { isOnClient, loadFile } from '..';
 import { PlaybackManager } from './playback';
 import { enqueueMusicScore } from './play-music/play-music';
-import { Player, ToneAudioBuffer, context } from 'tone';
-import { MusicVolumePairMap } from '@/types/audio/volume';
+import { BasicPlaybackState, Player, ToneAudioBuffer, context } from 'tone';
+import { MusicPlaybackState, MusicVolumePairMap } from '@/types/audio/volume';
 import { createVolumePair } from './volume';
 
 // A sub class of PlaybackManager that provides support for adding an audio file and a music score
 export class MusicPlaybackManager extends PlaybackManager {
 	readonly importedAudioId = 'Imported Audio';
+	private musicPlaybackState: MusicPlaybackState;
 	musicScore?: MusicScore;
 
 	constructor(musicScore?: MusicScore) {
@@ -19,12 +20,28 @@ export class MusicPlaybackManager extends PlaybackManager {
 	protected loadAudioBuffers = async () => {
 		if (!this.musicScore) return;
 
-		console.log({ enqueueingScore: this.musicScore.parts[0].measures });
+		const prevState = this.musicPlaybackState;
+		this.setMusicPlaybackState('enqueueing');
+		this.stop();
 		const enqueuedBuffers = await enqueueMusicScore(this.musicScore);
 
 		for (const { name, buffer } of enqueuedBuffers) {
 			this.addAudioPlayer(buffer, name);
 		}
+
+		this.setMusicPlaybackState(prevState);
+	};
+
+	protected removeAudioBuffers = () => {
+		if (this.musicScore) {
+			this.musicScore.parts.forEach((part) => {
+				this.removeAudioPlayer(part.attributes.name);
+			});
+		}
+	};
+
+	private setMusicPlaybackState = (state?: MusicPlaybackState) => {
+		this.musicPlaybackState = state;
 	};
 
 	setMusicScore = async (musicScore?: MusicScore) => {
@@ -33,16 +50,30 @@ export class MusicPlaybackManager extends PlaybackManager {
 			return false;
 		}
 
+		this.removeAudioBuffers();
+
 		if (this.musicScore) {
-			this.musicScore.parts.forEach((part) => {
-				this.removeAudioPlayer(part.attributes.name);
-			});
+			await this.loadAudioBuffers();
 		}
 
-		this.musicScore = musicScore;
-		if (this.musicScore) await this.loadAudioBuffers();
-
 		return true;
+	};
+
+	newMusicScore = (musicScore?: MusicScore) => {
+		if (this.musicScore !== musicScore) {
+			this.stop();
+			this.removeAudioBuffers();
+			if (!musicScore) this.setMusicPlaybackState();
+			else this.setMusicPlaybackState('requires enqueue');
+			this.musicScore = musicScore;
+		}
+	};
+
+	enqueueLoadedScore = async () => {
+		if (this.musicPlaybackState !== 'requires enqueue') return;
+
+		await this.loadAudioBuffers();
+		this.setMusicPlaybackState();
 	};
 
 	setImportedAudio = async (audioFile?: File) => {
@@ -53,6 +84,9 @@ export class MusicPlaybackManager extends PlaybackManager {
 			return true;
 		}
 
+		const prevState = this.musicPlaybackState;
+		this.setMusicPlaybackState('enqueueing');
+
 		const audioData = await loadFile(audioFile, 'array');
 		// shouldn't ever be a string because of how we read it, but needed for TypeScript
 		if (!audioData || typeof audioData === 'string') return false;
@@ -60,6 +94,8 @@ export class MusicPlaybackManager extends PlaybackManager {
 		const buffer = await context.decodeAudioData(audioData);
 		const toneAudioBuffer = new ToneAudioBuffer().set(buffer);
 		this.addAudioPlayer(toneAudioBuffer, this.importedAudioId);
+
+		this.setMusicPlaybackState(prevState);
 		return true;
 	};
 
@@ -67,6 +103,16 @@ export class MusicPlaybackManager extends PlaybackManager {
 		const newManager = new MusicPlaybackManager(this.musicScore);
 		this.copyToManager(newManager, playbackSection);
 		return newManager;
+	};
+
+	getMusicPlaybackState = () => {
+		return this.musicPlaybackState || this.getPlaybackState();
+	};
+
+	play = async () => {
+		await this.enqueueLoadedScore();
+		super.play();
+		this.setMusicPlaybackState();
 	};
 
 	getMusicVolumePairs = () => {

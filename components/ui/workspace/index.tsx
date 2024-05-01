@@ -1,6 +1,11 @@
 'use client';
 
-import { CSSProperties, FunctionComponent, MutableRefObject } from 'react';
+import {
+	CSSProperties,
+	FunctionComponent,
+	MutableRefObject,
+	useEffect,
+} from 'react';
 import classes from './index.module.css';
 import useWorkSpace from '../../hooks/workspace/useWorkspace';
 import ControlButtons from './control-buttons';
@@ -10,8 +15,6 @@ import { ControlButton } from '@/types/workspace';
 import { MemoizedMeasureSelectedCanvas } from '../reusable/music-canvas/measure-select-canvas';
 import useOverlayPositions from '@/components/hooks/workspace/useOverlayPositions';
 import MeasureSelectOverlay from './measure-select-overlay';
-import LoopPlaybackModal from '../playback/loop-playback/loop-playback-modal';
-import { MusicPlaybackManager } from '@/utils/audio/music-playback';
 import { Selection } from '@/components/hooks/useSelection';
 
 const aspectRatio = 0.75;
@@ -69,11 +72,14 @@ const Workspace: FunctionComponent<WorkspaceProps> = ({
 	];
 
 	const modalShouldOpen = currentMode === 'modify' && ws.isSelectedMeasures();
-	const shouldLoop = currentMode === 'loop' && ws.isSelectedMeasures();
-	if (shouldLoop && updateLoopSelectionRef?.current)
-		updateLoopSelectionRef.current(ws.getSelectedMeasures());
-	else if (!shouldLoop && updateLoopSelectionRef?.current)
-		updateLoopSelectionRef.current();
+
+	useEffect(() => {
+		const shouldLoop = currentMode === 'loop' && ws.isSelectedMeasures();
+		if (shouldLoop && updateLoopSelectionRef?.current)
+			updateLoopSelectionRef.current(ws.getSelectedMeasures());
+		else if (!shouldLoop && updateLoopSelectionRef?.current)
+			updateLoopSelectionRef.current();
+	}, [currentMode, updateLoopSelectionRef, ws]);
 
 	return (
 		<>

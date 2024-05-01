@@ -56,56 +56,6 @@ export class PlaybackManager extends VolumeManager {
 			};
 	};
 
-	/* protected loadAudioBuffers = async () => {
-		if (!this.musicScore) return;
-
-		const enqueuedBuffers = await enqueueMusicScore(this.musicScore);
-
-		for (const { name, buffer } of enqueuedBuffers) {
-			this.addAudioPlayer(buffer, name);
-		}
-	}; */
-
-	/* setMusicScore = async (musicScore?: MusicScore) => {
-		if (this.musicScore === musicScore) return;
-
-		if (this.musicScore) {
-			this.musicScore.parts.forEach((part) => {
-				this.removeVolumeNode(part.attributes.name);
-				delete this.players[part.attributes.name];
-			});
-		}
-
-		this.musicScore = musicScore;
-		if (this.musicScore) await this.loadAudioBuffers();
-	};
-
-	setImportedAudio = async (audioFile?: File) => {
-		if (!isOnClient()) return;
-
-		if (!audioFile) {
-			this.removeAudioPlayer(this.playerNodeId);
-			return true;
-		}
-
-		let player = this.players[this.playerNodeId];
-		if (!player) {
-			player = new Player();
-			this.addVolumeNode(this.playerNodeId, player);
-			this.players[this.playerNodeId] = player;
-		}
-
-		const audioData = await loadFile(audioFile, 'array');
-		// shouldn't ever be a string because of how we read it, but needed for TypeScript
-		if (!audioData || typeof audioData === 'string') return false;
-
-		const buffer = await context.decodeAudioData(audioData);
-		const toneAudioBuffer = new ToneAudioBuffer().set(buffer);
-		player.buffer = toneAudioBuffer;
-		this.updateAudioDuration();
-		return true;
-	}; */
-
 	// The time the play button was last clicked
 	private lastStartTime = Date.now();
 	// The number of seconds into the player the playback manager is in
@@ -115,7 +65,7 @@ export class PlaybackManager extends VolumeManager {
 	// lastStartTime won't be correct
 	private getCurrentPlayTime = () => (Date.now() - this.lastStartTime) / 1000;
 
-	play = () => {
+	play() {
 		if (this.getPlaybackState() === 'started') return;
 
 		for (const player of Object.values(this.players)) {
@@ -126,7 +76,7 @@ export class PlaybackManager extends VolumeManager {
 
 		this.lastStartTime = Date.now();
 		this.playbackState = 'started';
-	};
+	}
 
 	stop = () => {
 		if (this.getPlaybackState() === 'stopped') return;

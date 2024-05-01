@@ -15,6 +15,7 @@ const MusicScorePlaybackVolumeManager: FunctionComponent<
 > = ({ setImportedAudioLifter, initialPBM }) => {
 	const {
 		setScore,
+		newScoreEncountered,
 		setImportedAudio,
 		playMusic,
 		stopMusic,
@@ -31,6 +32,7 @@ const MusicScorePlaybackVolumeManager: FunctionComponent<
 
 	useEffect(() => {
 		console.log('Music score changed!');
+		newScoreEncountered(musicScore);
 		seekMusic(0);
 	}, [musicScore]);
 
@@ -47,7 +49,7 @@ const MusicScorePlaybackVolumeManager: FunctionComponent<
 		<>
 			<PBVManagerMain
 				onPlay={async () => {
-					await setScore(musicScore);
+					/* await setScore(musicScore); */
 					playMusic();
 				}}
 				onStop={stopMusic}

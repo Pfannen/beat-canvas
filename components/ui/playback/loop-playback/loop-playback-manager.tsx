@@ -1,5 +1,5 @@
 import { FunctionComponent, useEffect, useRef, useState } from 'react';
-import classes from './RangedPlaybackManager.module.css';
+import classes from './loop-playback-manager.module.css';
 import { MusicPlaybackManager } from '@/utils/audio/music-playback';
 /* import { PlaybackManager as MusicPlaybackManager } from '@/utils/audio/playback'; */
 import { usePlayback } from '@/components/hooks/usePlayback/usePlayback';
@@ -56,11 +56,11 @@ const LoopPlaybackManager: FunctionComponent<LoopPlaybackManagerProps> = ({
 	};
 
 	return (
-		<div>
+		<>
 			<PBVManagerMain
 				musicVolumePairs={playbackProps.musicVolumePairMap}
 				modifyVolume={playbackProps.playbackManager.modifyVolume}
-				title="Ranged Measures"
+				title={`Measures ${start + 1} - ${end + 1}`}
 				onPlay={loopProps.startLooping}
 				onStop={loopProps.stopLooping}
 				onSeek={onSeek}
@@ -69,30 +69,32 @@ const LoopPlaybackManager: FunctionComponent<LoopPlaybackManagerProps> = ({
 				disableUserSliding={true}
 				stopPlaybackOnButtonSeek={false}
 			/>
-			<div>
-				<label htmlFor="loop-count" aria-disabled={loopProps.isLooping}>
-					Loop Count:{' '}
-				</label>
-				<input
-					type="number"
-					step="1"
-					min="1"
-					max="10"
-					id="loop-count"
-					disabled={loopProps.isLooping}
-					defaultValue={DEFAULT_LOOP_COUNT}
-					onBlur={(e) => {
-						const loopCount = getValidLoopCountValue(+e.target.value);
-						if (inputRef.current) {
-							inputRef.current.value = loopCount.toString();
-						}
-						loopProps.setLoopCount(loopCount);
-					}}
-					ref={inputRef}
-				/>
+			<div className={classes.loop_settings}>
+				<div className={classes.loop_input_container}>
+					<label htmlFor="loop-count" aria-disabled={loopProps.isLooping}>
+						Loop Count:{' '}
+					</label>
+					<input
+						type="number"
+						step="1"
+						min="1"
+						max="10"
+						id="loop-count"
+						disabled={loopProps.isLooping}
+						defaultValue={DEFAULT_LOOP_COUNT}
+						onBlur={(e) => {
+							const loopCount = getValidLoopCountValue(+e.target.value);
+							if (inputRef.current) {
+								inputRef.current.value = loopCount.toString();
+							}
+							loopProps.setLoopCount(loopCount);
+						}}
+						ref={inputRef}
+					/>
+				</div>
 				<p>Current Iteration: {loopProps.currentIteration}</p>
 			</div>
-		</div>
+		</>
 	);
 };
 
