@@ -13,5 +13,5 @@ export const pdfLibFontFamilies: Record<
   ScoreDrawerFont<StandardFonts>
 > = {
   "Times New Roman": { font: StandardFonts.TimesRoman, isLocation: false },
-  Sonata: { font: StandardFonts.Symbol, isLocation: false },
+  Sonata: { font: StandardFonts.HelveticaOblique, isLocation: false },
 };

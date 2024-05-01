@@ -27,3 +27,12 @@ export type CSSPosition = {
   width: string;
   height: string;
 };
+
+export type RecordEntry<T extends Record<any, any>, U = keyof T> = {
+  key: U;
+  value: T[U];
+};
+
+export type RecordEntryArray<T extends Record<any, any>> = Array<
+  RecordEntry<T>
+>;

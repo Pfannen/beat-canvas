@@ -13,23 +13,25 @@ import {
 import { getNoteDuration } from "@/components/providers/music/utils";
 import { CoordinateSection } from "@/types/music-rendering/measure-manager/measure-outline";
 import {
+  DynamicMeasureAttribute,
   MeasureAttributes,
   MeasureSectionMetadata,
   StaticMeasureAttribute,
   StaticMeasureAttributes,
-  staticMeasureAttributesKeys,
 } from "@/types/music";
 import { InitialMeasureSectionArray } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure/measure-section";
 import { formatInitialSections } from "../beat-canvas/drawers/measure-sections/initial-section-handlers";
 import { noteAttributeGenerator } from "@/utils/music/measures/traversal";
 import { ICanvasGetter } from "@/types/music-rendering/canvas/manager/canvas-manager";
 import { Tolerence } from "@/types/music-rendering/measure-manager";
-import { getMeasureSectionData } from "@/utils/music-rendering/measure-section";
 import { StaticAttributeParser } from "./parsers/static-parser";
 import {
   isDynamicMeasureAttribute,
   isStaticMeasureAttribute,
 } from "@/utils/music";
+import { DynamicAttributeParser } from "./parsers/dynamic-parser";
+import { MeasureSectionData } from "@/types/music-rendering/attribute-parsing";
+import { DynamicAttributeData } from "@/types/music-rendering/canvas/beat-canvas";
 
 export class MeasureRenderer {
   private measures: Measure[];
@@ -139,10 +141,8 @@ export class MeasureRenderer {
   }
 
   private generateMeasureAttributes() {
-    const measureSections: {
-      sections: InitialMeasureSectionArray;
-      attributes: MeasureSectionMetadata;
-    }[] = [];
+    const measureSections: MeasureSectionData[] = [];
+    const dynamicAttributes: DynamicAttributeData[] = [];
     for (const locObj of noteAttributeGenerator(this.measures)) {
       if (locObj.measureStart) {
         let measureDetails;
@@ -157,11 +157,11 @@ export class MeasureRenderer {
             locObj.newAttributes
           );
         }
-
-        measureSections.push(measureDetails);
+        dynamicAttributes.push(measureDetails.dynamic);
+        measureSections.push(measureDetails.static);
       }
     }
-    return measureSections;
+    return { sections: measureSections, dynamicAttributes };
   }
 
   private getContainerPositionData(measureIndex: number) {
@@ -193,15 +193,16 @@ export class MeasureRenderer {
 
   public render() {
     const measureDetails = this.generateMeasureAttributes();
-    this.generateMeasureOutline((i) => measureDetails[i]);
+    this.generateMeasureOutline((i) => measureDetails.sections[i]);
     const renderData = this.getMusicRenderData((i) => ({
-      timeSig: measureDetails[i].attributes.timeSignature,
+      timeSig: measureDetails.sections[i].attributes.timeSignature,
       noteSpaceWidth: this.measureManager.getMeasureSection(i, "note")!.width,
     }));
     const containerData = this.getContainerDimensionData();
     renderData.forEach((measure, measureIndex) => {
       const positionData = this.getContainerPositionData(measureIndex);
-      const timeSig = measureDetails[measureIndex].attributes.timeSignature;
+      const timeSig =
+        measureDetails.sections[measureIndex].attributes.timeSignature;
       const { measureData } = positionData;
       const beatCanvas = this.canvasManager.getCanvasForPage(
         measureData.pageNumber
@@ -264,7 +265,8 @@ export class MeasureRenderer {
         totalWidth: measureData.width,
         measureIndex,
         pageNumber: measureData.pageNumber,
-        sectionAttributes: measureDetails[measureIndex].attributes,
+        sectionAttributes: measureDetails.sections[measureIndex].attributes,
+        dynamicAttributes: measureDetails.dynamicAttributes[measureIndex],
       });
     });
   }
@@ -310,11 +312,13 @@ const combineMeasureSectionObjects = (
     currentAttributes,
     newAttributes
   );
+  const dynamicParser = new DynamicAttributeParser(newAttributes);
   for (const key in newAttributes) {
     if (isStaticMeasureAttribute(key)) {
-      staticParser.parse(key as StaticMeasureAttribute);
+      staticParser.parseKey(key as StaticMeasureAttribute);
     } else if (isDynamicMeasureAttribute(key)) {
+      dynamicParser.parseKey(key as DynamicMeasureAttribute);
     }
   }
-  return staticParser.get();
+  return { static: staticParser.get(), dynamic: dynamicParser.get() };
 };

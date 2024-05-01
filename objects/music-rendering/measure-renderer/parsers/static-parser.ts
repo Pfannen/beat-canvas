@@ -5,12 +5,12 @@ import {
 } from "@/types/music";
 import { MeasureSectionData } from "@/types/music-rendering/attribute-parsing";
 import { InitialMeasureSectionArray } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure/measure-section";
-import { IObjectsParser } from "@/types/utils/objects-parser";
+import { IObjectParser } from "@/types/utils/objects-parser";
 import { isStaticMeasureAttribute } from "@/utils/music";
 import { getMeasureSectionData } from "@/utils/music-rendering/measure-section";
 
 export class StaticAttributeParser
-  implements IObjectsParser<StaticMeasureAttributes, MeasureSectionData>
+  implements IObjectParser<StaticMeasureAttributes, MeasureSectionData>
 {
   private attributes = {} as MeasureSectionMetadata;
   private sections: InitialMeasureSectionArray = [];
@@ -44,7 +44,7 @@ export class StaticAttributeParser
     }
   }
 
-  parse(attribute: keyof StaticMeasureAttributes): void {
+  parseKey(attribute: keyof StaticMeasureAttributes): void {
     const data = this.newAttributes[attribute];
     const section = getMeasureSectionData(attribute, data);
     this.sections.push({

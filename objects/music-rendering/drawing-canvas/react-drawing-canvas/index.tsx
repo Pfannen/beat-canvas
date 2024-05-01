@@ -1,5 +1,8 @@
 import { UnitConverter, UnitMeasurement } from "@/types";
-import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
+import {
+  IDrawingCanvas,
+  TextDrawOptions,
+} from "@/types/music-rendering/canvas/drawing-canvas";
 import { PolymorphicComponentProps } from "@/types/polymorphic";
 import {
   ComponentProps,
@@ -29,6 +32,10 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
   ) {
     this.unit = unit;
     this.svgWidthConverter = svgWidthConverter || getRedundantConverter();
+  }
+
+  drawText(options: TextDrawOptions<{}>): void {
+    console.log("Draw Text");
   }
 
   private static attachDrawOptions(

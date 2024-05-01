@@ -1,5 +1,5 @@
 import { NoteType } from "@/components/providers/music/types";
-import { Coordinate } from "@/types";
+import { Coordinate, RecordEntryArray } from "@/types";
 import {
   DynamicMeasureAttribute,
   DynamicMeasureAttributes,
@@ -72,16 +72,11 @@ export type MeasureDrawData = {
   pageNumber: number;
 };
 
-export type DynamicAttribute<T extends DynamicMeasureAttribute> = {
-  attribute: keyof T;
-  value: DynamicMeasureAttributes[T];
-};
-
-export type DynamicAttributeArray = DynamicAttribute<DynamicMeasureAttribute>[];
+export type DynamicAttributeData = RecordEntryArray<DynamicMeasureAttributes>;
 
 export type MeasureData = MeasureDrawData & {
   sectionAttributes: Omit<MeasureSectionMetadata, "notes">;
-  dynamicAttributes?: DynamicAttributeArray;
+  dynamicAttributes?: DynamicAttributeData;
 };
 
 export type RestOptions = {

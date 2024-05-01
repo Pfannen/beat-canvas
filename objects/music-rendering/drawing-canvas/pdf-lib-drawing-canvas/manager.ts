@@ -10,7 +10,7 @@ import {
 import { IScoreDrawerGetter } from "@/types/music-rendering/canvas/manager/score-manager";
 import { IScoreDrawer } from "@/types/music-rendering/canvas/score-drawer";
 import { ScoreDrawer } from "../../score-drawer";
-import { pdfLibFontFamilies } from "@/utils/fonts/score-drawer";
+import { deafultFonts, pdfLibFontFamilies } from "@/utils/fonts/score-drawer";
 
 export class PDFLibCanvasManager extends CanvasManager {
   protected pdfDoc?: PDFDocument;
@@ -31,8 +31,7 @@ export class PDFLibCanvasManager extends CanvasManager {
     }
   }
 
-  private async embedFonts(fonts?: DrawingCanvasFontFamily[]) {
-    if (!fonts) return;
+  private async embedFonts(fonts: DrawingCanvasFontFamily[]) {
     const promises = fonts.map((font) => {
       const pdfLibFont = pdfLibFontFamilies[font];
       if (!pdfLibFont.isLocation) {
@@ -55,8 +54,11 @@ export class PDFLibCanvasManager extends CanvasManager {
 
   public async initializeCanvas(fonts?: DrawingCanvasFontFamily[]) {
     this.pdfDoc = await PDFDocument.create();
-    const refs = await this.embedFonts(fonts);
-    this.fonts = this.createPDFFonts(fonts, refs);
+    if (fonts) {
+      const combinedFonts = [...fonts, ...deafultFonts];
+      const refs = await this.embedFonts(combinedFonts);
+      this.fonts = this.createPDFFonts(combinedFonts, refs);
+    }
   }
 
   public getPDF() {
