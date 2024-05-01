@@ -33,5 +33,5 @@ export interface IScoreDrawer extends IBeatCanvas {
 }
 
 export type ScoreDrawerFont<T> =
-  | { font: T; isLocation: false }
-  | { font: string; isLocation: true };
+  | { font: T; isFileName: false }
+  | { font: string; isFileName: true };

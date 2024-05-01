@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
+import local from "next/font/local";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { concatClassNames } from "@/utils/css";
+
+const sonata = local({
+  src: [{ path: "../public/fonts/sonata.ttf" }],
+  variable: "--font-sonata",
+});
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={concatClassNames(sonata.variable, inter.className)}>
+        {children}
+      </body>
     </html>
   );
 }

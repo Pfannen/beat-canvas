@@ -4,6 +4,7 @@ import { UnitMeasurement } from "@/types";
 import { DrawingCanvasFontFamily } from "@/types/music-rendering/canvas/drawing-canvas";
 import { DimensionDirections } from "@/types/music-rendering/canvas/drawing-canvas/html";
 import { appendUnit } from "@/utils";
+import { getCSSFontFamily } from "@/utils/fonts/score-drawer";
 import { CSSProperties } from "react";
 
 type Style = { [key: string]: string | undefined | number };
@@ -25,6 +26,10 @@ export class StyleCreator {
 
   private addClassName(className: string) {
     this.classNames.push(classes[className]);
+  }
+
+  private addDefinedVariable(variable: string, value: string) {
+    this.cssVariables[variable] = value;
   }
 
   private addVariableAndClass(key: string, value: Style[""]) {
@@ -99,7 +104,8 @@ export class StyleCreator {
   };
 
   public addFontFamily = (fontFamily: DrawingCanvasFontFamily) => {
-    this.addVariableAndClass("font-family", "'Times New Roman', Times, serif");
+    const variableName = getCSSFontFamily(fontFamily);
+    this.addVariableAndClass("font-family", variableName);
   };
 
   public addFontSize = (fontSize: string) => {
