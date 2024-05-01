@@ -9,6 +9,7 @@ import {
 import { getSVGCenter, getSVGTopLeft } from "@/utils/svg";
 import { Color, PDFPage, degrees, rgb } from "pdf-lib";
 import { getPositionFunction } from "./utils";
+import { remToPixel } from "@/utils";
 
 export class PDFLibDrawingCanvas implements IDrawingCanvas {
   constructor(private page: PDFPage, private fonts?: PDFFonts) {
@@ -84,6 +85,9 @@ export class PDFLibDrawingCanvas implements IDrawingCanvas {
       });
       x = coordinates.x;
       y = coordinates.y;
+    }
+    if (options.fontUnit === "rem") {
+      options.fontSize = remToPixel(options.fontSize);
     }
     this.page.drawText(options.text, {
       font: fontRef,

@@ -58,11 +58,11 @@ const centerYFont = (font: PDFFont, size: number) => {
 
 const positionFunctions: Record<DrawingCanvasTextPosition, PositionDel> = {
   center: centerFont,
-  topCenter: topCenterFont,
+  // topCenter: topCenterFont,
   bottomCenter: bottomCenterFont,
   bottomLeft: (args) => ({ x: args.x, y: args.y }),
-  topRight: topRight,
-  topLeft: topLeft,
+  // topRight: topRight,
+  // topLeft: topLeft,
 };
 
 export const getPositionFunction = (position: DrawingCanvasTextPosition) =>

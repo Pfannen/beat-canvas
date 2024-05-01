@@ -10,7 +10,7 @@ import {
   FunctionComponent,
   ReactElement,
 } from "react";
-import { CoordinateStyleCreator } from "./utils";
+import { CoordinateStyleCreator } from "./style-creator/coordinate";
 import {
   HTMLDrawOptions,
   HTMLEllipseOptions,
@@ -21,6 +21,7 @@ import { concatClassNames } from "@/utils/css";
 import { StyleCreator } from "./style-creator";
 import { getSVGHeight, getSVGWidth } from "@/utils/svg";
 import { getRedundantConverter } from "@/utils/music-rendering";
+import { appendPosition } from "./style-creator/utils";
 
 export class ReactDrawingCanvas implements IDrawingCanvas {
   private unit: UnitMeasurement;
@@ -32,10 +33,6 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
   ) {
     this.unit = unit;
     this.svgWidthConverter = svgWidthConverter || getRedundantConverter();
-  }
-
-  drawText(options: TextDrawOptions<{}>): void {
-    console.log("Draw Text");
   }
 
   private static attachDrawOptions(
@@ -85,9 +82,10 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
   }: HTMLRectangleOptions): void {
     const styleCreator = new CoordinateStyleCreator(
       corner,
+
+      this.unit,
       width,
-      height,
-      this.unit
+      height
     );
     ReactDrawingCanvas.attachDrawOptions(drawOptions, styleCreator);
     this.createStyledElement(styleCreator, props);
@@ -103,9 +101,10 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     const width = aspectRatio * diameter;
     const styleCreator = new CoordinateStyleCreator(
       center,
+
+      this.unit,
       width,
-      diameter,
-      this.unit
+      diameter
     );
 
     styleCreator.center();
@@ -131,9 +130,9 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
     //Height is passed for the width because it seems that if width >= height, the scaling factor works correctly
     const styleCreator = new CoordinateStyleCreator(
       { x, y },
+      this.unit,
       width,
-      height,
-      this.unit
+      height
     );
 
     styleCreator.addScale(scale);
@@ -160,6 +159,24 @@ export class ReactDrawingCanvas implements IDrawingCanvas {
       </svg>
     );
     this.components.push(component);
+  }
+
+  drawText(options: TextDrawOptions): void {
+    const styleCreator = new CoordinateStyleCreator(
+      { x: options.x, y: options.y },
+      this.unit
+    );
+    options.position && appendPosition(options.position, styleCreator);
+    styleCreator.addFontFamily(options.fontFamily);
+    styleCreator.addFontSize(options.fontSize + options.fontUnit);
+    styleCreator.addPointerEvent("none");
+    const { className, style } =
+      ReactDrawingCanvas.extractStyleData(styleCreator);
+    this.components.push(
+      <p className={className} style={style}>
+        {options.text}
+      </p>
+    );
   }
 
   getComponents(): FunctionComponent {

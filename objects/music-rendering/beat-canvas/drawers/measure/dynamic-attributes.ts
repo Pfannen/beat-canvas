@@ -31,7 +31,8 @@ const drawDynamic: DynamicAttributeDel<"dynamic"> =
       y,
       fontFamily: "Sonata",
       fontSize: dynamicFontSize,
-      position: "topLeft",
+      position: "bottomLeft",
+      fontUnit: "px",
     });
   };
 
@@ -49,6 +50,7 @@ const drawMetronome: DynamicAttributeDel<"metronome"> =
       fontFamily: "Sonata",
       fontSize: metronomeFontSize,
       position: "bottomLeft",
+      fontUnit: "px",
     });
   };
 

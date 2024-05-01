@@ -50,17 +50,20 @@ export type DrawingCanvasFontFamily = "Times New Roman" | "Sonata";
 
 export type DrawingCanvasTextPosition =
   | "center"
-  | "topCenter"
+  // | "topCenter"
   | "bottomCenter"
-  | "bottomLeft"
-  | "topRight"
-  | "topLeft";
+  | "bottomLeft";
+// | "topRight"
+// | "topLeft";
+
+export type DrawingCanvasFontUnit = "px" | "rem";
 
 export type TextOptions = {
   x: number;
   y: number;
   text: string;
   fontSize: number;
+  fontUnit: DrawingCanvasFontUnit;
   fontFamily: DrawingCanvasFontFamily;
   position?: DrawingCanvasTextPosition;
 };

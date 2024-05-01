@@ -1,7 +1,9 @@
 import classes from "./index.module.css";
 import { Coordinate } from "@/types";
 import { UnitMeasurement } from "@/types";
+import { DrawingCanvasFontFamily } from "@/types/music-rendering/canvas/drawing-canvas";
 import { DimensionDirections } from "@/types/music-rendering/canvas/drawing-canvas/html";
+import { appendUnit } from "@/utils";
 import { CSSProperties } from "react";
 
 type Style = { [key: string]: string | undefined | number };
@@ -87,6 +89,31 @@ export class StyleCreator {
 
   public addScale = (scale: number) => {
     this.addVariableAndClass("scale", scale);
+  };
+
+  public addReferencePoint = (
+    point: "top" | "bottom" | "left" | "right",
+    value: number
+  ) => {
+    this.addVariableAndClass(point, appendUnit(value, this.unit));
+  };
+
+  public addFontFamily = (fontFamily: DrawingCanvasFontFamily) => {
+    this.addVariableAndClass("font-family", "'Times New Roman', Times, serif");
+  };
+
+  public addFontSize = (fontSize: string) => {
+    this.addVariableAndClass("font-size", fontSize);
+  };
+
+  public centerOnAxis = (axis: "x" | "y") => {
+    axis === "x"
+      ? this.addClassName("center-x")
+      : this.addClassName("center-y");
+  };
+
+  public addPointerEvent = (event: CSSProperties["pointerEvents"]) => {
+    this.addVariableAndClass("pointer", event);
   };
 
   public getStyle = () => {
