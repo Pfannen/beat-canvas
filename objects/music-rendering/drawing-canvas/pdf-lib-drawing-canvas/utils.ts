@@ -34,6 +34,20 @@ const bottomCenterFont: PositionDel = (args) => {
   };
 };
 
+const topRight: PositionDel = (args) => {
+  return {
+    x: args.x + args.font.widthOfTextAtSize(args.text, args.size),
+    y: args.y - args.font.heightAtSize(args.size),
+  };
+};
+
+const topLeft: PositionDel = (args) => {
+  return {
+    x: args.x,
+    y: args.y - args.font.sizeAtHeight(args.size),
+  };
+};
+
 const centerXFont = (text: string, font: PDFFont, size: number) => {
   return font.widthOfTextAtSize(text, size) / 2;
 };
@@ -46,6 +60,9 @@ const positionFunctions: Record<DrawingCanvasTextPosition, PositionDel> = {
   center: centerFont,
   topCenter: topCenterFont,
   bottomCenter: bottomCenterFont,
+  bottomLeft: (args) => ({ x: args.x, y: args.y }),
+  topRight: topRight,
+  topLeft: topLeft,
 };
 
 export const getPositionFunction = (position: DrawingCanvasTextPosition) =>

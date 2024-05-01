@@ -70,6 +70,7 @@ export type MeasureDrawData = {
   totalWidth: number;
   measureIndex: number;
   pageNumber: number;
+  noteStartX: number;
 };
 
 export type DynamicAttributeData = RecordEntryArray<DynamicMeasureAttributes>;

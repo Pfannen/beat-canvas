@@ -48,7 +48,13 @@ export type SVGDrawOptions<T = {}> = OptionsWithDrawOptions<SVGOptions, T>;
 
 export type DrawingCanvasFontFamily = "Times New Roman" | "Sonata";
 
-export type DrawingCanvasTextPosition = "center" | "topCenter" | "bottomCenter";
+export type DrawingCanvasTextPosition =
+  | "center"
+  | "topCenter"
+  | "bottomCenter"
+  | "bottomLeft"
+  | "topRight"
+  | "topLeft";
 
 export type TextOptions = {
   x: number;

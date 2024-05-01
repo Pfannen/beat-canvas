@@ -308,7 +308,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
     );
     this.drawDynamicAttributes(
       measureBottomY,
-      options.topLeft.x,
+      options.noteStartX,
       options.dynamicAttributes
     );
   }

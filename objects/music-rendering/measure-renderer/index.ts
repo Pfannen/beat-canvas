@@ -265,6 +265,7 @@ export class MeasureRenderer {
         totalWidth: measureData.width,
         measureIndex,
         pageNumber: measureData.pageNumber,
+        noteStartX: noteSection.startX,
         sectionAttributes: measureDetails.sections[measureIndex].attributes,
         dynamicAttributes: measureDetails.dynamicAttributes[measureIndex],
       });
