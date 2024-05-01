@@ -9,7 +9,11 @@ import { getQuarterNoteDuration } from '..';
 import { getQuarterNotesPerMeasure, getSecondsPerQuarterNote } from '.';
 import { indexIsValid } from '@/utils';
 import { IndexEndTime } from '@/types/music/expand-measures';
-import { expandMeasures, getMeasureMapping } from '../measures/expand-measures';
+import {
+	expandMeasures,
+	getCumulativeMeasureMapping,
+	getTrueMeasureMapping,
+} from '../measures/expand-measures';
 
 // Returns the amount of time spent in a measure
 const getTimeInMeasure = (
@@ -68,7 +72,8 @@ export type MeasureDurationOptionParams = {
 // They can equal one another if you want the start and end time of the same measure (to loop a single measure, for example)
 export const getMeasuresStartAndEndTime = (
 	measures: Measure[],
-	options: MeasureDurationOptionParams = {}
+	options: MeasureDurationOptionParams = {},
+	measuresNeedExpansion = false
 ): [number, number] => {
 	// Extract options as let variables so we can easily update them if they're not provided
 	let { durationStartIndex, durationEndIndex, measureZeroAttributes } = options;
@@ -79,13 +84,27 @@ export const getMeasuresStartAndEndTime = (
 	if (durationStartIndex === undefined) durationStartIndex = 0;
 	if (durationEndIndex === undefined) durationEndIndex = measures.length - 1;
 
-	// If the indices are bad, return
 	if (
 		!indexIsValid(durationStartIndex, measures.length) ||
 		!indexIsValid(durationEndIndex, measures.length) ||
 		durationStartIndex > durationEndIndex
 	)
+		// If the indices are bad, return
 		return [0, 0];
+
+	// If measures need expanding, the given indices are true indices, not cumulative
+	if (measuresNeedExpansion) {
+		// Get an array mapping from true idx to cumulative indices
+		// For looping, repeats can get in the way and thus true indices won't map to their seconds correctly
+		// Because of this, we use their last occurrence in the score
+		const mapping = getTrueMeasureMapping(measures);
+		const startMapLen = mapping[durationStartIndex].length;
+		const endMapLen = mapping[durationEndIndex].length;
+		durationStartIndex = mapping[durationStartIndex][startMapLen - 1];
+		durationEndIndex = mapping[durationEndIndex][endMapLen - 1];
+
+		measures = expandMeasures(measures);
+	}
 
 	// Store the start and end times of the target indices
 	// Add 1 to the end index because the end time of it is the start time of the next index
@@ -112,7 +131,7 @@ export const getIndexEndTimes = (
 		measureZeroAttributes
 	);
 	// Get the mapping of cummulative measure idx to true measure idx
-	const measureMapping = getMeasureMapping(nonExpandedMeasures);
+	const measureMapping = getCumulativeMeasureMapping(nonExpandedMeasures);
 
 	const indexToEndTimes: IndexEndTime[] = [];
 	let cummulativeMeasureIdx = 0;

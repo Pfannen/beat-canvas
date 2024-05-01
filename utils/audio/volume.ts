@@ -48,7 +48,9 @@ export class VolumeManager implements IVolumeNodeModifier, IVolumeValueModifer {
 
 	getVolumeValue = (volumePct: number) => {
 		const { min, max } = this.decibelRange;
-		return volumePct === 0 ? -Infinity : getValueFromRange(min, max, volumePct);
+		return volumePct < 0.01
+			? -Infinity
+			: getValueFromRange(min, max, volumePct);
 	};
 
 	decibelsToPercentage = (decibels: number) => {

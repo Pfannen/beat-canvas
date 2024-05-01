@@ -60,9 +60,11 @@ export const getDefaultPart = () => {
 
 export const getDefaultScore = () => {
 	const score: MusicScore = {
-		title: 'A new score',
+		title: getDefaultScoreTitle(),
 		parts: [getDefaultPart()],
 	};
 
 	return score;
 };
+
+export const getDefaultScoreTitle = () => 'A Beat Canvas Score';

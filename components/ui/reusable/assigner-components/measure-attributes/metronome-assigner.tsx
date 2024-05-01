@@ -17,6 +17,7 @@ import {
 import { getAssignValue } from '@/utils/music/modify-score/metadata-helpers';
 import { MeasureAttributes, Metronome } from '@/types/music';
 import { metronomesAreEqual } from '@/utils/music/is-equal-helpers';
+import { clamp } from '@/utils';
 
 const nameNoteTypesWithElement: AssignerDropdownItemDisplay[] = [
 	{ value: '1', displayValue: 'whole', el: <WholeNoteSVG /> },
@@ -27,7 +28,7 @@ const nameNoteTypesWithElement: AssignerDropdownItemDisplay[] = [
 ];
 const minBPM = 1;
 const maxBPM = 360;
-const defaultBPM = 60;
+const defaultBPM = 120;
 
 interface MetronomeAssignerProps
 	extends IKnownGenericAssignerComponent<MeasureAttributes, 'metronome'> {}
@@ -63,15 +64,13 @@ const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
 					id="beats-per-minute"
 					defaultValue={bpm}
 					onChange={(e) => {
-						let num = parseInt(e.target.value);
-						if (isNaN(num)) return;
-						num = Math.min(maxBPM, num);
-						num = Math.max(minBPM, num);
+						let num = clamp(minBPM, maxBPM, parseInt(e.target.value));
+						if (num === null) return;
 						inputRef.current!.value = num.toString();
 					}}
 					onBlur={() => {
-						let num = parseInt(inputRef.current!.value);
-						if (isNaN(num)) {
+						let num = clamp(minBPM, maxBPM, parseInt(inputRef.current!.value));
+						if (!num) {
 							num = defaultBPM;
 							inputRef.current!.value = num.toString();
 						}

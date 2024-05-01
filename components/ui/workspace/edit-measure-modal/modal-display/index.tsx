@@ -1,7 +1,7 @@
 import classes from "./index.module.css";
 import { CSSProperties, FunctionComponent, useEffect } from "react";
 import { Selection } from "@/components/hooks/useSelection";
-import ModalMeasureDispay from "../modal-measure-display";
+import ModalMeasureDisplay from "../modal-measure-display";
 import { ABOVE_BELOW_CT, LINE_TO_SPACE_R } from "@/constants/music-dimensions";
 import { PositionData } from "@/types/ui/music-modal";
 import { Coordinate } from "@/types";
@@ -61,7 +61,7 @@ const ModalDisplay: FunctionComponent<ModalDisplayProps> = ({
           { "--aspect-ratio": aspectRatio, "--width": width } as CSSProperties
         }
       >
-        <ModalMeasureDispay
+        <ModalMeasureDisplay
           aspectRatio={aspectRatio}
           measures={editMeasures}
           height={width / aspectRatio}

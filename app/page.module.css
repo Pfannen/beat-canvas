@@ -8,3 +8,7 @@
 .main_container > * {
 	margin-bottom: var(--body-item-gap);
 }
+
+.main_container >:first-child {
+	border-bottom: 1px solid var(--line-color);
+}

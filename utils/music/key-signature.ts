@@ -4,9 +4,10 @@ import { getYPosFromNote } from '.';
 const sharpsOrdering: Pitch[] = ['F', 'C', 'G', 'D', 'A', 'E', 'B'];
 const flatsOrdering: Pitch[] = ['B', 'E', 'A', 'D', 'G', 'C', 'F'];
 
+// Returns the index in the array of the last pitch that's in the given key signature
 const getOrderingIndex = (keySignature: number) => {
 	let i = Math.abs(keySignature) - 1;
-	if (i >= 7) return null;
+	if (i >= 7 || i < 0) return null;
 	else return i;
 };
 
@@ -40,16 +41,17 @@ export const getYPositionsForKeySignature = (
 	keySignature: number,
 	clef: Clef
 ) => {
+	// If key signature is 0 or just return any empty array (correct return value for key of C)
+	if (!keySignature) return [];
 	let i = getOrderingIndex(keySignature);
-	// If i is 0 or null just return any empty array (correct return value for i = 0)
-	if (!i) return [];
+	if (i === null) return [];
 
 	const pitchOrdering = keySignature < 0 ? flatsOrdering : sharpsOrdering;
 	const positions: number[] = [];
-	while (i >= 0) {
+	for (let j = 0; j <= i; j++) {
 		// Create a dummy pitch octave
 		const pitchOctave: PitchOctave = {
-			pitch: pitchOrdering[i].toString() as Pitch,
+			pitch: pitchOrdering[j].toString() as Pitch,
 			octave: 3,
 		};
 		let yPos = getYPosFromNote(pitchOctave, clef);
@@ -60,8 +62,11 @@ export const getYPositionsForKeySignature = (
 		// 3 % 7 = 3 + 7 = 10 % 7 = 3
 		// 13 % 7 = 6 + 7 = 13 % 7 = 6
 		yPos = ((yPos % 7) + 7) % 7;
+		// The lines of a measure can specify the same note in different octaves - we want to
+		// use the highest octave of a note that fits within the measures lines 
+		// (there's 8 total places within a measure's lines, excluding the top line)
+		if (yPos + 7 <= 8) yPos += 7;
 		positions.push(yPos);
-		i--;
 	}
 
 	return positions;

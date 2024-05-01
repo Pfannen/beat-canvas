@@ -9,7 +9,11 @@ import {
 	measureAttributeGenerator,
 	updateMeasureAttributes,
 } from './measure-generator';
-import { MeasureMapping } from '@/types/music/expand-measures';
+import {
+	CumulativeMeasureMapping,
+	TrueMeasureMapping,
+} from '@/types/music/expand-measures';
+import { indexIsValid } from '@/utils';
 
 type EndingState = {
 	// Both indices are inclusive
@@ -127,13 +131,14 @@ const hasForwardRepeat = (
 	);
 };
 
-// cummulativeMeasureIdx: The next index of the expanded measures
-// measureMapping: A mapping of cummulativeMeasureIdx to its true idx
+// cumulativeMeasureIdx: The next index of the expanded measures
 // repeatState: Repeat information necessary to update the measure mapping
+// updater: A function that should update some mapping reliant upon cumulative and true measure indices
 const updateMeasureMapping = (
-	cummulativeMeasureIdx: number,
-	measureMapping: MeasureMapping,
-	repeatState: RepeatState
+	cumulativeMeasureIdx: number,
+	//measureMapping: CumulativeMeasureMapping,
+	repeatState: RepeatState,
+	updater: (cumulativeIdx: number, trueIdx: number) => void
 ) => {
 	const {
 		forwardRepeatIndex,
@@ -152,8 +157,9 @@ const updateMeasureMapping = (
 		for (let j = 0; j < commonMeasureCount; j++) {
 			// measureNum gets incremented after each iteration, so mapping[j + measureNum] isn't needed
 			// Add j to forwardRepeatIndex as those measures are common to all repeated measures
-			measureMapping[cummulativeMeasureIdx] = forwardRepeatIndex + j;
-			cummulativeMeasureIdx++;
+			// measureMapping[cumulativeMeasureIdx] = forwardRepeatIndex + j;
+			updater(cumulativeMeasureIdx, forwardRepeatIndex + j);
+			cumulativeMeasureIdx++;
 		}
 
 		// On the first (0th) pass through, we play the first ending, and so on
@@ -162,13 +168,14 @@ const updateMeasureMapping = (
 			const endingMeasureCount = end - start + 1;
 			for (let j = 0; j < endingMeasureCount; j++) {
 				// Similar to adding j to forwardRepeatIndex, but endings start at the first value in the length-2 array
-				measureMapping[cummulativeMeasureIdx] = start + j;
-				cummulativeMeasureIdx++;
+				// measureMapping[cumulativeMeasureIdx] = start + j;
+				updater(cumulativeMeasureIdx, start + j);
+				cumulativeMeasureIdx++;
 			}
 		}
 	}
 
-	return cummulativeMeasureIdx;
+	return cumulativeMeasureIdx;
 };
 
 export const expandMeasures = (measures: Measure[]) => {
@@ -190,25 +197,88 @@ export const expandMeasures = (measures: Measure[]) => {
 	return expandedMeasures;
 };
 
-export const getMeasureMapping = (measures: Measure[]) => {
-	let cummulativeMeasureIdx = 0;
-	const measureMapping: MeasureMapping = {};
+// Updates a cumulative measure mapping
+const cumulativeMeasureMappingUpdater = (
+	mapping: CumulativeMeasureMapping,
+	cumulativeIdx: number,
+	trueIdx: number
+) => {
+	if (trueIdx < 0 || trueIdx > cumulativeIdx) {
+		console.log(`True idx: ${trueIdx} | Cumulative idx: ${cumulativeIdx}`);
+		return;
+	}
+
+	mapping[cumulativeIdx] = trueIdx;
+};
+
+export const getCumulativeMeasureMapping = (measures: Measure[]) => {
+	let cumulativeMeasureIdx = 0;
+	const cumulativeMeasureMapping: CumulativeMeasureMapping = {};
+	const localUpdater = cumulativeMeasureMappingUpdater.bind(
+		null,
+		cumulativeMeasureMapping
+	);
 
 	for (let i = 0; i < measures.length; i++) {
 		const measure = measures[i];
 		if (hasForwardRepeat(measure.staticAttributes)) {
 			const repeatState = forwardRepeatEncountered(measures, i);
-			cummulativeMeasureIdx = updateMeasureMapping(
-				cummulativeMeasureIdx,
-				measureMapping,
-				repeatState
+			cumulativeMeasureIdx = updateMeasureMapping(
+				cumulativeMeasureIdx,
+				// measureMapping,
+				repeatState,
+				localUpdater
 			);
 			i = repeatState.backwardRepeatIndex;
 		} else {
-			measureMapping[cummulativeMeasureIdx] = i;
-			cummulativeMeasureIdx++;
+			cumulativeMeasureMapping[cumulativeMeasureIdx] = i;
+			cumulativeMeasureIdx++;
 		}
 	}
 
-	return measureMapping;
+	return cumulativeMeasureMapping;
+};
+
+// Updates a true measure mapping
+const trueMeasureMappingUpdater = (
+	trueArray: TrueMeasureMapping,
+	cumulativeIdx: number,
+	trueIdx: number
+) => {
+	if (!indexIsValid(trueIdx, trueArray.length)) {
+		console.log(`Bad true idx: ${trueIdx} | Len: ${trueArray.length}`);
+		return;
+	}
+	if (trueIdx < 0 || trueIdx > cumulativeIdx) {
+		console.log(`True idx: ${trueIdx} | Cumulative idx: ${cumulativeIdx}`);
+		return;
+	}
+
+	trueArray[trueIdx].push(cumulativeIdx);
+};
+
+export const getTrueMeasureMapping = (measures: Measure[]) => {
+	let cumulativeMeasureIdx = 0;
+	const trueMeasureMapping: TrueMeasureMapping = [];
+	measures.forEach(() => trueMeasureMapping.push([]));
+	const localUpdater = trueMeasureMappingUpdater.bind(null, trueMeasureMapping);
+
+	for (let i = 0; i < measures.length; i++) {
+		const measure = measures[i];
+		if (hasForwardRepeat(measure.staticAttributes)) {
+			const repeatState = forwardRepeatEncountered(measures, i);
+			cumulativeMeasureIdx = updateMeasureMapping(
+				cumulativeMeasureIdx,
+				// measureMapping,
+				repeatState,
+				localUpdater
+			);
+			i = repeatState.backwardRepeatIndex;
+		} else {
+			trueMeasureMapping[i].push(cumulativeMeasureIdx);
+			cumulativeMeasureIdx++;
+		}
+	}
+
+	return trueMeasureMapping;
 };

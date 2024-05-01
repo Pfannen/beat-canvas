@@ -29,12 +29,12 @@ export const isValidXOffsetForNoteType = (
 	const xRemainder = x - Math.floor(x);
 	// If the remainder is present in the lookup table and the duration it's mapped to
 	// is smaller than the note's duration, it cannot be placed at the given x
-	if (
+	/* if (
 		xRemainder in rightHandSplits &&
 		noteDuration > rightHandSplits[xRemainder]
 	) {
 		return false;
-	}
+	} */
 
 	// Factor in if the note is dotted now
 	if (isDotted) noteDuration += noteDuration / 2;

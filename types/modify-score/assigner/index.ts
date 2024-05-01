@@ -3,7 +3,11 @@ import { GenericAssigner } from '..';
 import { Measure, NoteType } from '@/components/providers/music/types';
 import { ReactNode } from 'react';
 import { MeasureAttributes } from '@/types/music';
-import { SegmentSelectionData, SelectionMetadata } from './metadata';
+import {
+	EqualityDelegate,
+	SegmentSelectionData,
+	SelectionMetadata,
+} from './metadata';
 
 export interface IMusicAssignerComponent {
 	disabled?: boolean;
@@ -18,6 +22,7 @@ export interface IGenericAssignerComponent<T, K extends keyof T> {
 	metadataEntry: SelectionMetadata<T>[K] | undefined;
 	children: ReactNode;
 	currentValue?: T[K];
+	equalityDelegate?: EqualityDelegate<T[K]>;
 }
 
 // Use this interface when you create a component that is for a specific attribute / annotation

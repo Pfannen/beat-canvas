@@ -1,6 +1,6 @@
-.managers_container {
+/* .managers_container {
 	border-bottom: 1px solid var(--line-color);
-}
+} */
 
 .managers_container > * {
 	margin-bottom: var(--body-item-gap);

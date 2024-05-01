@@ -59,7 +59,8 @@ const ImportExportTestPage: FunctionComponent<
 						{
 							durationStartIndex: 14,
 							durationEndIndex: 15,
-						}
+						},
+						true
 					);
 					setTestRanges(ranges);
 				}}

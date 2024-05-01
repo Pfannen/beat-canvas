@@ -1,4 +1,10 @@
-import { FunctionComponent, ReactNode, SelectHTMLAttributes } from 'react';
+import {
+	FunctionComponent,
+	LegacyRef,
+	MutableRefObject,
+	ReactNode,
+	SelectHTMLAttributes,
+} from 'react';
 import classes from './assigner-dropdown-field.module.css';
 
 // Default type of T is a string
@@ -10,14 +16,16 @@ export type DropdownItem<T = string> = {
 interface AssignerDropdownFieldProps<T>
 	extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'children'> {
 	children: DropdownItem<T>[];
+	inputRef?: LegacyRef<HTMLSelectElement>;
 }
 
 const AssignerDropdownField = <T extends any = string>({
 	children,
+	inputRef,
 	...props
 }: AssignerDropdownFieldProps<T>): JSX.Element => {
 	return (
-		<select {...props} className={classes.assigner_select_input}>
+		<select {...props} ref={inputRef} className={classes.assigner_select_input}>
 			{children.map(({ value, displayValue }) => {
 				const valueString = JSON.stringify(value);
 				return (

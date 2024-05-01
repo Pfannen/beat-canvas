@@ -65,7 +65,7 @@ const useMusicScore = (init?: MusicScore) => {
 			if (idx !== -1) score.parts[idx] = partItems.part;
 			return { ...score };
 		});
-	}, [partItems.part]);
+	}, [partItems.part, selectedPartId]);
 
 	return {
 		scoreItems: {

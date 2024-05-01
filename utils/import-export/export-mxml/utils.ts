@@ -52,6 +52,29 @@ export const createMusicXMLDocument = () => {
 	return [root, scoreXML] as [Document, Element];
 };
 
+export const createTitleEl = (title: string) => {
+	const workEl = createXMLElement('work');
+	const workTitleEl = createXMLElement('work-title');
+	workTitleEl.textContent = title;
+	appendElement(workEl, workTitleEl);
+	return workEl;
+};
+
+export const createIdentificationEl = () => {
+	const identificationEl = createXMLElement('identification');
+	const encodingEl = createXMLElement('encoding');
+	const softwareEl = createXMLElement('software');
+	const encodingDateEl = createXMLElement('encoding-date');
+
+	softwareEl.textContent = 'Beat Canvas 1.0';
+	encodingDateEl.textContent = new Date().toISOString().split('T')[0];
+
+	appendElements(encodingEl, [softwareEl, encodingDateEl]);
+	appendElement(identificationEl, encodingEl);
+
+	return identificationEl;
+};
+
 export const createPartListEl = (parts: MusicPart[]) => {
 	const partListEl = createXMLElement('part-list');
 

@@ -4,6 +4,7 @@ import { Selection } from '@/components/hooks/useSelection';
 import { MusicPlaybackManager } from '@/utils/audio/music-playback';
 import MusicScorePlaybackVolumeManager from './music-score-playback-volume-manager';
 import LoopPlaybackManager from './loop-playback/loop-playback-manager';
+import { selectionsAreEqual } from '@/utils/music/is-equal-helpers';
 
 interface PlaybackVolumeManagerSwapperProps {
 	setImportedAudioLifter?: (setImportedAudioDel: () => void) => void;
@@ -24,6 +25,7 @@ const PlaybackVolumeManagerSwapper: FunctionComponent<
 	const singletonPBMRef = useRef<MusicPlaybackManager>(
 		new MusicPlaybackManager()
 	);
+	// const stopLoopingRef = useRef<() => void>(() => { console.log('dis one');});
 
 	const [selectedMeasures, setSelectedMeasures] = useState<Selection | null>(
 		null
@@ -37,8 +39,10 @@ const PlaybackVolumeManagerSwapper: FunctionComponent<
 			if (!selection) {
 				if (selectedMeasures !== null) setSelectedMeasures(null);
 			} else {
-				if (selection === selectedMeasures) return;
+				if (selectionsAreEqual(selection, selectedMeasures || undefined))
+					return;
 
+				// if (stopLoopingRef.current) stopLoopingRef.current();
 				await singletonPBMRef.current.enqueueLoadedScore();
 				setSelectedMeasures(selection);
 			}
@@ -52,27 +56,29 @@ const PlaybackVolumeManagerSwapper: FunctionComponent<
 	}, [getAudioBufferLifter]);
 
 	// If we don't have measures selected, we render the standard PBM
-	if (!selectedMeasures) {
-		return (
-			<div className={classes.managers_container}>
-				<MusicScorePlaybackVolumeManager
-					setImportedAudioLifter={setImportedAudioLifter}
-					initialPBM={singletonPBMRef.current}
-				/>
-			</div>
-		);
-	} else {
-		const { start, end } = selectedMeasures;
-		return (
-			<div className={classes.managers_container}>
-				<LoopPlaybackManager
-					sourcePlaybackManager={singletonPBMRef.current!}
-					start={start}
-					end={end}
-				/>
-			</div>
-		);
-	}
+
+	return (
+		<>
+			{!selectedMeasures && (
+				<div className={classes.managers_container}>
+					<MusicScorePlaybackVolumeManager
+						setImportedAudioLifter={setImportedAudioLifter}
+						initialPBM={singletonPBMRef.current}
+					/>
+				</div>
+			)}
+			{selectedMeasures && (
+				<div className={classes.managers_container}>
+					<LoopPlaybackManager
+						sourcePlaybackManager={singletonPBMRef.current!}
+						start={selectedMeasures.start}
+						end={selectedMeasures.end}
+						// stopLoopingRef={stopLoopingRef}
+					/>
+				</div>
+			)}
+		</>
+	);
 };
 
 export default PlaybackVolumeManagerSwapper;

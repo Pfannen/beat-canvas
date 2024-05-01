@@ -1,4 +1,5 @@
 import classes from './index.module.css';
+import modalStyles from '@/utils/shared-css/react-modal-styles.module.css';
 import ReactModal from 'react-modal';
 import { FunctionComponent, useRef } from 'react';
 import { Selection } from '@/components/hooks/useSelection';
@@ -30,7 +31,7 @@ const EditMeasureModal: FunctionComponent<EditMeasureModalProps> = ({
 			onRequestClose={onCloseModal}
 			shouldCloseOnOverlayClick={true}
 			style={reactModalStyles}
-			overlayClassName={classes.modal_overlay}
+			overlayClassName={modalStyles.modal_overlay}
 		>
 			{showModal && (
 				<ModalDisplay

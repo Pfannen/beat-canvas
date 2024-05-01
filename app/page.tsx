@@ -8,6 +8,7 @@ import MusicScorePlaybackVolumeManager from '@/components/ui/playback/music-scor
 import { useCallback, useRef, useState } from 'react';
 import PlaybackVolumeManagerSwapper from '@/components/ui/playback/playback-volume-manager-swapper';
 import { Selection } from '@/components/hooks/useSelection';
+import EditScoreTitle from '@/components/ui/score-attributes/edit-score-title';
 
 export default function Home() {
 	const setImportedAudioRef = useRef<(file: File) => void>(() => {});
@@ -42,11 +43,14 @@ export default function Home() {
 				getAudioBuffer={getAudioBufferDel}
 			/>
 			<div className={classes.main_container}>
-				<PlaybackVolumeManagerSwapper
-					setImportedAudioLifter={setImportedAudio}
-					setSelectedMeasuresLifter={setSelectedMeasureLifter}
-					getAudioBufferLifter={getAudioBufferLifter}
-				/>
+				<div>
+					<PlaybackVolumeManagerSwapper
+						setImportedAudioLifter={setImportedAudio}
+						setSelectedMeasuresLifter={setSelectedMeasureLifter}
+						getAudioBufferLifter={getAudioBufferLifter}
+					/>
+					<EditScoreTitle />
+				</div>
 				<Workspace updateLoopSelectionRef={updateLoopSelectionRef} />
 			</div>
 		</MusicProvider>

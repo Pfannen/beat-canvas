@@ -2,8 +2,10 @@ import { MusicPart, MusicScore } from '@/types/music';
 import {
 	appendElement,
 	appendElements,
+	createIdentificationEl,
 	createMusicXMLDocument,
 	createPartListEl,
+	createTitleEl,
 	createXMLElement,
 } from './utils';
 import { noteAttributeGenerator } from '@/utils/music/measures/traversal';
@@ -22,7 +24,6 @@ const createPartElement = (partId: string) => {
 	return partElement;
 };
 
-// TODO: Rests not always getting placed correctly, look into generator or partEC
 const partEC = (part: MusicPart) => {
 	const partElement = createPartElement(part.attributes.id);
 
@@ -80,13 +81,20 @@ const partEC = (part: MusicPart) => {
 
 export const createMusicXMLScore = (score: MusicScore) => {
 	const [root, scoreEl] = createMusicXMLDocument();
-	const partListEl = createPartListEl(score.parts);
-	appendElement(scoreEl, partListEl);
+	// Add identification
+	appendElement(scoreEl, createIdentificationEl());
+	// Add title
+	appendElement(scoreEl, createTitleEl(score.title));
+	// Add part list
+	appendElement(scoreEl, createPartListEl(score.parts));
 
+	// Add each part
 	for (const part of score.parts) {
 		appendElement(scoreEl, partEC(part));
 	}
 
+	// We always use 1 for the divisions
+	// Find the first attributes element and insert the divisions into it
 	const divisionsEl = createXMLElement('divisions');
 	divisionsEl.textContent = '1';
 	const firstAttrEl = scoreEl.querySelector('attributes');

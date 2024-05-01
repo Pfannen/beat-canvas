@@ -10,7 +10,7 @@ export const concatClassNames = (
 export const reactModalStyles: ReactModal.Styles = {
 	content: {
 		padding: 0,
-		maxWidth: 1225,
+		maxWidth: 1500,
 		marginInline: 'auto',
 		backgroundColor: 'var(--surface-primary)',
 		height: 'fit-content',

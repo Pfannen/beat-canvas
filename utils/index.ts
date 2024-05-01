@@ -1,6 +1,6 @@
-import { UnitMeasurement } from "@/types";
+import { UnitMeasurement } from '@/types';
 
-export const fractionToPercent = (val: number) => numToUnit(val, "%");
+export const fractionToPercent = (val: number) => numToUnit(val, '%');
 
 export const numToUnit = (val: number, unit: 'px' | '%' | 'deg') => {
 	if (unit === '%') {
@@ -42,12 +42,12 @@ export const deepyCopy = <T>(item: T): T => {
 };
 
 export const mergePartial = <T extends Record<any, any>>(
-  objOne: T,
-  objTwo?: Partial<T>
+	objOne: T,
+	objTwo?: Partial<T>
 ) => {
-  for (const key in objTwo) {
-    objOne[key] = objTwo[key]!;
-  }
+	for (const key in objTwo) {
+		objOne[key] = objTwo[key]!;
+	}
 };
 
 export const indexIsValid = (index: number, length: number) => {
@@ -97,4 +97,12 @@ export const getPercentageFromRange = (
 	const offset = rangeLow * -1;
 	const max = rangeHigh + offset;
 	return (value + offset) / max;
+};
+
+export const clamp = (min: number, max: number, cur: number) => {
+	let num = cur;
+	if (isNaN(num)) return null;
+	num = Math.min(max, num);
+	num = Math.max(min, num);
+	return num;
 };

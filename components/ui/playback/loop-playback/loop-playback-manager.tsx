@@ -1,4 +1,10 @@
-import { FunctionComponent, useEffect, useRef, useState } from 'react';
+import {
+	FunctionComponent,
+	MutableRefObject,
+	useEffect,
+	useRef,
+	useState,
+} from 'react';
 import classes from './loop-playback-manager.module.css';
 import { MusicPlaybackManager } from '@/utils/audio/music-playback';
 /* import { PlaybackManager as MusicPlaybackManager } from '@/utils/audio/playback'; */
@@ -23,12 +29,14 @@ export interface LoopPlaybackManagerProps {
 	start: number;
 	end: number;
 	stopLooping?: () => void;
+	stopLoopingRef?: MutableRefObject<() => void>;
 }
 
 const LoopPlaybackManager: FunctionComponent<LoopPlaybackManagerProps> = ({
 	sourcePlaybackManager,
 	start,
 	end,
+	stopLoopingRef,
 }) => {
 	// Use useMusic so we can get the measures start and end reference (can take in measures later if needed)
 	const {
@@ -38,16 +46,25 @@ const LoopPlaybackManager: FunctionComponent<LoopPlaybackManagerProps> = ({
 	// Store the ranged pbm in state using set state
 	// (so we can initialize it once and have it be present before anything else gets executed)
 	const [rangedPBM, _] = useState<MusicPlaybackManager>(() => {
-		const [startSeconds, endSeconds] = getMeasuresStartAndEndTime(measures, {
-			durationStartIndex: start,
-			durationEndIndex: end,
-		});
+		const [startSeconds, endSeconds] = getMeasuresStartAndEndTime(
+			measures,
+			{
+				durationStartIndex: start,
+				durationEndIndex: end,
+			},
+			true
+		);
 		return sourcePlaybackManager.copy([startSeconds, endSeconds]);
 	});
 
 	const { loopProps, playbackProps } = useLoopPlayback(rangedPBM, {
 		loopCount: DEFAULT_LOOP_COUNT,
 	});
+
+	useEffect(() => {
+		if (stopLoopingRef) stopLoopingRef.current = rangedPBM.stop;
+	}, [stopLoopingRef, rangedPBM]);
+
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const onSeek = (seekPercent: number) => {

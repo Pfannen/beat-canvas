@@ -17,10 +17,12 @@ const AttributeAssignerButton = <K extends keyof MeasureAttributes>({
 	metadataEntry,
 	children,
 	currentValue,
+	equalityDelegate,
 }: AttributeAssignerButtonProps<K>): JSX.Element => {
 	const assignValue = getAssignValue<MeasureAttributes, K>(
 		currentValue || defaults[key],
-		metadataEntry
+		metadataEntry,
+		equalityDelegate
 	);
 
 	return (
