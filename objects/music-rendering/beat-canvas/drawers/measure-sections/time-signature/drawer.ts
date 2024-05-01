@@ -11,19 +11,11 @@ export const timeSignatureSectionDrawer: MeasureSectionDrawer<
   const x = getSectionCenterX(section);
   const svgHeight = bodyHeight / 2;
 
-  const beatNoteScale = calculateScaleToHeight(beatNote.viewBox, svgHeight);
-  const beatNoteCenterY = centerY + svgHeight / 2;
-
   const bpmScale = calculateScaleToHeight(beatsPerMeasure.viewBox, svgHeight);
-  const bpmCenterY = centerY - svgHeight / 2;
-  drawCanvas.drawSVG({
-    paths: beatNote.paths,
-    viewBox: beatNote.viewBox,
-    x,
-    y: beatNoteCenterY,
-    center: true,
-    scale: beatNoteScale,
-  });
+  const bpmCenterY = centerY + svgHeight / 2;
+
+  const beatNoteScale = calculateScaleToHeight(beatNote.viewBox, svgHeight);
+  const beatNoteCenterY = centerY - svgHeight / 2;
 
   drawCanvas.drawSVG({
     paths: beatsPerMeasure.paths,
@@ -32,5 +24,14 @@ export const timeSignatureSectionDrawer: MeasureSectionDrawer<
     y: bpmCenterY,
     center: true,
     scale: bpmScale,
+  });
+
+  drawCanvas.drawSVG({
+    paths: beatNote.paths,
+    viewBox: beatNote.viewBox,
+    x,
+    y: beatNoteCenterY,
+    center: true,
+    scale: beatNoteScale,
   });
 };
