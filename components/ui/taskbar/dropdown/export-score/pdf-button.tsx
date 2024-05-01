@@ -1,19 +1,19 @@
 import MP3SVG from "@/components/ui/svg/mp3";
 import { FunctionComponent } from "react";
-import { Measure } from "@/components/providers/music/types";
+import { MusicScore } from "@/types/music";
 
 type ExportPDFButtonProps = {
-  measures?: Measure[];
+  score?: MusicScore;
 };
 
 const ExportPDFButton: FunctionComponent<ExportPDFButtonProps> = ({
-  measures,
+  score,
 }) => {
   const getPDF = async () => {
-    if (measures) {
+    if (score) {
       const res = await fetch("/pdf/create", {
         method: "POST",
-        body: JSON.stringify(measures),
+        body: JSON.stringify(score),
       });
       const data = await res.blob();
       const url = URL.createObjectURL(data);

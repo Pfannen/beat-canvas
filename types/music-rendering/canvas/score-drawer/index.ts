@@ -2,6 +2,7 @@ import { IBeatCanvas } from "../beat-canvas";
 import {
   DrawingCanvasFontFamily,
   DrawingCanvasTextPosition,
+  IDrawingCanvas,
 } from "../drawing-canvas";
 
 export type ScoreDrawerTitleOptions = {
@@ -20,6 +21,11 @@ export type TitleOptions = {
   y: number;
   position: DrawingCanvasTextPosition;
 };
+
+export type ScoreDrawerConstructor = (
+  drawingCanvas: IDrawingCanvas,
+  beatCanvas: IBeatCanvas
+) => IScoreDrawer;
 
 export interface IScoreDrawer extends IBeatCanvas {
   drawTitle(options: TitleOptions): void;

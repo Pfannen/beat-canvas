@@ -1,4 +1,4 @@
-import { CanvasManager } from "@/types/music-rendering/canvas/canvas-manager";
+import { CanvasManager } from "@/types/music-rendering/canvas/manager/canvas-manager";
 import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
 import { NotificationBeatCanvas } from ".";
 import { MeasureNotifier } from "@/types/music-rendering";

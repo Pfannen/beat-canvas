@@ -21,7 +21,7 @@ import {
 import { InitialMeasureSectionArray } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure/measure-section";
 import { formatInitialSections } from "../beat-canvas/drawers/measure-sections/initial-section-handlers";
 import { noteAttributeGenerator } from "@/utils/music/measures/traversal";
-import { ICanvasGetter } from "@/types/music-rendering/canvas/canvas-manager";
+import { ICanvasGetter } from "@/types/music-rendering/canvas/manager/canvas-manager";
 import { Tolerence } from "@/types/music-rendering/measure-manager";
 import { getMeasureSectionData } from "@/utils/music-rendering/measure-section";
 

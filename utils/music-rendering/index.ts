@@ -15,7 +15,7 @@ import { PageDimensionParams } from "@/objects/music-rendering/music-layout/page
 import { DeepPartial, UnitConverter } from "@/types";
 import { UnitConverters } from "@/types/music-rendering";
 import { BeatCanvasDrawOptions } from "@/types/music-rendering/canvas/beat-canvas";
-import { CanvasManager } from "@/types/music-rendering/canvas/canvas-manager";
+import { CanvasManager } from "@/types/music-rendering/canvas/manager/canvas-manager";
 
 export const renderMeasures = (measures: Measure[], manager: CanvasManager) => {
   const pageParams = PageDimensionParams.genericSheetMusic(

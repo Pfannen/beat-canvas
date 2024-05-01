@@ -3,6 +3,7 @@ import {
   NoteData,
   MeasureData,
   RestOptions,
+  IBeatCanvas,
 } from "@/types/music-rendering/canvas/beat-canvas";
 import {
   IScoreDrawer,
@@ -10,39 +11,21 @@ import {
   ScoreDrawerTitleOptions,
   TitleOptions,
 } from "@/types/music-rendering/canvas/score-drawer";
-import { BeatCanvas } from "../beat-canvas";
 import { IDrawingCanvas } from "@/types/music-rendering/canvas/drawing-canvas";
 import { mergePartial } from "@/utils";
 
-const getDefaultDrawOptions = () => {
-  const titleOptions: ScoreDrawerTitleOptions = {
-    fontFamily: "Times New Roman",
-    fontSize: 36,
-  };
-
-  const subtitleOptions: ScoreDrawerTitleOptions = {
-    fontFamily: "Times New Roman",
-    fontSize: 24,
-  };
-
-  const drawOptions: ScoreDrawerOptions = {
-    title: titleOptions,
-    subtitle: subtitleOptions,
-  };
-  return drawOptions;
-};
-
 export class ScoreDrawer implements IScoreDrawer {
   private drawOptions: ScoreDrawerOptions;
-  private beatCanvas: BeatCanvas;
+  private beatCanvas: IBeatCanvas;
   private drawingCanvas: IDrawingCanvas;
   constructor(
-    drawOptions?: DeepPartial<ScoreDrawerOptions>,
-    ...beatCanvasParams: ConstructorParameters<typeof BeatCanvas>
+    drawingCanvas: IDrawingCanvas,
+    beatCanvas: IBeatCanvas,
+    drawOptions?: DeepPartial<ScoreDrawerOptions>
   ) {
     this.drawOptions = this.combineDrawOptions(drawOptions);
-    this.beatCanvas = new BeatCanvas(...beatCanvasParams);
-    this.drawingCanvas = beatCanvasParams[0];
+    this.beatCanvas = beatCanvas;
+    this.drawingCanvas = drawingCanvas;
   }
 
   private combineDrawOptions = (
@@ -81,10 +64,30 @@ export class ScoreDrawer implements IScoreDrawer {
   drawNote(options: NoteData) {
     this.beatCanvas.drawNote(options);
   }
+
   drawMeasure(options: MeasureData) {
     this.beatCanvas.drawMeasure(options);
   }
+
   drawRest(options: RestOptions) {
     this.beatCanvas.drawRest(options);
   }
 }
+
+const getDefaultDrawOptions = () => {
+  const titleOptions: ScoreDrawerTitleOptions = {
+    fontFamily: "Times New Roman",
+    fontSize: 36,
+  };
+
+  const subtitleOptions: ScoreDrawerTitleOptions = {
+    fontFamily: "Times New Roman",
+    fontSize: 24,
+  };
+
+  const drawOptions: ScoreDrawerOptions = {
+    title: titleOptions,
+    subtitle: subtitleOptions,
+  };
+  return drawOptions;
+};

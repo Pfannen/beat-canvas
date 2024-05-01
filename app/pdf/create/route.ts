@@ -1,10 +1,10 @@
-import { Measure } from "@/components/providers/music/types";
-import { createPDFFromMeasures } from "@/utils/import-export/export-pdf";
+import { MusicScore } from "@/types/music";
+import { createPDFFromScore } from "@/utils/import-export/export-pdf";
 
 export async function POST(request: Request) {
-  const measures = (await request.json()) as Measure[];
+  const measures = (await request.json()) as MusicScore;
 
-  const pdf = await createPDFFromMeasures(measures);
+  const pdf = await createPDFFromScore(measures);
 
   return new Response(pdf, {
     status: 200,

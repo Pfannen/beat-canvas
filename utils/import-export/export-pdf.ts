@@ -1,6 +1,5 @@
 "use server";
 
-import { headers } from "next/headers";
 import { Measure } from "@/components/providers/music/types";
 import {
   ABOVE_BELOW_CT,
@@ -10,11 +9,16 @@ import {
   MEASURES_PER_LINE,
 } from "@/constants/music-dimensions";
 import { Measurements } from "@/objects/measurement/measurements";
-import { PDFLibCanvasManager } from "@/objects/music-rendering/drawing-canvas/pdf-lib-drawing-canvas/manager";
+import {
+  PDFLibCanvasManager,
+  PDFLibScoreDrawererManager,
+} from "@/objects/music-rendering/drawing-canvas/pdf-lib-drawing-canvas/manager";
 import { MeasureRenderer } from "@/objects/music-rendering/measure-renderer";
 import { MusicLayout } from "@/objects/music-rendering/music-layout";
 import { PageDimensionParams } from "@/objects/music-rendering/music-layout/page-dimension-params";
 import { PageSizes } from "pdf-lib";
+import { MusicScore } from "@/types/music";
+import { ScoreRenderer } from "@/objects/music-rendering/score-renderer";
 
 export const pdfToUrl = (pdf: Uint8Array) => {
   const pdfArray: number[] = [];
@@ -47,4 +51,32 @@ export const createPDFFromMeasures = async (measures: Measure[]) => {
   renderer.render();
 
   return await pdfLibManager.getPDF()!.save();
+};
+
+export const createPDFFromScore = async (score: MusicScore) => {
+  const pageParams = PageDimensionParams.genericSheetMusic(
+    MEASURES_PER_LINE,
+    LINES_PER_PAGE
+  );
+  const dimensions = MusicLayout.getDimensions(pageParams);
+  const measurements = new Measurements(
+    ABOVE_BELOW_CT,
+    BODY_CT,
+    LINE_TO_SPACE_R,
+    dimensions.measureDimensions
+  );
+  const pdfLibManager = new PDFLibScoreDrawererManager(
+    PageSizes.A4,
+    measurements
+  );
+  await pdfLibManager.initializeCanvas(["Times New Roman"]);
+
+  const scoreRenderer = new ScoreRenderer(
+    score,
+    pdfLibManager,
+    dimensions,
+    measurements
+  );
+  scoreRenderer.render();
+  return pdfLibManager.getPDF()!.save();
 };

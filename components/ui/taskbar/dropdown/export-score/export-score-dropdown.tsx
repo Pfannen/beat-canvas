@@ -55,7 +55,7 @@ const ExportScoreDropdown: FunctionComponent<ExportScoreDropdownProps> = ({
         Mp3
         <MP3SVG />
       </button>
-      <ExportPDFButton measures={musicScore?.parts[0].measures} />
+      <ExportPDFButton score={musicScore} />
     </TaskbarDropdown>
   );
 };

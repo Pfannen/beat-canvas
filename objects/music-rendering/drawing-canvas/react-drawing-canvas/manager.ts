@@ -1,4 +1,4 @@
-import { CanvasManager } from "@/types/music-rendering/canvas/canvas-manager";
+import { CanvasManager } from "@/types/music-rendering/canvas/manager/canvas-manager";
 import { ReactDrawingCanvas } from ".";
 import { ReactNode } from "react";
 import { Measurements } from "@/objects/measurement/measurements";
