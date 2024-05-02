@@ -1,4 +1,4 @@
-import { NoteType } from "./types";
+import { NoteType, TimeSignature } from "./types";
 
 const noteTypeToFourFourValue: { [type in NoteType]: number } = {
   whole: 1,
@@ -24,12 +24,22 @@ export const getNoteDuration = (
 	) as SegmentBeat; //toFixed 3 works except for dotted-thirtysecond (rounds it to .188 for 4/4 but needs to be .1875) */
 };
 
+export const getNotePercentageOfMeasure = (
+  noteType: NoteType,
+  timeSignature: TimeSignature,
+  dotted = false
+) => {
+  return (
+    getNoteDuration(noteType, timeSignature.beatNote, dotted) *
+    (timeSignature.beatsPerMeasure / timeSignature.beatNote)
+  );
+};
+
 export const getNotesPerMeasure = (
   noteType: NoteType,
   beatNote: number,
   dotted = false
 ) => {
   const duration = getNoteDuration(noteType, beatNote, dotted);
-  console.log({ beatNote, duration }, beatNote / duration);
   return beatNote / duration;
 };

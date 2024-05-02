@@ -218,6 +218,12 @@ export const getQuarterNoteDurationFromNoteType = (noteType: NoteType) => {
   }
 };
 
+export const isNoteDotted = (duration: number, beatNote: number) => {
+  const quarterDuration = getQuarterNoteDuration(duration, beatNote);
+  const nonDottedDuration = (2 * quarterDuration) / 3;
+  return nonDottedDuration in quarterDurationToNoteType;
+};
+
 export const rightHandSplits: { [key: number]: SegmentBeat } = {
   0.5: 0.5,
   0.25: 0.25,
@@ -309,4 +315,10 @@ export const isStaticMeasureAttribute = (key: any) => {
 
 export const isDynamicMeasureAttribute = (key: any) => {
   return dynamicMeasureAttributesKeys.has(key);
+};
+
+export const getNoteType = (duration: number, time: TimeSignature) => {
+  const type = durationToRestType(duration, time);
+  const isDotted = isNoteDotted(duration, time.beatNote);
+  return { type, isDotted };
 };

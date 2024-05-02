@@ -6,7 +6,7 @@ import {
   Rest,
 } from "@/types/music/render-data";
 import { getDecimalPortion } from "@/utils";
-import { durationToRestType, isDownbeat } from "@/utils/music";
+import { getNoteType, isDownbeat } from "@/utils/music";
 
 export type MusicIteratorCallback = (
   measureData: MeasureRenderData,
@@ -91,14 +91,14 @@ export const getRestsForDuration = (
   timeSignature: TimeSignature
 ): Rest[] => {
   if (timeSignature.beatsPerMeasure === duration) {
-    return [{ x: 0, type: "whole" }];
+    return [{ x: 0, type: "whole", isDotted: false }];
   }
   const rests: Rest[] = [];
   if (!isDownbeat(x)) {
     const partialDuration = 1 - getDecimalPortion(x);
     const dur = Math.min(duration, partialDuration);
-    const type = durationToRestType(dur, timeSignature);
-    rests.push({ x, type });
+    const { type, isDotted } = getNoteType(dur, timeSignature);
+    rests.push({ x, type, isDotted });
     duration -= dur;
     x += dur;
   }
@@ -108,15 +108,15 @@ export const getRestsForDuration = (
 
   while (duration) {
     const dur = getMaxRestDuration(x, duration, subdivisionLength);
-    const type = durationToRestType(dur, timeSignature);
-    rests.push({ x, type });
+    const { type, isDotted } = getNoteType(dur, timeSignature);
+    rests.push({ x, type, isDotted });
     duration -= dur;
     x += dur;
   }
 
   if (fractionalDuaration) {
-    const type = durationToRestType(fractionalDuaration, timeSignature);
-    rests.push({ x, type });
+    const { type, isDotted } = getNoteType(fractionalDuaration, timeSignature);
+    rests.push({ x, type, isDotted });
   }
 
   return rests;

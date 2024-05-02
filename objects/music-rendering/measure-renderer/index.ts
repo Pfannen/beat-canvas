@@ -10,7 +10,10 @@ import {
   NoteType,
   TimeSignature,
 } from "@/components/providers/music/types";
-import { getNoteDuration } from "@/components/providers/music/utils";
+import {
+  getNoteDuration,
+  getNotePercentageOfMeasure,
+} from "@/components/providers/music/utils";
 import { CoordinateSection } from "@/types/music-rendering/measure-manager/measure-outline";
 import {
   DynamicMeasureAttribute,
@@ -24,19 +27,15 @@ import { noteAttributeGenerator } from "@/utils/music/measures/traversal";
 import { ICanvasGetter } from "@/types/music-rendering/canvas/manager/canvas-manager";
 import { Tolerence } from "@/types/music-rendering/measure-manager";
 import { StaticAttributeParser } from "./parsers/static-parser";
-import {
-  isDynamicMeasureAttribute,
-  isStaticMeasureAttribute,
-} from "@/utils/music";
+import { isStaticMeasureAttribute } from "@/utils/music";
 import { DynamicAttributeParser } from "./parsers/dynamic-parser";
 import { MeasureSectionData } from "@/types/music-rendering/attribute-parsing";
 import { DynamicAttributeData } from "@/types/music-rendering/canvas/beat-canvas";
 
 export class MeasureRenderer {
   private measures: Measure[];
-  private music: Music;
+
   private canvasManager: ICanvasGetter;
-  private transformer: MeasureTransformer;
   private measureManager!: MeasureManager;
   private musicDimensions: MusicDimensionData;
   private measurements: Measurements;
@@ -53,9 +52,6 @@ export class MeasureRenderer {
     this.measures = measures;
     this.musicDimensions = musicDimensions;
     this.canvasManager = canvasManager;
-    this.music = new Music();
-    this.music.setMeasures(measures);
-    this.transformer = new MeasureTransformer(this.music, measurements);
     this.measureManager = new MeasureManager(
       this.musicDimensions,
       sectionToggleList,
@@ -75,12 +71,11 @@ export class MeasureRenderer {
   }
 
   private getMusicRenderData(
-    getMeasureData: (measureIndex: number) => {
-      timeSig: TimeSignature;
-      noteSpaceWidth: number;
-    }
+    music: Music,
+    getMeasureNoteSpace: (measureIndex: number) => number
   ) {
-    this.transformer.computeDisplayData([
+    const transformer = new MeasureTransformer(music, this.measurements);
+    transformer.computeDisplayData([
       { attacher: "non-body", context: undefined },
       {
         attacher: "beam-data",
@@ -88,7 +83,8 @@ export class MeasureRenderer {
           unitConverters: this.unitConverters,
           getAbsolutePosition: (measureIndex, noteIndex) => {
             const note = this.measures[measureIndex].notes[noteIndex];
-            const { timeSig, noteSpaceWidth } = getMeasureData(measureIndex);
+            const noteSpaceWidth = getMeasureNoteSpace(measureIndex);
+            const timeSig = music.getMeasureTimeSignature(measureIndex);
             const duration = getNoteDuration(note.type, timeSig.beatNote);
             const x =
               Measurements.getXFractionOffset(
@@ -104,7 +100,7 @@ export class MeasureRenderer {
         },
       },
     ]);
-    return this.transformer.getMeasureRenderData();
+    return transformer.getMeasureRenderData();
   }
 
   private generateMeasureOutline(
@@ -192,11 +188,15 @@ export class MeasureRenderer {
 
   public render() {
     const measureDetails = this.generateMeasureAttributes();
+    const music = new Music(
+      this.measures,
+      (i) => measureDetails.sections[i].attributes.timeSignature
+    );
     this.generateMeasureOutline((i) => measureDetails.sections[i]);
-    const renderData = this.getMusicRenderData((i) => ({
-      timeSig: measureDetails.sections[i].attributes.timeSignature,
-      noteSpaceWidth: this.measureManager.getMeasureSection(i, "note")!.width,
-    }));
+    const renderData = this.getMusicRenderData(
+      music,
+      (i) => this.measureManager.getMeasureSection(i, "note")!.width
+    );
     const containerData = this.getContainerDimensionData();
     renderData.forEach((measure, measureIndex) => {
       const positionData = this.getContainerPositionData(measureIndex);
@@ -227,9 +227,10 @@ export class MeasureRenderer {
           const bodyCenter = componentHelper.getCoordinates(
             note.type,
             note.x,
-            note.y
+            note.y,
+            !!note.annotations?.dotted
           );
-          const noteAnnotations = this.music.getNoteAnnotations(
+          const noteAnnotations = music.getNoteAnnotations(
             measureIndex,
             noteIndex
           );
@@ -250,7 +251,12 @@ export class MeasureRenderer {
           noteIndex++;
         } else {
           const { rest } = component;
-          const center = componentHelper.getCoordinates(rest.type, rest.x, 4);
+          const center = componentHelper.getCoordinates(
+            rest.type,
+            rest.x,
+            4,
+            rest.isDotted
+          );
           beatCanvas.drawRest({
             center,
             type: rest.type,
@@ -290,14 +296,19 @@ class MeasureComponentHelper {
     return this.noteSection.width * fractionOffset;
   }
 
-  private getNoteOffset(type: NoteType, xPos: number) {
-    const duration = getNoteDuration(type, this.timeSignature.beatNote);
+  private getNoteOffset(type: NoteType, xPos: number, isDotted: boolean) {
+    const duration = getNotePercentageOfMeasure(type, this.timeSignature);
     return this.getXOffset(xPos, duration);
   }
 
-  public getCoordinates(type: NoteType, xPos: number, yPos: number) {
+  public getCoordinates(
+    type: NoteType,
+    xPos: number,
+    yPos: number,
+    isDotted: boolean
+  ) {
     const { startX } = this.noteSection;
-    const noteOffset = this.getNoteOffset(type, xPos);
+    const noteOffset = this.getNoteOffset(type, xPos, isDotted);
     const noteCenterX = startX + noteOffset;
     const yOffset = this.measurements.getYFractionOffset(yPos);
     const centerY = this.height * yOffset + this.bottomY;
@@ -317,9 +328,10 @@ const combineMeasureSectionObjects = (
   for (const key in newAttributes) {
     if (isStaticMeasureAttribute(key)) {
       staticParser.parseKey(key as StaticMeasureAttribute);
-    } else if (isDynamicMeasureAttribute(key)) {
-      dynamicParser.parseKey(key as DynamicMeasureAttribute);
     }
+    // else if (isDynamicMeasureAttribute(key)) {
+    //   dynamicParser.parseKey(key as DynamicMeasureAttribute);
+    // }
   }
   return { static: staticParser.get(), dynamic: dynamicParser.get() };
 };
