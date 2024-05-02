@@ -4,10 +4,7 @@ import {
   NoteType,
   TimeSignature,
 } from "@/components/providers/music/types";
-import {
-  getNoteDuration,
-  getNotesPerMeasure,
-} from "@/components/providers/music/utils";
+import { getNoteDuration } from "@/components/providers/music/utils";
 import { NoteDirection } from "@/lib/notes/types";
 import {
   NoteAnnotation,
@@ -41,7 +38,10 @@ export interface ReadonlyMusic {
 }
 
 export class Music implements ReadonlyMusic {
-  private measures?: Measure[];
+  constructor(
+    private measures: Measure[],
+    private getMeasureTimeSig: (measureIndex: number) => TimeSignature
+  ) {}
 
   private checkMeasures() {
     if (!this.measures) {
@@ -93,7 +93,7 @@ export class Music implements ReadonlyMusic {
   }
 
   getMeasureTimeSignature(measureIndex: number): TimeSignature {
-    return { beatsPerMeasure: 4, beatNote: 4 }; //Add time signauture data later
+    return this.getMeasureTimeSig(measureIndex);
   }
 
   getMeasures(): Measure[] {

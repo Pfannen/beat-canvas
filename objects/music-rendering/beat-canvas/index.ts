@@ -12,6 +12,7 @@ import {
   RestOptions,
   MeasureComponentContextIterator,
   MeasureData,
+  DynamicAttributeData,
 } from "@/types/music-rendering/canvas/beat-canvas";
 import { NoteDirection } from "@/lib/notes/types";
 import {
@@ -31,6 +32,8 @@ import { getNoteBodyDrawer } from "./drawers/note/note-body";
 import { getRestDrawer } from "./drawers/measure/measure-rests";
 import { getNoteStemDrawer, noteStemDrawer } from "./drawers/note/note-stem";
 import { nonBodyDrawer } from "./drawers/note/non-body";
+import { getDynamicAttributeDrawer } from "./drawers/measure/dynamic-attributes";
+import { BlockDirection } from "@/types/music-rendering/pdf";
 
 const getDrawOptions = () => {
   const tempNoteDrawOptions: BeatCanvasNoteDrawOptions = {
@@ -294,16 +297,54 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
       height: bodyHeight - lineHeight / 2,
       width: endBarWidth,
     });
+
     const dimensions = this.measurements.getMeasureDimensions();
+    const measureBottomY =
+      y - (dimensions.noteSpaceHeight + dimensions.padding.top);
     this.drawMeasureSections(
-      y - (dimensions.noteSpaceHeight + dimensions.padding.top),
+      measureBottomY,
       options.sections as any,
       options.sectionAttributes
+    );
+    this.drawDynamicAttributes(
+      measureBottomY,
+      options.noteStartX,
+      options.paddingValues,
+      options.dynamicAttributes
     );
   }
 
   private yPosToAbsolute(measureBottomY: number, yPos: number) {
     return this.measurements.getYOffset(yPos) + measureBottomY;
+  }
+
+  protected drawDynamicAttributes(
+    measureBottomY: number,
+    noteStartX: number,
+    paddingValues: BlockDirection<number>,
+    dynamicAttributes?: DynamicAttributeData
+  ) {
+    if (dynamicAttributes) {
+      const args = {
+        drawCanvas: this.canvas,
+        measureYValues: {
+          top: this.yPosToAbsolute(
+            measureBottomY,
+            this.measurements.getAboveBelowCount() +
+              this.measurements.getBodyCount() -
+              1
+          ),
+          bottom: measureBottomY,
+        },
+        bodyHeight: this.measurements.getBodyHeight(),
+        noteStartX,
+        paddingValues,
+      };
+      dynamicAttributes.forEach(({ key, value }) => {
+        const drawer = getDynamicAttributeDrawer(key, value);
+        drawer(args);
+      });
+    }
   }
 
   protected drawMeasureSections(

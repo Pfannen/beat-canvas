@@ -118,6 +118,10 @@ export class Measurements {
     return this.aboveBelowCount;
   }
 
+  public getTotalComponentCount() {
+    return this.getBodyCount() + this.getAboveBelowCount() * 2;
+  }
+
   public getBodyHeight() {
     return this.bodyHeight;
   }

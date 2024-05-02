@@ -11,6 +11,7 @@
 		"gen-schema": "typescript-json-schema --required ./json-schemas/tsconfig.json"
 	},
 	"dependencies": {
+		"@pdf-lib/fontkit": "^1.1.1",
 		"@types/react-modal": "^3.16.3",
 		"ajv": "^8.12.0",
 		"audiobuffer-to-blob": "^1.0.2",

@@ -29,7 +29,7 @@ export class ScoreRenderer {
       x,
       y,
       text: this.score.title,
-      position: "topCenter",
+      position: "bottomCenter",
     });
   }
 

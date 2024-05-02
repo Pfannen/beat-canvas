@@ -16,7 +16,7 @@ const accidentalSVGData: Record<Accidental, AccidentalSVG> = {
     ],
     viewBox: [0, 0, 5.84, 19],
     centerFractionOffsetY: 0,
-    fractionOfSpaceHeight: 4,
+    fractionOfSpaceHeight: 3.5,
   },
   b: {
     paths: [

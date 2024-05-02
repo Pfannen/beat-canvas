@@ -6,7 +6,7 @@ import {
 } from "@/components/providers/music/types";
 import { NoteDisplayData } from "../music-rendering/draw-data/note";
 
-export type Rest = { x: number; type: NoteType };
+export type Rest = { x: number; type: NoteType; isDotted: boolean };
 
 export type NoteComponent = {
   type: "note";

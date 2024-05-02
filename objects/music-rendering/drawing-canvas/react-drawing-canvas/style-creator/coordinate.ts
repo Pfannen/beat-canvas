@@ -1,24 +1,29 @@
 import { Coordinate } from "@/types";
 import { UnitMeasurement } from "@/types";
-import { StyleCreator } from "./style-creator";
+import { StyleCreator } from ".";
 import { DimensionDirections } from "@/types/music-rendering/canvas/drawing-canvas/html";
 
 export class CoordinateStyleCreator extends StyleCreator {
   constructor(
     coordinate: Coordinate,
-    xAxisValue: number,
-    yAxisValue: number,
-    unit: UnitMeasurement
+    unit: UnitMeasurement,
+    xAxisValue?: number,
+    yAxisValue?: number
   ) {
     super(unit);
-    const values = CoordinateStyleCreator.adjustPosition(
-      coordinate,
-      xAxisValue,
-      yAxisValue
-    );
-    this.addCoordinate(values.adjustedCoordinate);
-    this.addDimensions(values.adjustedXValue, values.adjustedYValue);
-    this.modifyTransformOrigin(this.getDirectionData(xAxisValue, yAxisValue));
+    if (xAxisValue && yAxisValue) {
+      const values = CoordinateStyleCreator.adjustPosition(
+        coordinate,
+        xAxisValue,
+        yAxisValue
+      );
+      this.addCoordinate(values.adjustedCoordinate);
+      this.addDimensions(values.adjustedXValue, values.adjustedYValue);
+      this.modifyTransformOrigin(this.getDirectionData(xAxisValue, yAxisValue));
+    } else {
+      this.addCoordinate(coordinate);
+    }
+
     this.addPosition("absolute");
   }
 

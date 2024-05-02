@@ -1,23 +1,19 @@
 import { NoteType } from "@/components/providers/music/types";
-import { Coordinate } from "@/types";
+import { Coordinate, RecordEntryArray } from "@/types";
 import {
+  DynamicMeasureAttribute,
   DynamicMeasureAttributes,
   MeasureSection,
   MeasureSectionMetadata,
-  StaticMeasureAttributes,
 } from "@/types/music";
 import { NoteDirection } from "@/lib/notes/types";
-import {
-  MeasureComponent,
-  MeasureComponentIterator,
-  MeasureComponentValues,
-} from "../..";
+import { MeasureComponent, MeasureComponentValues } from "../..";
 import { NoteDisplayData } from "@/types/music-rendering/draw-data/note";
 import { NoteAnnotation } from "@/types/music/note-annotations";
 import { CoordinateSectionArray } from "../../measure-manager/measure-outline";
 import { IDrawingCanvas } from "../drawing-canvas";
 import { Measurements } from "@/objects/measurement/measurements";
-import { BeatCanvas } from "@/objects/music-rendering/beat-canvas";
+import { BlockDirection } from "../../pdf";
 
 export type StemOptions = {
   bodyWidth: number;
@@ -75,11 +71,15 @@ export type MeasureDrawData = {
   totalWidth: number;
   measureIndex: number;
   pageNumber: number;
+  noteStartX: number;
+  paddingValues: BlockDirection<number>;
 };
+
+export type DynamicAttributeData = RecordEntryArray<DynamicMeasureAttributes>;
 
 export type MeasureData = MeasureDrawData & {
   sectionAttributes: Omit<MeasureSectionMetadata, "notes">;
-  dynamicAttributes?: Partial<DynamicMeasureAttributes>;
+  dynamicAttributes?: DynamicAttributeData;
 };
 
 export type RestOptions = {

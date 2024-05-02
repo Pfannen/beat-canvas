@@ -1,7 +1,10 @@
 import classes from "./index.module.css";
 import { Coordinate } from "@/types";
 import { UnitMeasurement } from "@/types";
+import { DrawingCanvasFontFamily } from "@/types/music-rendering/canvas/drawing-canvas";
 import { DimensionDirections } from "@/types/music-rendering/canvas/drawing-canvas/html";
+import { appendUnit } from "@/utils";
+import { getCSSFontFamily } from "@/utils/fonts/score-drawer";
 import { CSSProperties } from "react";
 
 type Style = { [key: string]: string | undefined | number };
@@ -23,6 +26,10 @@ export class StyleCreator {
 
   private addClassName(className: string) {
     this.classNames.push(classes[className]);
+  }
+
+  private addDefinedVariable(variable: string, value: string) {
+    this.cssVariables[variable] = value;
   }
 
   private addVariableAndClass(key: string, value: Style[""]) {
@@ -87,6 +94,32 @@ export class StyleCreator {
 
   public addScale = (scale: number) => {
     this.addVariableAndClass("scale", scale);
+  };
+
+  public addReferencePoint = (
+    point: "top" | "bottom" | "left" | "right",
+    value: number
+  ) => {
+    this.addVariableAndClass(point, appendUnit(value, this.unit));
+  };
+
+  public addFontFamily = (fontFamily: DrawingCanvasFontFamily) => {
+    const variableName = getCSSFontFamily(fontFamily);
+    this.addVariableAndClass("font-family", variableName);
+  };
+
+  public addFontSize = (fontSize: string) => {
+    this.addVariableAndClass("font-size", fontSize);
+  };
+
+  public centerOnAxis = (axis: "x" | "y") => {
+    axis === "x"
+      ? this.addClassName("center-x")
+      : this.addClassName("center-y");
+  };
+
+  public addPointerEvent = (event: CSSProperties["pointerEvents"]) => {
+    this.addVariableAndClass("pointer", event);
   };
 
   public getStyle = () => {
