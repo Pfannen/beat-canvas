@@ -25,14 +25,17 @@ const useMeasureRange = (
 	const initialMACache = useRef<RequiredMeasureAttributes | null>(null);
 	const currentMACache = useRef<MeasureAttributes | null>(null);
 
-	// Make sure initial measure attribute cache only gets set once
-	useEffect(() => {
+	const recache = () => {
 		initialMACache.current = getRequiredMeasureAttributes(
 			getMeasures(0, startIndex + 1, true),
 			startIndex
 		);
 		currentMACache.current = initialMACache.current;
-	}, [getMeasures, startIndex]);
+	};
+
+	// Make sure initial measure attribute cache only gets set once
+	// This will probably run unnecessarily if 'getAttributes' is called before this useEffect is executed
+	useEffect(recache, [getMeasures, startIndex]);
 
 	// Update the attribute cache to match that of the first measure
 	useEffect(() => {
@@ -53,6 +56,7 @@ const useMeasureRange = (
 		x = 0
 	): MeasureAttributes | null => {
 		if (measureIndex >= rangedMeasures.length || measureIndex < 0) return null;
+		if (!currentMACache.current) recache();
 
 		// Get the attributes of the desired measure and x position
 		// Attributes shouldn't be null because the given measure index was checked
@@ -62,6 +66,7 @@ const useMeasureRange = (
 			currentMACache.current || undefined,
 			x
 		);
+		console.log({ attributes, measureIndex, cache: currentMACache.current });
 		// Return null (if the attributes were null) or a copy of the attributes
 		return attributes && { ...attributes };
 	};

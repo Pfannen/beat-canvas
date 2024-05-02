@@ -1,4 +1,4 @@
-import { PitchOctave } from '.';
+import { Accidental, PitchOctave } from '.';
 
 export type NoteAnnotation =
 	| 'accent'
@@ -26,7 +26,7 @@ export type Dynamic =
 	| 'ff'
 	| 'fff';
 
-export type Accidental = 'sharp' | 'flat' | 'natural';
+// export type Accidental = 'sharp' | 'flat' | 'natural';
 
 export type InstrumentEnvelope = {
 	attack: number;

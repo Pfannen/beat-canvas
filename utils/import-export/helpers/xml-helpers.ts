@@ -1,5 +1,6 @@
 import { NoteType } from '@/components/providers/music/types';
-import { NoteTypeMXML } from '@/types/import-export/import';
+import { AccidentalMXML, NoteTypeMXML } from '@/types/import-export/import';
+import { Accidental } from '@/types/music';
 
 export const createAppend = (
 	root: XMLDocument,
@@ -89,4 +90,20 @@ export const convertToMXMLNoteType = (noteType: NoteType) => {
 	}
 
 	return mxmlNoteType;
+};
+
+export const convertFromMXMLAccidental = (
+	mxmlAccidental: AccidentalMXML
+): Accidental => {
+	if (mxmlAccidental === 'flat') return 'b';
+	else if (mxmlAccidental === 'sharp') return '#';
+	else return 'n';
+};
+
+export const convertToMXMLAccidental = (
+	accidental: Accidental
+): AccidentalMXML => {
+	if (accidental === 'b') return 'flat';
+	else if (accidental === '#') return 'sharp';
+	else return 'natural';
 };

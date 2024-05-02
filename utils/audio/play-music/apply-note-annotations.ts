@@ -40,9 +40,8 @@ const slurApplier: NoteAnnotationApplier = (attr, annotations) => {
 const accidentalApplier: NoteAnnotationApplier = (attr, annotations) => {
 	const { accidental } = annotations;
 	if (accidental) {
-		if (accidental === 'flat') attr.pitchOctave.accidental = 'b';
-		else if (accidental === 'sharp') attr.pitchOctave.accidental = '#';
-		else delete attr.pitchOctave.accidental;
+		if (accidental === 'n') delete attr.pitchOctave.accidental;
+		else attr.pitchOctave.accidental = accidental;
 	}
 };
 

@@ -174,5 +174,6 @@ export const useEditMeasures = (
 		commitMeasures,
 		isSegmentSelected,
 		isYLevelSelected,
+		getAttributes,
 	};
 };

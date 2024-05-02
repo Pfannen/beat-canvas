@@ -1,23 +1,20 @@
 import {
+	AccidentalMXML,
 	NoteImportAnnotationsHelper,
 	NoteImportAnnotationsHelperMap,
 	NoteImportHelper,
 	NoteImportHelperMap,
 	NoteTypeMXML,
 } from '@/types/import-export/import';
+import { Dynamic, Slur, SlurMXMLImport } from '@/types/music/note-annotations';
 import {
-	Accidental,
-	Dynamic,
-	Slur,
-	SlurMXMLImport,
-} from '@/types/music/note-annotations';
-import {
+	convertFromMXMLAccidental,
 	convertFromMXMLNoteType,
 	getSingleElement,
 	validateElements,
 	verifyTagName,
 } from './xml-helpers';
-import { Pitch } from '@/types/music';
+import { Accidental, Pitch } from '@/types/music';
 import { NoteType } from '@/components/providers/music/types';
 
 const pitchOctaveImportHelper: NoteImportHelper = (nD, el) => {
@@ -45,12 +42,14 @@ const accidentalMarkImportHelper: NoteImportAnnotationsHelper = (
 ) => {
 	const { a } = details;
 	if (!verifyTagName(el, 'accidental-mark') || !el.textContent) return;
-	a.accidental = el.textContent as Accidental;
+	a.accidental = convertFromMXMLAccidental(el.textContent as AccidentalMXML);
 };
 
 const accidentalImportHelper: NoteImportHelper = (nD, el) => {
 	if (!verifyTagName(el, 'accidental') || !el.textContent) return;
-	nD.annotations.accidental = el.textContent as Accidental;
+	nD.annotations.accidental = convertFromMXMLAccidental(
+		el.textContent as AccidentalMXML
+	);
 };
 
 const chordImportHelper: NoteImportHelper = (nD, el) => {

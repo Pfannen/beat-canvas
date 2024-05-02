@@ -31,6 +31,8 @@ export const getMeasureSecondsArray = (
 	measures: Measure[],
 	measureZeroAttributes?: MeasureAttributes
 ) => {
+	if (!measures || !measures.length) return [0];
+
 	// Set optional parameters if they're not present
 	const attributes =
 		measureZeroAttributes || initializeMeasureAttributes(measures[0]);

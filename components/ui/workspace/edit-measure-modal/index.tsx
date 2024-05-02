@@ -39,6 +39,7 @@ const EditMeasureModal: FunctionComponent<EditMeasureModalProps> = ({
 					liftCommitMeasures={(fn) => {
 						commitModalChanges.current = fn;
 					}}
+					close={onCloseModal}
 				/>
 			)}
 		</ReactModal>

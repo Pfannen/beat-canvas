@@ -12,7 +12,7 @@ const useWorkspace = () => {
 	const selection = useSelection();
 	const mode = useMode<MeasureMode>();
 	const {
-		measuresItems: { invokeMeasureModifier },
+		measuresItems: { invokeMeasureModifier, measures },
 	} = useMusic();
 
 	const onMeasureClick = (index: number) => {
@@ -52,6 +52,9 @@ const useWorkspace = () => {
 		invokeMeasureModifier(
 			removeMeasures({ startIndex: selectedMeasures.start, count })
 		);
+		// If all measures are being removed, add one back
+		const measuresCount = measures.length;
+		if (measuresCount === count) invokeMeasureModifier(createMeasure({}));
 		selection.clearSelection();
 	};
 

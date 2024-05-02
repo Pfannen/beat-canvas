@@ -31,7 +31,7 @@ export const getDefaultInstrumentEnvelope = () => {
 		attack: 0.005, // 0.005
 		decay: 0.1, // 0.1
 		sustain: 0.3, // 0.3
-		release: 0.75, // 1
+		release: 1, // 1
 	};
 
 	return envelope;

@@ -92,12 +92,7 @@ const MetronomeAssigner: FunctionComponent<MetronomeAssignerProps> = ({
 				</AssignerDropdownField> */}
 			</div>
 			<ModifyMusicAssigner
-				onClick={() =>
-					assigner('metronome', {
-						beatNote: +beatNote.value!,
-						beatsPerMinute: bpm,
-					})
-				}
+				onClick={() => assigner('metronome', assignValue)}
 				add={!!assignValue}
 				disabled={!metadataEntry}
 			>

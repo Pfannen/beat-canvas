@@ -132,4 +132,6 @@ export type NoteTypeMXML =
 	| '64th'
 	| '128th';
 
+export type AccidentalMXML = 'sharp' | 'flat' | 'natural';
+
 // #endregion

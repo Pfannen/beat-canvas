@@ -17,7 +17,10 @@ import {
 	createXMLElement,
 } from './utils';
 import { minimalSegmentGenerator } from '@/utils/segments/segment-gen-1';
-import { convertToMXMLNoteType } from '../helpers/xml-helpers';
+import {
+	convertToMXMLAccidental,
+	convertToMXMLNoteType,
+} from '../helpers/xml-helpers';
 
 const pitchEC = (note: Note, clef: Clef) => {
 	const pitchEl = createXMLElement('pitch');
@@ -103,7 +106,7 @@ const accentPEC: AnnotationPEC<'accent'> = (accent) => {
 
 const accidentalPEC: AnnotationPEC<'accidental'> = (accidental) => {
 	const accidentalEl = createXMLElement('accidental');
-	accidentalEl.textContent = accidental;
+	accidentalEl.textContent = convertToMXMLAccidental(accidental);
 	return [accidentalEl];
 };
 

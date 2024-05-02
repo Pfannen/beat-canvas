@@ -104,6 +104,7 @@ export const noteAttributeGenerator = function* (
 	deepCopy = false
 ) {
 	if (!measures || !measures.length) return;
+	
 	const attr = initialAttributes
 		? deepyCopy(initialAttributes)
 		: initializeMeasureAttributes(measures[0]);

@@ -60,8 +60,16 @@ export const duplicateMeasures: MeasureModifier<{
 	({ startIndex, count, insertIndex }) =>
 	(getMeasures) => {
 		const measures = getMeasures();
-		const duplicatedMeasures = measures.slice(startIndex, startIndex + count);
-		measures.splice(insertIndex || measures.length, 0, ...duplicatedMeasures);
+		const duppedMeasures: Measure[] = [];
+		for (let i = 0; i < count; i++) {
+			const duppedMeasure = measures[i + startIndex];
+			// remove all the defined attributes of the duplicated measures (it's a pain to edit if we don't)
+			delete duppedMeasure.staticAttributes;
+			delete duppedMeasure.temporalAttributes;
+			duppedMeasures.push(duppedMeasure);
+		}
+		// const duplicatedMeasures = measures.slice(startIndex, startIndex + count);
+		measures.splice(insertIndex || measures.length, 0, ...duppedMeasures);
 	};
 
 const isValidPlacement = (
