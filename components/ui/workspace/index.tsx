@@ -30,38 +30,39 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
 	const { measuresItems } = useMusic();
 	const currentMode = ws.mode.get();
 	const isPlayback = currentMode === 'playback';
+	const isLooping = currentMode === 'loop';
 
 	const buttons: ControlButton[] = [
 		{
-			label: 'Add Measure',
+			label: 'Add',
 			buttonProps: {
 				onClick: ws.measureDels.addMeasureSelection,
-				disabled: isPlayback,
-			},
-		},
-		{
-			label: 'Duplicate Measures',
-			buttonProps: {
-				onClick: ws.mode.set.bind(null, 'duplicate'),
-				disabled: !ws.isSelectedMeasures() || isPlayback,
-			},
-		},
-		{
-			label: 'Modify',
-			buttonProps: {
-				onClick: ws.mode.set.bind(null, 'modify'),
-				disabled: !ws.isSelectedMeasures() || isPlayback,
+				disabled: isPlayback || isLooping,
 			},
 		},
 		{
 			label: 'Remove',
 			buttonProps: {
 				onClick: ws.measureDels.removeMeasureSelection,
-				disabled: !ws.isSelectedMeasures() || isPlayback,
+				disabled: !ws.isSelectedMeasures() || isPlayback || isLooping,
 			},
 		},
 		{
-			label: currentMode !== 'loop' ? 'Loop Measures' : 'Stop Looping',
+			label: 'Duplicate',
+			buttonProps: {
+				onClick: ws.mode.set.bind(null, 'duplicate'),
+				disabled: !ws.isSelectedMeasures() || isPlayback || isLooping,
+			},
+		},
+		{
+			label: 'Modify',
+			buttonProps: {
+				onClick: ws.mode.set.bind(null, 'modify'),
+				disabled: !ws.isSelectedMeasures() || isPlayback || isLooping,
+			},
+		},
+		{
+			label: currentMode !== 'loop' ? 'Loop' : 'Stop Looping',
 			buttonProps: {
 				onClick:
 					currentMode !== 'loop'
@@ -73,14 +74,6 @@ const Workspace: FunctionComponent<WorkspaceProps> = () => {
 	];
 
 	const modalShouldOpen = currentMode === 'modify' && ws.isSelectedMeasures();
-
-	/* useEffect(() => {
-		const shouldLoop = currentMode === 'loop' && ws.isSelectedMeasures();
-		if (shouldLoop && updateLoopSelectionRef?.current)
-			updateLoopSelectionRef.current(ws.getSelectedMeasures());
-		else if (!shouldLoop && updateLoopSelectionRef?.current)
-			updateLoopSelectionRef.current();
-	}, [currentMode, updateLoopSelectionRef, ws]); */
 
 	return (
 		<>

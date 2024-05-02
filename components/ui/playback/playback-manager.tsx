@@ -6,6 +6,7 @@ import PlayStopSwapper from './buttons/play-stop-button-swapper';
 import { BasicPlaybackState } from 'tone';
 import { concatClassNames } from '@/utils/css';
 import { MusicPlaybackState } from '@/types/audio/volume';
+import Spinner from '../reusable/feedback/spinner';
 
 export interface PlaybackManagerProps {
 	title?: string;
@@ -34,7 +35,12 @@ const PlaybackManager: FunctionComponent<PlaybackManagerProps> = ({
 		playbackState === 'enqueueing';
 
 	return (
-		<div className={classes.playback_manager}>
+		<div
+			className={concatClassNames(
+				classes.playback_manager,
+				classes[playbackState || '']
+			)}
+		>
 			<h1 className={classes.title}>{title || 'Playback Manager'}</h1>
 			<div className={classes.playback_buttons}>
 				<SeekButton
@@ -64,6 +70,7 @@ const PlaybackManager: FunctionComponent<PlaybackManagerProps> = ({
 					disableUserSliding={disableUserSliding || disabled}
 				/>
 			</div>
+			{playbackState === 'enqueueing' && <Spinner />}
 		</div>
 	);
 };

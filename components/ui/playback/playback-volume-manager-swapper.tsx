@@ -39,7 +39,11 @@ const PlaybackVolumeManagerSwapper: FunctionComponent<
 			// If we already have selected measures (because the mode has been loop), do nothing
 			if (selectedMeasures) return;
 			// Else the mode was changed and we need to update the state
-			setSelectedMeasures(ws.getSelectedMeasures() || null);
+			const asyncEffectFunc = async () => {
+				await singletonPBMRef.current.enqueueLoadedScore();
+				setSelectedMeasures(ws.getSelectedMeasures() || null);
+			};
+			asyncEffectFunc();
 		} else {
 			// If the selected measures aren't null (because we just switched out of loop mode), set them to be null
 			if (selectedMeasures !== null) {

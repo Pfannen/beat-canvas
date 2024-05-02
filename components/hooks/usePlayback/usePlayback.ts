@@ -61,6 +61,8 @@ export const usePlayback = (initialPBM?: MusicPlaybackManager) => {
 
 	//TODO: have status for importing bad audio file
 	const setImportedAudio = async (audioFile?: File) => {
+		// Importing audio will set the state to 'enqueueing' (no good way to get this enqueueing state besides manually updating)
+		setPlaybackState('enqueueing');
 		await playbackManager.current.setImportedAudio(audioFile);
 		updateVolumePairs();
 		updatePlaybackState();
@@ -68,9 +70,11 @@ export const usePlayback = (initialPBM?: MusicPlaybackManager) => {
 
 	// Play the music - only need to update the volume pairs if we need to enqueue, else the pairs should be the same
 	const playMusic = async () => {
+		// If the manager requires enqueueing, we know the state will be 'enqueueing'
 		if (
 			playbackManager.current.getMusicPlaybackState() === 'requires enqueue'
 		) {
+			setPlaybackState('enqueueing');
 			await playbackManager.current.enqueueLoadedScore();
 			updateVolumePairs();
 		}

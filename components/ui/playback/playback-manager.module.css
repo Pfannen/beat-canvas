@@ -1,16 +1,19 @@
 .playback_manager {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	gap: 16px;
 	max-width: 40%;
 	margin-inline: auto;
+	z-index: 0;
 }
 
 .playback_manager > * {
 	margin-inline: auto;
 }
 
-.playback_manager :disabled {
+.playback_manager :disabled,
+.playback_manager.enqueueing {
 	opacity: 0.5;
 }
 
