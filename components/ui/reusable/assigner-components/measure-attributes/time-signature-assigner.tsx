@@ -10,6 +10,8 @@ import {
 	IKnownGenericAssignerComponent,
 } from '@/types/modify-score/assigner';
 import { getAssignValue } from '@/utils/music/modify-score/metadata-helpers';
+import { timeSignaturesAreEqal } from '@/utils/music/is-equal-helpers';
+import AttributeAssignerButton from './buttons/attribute-assigner-button';
 
 interface TimeSignatureAssignerProps
 	extends IKnownGenericAssignerComponent<MeasureAttributes, 'timeSignature'> {}
@@ -22,10 +24,11 @@ const TimeSignatureAssigner: FunctionComponent<TimeSignatureAssignerProps> = ({
 	const [beatNote, setBeatNote] = useState(4);
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const assignValue = getAssignValue<MeasureAttributes, 'timeSignature'>(
-		{ beatNote: 4, beatsPerMeasure: 4 },
-		metadataEntry
-	);
+	/* const assignValue = getAssignValue<MeasureAttributes, 'timeSignature'>(
+		{ beatNote, beatsPerMeasure },
+		metadataEntry,
+		timeSignaturesAreEqal
+	); */
 
 	return (
 		<AssignerInputLayout>
@@ -69,19 +72,15 @@ const TimeSignatureAssigner: FunctionComponent<TimeSignatureAssignerProps> = ({
 					}
 				</AssignerDropdownField>
 			</div>
-			<ModifyMusicAssigner
-				onClick={() =>
-					assigner('timeSignature', {
-						beatNote: beatNote,
-						beatsPerMeasure: beatsPerMeasure,
-					})
-				}
-				disabled={!metadataEntry}
-				add={!!assignValue}
+			<AttributeAssignerButton<'timeSignature'>
+				tKey="timeSignature"
+				assigner={assigner}
+				metadataEntry={metadataEntry}
+				currentValue={{ beatNote, beatsPerMeasure }}
 			>
 				<p style={{ display: 'inline' }}>{beatsPerMeasure}</p>/
 				<p style={{ display: 'inline' }}>{beatNote}</p>
-			</ModifyMusicAssigner>
+			</AttributeAssignerButton>
 		</AssignerInputLayout>
 	);
 };

@@ -12,7 +12,7 @@ export const usePlayback = (initialPBM?: MusicPlaybackManager) => {
 	);
 
 	const { pollValue, startPolling, stopPolling, updatePollValue } = usePolling(
-		500,
+		250,
 		playbackManager.current.getOffsetPercentage
 	);
 

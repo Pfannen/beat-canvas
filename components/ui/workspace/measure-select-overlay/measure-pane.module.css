@@ -10,7 +10,8 @@
 }
 
 .selected {
-  background-color: #50c878;
+  /* background-color: #50c878; */
+  background-color: var(--selected-border-color);
   opacity: 0.1;
 }
 

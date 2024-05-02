@@ -16,49 +16,48 @@ import { MemoizedMeasureSelectedCanvas } from '../reusable/music-canvas/measure-
 import useOverlayPositions from '@/components/hooks/workspace/useOverlayPositions';
 import MeasureSelectOverlay from './measure-select-overlay';
 import { Selection } from '@/components/hooks/useSelection';
+import { useGlobalWorkspace } from '@/components/providers/workspace';
 
 const height = 900;
-const unit = "px";
+const unit = 'px';
 const aspectRatio = 0.75;
 
-type WorkspaceProps = {
-	updateLoopSelectionRef?: MutableRefObject<(selection?: Selection) => void>;
-};
+type WorkspaceProps = {};
 
-const Workspace: FunctionComponent<WorkspaceProps> = ({
-	updateLoopSelectionRef,
-}) => {
+const Workspace: FunctionComponent<WorkspaceProps> = () => {
 	const { overlayPositions, onMeasureRendered } = useOverlayPositions(height);
-	const ws = useWorkSpace();
+	const ws = useGlobalWorkspace();
 	const { measuresItems } = useMusic();
 	const currentMode = ws.mode.get();
+	const isPlayback = currentMode === 'playback';
 
 	const buttons: ControlButton[] = [
 		{
 			label: 'Add Measure',
 			buttonProps: {
 				onClick: ws.measureDels.addMeasureSelection,
+				disabled: isPlayback,
 			},
 		},
 		{
 			label: 'Duplicate Measures',
 			buttonProps: {
 				onClick: ws.mode.set.bind(null, 'duplicate'),
-				disabled: !ws.isSelectedMeasures(),
+				disabled: !ws.isSelectedMeasures() || isPlayback,
 			},
 		},
 		{
 			label: 'Modify',
 			buttonProps: {
 				onClick: ws.mode.set.bind(null, 'modify'),
-				disabled: !ws.isSelectedMeasures(),
+				disabled: !ws.isSelectedMeasures() || isPlayback,
 			},
 		},
 		{
 			label: 'Remove',
 			buttonProps: {
 				onClick: ws.measureDels.removeMeasureSelection,
-				disabled: !ws.isSelectedMeasures(),
+				disabled: !ws.isSelectedMeasures() || isPlayback,
 			},
 		},
 		{
@@ -68,20 +67,20 @@ const Workspace: FunctionComponent<WorkspaceProps> = ({
 					currentMode !== 'loop'
 						? ws.mode.set.bind(null, 'loop')
 						: ws.mode.clear,
-				disabled: !ws.isSelectedMeasures(),
+				disabled: !ws.isSelectedMeasures() || isPlayback,
 			},
 		},
 	];
 
 	const modalShouldOpen = currentMode === 'modify' && ws.isSelectedMeasures();
 
-	useEffect(() => {
+	/* useEffect(() => {
 		const shouldLoop = currentMode === 'loop' && ws.isSelectedMeasures();
 		if (shouldLoop && updateLoopSelectionRef?.current)
 			updateLoopSelectionRef.current(ws.getSelectedMeasures());
 		else if (!shouldLoop && updateLoopSelectionRef?.current)
 			updateLoopSelectionRef.current();
-	}, [currentMode, updateLoopSelectionRef, ws]);
+	}, [currentMode, updateLoopSelectionRef, ws]); */
 
 	return (
 		<>
@@ -91,9 +90,9 @@ const Workspace: FunctionComponent<WorkspaceProps> = ({
 				style={{ '--aspect-ratio': aspectRatio } as CSSProperties}
 			>
 				<MemoizedMeasureSelectedCanvas
-          height={height}
+					height={height}
 					measures={measuresItems.measures}
-          unit={unit}
+					unit={unit}
 					aspectRatio={aspectRatio}
 					onMeasureRendered={onMeasureRendered}
 				/>

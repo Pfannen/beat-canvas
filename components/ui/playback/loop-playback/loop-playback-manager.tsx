@@ -15,6 +15,7 @@ import useLoopPlayback from '@/components/hooks/usePlayback/useLoopPlayback';
 import PBVManagerMain from '../styles/pbv-manager-main';
 import { useMusic } from '@/components/providers/music';
 import { getMeasuresStartAndEndTime } from '@/utils/music/time/measures';
+import { useSecondsToMeasureIndex } from '@/components/hooks/usePlayback/useSecondsToMeasureIndex';
 
 const DEFAULT_LOOP_COUNT = 4;
 const MAX_LOOP_COUNT = 10;
@@ -29,14 +30,14 @@ export interface LoopPlaybackManagerProps {
 	start: number;
 	end: number;
 	stopLooping?: () => void;
-	stopLoopingRef?: MutableRefObject<() => void>;
+	playedMeasureUpdated?: (index: number | null) => void;
 }
 
 const LoopPlaybackManager: FunctionComponent<LoopPlaybackManagerProps> = ({
 	sourcePlaybackManager,
 	start,
 	end,
-	stopLoopingRef,
+	playedMeasureUpdated,
 }) => {
 	// Use useMusic so we can get the measures start and end reference (can take in measures later if needed)
 	const {
@@ -61,16 +62,22 @@ const LoopPlaybackManager: FunctionComponent<LoopPlaybackManagerProps> = ({
 		loopCount: DEFAULT_LOOP_COUNT,
 	});
 
-	useEffect(() => {
-		if (stopLoopingRef) stopLoopingRef.current = rangedPBM.stop;
-	}, [stopLoopingRef, rangedPBM]);
-
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const onSeek = (seekPercent: number) => {
 		if (seekPercent === 0) loopProps.restartIteration();
 		else if (seekPercent === 1) loopProps.skipIteratation();
 	};
+
+	const { measureIdx } = useSecondsToMeasureIndex(
+		playbackProps.seekPercentage * rangedPBM.getMaxDuration(),
+		measures
+	);
+
+	useEffect(() => {
+		playedMeasureUpdated &&
+			playedMeasureUpdated(measureIdx !== null ? measureIdx + start : null);
+	}, [measureIdx, playedMeasureUpdated, start]);
 
 	return (
 		<>

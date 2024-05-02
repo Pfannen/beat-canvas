@@ -63,6 +63,8 @@ a {
 	--line-color: #ced3dd;
 
 	--element-item-gap: 12px;
+	--selected-bg-color: #0092db5d;
+	--selected-border-color: #0091db;
 
 	background-color: var(--surface-primary);
 	font-family: 'Fira Sans', sans-serif;

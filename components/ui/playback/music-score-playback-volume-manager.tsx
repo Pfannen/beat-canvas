@@ -8,11 +8,20 @@ import { MusicPlaybackManager } from '@/utils/audio/music-playback';
 interface MusicScorePlaybackVolumeManagerProps {
 	setImportedAudioLifter?: (setImportedAudioDel: () => void) => void;
 	initialPBM?: MusicPlaybackManager;
+	onPlay?: () => void;
+	onStop?: () => void;
+	playedMeasureUpdated?: (index: number | null) => void;
 }
 
 const MusicScorePlaybackVolumeManager: FunctionComponent<
 	MusicScorePlaybackVolumeManagerProps
-> = ({ setImportedAudioLifter, initialPBM }) => {
+> = ({
+	setImportedAudioLifter,
+	initialPBM,
+	onPlay,
+	onStop,
+	playedMeasureUpdated,
+}) => {
 	const {
 		setScore,
 		newScoreEncountered,
@@ -36,6 +45,11 @@ const MusicScorePlaybackVolumeManager: FunctionComponent<
 		seekMusic(0);
 	}, [musicScore]);
 
+	useEffect(() => {
+		if (playbackState === 'stopped') onStop && onStop();
+		else if (playbackState === 'started') onPlay && onPlay();
+	}, [playbackState]);
+
 	// Currently spams the delegate during playback
 	if (setImportedAudioLifter) setImportedAudioLifter(setImportedAudio);
 
@@ -43,7 +57,10 @@ const MusicScorePlaybackVolumeManager: FunctionComponent<
 		seekPercentage * playbackManager.getMaxDuration(),
 		measures
 	);
-	// console.log({ measureIdx });
+
+	useEffect(() => {
+		playedMeasureUpdated && playedMeasureUpdated(measureIdx);
+	}, [measureIdx, playedMeasureUpdated]);
 
 	return (
 		<>

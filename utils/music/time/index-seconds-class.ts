@@ -3,9 +3,12 @@ import { IndexEndTime } from '@/types/music/expand-measures';
 export class IndexSeconds {
 	private curIdx = 0;
 	private maxEndTime = 0;
+	private len = 0;
 
 	constructor(private indexEndTimes: IndexEndTime[]) {
-		this.maxEndTime = this.indexEndTimes[this.indexEndTimes.length - 1].seconds;
+		this.len = this.indexEndTimes.length;
+		if (this.len === 0) return;
+		this.maxEndTime = this.indexEndTimes[this.len - 1].seconds;
 		console.log({ indexEndTimes });
 	}
 
@@ -30,16 +33,21 @@ export class IndexSeconds {
 			}
 		}
 
-		this.curIdx = i - 1;
+		this.curIdx = i;
 	};
 
 	getIndex = (seconds: number) => {
-		if (seconds < 0 || seconds > this.maxEndTime) return null;
+		if (seconds < 0 || seconds > this.maxEndTime || this.len === 0) return null;
 
+		if (this.curIdx >= this.len) this.curIdx--;
 		if (this.indexEndTimes[this.curIdx].seconds < seconds)
 			this.iterateUp(seconds);
 		else this.iterateDown(seconds);
 
+		if (this.curIdx >= this.indexEndTimes.length) {
+			this.curIdx--;
+			return null;
+		}
 		return this.indexEndTimes[this.curIdx].index;
 	};
 }

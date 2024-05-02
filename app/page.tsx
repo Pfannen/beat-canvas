@@ -9,22 +9,14 @@ import { useCallback, useRef, useState } from 'react';
 import PlaybackVolumeManagerSwapper from '@/components/ui/playback/playback-volume-manager-swapper';
 import { Selection } from '@/components/hooks/useSelection';
 import EditScoreTitle from '@/components/ui/score-attributes/edit-score-title';
+import WorkspaceProvider from '@/components/providers/workspace';
 
 export default function Home() {
 	const setImportedAudioRef = useRef<(file: File) => void>(() => {});
-	const updateLoopSelectionRef = useRef<(selection?: Selection) => void>(
-		() => {}
-	);
 
 	const setImportedAudio = (del: (file: File) => void) => {
 		setImportedAudioRef.current = del;
 	};
-	const setSelectedMeasureLifter = useCallback(
-		(del: (selection?: Selection) => void) => {
-			updateLoopSelectionRef.current = del;
-		},
-		[]
-	);
 
 	const [getAudioBufferDel, setGetAudioBufferDel] =
 		useState<() => Promise<AudioBuffer | null>>();
@@ -38,21 +30,22 @@ export default function Home() {
 
 	return (
 		<MusicProvider>
-			<MainImportExportNavBar
-				setImportedAudioRef={setImportedAudioRef}
-				getAudioBuffer={getAudioBufferDel}
-			/>
-			<div className={classes.main_container}>
-				<div>
-					<PlaybackVolumeManagerSwapper
-						setImportedAudioLifter={setImportedAudio}
-						setSelectedMeasuresLifter={setSelectedMeasureLifter}
-						getAudioBufferLifter={getAudioBufferLifter}
-					/>
-					<EditScoreTitle />
+			<WorkspaceProvider>
+				<MainImportExportNavBar
+					setImportedAudioRef={setImportedAudioRef}
+					getAudioBuffer={getAudioBufferDel}
+				/>
+				<div className={classes.main_container}>
+					<div>
+						<PlaybackVolumeManagerSwapper
+							setImportedAudioLifter={setImportedAudio}
+							getAudioBufferLifter={getAudioBufferLifter}
+						/>
+						<EditScoreTitle />
+					</div>
+					<Workspace />
 				</div>
-				<Workspace updateLoopSelectionRef={updateLoopSelectionRef} />
-			</div>
+			</WorkspaceProvider>
 		</MusicProvider>
 	);
 }
