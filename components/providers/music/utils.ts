@@ -29,10 +29,11 @@ export const getNotePercentageOfMeasure = (
   timeSignature: TimeSignature,
   dotted = false
 ) => {
-  return (
-    getNoteDuration(noteType, timeSignature.beatNote, dotted) *
-    (timeSignature.beatsPerMeasure / timeSignature.beatNote)
-  );
+  const duration = getNoteDuration(noteType, timeSignature.beatNote, dotted);
+  return {
+    duration,
+    percentageOfMeasure: duration / timeSignature.beatsPerMeasure,
+  };
 };
 
 export const getNotesPerMeasure = (

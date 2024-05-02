@@ -40,6 +40,7 @@ export class MeasureRenderer {
   private musicDimensions: MusicDimensionData;
   private measurements: Measurements;
   private unitConverters!: UnitConverters;
+  private initialAttributes?: MeasureAttributes;
   constructor(
     measures: Measure[],
     musicDimensions: MusicDimensionData,
@@ -47,7 +48,8 @@ export class MeasureRenderer {
     measurements: Measurements,
     sectionToggleList?: MeasureSectionToggle,
     unitConverters?: UnitConverters,
-    measureTolerence?: Tolerence
+    measureTolerence?: Tolerence,
+    initialAttributes?: MeasureAttributes
   ) {
     this.measures = measures;
     this.musicDimensions = musicDimensions;
@@ -59,6 +61,7 @@ export class MeasureRenderer {
     );
     this.measurements = measurements;
     this.initializeUnitConverters(unitConverters);
+    this.initialAttributes = initialAttributes;
   }
 
   private initializeUnitConverters(unitConverters?: UnitConverters) {
@@ -138,7 +141,10 @@ export class MeasureRenderer {
   private generateMeasureAttributes() {
     const measureSections: MeasureSectionData[] = [];
     const dynamicAttributes: DynamicAttributeData[] = [];
-    for (const locObj of noteAttributeGenerator(this.measures)) {
+    for (const locObj of noteAttributeGenerator(
+      this.measures,
+      this.initialAttributes
+    )) {
       if (locObj.measureStart) {
         let measureDetails;
         if (locObj.measureIndex === 0) {
@@ -261,6 +267,7 @@ export class MeasureRenderer {
             center,
             type: rest.type,
             measureComponentHeights: containerData.measureComponentHeights,
+            isDotted: rest.isDotted,
           });
         }
       });
@@ -297,7 +304,11 @@ class MeasureComponentHelper {
   }
 
   private getNoteOffset(type: NoteType, xPos: number, isDotted: boolean) {
-    const duration = getNotePercentageOfMeasure(type, this.timeSignature);
+    const duration = getNoteDuration(
+      type,
+      this.timeSignature.beatNote,
+      isDotted
+    );
     return this.getXOffset(xPos, duration);
   }
 

@@ -84,6 +84,7 @@ export type MeasureData = MeasureDrawData & {
 
 export type RestOptions = {
   type: NoteType;
+  isDotted: boolean;
   center: Coordinate;
   measureComponentHeights: MeasureComponentValues;
 };

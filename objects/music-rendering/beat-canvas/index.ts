@@ -378,7 +378,7 @@ export class BeatCanvas<T extends IDrawingCanvas = IDrawingCanvas>
       drawer({
         drawCanvas: this.canvas,
         restCenter: options.center,
-        isDotted: false,
+        isDotted: options.isDotted,
         measureComponentHeights: options.measureComponentHeights,
       });
     }

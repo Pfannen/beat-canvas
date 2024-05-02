@@ -73,7 +73,7 @@ const drawDot = (
   spaceHeight: number
 ) => {
   drawCanvas.drawEllipse({
-    center: { x: center.x - (restWidth + spaceHeight / 2), y: center.y },
+    center: { x: center.x - (restWidth + spaceHeight), y: center.y },
     diameter: spaceHeight / 2,
     aspectRatio: 1,
   });

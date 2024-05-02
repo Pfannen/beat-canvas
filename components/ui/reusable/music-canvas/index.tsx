@@ -7,6 +7,7 @@ import { ReactCanvasManager } from "@/objects/music-rendering/drawing-canvas/rea
 import { drawMeasures } from "@/types/music-rendering/react";
 import { UnitMeasurement } from "@/types";
 import { appendUnit } from "@/utils";
+import { MeasureAttributes } from "@/types/music";
 
 type MusicCanvasProps = {
   measures: Measure[];
@@ -17,6 +18,7 @@ type MusicCanvasProps = {
   sectionToggleList?: MeasureSectionToggle;
   children?: ReactNode;
   unitConverters?: UnitConverters;
+  initialAttributes?: MeasureAttributes;
 };
 
 const MusicCanvas: FunctionComponent<MusicCanvasProps> = ({
@@ -28,6 +30,7 @@ const MusicCanvas: FunctionComponent<MusicCanvasProps> = ({
   sectionToggleList,
   children,
   unitConverters,
+  initialAttributes,
 }) => {
   drawMeasures(
     measures,
@@ -35,7 +38,9 @@ const MusicCanvas: FunctionComponent<MusicCanvasProps> = ({
     manager,
     measurements,
     sectionToggleList,
-    unitConverters
+    unitConverters,
+    undefined,
+    initialAttributes
   );
 
   return manager.getPages({
