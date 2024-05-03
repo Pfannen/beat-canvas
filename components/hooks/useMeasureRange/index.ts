@@ -66,7 +66,7 @@ const useMeasureRange = (
 			currentMACache.current || undefined,
 			x
 		);
-		console.log({ attributes, measureIndex, cache: currentMACache.current });
+		// console.log({ attributes, measureIndex, cache: currentMACache.current });
 		// Return null (if the attributes were null) or a copy of the attributes
 		return attributes && { ...attributes };
 	};

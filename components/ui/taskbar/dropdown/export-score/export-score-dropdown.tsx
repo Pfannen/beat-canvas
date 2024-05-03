@@ -52,7 +52,7 @@ const ExportScoreDropdown: FunctionComponent<ExportScoreDropdownProps> = ({
 					);
 				}}
 			>
-				mp3
+				MP3
 				<MP3SVG />
 			</button>
 			<ExportPDFButton score={musicScore} />

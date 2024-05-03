@@ -79,7 +79,7 @@ const PlaybackVolumeManagerSwapper: FunctionComponent<
 	const onStop = useCallback(() => {
 		ws.clearSelection();
 		ws.mode.clear();
-		console.log('stop');
+		//console.log('stop');
 	}, [ws]);
 
 	return (

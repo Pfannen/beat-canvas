@@ -22,7 +22,7 @@ const MeasureAttributeAssignerSet: FunctionComponent<
 	MeasureAttributeAssignerSetProps
 > = ({ liftExecuter, attributeMetadata }) => {
 	const assigner: MeasureAttributeAssigner = (attribute, value) => {
-		console.log({ attribute, value });
+		//console.log({ attribute, value });
 
 		if (!liftExecuter) return;
 
