@@ -31,7 +31,7 @@ const ImportAudioDropdown: FunctionComponent<ImportAudioDropdownProps> = ({
 						setImportedAudio(file);
 					}}
 				/>
-				<p>mp3</p>
+				<p>MP3</p>
 				<MP3SVG />
 			</button>
 		</TaskbarDropdown>

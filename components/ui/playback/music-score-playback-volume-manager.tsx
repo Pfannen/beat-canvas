@@ -40,7 +40,7 @@ const MusicScorePlaybackVolumeManager: FunctionComponent<
 	} = useMusic();
 
 	useEffect(() => {
-		console.log('Music score changed!');
+		//console.log('Music score changed!');
 		newScoreEncountered(musicScore);
 		seekMusic(0);
 	}, [musicScore]);

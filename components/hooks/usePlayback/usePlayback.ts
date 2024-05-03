@@ -99,7 +99,6 @@ export const usePlayback = (initialPBM?: MusicPlaybackManager) => {
 
 	useEffect(() => {
 		const curState = playbackManager.current.getMusicPlaybackState();
-		console.log({ curState });
 		if (curState !== playbackState) {
 			if (curState === 'stopped' && pollValue === 1) {
 				seekMusic(0);
