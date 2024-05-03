@@ -13,7 +13,7 @@ const ControlButtons: FunctionComponent<ControlButtonsProps> = ({
 }) => {
 	return (
 		<ul className={classes.buttons}>
-      <p>Measure Actions</p>
+			<p>Measure Actions</p>
 			{buttons.map(({ label, buttonProps }, i) => {
 				return (
 					<li key={i}>

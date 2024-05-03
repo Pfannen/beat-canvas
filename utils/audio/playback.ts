@@ -98,6 +98,7 @@ export class PlaybackManager extends VolumeManager {
 
 		// Seek every player to the right position
 		for (const player of Object.values(this.players)) {
+			if (this.playbackState === 'started') player.start();
 			player.seek(this.secondsIntoPlayback);
 		}
 

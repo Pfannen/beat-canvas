@@ -21,7 +21,7 @@ const ImportAudioDropdown: FunctionComponent<ImportAudioDropdownProps> = ({
 			>
 				<input
 					type="file"
-					accept=".mp3"
+					accept=".mp3, .mp4"
 					style={{ display: 'none' }}
 					ref={mp3InputRef}
 					onChange={() => {

@@ -17,7 +17,7 @@
   /* width: 90%; */
   max-height: 55vh;
   position: relative;
-  overflow: scroll;
+  /* overflow: scroll; */
 }
 
 .selected {
