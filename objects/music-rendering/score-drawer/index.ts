@@ -46,6 +46,7 @@ export class ScoreDrawer implements IScoreDrawer {
       position: options.position,
       fontFamily: drawOptions.fontFamily,
       fontSize: drawOptions.fontSize,
+      fontUnit: "px",
     });
   }
 
@@ -58,6 +59,7 @@ export class ScoreDrawer implements IScoreDrawer {
       position: options.position,
       fontFamily: drawOptions.fontFamily,
       fontSize: drawOptions.fontSize,
+      fontUnit: "px",
     });
   }
 

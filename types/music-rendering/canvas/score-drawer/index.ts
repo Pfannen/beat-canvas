@@ -31,3 +31,7 @@ export interface IScoreDrawer extends IBeatCanvas {
   drawTitle(options: TitleOptions): void;
   drawSubtitle(options: TitleOptions): void;
 }
+
+export type ScoreDrawerFont<T> =
+  | { font: T; isFileName: false }
+  | { font: string; isFileName: true };

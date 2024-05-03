@@ -1,77 +1,82 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
+
+@font-face {
+  font-family: "Sonata";
+  src: url("/fonts/sonata.ttf") format("truetype");
+}
 
 *,
 *::before,
 *::after {
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 * {
-	margin: 0;
-	/* font-family: 'Inter', sans-serif; */
-	font: inherit; /*Forces you to declare what heading levels look like*/
-	/* font-weight: bold; */
+  margin: 0;
+  /* font-family: 'Inter', sans-serif; */
+  font: inherit; /*Forces you to declare what heading levels look like*/
+  /* font-weight: bold; */
 }
 
 /* Default header font sizes */
 h1 {
-	font-size: 1.5rem;
+  font-size: 1.5rem;
 }
 h2 {
-	font-size: 1.125rem;
+  font-size: 1.125rem;
 }
 
 img,
 svg {
-	display: block;
-	max-width: 100%;
+  display: block;
+  max-width: 100%;
 }
 
 ul,
 ol {
-	padding: 0;
+  padding: 0;
 }
 
 li {
-	list-style: none;
+  list-style: none;
 }
 
 button {
-	all: unset;
-	cursor: pointer;
+  all: unset;
+  cursor: pointer;
 }
 
 a {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 :root {
-	--text-primary: #3d434f;
-	--surface-primary: #f4f9fa;
-	--surface-secondary: #3d434f;
+  --text-primary: #3d434f;
+  --surface-primary: #f4f9fa;
+  --surface-secondary: #3d434f;
 
-	--button-background-primary: #f4f9fa;
-	--button-border-radius: 6px;
-	--button-padding: 8px 12px;
-	--button-disabled-secondary: #989ea4;
+  --button-background-primary: #f4f9fa;
+  --button-border-radius: 6px;
+  --button-padding: 8px 12px;
+  --button-disabled-secondary: #989ea4;
 
-	--large-font-size: 32px;
-	--input-border-radius: 4px;
-	--body-max-width: 1360px;
-	--body-item-gap: 40px;
+  --large-font-size: 32px;
+  --input-border-radius: 4px;
+  --body-max-width: 1360px;
+  --body-item-gap: 40px;
 
-	--line-color: #ced3dd;
+  --line-color: #ced3dd;
 
-	--element-item-gap: 12px;
-	--selected-bg-color: #0092db5d;
-	--selected-border-color: #0091db;
+  --element-item-gap: 12px;
+  --selected-bg-color: #0092db5d;
+  --selected-border-color: #0091db;
 
-	background-color: var(--surface-primary);
-	font-family: 'Fira Sans', sans-serif;
+  background-color: var(--surface-primary);
+  font-family: "Fira Sans", sans-serif;
 }
 
 .center {
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }

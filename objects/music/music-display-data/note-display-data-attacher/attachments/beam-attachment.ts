@@ -66,8 +66,7 @@ export const attachBeamData =
           startNoteIndex,
           beamStack,
           measureIndex,
-          context.getAbsolutePosition,
-          context.unitConverters
+          context.getAbsolutePosition
         );
         startNoteIndex = i;
         beamStack = currNote ? [currNote] : [];
@@ -78,8 +77,7 @@ export const attachBeamData =
       startNoteIndex,
       beamStack,
       measureIndex,
-      context.getAbsolutePosition,
-      context.unitConverters
+      context.getAbsolutePosition
     );
   };
 
@@ -88,8 +86,7 @@ const processBeamStack = (
   startNoteIndex: number,
   beamStack: BeamableNoteData[],
   measureIndex: number,
-  getAbsolutePosition: NotePositionDel,
-  unitConverters: UnitConverters
+  getAbsolutePosition: NotePositionDel
 ) => {
   //If there is actually more than one note to beam
   if (beamStack.length > 1) {
@@ -102,8 +99,7 @@ const processBeamStack = (
       beamStack,
       direction,
       measureIndex,
-      getAbsolutePosition,
-      unitConverters
+      getAbsolutePosition
     );
     for (let i = 0; i < beamStack.length; i++) {
       const globalNoteIndex = i + startNoteIndex;
@@ -136,21 +132,14 @@ const getNoteBeamData = (
   notes: BeamableNoteData[],
   direction: NoteDirection,
   measureIndex: number,
-  getAbsolutePosition: NotePositionDel,
-  unitConverters: UnitConverters
+  getAbsolutePosition: NotePositionDel
 ) => {
   const coordinates = notes.map(({ noteIndex, stemOffset, beamCount }) => {
     let { x, y } = getAbsolutePosition(measureIndex, noteIndex);
     direction === "up" ? (y += stemOffset) : (y -= stemOffset);
-    x = unitConverters.y(x);
     return { x, y, beamCount }; //Account for stemOffset later
   });
   const data = NoteBeamCalculator.getPositionData(coordinates, direction, 25);
-  data.forEach((position, i) => {
-    position.beams?.forEach((beam) => {
-      beam.length = unitConverters.x(beam.length);
-    });
-  });
 
   return data;
 };
