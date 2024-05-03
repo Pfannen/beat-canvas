@@ -1,5 +1,5 @@
 import { Drawer } from "..";
-import { NoteDirection } from "@/lib/notes/types";
+import { NoteDirection } from "@/types/music";
 import { Coordinate } from "@/types";
 import { MeasureComponentValues } from "@/types/music-rendering";
 

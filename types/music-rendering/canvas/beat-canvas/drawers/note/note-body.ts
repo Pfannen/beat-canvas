@@ -1,6 +1,6 @@
 import { Coordinate } from "@/types";
 import { Drawer } from "..";
-import { NoteDirection } from "@/lib/notes/types";
+import { NoteDirection } from "@/types/music";
 
 export type NoteBodyArgs = {
   center: Coordinate;

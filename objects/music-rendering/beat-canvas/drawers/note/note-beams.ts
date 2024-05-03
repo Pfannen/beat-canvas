@@ -1,4 +1,4 @@
-import { NoteDirection } from "@/lib/notes/types";
+import { NoteDirection } from "@/types/music";
 import { Coordinate } from "@/types";
 import { NoteBeamDrawer } from "@/types/music-rendering/canvas/beat-canvas/drawers/note/note-beams";
 import { SVGData } from "@/types/svg";

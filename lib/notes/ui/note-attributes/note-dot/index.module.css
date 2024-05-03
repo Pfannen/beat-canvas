@@ -1,7 +1,0 @@
-.note_dot {
-  position: absolute;
-  width: var(--percent-of-body);
-  aspect-ratio: 1/1;
-  background-color: black;
-  border-radius: 50%;
-}

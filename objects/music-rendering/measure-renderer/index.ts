@@ -88,7 +88,11 @@ export class MeasureRenderer {
             const note = this.measures[measureIndex].notes[noteIndex];
             const noteSpaceWidth = getMeasureNoteSpace(measureIndex);
             const timeSig = music.getMeasureTimeSignature(measureIndex);
-            const duration = getNoteDuration(note.type, timeSig.beatNote);
+            const duration = getNoteDuration(
+              note.type,
+              timeSig.beatNote,
+              note.annotations?.dotted
+            );
             const x =
               Measurements.getXFractionOffset(
                 note.x,

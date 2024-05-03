@@ -1,7 +1,0 @@
-.note_beam {
-  height: var(--height);
-  width: var(--width);
-  rotate: var(--angle);
-  background-color: black;
-  transform-origin: bottom center;
-}

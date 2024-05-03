@@ -167,3 +167,5 @@ export type MeasureSectionMetadata = FilteredMeasureAttributes & {
 };
 
 export type MeasureSection = keyof MeasureSectionMetadata;
+
+export type NoteDirection = "up" | "down"; //up --> staff is up and on right, down --> staff is down and on left

@@ -6,7 +6,7 @@ import {
   MeasureSection,
   MeasureSectionMetadata,
 } from "@/types/music";
-import { NoteDirection } from "@/lib/notes/types";
+import { NoteDirection } from "@/types/music";
 import { MeasureComponent, MeasureComponentValues } from "../..";
 import { NoteDisplayData } from "@/types/music-rendering/draw-data/note";
 import { NoteAnnotation } from "@/types/music/note-annotations";

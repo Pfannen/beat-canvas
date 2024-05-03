@@ -1,8 +1,8 @@
-import { NoteDirection } from "@/lib/notes/types";
 import { Coordinate } from "@/types";
 import { BeamedNoteInfo } from "@/types/measurement";
 import { TrigHelpers } from "@/utils/trig";
 import { BeamGenerator } from "./beam-generator";
+import { NoteDirection } from "@/types/music";
 
 export type BeamNote = Coordinate & { beamCount: number };
 

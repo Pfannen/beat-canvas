@@ -1,5 +1,5 @@
 import { DisplayDataAttacher, NotePositionDel } from "./types";
-import { NoteDirection } from "@/lib/notes/types";
+import { NoteDirection } from "@/types/music";
 import { NoteBeamCalculator } from "@/objects/measurement/note-beam/note-beam-calculator";
 import { NoteDisplayData } from "@/types/music-rendering/draw-data/note";
 import { BeamableNoteData } from "@/types/measurement";
@@ -22,6 +22,7 @@ export const attachBeamData =
     let startNoteIndex = 0; // The index of the first note in the beam stack
     for (let i = 0; i < noteCount; i++) {
       const note = music.getNoteData(measureIndex, i);
+
       let processStack = true; // If the notes in the beam stack should be beamed (this will be toggled if necessary)
       let currNote: BeamableNoteData | undefined; // The note to be pushed onto the beam stack (if undefined, no note should be pushed)
       const beamCount = getNoteBeamCount(note.type);

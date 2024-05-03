@@ -1,4 +1,4 @@
-import { NoteDirection } from "@/lib/notes/types";
+import { NoteDirection } from "@/types/music";
 import { NonBodyDrawer } from "@/types/music-rendering/canvas/beat-canvas/drawers/note/non-body";
 
 export const nonBodyDrawer: NonBodyDrawer = ({

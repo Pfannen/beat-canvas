@@ -1,4 +1,4 @@
-import { NoteDirection } from "@/lib/notes/types";
+import { NoteDirection } from "@/types/music";
 import { NoteAnnotations } from "../../music/note-annotations";
 
 export type BeamData = {

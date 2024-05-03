@@ -5,7 +5,7 @@ import {
   TimeSignature,
 } from "@/components/providers/music/types";
 import { getNoteDuration } from "@/components/providers/music/utils";
-import { NoteDirection } from "@/lib/notes/types";
+import { NoteDirection } from "@/types/music";
 import {
   NoteAnnotation,
   NoteAnnotations,
@@ -128,7 +128,7 @@ export class Music implements ReadonlyMusic {
     return getNoteDuration(
       note.type,
       this.getMeasureTimeSignature(measureIndex).beatNote,
-      measure.notes[noteIndex].annotations?.dotted
+      note.annotations?.dotted
     );
   }
 

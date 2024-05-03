@@ -14,7 +14,7 @@ import {
   MeasureData,
   DynamicAttributeData,
 } from "@/types/music-rendering/canvas/beat-canvas";
-import { NoteDirection } from "@/lib/notes/types";
+import { NoteDirection } from "@/types/music";
 import {
   annotationDrawers,
   createOffsetsObject,
