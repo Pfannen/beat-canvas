@@ -15,7 +15,8 @@ const requiredSections: { [K in MeasureSection]: boolean } = {
   note: true,
   keySignature: true,
   timeSignature: false,
-  repeat: false,
+  forwardRepeat: false,
+  backwardRepeat: false,
   repeatEndings: false,
 };
 

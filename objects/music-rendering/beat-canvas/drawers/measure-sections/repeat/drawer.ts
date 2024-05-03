@@ -63,33 +63,35 @@ export const backwardRepeatSectionDrawer: MeasureSectionDrawer<
   "backwardRepeat"
 > = ({ drawCanvas, bodyHeight, section, yPosToAbsolute, componentHeights }) => {
   const y = yPosToAbsolute(0) - componentHeights.line / 2;
-  let x = section.startX;
+  let x = section.startX + section.width;
   const outerWidth = getOuterWidth(section.width);
   const innerWidth = getInnerWidth(section.width);
   const circleDiameter = getCircleDiameter(section.width);
 
-  drawCanvas.drawEllipse({
-    center: { x, y: yPosToAbsolute(5) },
-    diameter: circleDiameter,
-    aspectRatio: 1,
+  drawCanvas.drawRectangle({
+    corner: { x, y },
+    width: -outerWidth,
+    height: bodyHeight,
   });
+
+  x -= getOuterGap(section.width);
+
+  drawCanvas.drawRectangle({
+    corner: { x, y },
+    width: -innerWidth,
+    height: bodyHeight,
+  });
+
+  x -= getInnerGap(section.width);
+
   drawCanvas.drawEllipse({
     center: { x, y: yPosToAbsolute(3) },
     diameter: circleDiameter,
     aspectRatio: 1,
   });
-
-  x += getInnerGap(section.width);
-  drawCanvas.drawRectangle({
-    corner: { x, y },
-    width: innerWidth,
-    height: bodyHeight,
-  });
-
-  x += getOuterGap(section.width);
-  drawCanvas.drawRectangle({
-    corner: { x, y },
-    width: outerWidth,
-    height: bodyHeight,
+  drawCanvas.drawEllipse({
+    center: { x, y: yPosToAbsolute(5) },
+    diameter: circleDiameter,
+    aspectRatio: 1,
   });
 };

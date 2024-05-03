@@ -1,115 +1,117 @@
 import {
-	AllSelectionsHaveUpdater,
-	AnnotationSelectionMetadata,
-	CountMap,
-	DefaultAssignerValueMap,
-	MetadataEntryUpdater,
-	MetadataEntryUpdaterMap,
-	MetadataUpdater,
-	SegmentSelectionData,
-} from '@/types/modify-score/assigner/metadata';
-import { NoteAnnotations } from '@/types/music/note-annotations';
-import { updateAllSelectionsHave, updateMetadataStructures } from '.';
-import { getNoteAnnotationKeys } from '../..';
+  AllSelectionsHaveUpdater,
+  AnnotationSelectionMetadata,
+  CountMap,
+  DefaultAssignerValueMap,
+  MetadataEntryUpdater,
+  MetadataEntryUpdaterMap,
+  MetadataUpdater,
+  SegmentSelectionData,
+} from "@/types/modify-score/assigner/metadata";
+import { NoteAnnotations } from "@/types/music/note-annotations";
+import { updateAllSelectionsHave, updateMetadataStructures } from ".";
+import { getNoteAnnotationKeys } from "../..";
 
-export const getAnnotationSelectionMetadata = (selections: SegmentSelectionData[]) => {
-	if (selections.length === 0) return null;
+export const getAnnotationSelectionMetadata = (
+  selections: SegmentSelectionData[]
+) => {
+  if (selections.length === 0) return null;
 
-	// Store selection metadata
-	const metadata: AnnotationSelectionMetadata = {};
-	// Store a mapping of annotation -> count ; used to determine if all selections have an annotation
-	const countMap: CountMap<NoteAnnotations> = {};
+  // Store selection metadata
+  const metadata: AnnotationSelectionMetadata = {};
+  // Store a mapping of annotation -> count ; used to determine if all selections have an annotation
+  const countMap: CountMap<NoteAnnotations> = {};
 
-	// Keep track of which selections are notes
-	let notesSelected = 0;
-	selections.forEach(({ note }) => {
-		if (!note) return;
-		notesSelected++;
+  // Keep track of which selections are notes
+  let notesSelected = 0;
+  selections.forEach(({ note }) => {
+    if (!note) return;
+    notesSelected++;
 
-		const { annotations } = note;
-		if (!annotations) return;
+    const { annotations } = note;
+    if (!annotations) return;
 
-		updateMetadataStructures(metadata, countMap, annotations);
-	});
+    updateMetadataStructures(metadata, countMap, annotations);
+  });
 
-	if (notesSelected === 0) return null;
+  if (notesSelected === 0) return null;
 
-	updateAllSelectionsHave(
-		metadata,
-		countMap,
-		getNoteAnnotationKeys(),
-		notesSelected,
-		specialAnnotationsMetadataUpdaterMap
-	);
+  updateAllSelectionsHave(
+    metadata,
+    countMap,
+    getNoteAnnotationKeys(),
+    notesSelected,
+    specialAnnotationsMetadataUpdaterMap
+  );
 
-	return metadata;
+  return metadata;
 };
 
 export const updateAnnotationSelectionMetadata: MetadataUpdater<
-	NoteAnnotations
+  NoteAnnotations
 > = (metadata, countMap, selectionData) => {
-	const { note } = selectionData;
-	if (!note) return;
+  const { note } = selectionData;
+  if (!note) return;
 
-	if (note) {
-		const { annotations } = note;
-		if (!annotations) return;
-		updateMetadataStructures(metadata, countMap, annotations);
-	}
+  if (note) {
+    const { annotations } = note;
+    if (!annotations) return;
+    updateMetadataStructures(metadata, countMap, annotations);
+  }
 };
 
 export const annotationAllSelectionsHaveUpdater: AllSelectionsHaveUpdater<
-	NoteAnnotations
+  NoteAnnotations
 > = (metadata, countMap, notesSelected) => {
-	updateAllSelectionsHave(
-		metadata,
-		countMap,
-		getNoteAnnotationKeys(),
-		notesSelected,
-		specialAnnotationsMetadataUpdaterMap
-	);
+  updateAllSelectionsHave(
+    metadata,
+    countMap,
+    getNoteAnnotationKeys(),
+    notesSelected,
+    specialAnnotationsMetadataUpdaterMap
+  );
 };
 
-const slurMetadataUpdater: MetadataEntryUpdater<NoteAnnotations, 'slur'> = (
-	metadataEntry,
-	countMapEntry,
-	validSelectionCount
+const slurMetadataUpdater: MetadataEntryUpdater<NoteAnnotations, "slur"> = (
+  metadataEntry,
+  countMapEntry,
+  validSelectionCount
 ) => {
-	// If there is no metadata entry, we can't do much (it should always be present, though)
-	// We must have exactly 2 notes selected to do anything with a slur
-	// We also must have 2 notes that have a slur or 2 notes that do not have a slur
-	// (the count map entry may be undefined if no slurs were encountered)
-	// Return true in these cases to denote the slur annotation is not applicable for the selections
-	if (
-		!metadataEntry ||
-		validSelectionCount !== 2 ||
-		(countMapEntry !== undefined && countMapEntry !== 2 && countMapEntry !== 0)
-	) {
-		return true;
-	}
+  // If there is no metadata entry, we can't do much (it should always be present, though)
+  // We must have exactly 2 notes selected to do anything with a slur
+  // We also must have 2 notes that have a slur or 2 notes that do not have a slur
+  // (the count map entry may be undefined if no slurs were encountered)
+  // Return true in these cases to denote the slur annotation is not applicable for the selections
+  if (
+    !metadataEntry ||
+    validSelectionCount !== 2 ||
+    (countMapEntry !== undefined && countMapEntry !== 2 && countMapEntry !== 0)
+  ) {
+    return true;
+  }
 
-	// If there's two notes that have a slur, the 'value' field of the metadata should be an object
-	// If there's two notes that don't have a slur, the 'value' field should be undefined already
-	// (These are what we want)
+  // If there's two notes that have a slur, the 'value' field of the metadata should be an object
+  // If there's two notes that don't have a slur, the 'value' field should be undefined already
+  // (These are what we want)
 
-	return false;
+  return false;
 };
 
 export const specialAnnotationsMetadataUpdaterMap: MetadataEntryUpdaterMap<NoteAnnotations> =
-	{
-		slur: slurMetadataUpdater,
-	};
+  {
+    slur: slurMetadataUpdater,
+  };
 
 export const defaultAnnotationValues: DefaultAssignerValueMap<NoteAnnotations> =
-	{
-		slur: {},
-		accent: 'strong',
-		accidental: 'flat',
-		chord: true,
-		staccato: true,
-		dotted: true,
-		dynamic: 'p',
-	};
+  {
+    slur: {},
+    accent: "strong",
+    accidental: "b",
+    chord: true,
+    staccato: true,
+    dotted: true,
+    dynamic: "p",
+  };
 
 /* const slurMetadataUpdater: AnnotationMetadataEntryUpdater<'slur'> = (
 	slur,

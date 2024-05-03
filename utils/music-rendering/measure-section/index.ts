@@ -1,14 +1,9 @@
 import {
   MeasureSection,
-  MeasureSectionMetadata,
-  Repeat,
   StaticMeasureAttribute,
   StaticMeasureAttributes,
 } from "@/types/music";
-import {
-  InitialMeasureSection,
-  MeasureSectionInfo,
-} from "@/types/music-rendering/canvas/beat-canvas/drawers/measure/measure-section";
+import { MeasureSectionInfo } from "@/types/music-rendering/canvas/beat-canvas/drawers/measure/measure-section";
 
 const measureSectionOrder: Record<MeasureSection, number> = {
   clef: 0,

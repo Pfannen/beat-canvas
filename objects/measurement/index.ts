@@ -1,9 +1,9 @@
+import { BODY_CT } from "@/constants/music-dimensions";
 import { MeasureUnitConverter } from "./measure-unit-converter";
 import MeasurePositions, {
   MeasureUtils,
   NotePositionNote,
 } from "./note-position";
-import { BODY_CT } from "./constants";
 
 export default class Measurement {
   private aboveBelowCount: number;

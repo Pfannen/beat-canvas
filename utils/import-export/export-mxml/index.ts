@@ -60,7 +60,10 @@ const partEC = (part: MusicPart) => {
       }
 
       // Create the current note
-      appendElement(measureElement!, noteEC(note, timeSignature, clef));
+      appendElement(
+        measureElement!,
+        noteEC(note, timeSignature.beatNote, clef)
+      );
     }
 
     if (measureEnd && lastNoteXEnd !== curX) {

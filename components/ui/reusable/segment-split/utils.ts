@@ -1,5 +1,5 @@
 import { SegmentBeat } from "@/components/providers/music/types";
-import { SegmentCount, SegmentGenerator } from "../../measure/types";
+import { SegmentCount, SegmentGenerator } from "@/utils/segments/types";
 
 export const minimalSegmentGenerator: SegmentGenerator = (
   currentPosition: number,

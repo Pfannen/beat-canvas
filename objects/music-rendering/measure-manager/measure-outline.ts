@@ -1,5 +1,4 @@
 import { Coordinate } from "@/types";
-import { Tolerence } from "@/types/music-rendering/measure-manager";
 import {
   CoordinateSectionArray,
   IterateMeasuresArgs,
@@ -98,7 +97,6 @@ export class MeasureOutline<T extends string> {
           lineNumber,
           index,
         });
-
         x += measure.width;
         const committedMeasure: MeasureLineMeasure<CoordinateSectionArray<T>> =
           {

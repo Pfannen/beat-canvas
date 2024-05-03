@@ -160,7 +160,8 @@ class MeasureSectionHelper {
     this.iterateSections((section, isRequired) => {
       if (this.isSectionToggled(section.key)) {
         if (section.displayByDefault) width += section.width;
-        firstMeasureWidth += section.width;
+        if (section.displayByDefault || isRequired)
+          firstMeasureWidth += section.width;
       }
     });
 

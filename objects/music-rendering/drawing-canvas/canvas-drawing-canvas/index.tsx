@@ -3,6 +3,7 @@ import {
   IDrawingCanvas,
   RectangleDrawOptions,
   SVGDrawOptions,
+  TextDrawOptions,
 } from "@/types/music-rendering/canvas/drawing-canvas";
 import { centerToTopLeft } from "@/utils/coordinate";
 import { getSVGAspectRatio } from "@/utils/svg";
@@ -26,6 +27,9 @@ export class CanvasDrawingCanvas implements IDrawingCanvas {
       />
     );
     this.height = height;
+  }
+  drawText(options: TextDrawOptions<{}>): void {
+    throw new Error("Method not implemented.");
   }
 
   //   private addDrawAction(drawAction: CanvasDrawAction) {
