@@ -37,12 +37,12 @@ const MeasureSelectCanvas: FunctionComponent<MeasureSelectCanvasProps> = ({
 }) => {
   const dimensions = useMemo(
     () =>
-      MusicLayout.getMarginlessSheetMusic(
-        height * aspectRatio,
-        height,
-        undefined,
-        5
-      ),
+      MusicLayout.getMarginlessSheetMusic(height * aspectRatio, height, 5, 5, {
+        top: 0,
+        bottom: 50,
+        left: 0,
+        right: 0,
+      }),
     []
   );
   const measurements = useMemo(

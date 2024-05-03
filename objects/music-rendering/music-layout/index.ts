@@ -7,6 +7,7 @@ import {
   LINES_PER_PAGE,
   MEASURES_PER_LINE,
 } from "@/constants/music-dimensions";
+import { BlockDirection, InlineDirection } from "@/types/music-rendering/pdf";
 
 export class MusicLayout {
   static getDimensions(params: MusicDimensionParams): MusicDimensionData {
@@ -81,14 +82,16 @@ export class MusicLayout {
     width: number,
     height: number,
     linesPerPage = LINES_PER_PAGE,
-    measuresPerLine = MEASURES_PER_LINE
+    measuresPerLine = MEASURES_PER_LINE,
+    musicMargins?: BlockDirection<number> & InlineDirection<number>
   ) {
     return this.getDimensions(
       PageDimensionParams.marginlessSheetMusic(
         width,
         height,
         linesPerPage,
-        measuresPerLine
+        measuresPerLine,
+        musicMargins || { top: 0, bottom: 0, left: 0, right: 0 }
       )
     );
   }

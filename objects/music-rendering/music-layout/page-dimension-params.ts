@@ -1,4 +1,9 @@
-import { Margins, PageDimensions } from "@/types/music-rendering/pdf";
+import {
+  BlockDirection,
+  InlineDirection,
+  Margins,
+  PageDimensions,
+} from "@/types/music-rendering/pdf";
 import { MusicDimensionParams } from "@/types/music-rendering/music-layout";
 import { PageSizes } from "pdf-lib";
 
@@ -28,11 +33,12 @@ export class PageDimensionParams {
     width: number,
     height: number,
     linesPerPage: number,
-    measuresPerLine: number
+    measuresPerLine: number,
+    musicMargins: BlockDirection<number> & InlineDirection<number>
   ): MusicDimensionParams {
     return {
       pageDimensions: { width, height },
-      musicMargins: { top: 0, bottom: 0, left: 0, right: 0 },
+      musicMargins: musicMargins,
       minHeaderSpace: 0,
       measuresPerLine,
       linesPerPage,
