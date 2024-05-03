@@ -1,0 +1,7 @@
+npm run gen-schema 'NameOfType' > 'output-file-name'.json
+
+'NameOfType' is the name of the TypeScript type you created that you want a schema from
+
+NOTE: package.json includes the 'gen-schema' script pointing to the tsconfig file in this folder, and also adds the '--required' attribute
+
+To install the schema generating package, run 'npm install --save-dev typescript-json-schema'

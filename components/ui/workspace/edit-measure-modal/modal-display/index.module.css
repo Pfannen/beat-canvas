@@ -1,0 +1,54 @@
+.edit_modal_container {
+	max-height: 95vh;
+	overflow-y: auto;
+}
+
+.edit_modal_container > * {
+	padding: 32px;
+}
+
+.header_container {
+	background-color: var(--text-primary);
+	padding-block: 24px;
+}
+
+.header_items {
+	color: var(--surface-primary);
+}
+
+.header_items h1 {
+	text-align: center;
+	font-size: var(--large-font-size);
+	margin-bottom: 16px;
+}
+
+.header_items button {
+	display: block;
+	margin-inline: auto;
+}
+
+.measures {
+	width: var(--width);
+	/* max-width: 1100px; */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	/* aspect-ratio: var(--aspect-ratio); */
+}
+
+.note_selected {
+	opacity: 0.5;
+	background-color: limegreen;
+	border-radius: 6px;
+	transition: all 1s linear;
+}
+
+.assigner_container {
+	border-top: 1px solid #ced3dd;
+	padding-inline: 0;
+	margin-inline: 32px;
+}
+
+.assigner_container > * {
+	margin-bottom: 16px;
+}

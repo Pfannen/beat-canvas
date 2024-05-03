@@ -1,95 +1,51 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+
+import classes from './page.module.css';
+import MusicProvider from '@/components/providers/music';
+import Workspace from '@/components/ui/workspace';
+import MainImportExportNavBar from '@/components/ui/import-export-test/main-import-export-nav-bar';
+import MusicScorePlaybackVolumeManager from '@/components/ui/playback/music-score-playback-volume-manager';
+import { useCallback, useRef, useState } from 'react';
+import PlaybackVolumeManagerSwapper from '@/components/ui/playback/playback-volume-manager-swapper';
+import { Selection } from '@/components/hooks/useSelection';
+import EditScoreTitle from '@/components/ui/score-attributes/edit-score-title';
+import WorkspaceProvider from '@/components/providers/workspace';
 
 export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+	const setImportedAudioRef = useRef<(file: File) => void>(() => {});
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+	const setImportedAudio = (del: (file: File) => void) => {
+		setImportedAudioRef.current = del;
+	};
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+	const [getAudioBufferDel, setGetAudioBufferDel] =
+		useState<() => Promise<AudioBuffer | null>>();
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
+	const getAudioBufferLifter = useCallback(
+		(del: () => Promise<AudioBuffer | null>) => {
+			if (getAudioBufferDel !== del) setGetAudioBufferDel(() => del);
+		},
+		[getAudioBufferDel]
+	);
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+	return (
+		<MusicProvider>
+			<WorkspaceProvider>
+				<MainImportExportNavBar
+					setImportedAudioRef={setImportedAudioRef}
+					getAudioBuffer={getAudioBufferDel}
+				/>
+				<div className={classes.main_container}>
+					<div>
+						<PlaybackVolumeManagerSwapper
+							setImportedAudioLifter={setImportedAudio}
+							getAudioBufferLifter={getAudioBufferLifter}
+						/>
+						<EditScoreTitle />
+					</div>
+					<Workspace />
+				</div>
+			</WorkspaceProvider>
+		</MusicProvider>
+	);
 }

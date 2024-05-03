@@ -1,0 +1,14 @@
+.set {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: 100%;
+	--set-gap: 8px;
+	gap: var(--set-gap);
+}
+
+.buttons {
+	border-radius: 8px;
+	width: 100%;
+	padding: 0;
+}

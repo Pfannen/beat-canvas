@@ -1,0 +1,13 @@
+.edit_title {
+	margin-inline: auto;
+	margin-bottom: 20px;
+}
+
+.edit_title > * {
+	margin-right: var(--element-item-gap);
+}
+
+.edit_title input {
+	border-radius: var(--input-border-radius);
+	border: 1px solid black;
+}

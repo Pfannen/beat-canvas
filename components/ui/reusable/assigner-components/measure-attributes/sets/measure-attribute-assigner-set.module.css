@@ -1,0 +1,11 @@
+.measure_container {
+	width: 100%;
+}
+
+.dropdowns {
+	margin-top: 12px;
+}
+
+.dropdowns > * {
+	margin-top: 6px;
+}

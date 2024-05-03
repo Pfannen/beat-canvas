@@ -1,0 +1,13 @@
+.assigner_container {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--element-item-gap);
+}
+
+.assigner_container button {
+	flex: 1;
+	min-width: 50px;
+	max-width: 100px;
+}

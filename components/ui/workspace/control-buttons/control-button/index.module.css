@@ -1,0 +1,11 @@
+.button {
+  border-radius: 500px;
+  padding-inline: 2rem;
+  padding-block: 0.75rem;
+  background-color: lightskyblue;
+}
+
+.button:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}

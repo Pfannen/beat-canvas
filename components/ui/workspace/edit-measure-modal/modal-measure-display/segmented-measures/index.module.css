@@ -1,0 +1,14 @@
+.measures {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.measure {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: space-evenly;
+  position: absolute;
+  top: var(--offset);
+}

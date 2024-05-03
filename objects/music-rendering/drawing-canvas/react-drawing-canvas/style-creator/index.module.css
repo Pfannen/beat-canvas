@@ -1,0 +1,83 @@
+/*"--style-c"*/
+
+.dim {
+  height: var(--style-c-height);
+  width: var(--style-c-width);
+}
+
+.placement {
+  left: var(--style-c-left);
+  bottom: var(--style-c-bottom);
+}
+
+.center {
+  transform: translate(-50%, 50%);
+}
+
+.center-x {
+  transform: translate(-50%);
+}
+
+.center-y {
+  transform: translate(0%, 50%);
+}
+
+.t-origin {
+  transform-origin: var(--style-c-t-origin);
+}
+
+.border-radius {
+  border-radius: var(--style-c-border-radius);
+}
+
+.bg-color {
+  background-color: var(--style-c-bg-color);
+}
+
+.degree-rotation {
+  rotate: var(--style-c-degree-rotation);
+}
+
+.position {
+  position: var(--style-c-position);
+}
+
+.opacity {
+  opacity: var(--style-c-opacity);
+}
+
+.cursor {
+  cursor: var(--style-c-cursor);
+}
+
+.scale {
+  scale: var(--style-c-scale);
+}
+
+.top {
+  top: var(--style-c-top);
+}
+
+.bottom {
+  bottom: var(--style-c-bottom);
+}
+
+.left {
+  top: var(--style-c-left);
+}
+
+.right {
+  top: var(--style-c-right);
+}
+
+.font-family {
+  font-family: var(--style-c-font-family);
+}
+
+.font-size {
+  font-size: var(--style-c-font-size);
+}
+
+.pointer {
+  pointer-events: var(--style-c-pointer);
+}

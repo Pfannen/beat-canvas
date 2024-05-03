@@ -1,0 +1,8 @@
+.input {
+	border-radius: var(--input-border-radius);
+	width: 6ch;
+}
+
+.input:disabled {
+	opacity: 0.5;
+}

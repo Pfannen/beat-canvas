@@ -1,0 +1,31 @@
+.measures {
+  width: 90%;
+  height: 10vh;
+  margin-inline: auto;
+  margin-block: 1rem;
+}
+
+.measure {
+  cursor: pointer;
+}
+
+.music_canvas {
+  margin-inline: auto;
+  /* height: 100vh; */
+  height: 900px;
+  /* aspect-ratio: var(--aspect-ratio); */
+  /* width: 90%; */
+  max-height: 55vh;
+  position: relative;
+  /* overflow: scroll; */
+}
+
+.selected {
+  background-color: rgba(144, 238, 144, 0.3);
+  opacity: 1;
+}
+
+.not_selected {
+  opacity: 0.1;
+  background-color: gray;
+}
