@@ -12,11 +12,10 @@ import {
 } from "@/components/providers/music/types";
 import {
   getNoteDuration,
-  getNotePercentageOfMeasure,
+  getRestDuration,
 } from "@/components/providers/music/utils";
 import { CoordinateSection } from "@/types/music-rendering/measure-manager/measure-outline";
 import {
-  DynamicMeasureAttribute,
   MeasureAttributes,
   StaticMeasureAttribute,
   StaticMeasureAttributes,
@@ -238,7 +237,8 @@ export class MeasureRenderer {
             note.type,
             note.x,
             note.y,
-            !!note.annotations?.dotted
+            !!note.annotations?.dotted,
+            false
           );
           const noteAnnotations = music.getNoteAnnotations(
             measureIndex,
@@ -265,7 +265,8 @@ export class MeasureRenderer {
             rest.type,
             rest.x,
             4,
-            rest.isDotted
+            rest.isDotted,
+            true
           );
           beatCanvas.drawRest({
             center,
@@ -307,12 +308,15 @@ class MeasureComponentHelper {
     return this.noteSection.width * fractionOffset;
   }
 
-  private getNoteOffset(type: NoteType, xPos: number, isDotted: boolean) {
-    const duration = getNoteDuration(
-      type,
-      this.timeSignature.beatNote,
-      isDotted
-    );
+  private getNoteOffset(
+    type: NoteType,
+    xPos: number,
+    isDotted: boolean,
+    isRest: boolean
+  ) {
+    const duration = isRest
+      ? getRestDuration(type, this.timeSignature, isDotted)
+      : getNoteDuration(type, this.timeSignature.beatNote, isDotted);
     return this.getXOffset(xPos, duration);
   }
 
@@ -320,10 +324,11 @@ class MeasureComponentHelper {
     type: NoteType,
     xPos: number,
     yPos: number,
-    isDotted: boolean
+    isDotted: boolean,
+    isRest: boolean
   ) {
     const { startX } = this.noteSection;
-    const noteOffset = this.getNoteOffset(type, xPos, isDotted);
+    const noteOffset = this.getNoteOffset(type, xPos, isDotted, isRest);
     const noteCenterX = startX + noteOffset;
     const yOffset = this.measurements.getYFractionOffset(yPos);
     const centerY = this.height * yOffset + this.bottomY;

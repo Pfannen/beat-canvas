@@ -24,6 +24,15 @@ export const getNoteDuration = (
 	) as SegmentBeat; //toFixed 3 works except for dotted-thirtysecond (rounds it to .188 for 4/4 but needs to be .1875) */
 };
 
+export const getRestDuration = (
+  noteType: NoteType,
+  timeSignature: TimeSignature,
+  dotted = false
+) => {
+  if (noteType === "whole") return timeSignature.beatsPerMeasure;
+  return getNoteDuration(noteType, timeSignature.beatNote, dotted);
+};
+
 export const getNotePercentageOfMeasure = (
   noteType: NoteType,
   timeSignature: TimeSignature,
@@ -34,13 +43,4 @@ export const getNotePercentageOfMeasure = (
     duration,
     percentageOfMeasure: duration / timeSignature.beatsPerMeasure,
   };
-};
-
-export const getNotesPerMeasure = (
-  noteType: NoteType,
-  beatNote: number,
-  dotted = false
-) => {
-  const duration = getNoteDuration(noteType, beatNote, dotted);
-  return beatNote / duration;
 };

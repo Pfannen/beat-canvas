@@ -4,7 +4,10 @@ import {
   NoteType,
   TimeSignature,
 } from "@/components/providers/music/types";
-import { getNoteDuration } from "@/components/providers/music/utils";
+import {
+  getNoteDuration,
+  getRestDuration as getRDuration,
+} from "@/components/providers/music/utils";
 import { NoteDirection } from "@/types/music";
 import {
   NoteAnnotation,
@@ -20,7 +23,11 @@ export interface ReadonlyMusic {
   getMeasureNoteCount(measureIndex: number): number;
   getMeasureTimeSignature(measureIndex: number): TimeSignature;
   getMeasureAnnotations(measureIndex: number): Measure["staticAttributes"];
-  getRestDuration(measureIndex: number, type: NoteType): number;
+  getRestDuration(
+    measureIndex: number,
+    type: NoteType,
+    isDotted: boolean
+  ): number;
   // getMeasures(): Measure[];
   getMeasureNotes(measureIndex: number): Note[];
   getNoteData(
@@ -132,10 +139,15 @@ export class Music implements ReadonlyMusic {
     );
   }
 
-  getRestDuration(measureIndex: number, type: NoteType): number {
-    return getNoteDuration(
+  getRestDuration(
+    measureIndex: number,
+    type: NoteType,
+    isDotted: boolean
+  ): number {
+    return getRDuration(
       type,
-      this.getMeasureTimeSignature(measureIndex).beatNote
+      this.getMeasureTimeSignature(measureIndex),
+      isDotted
     );
   }
 
