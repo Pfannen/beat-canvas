@@ -1,5 +1,6 @@
-Demo Videos:
-Click on an image will take you to the associated YouTube video
+Demo Videos: 
+
+Clicking on an image will take you to the associated YouTube video
 
 Adding measures and notes:
 
